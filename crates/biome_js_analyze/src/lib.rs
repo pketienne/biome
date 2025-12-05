@@ -10,6 +10,7 @@ use biome_analyze::{
 };
 use biome_aria::AriaRoles;
 use biome_diagnostics::Error as DiagnosticError;
+use biome_js_semantic::{SemanticModelOptions, semantic_model};
 use biome_js_syntax::{JsFileSource, JsLanguage};
 use biome_module_graph::{ModuleGraph, ModuleResolver};
 use biome_project_layout::ProjectLayout;
@@ -163,6 +164,8 @@ where
         .map(|module_info| ModuleResolver::for_module(module_info, module_graph.clone()))
         .map(Arc::new);
 
+    let semantic_model = semantic_model(root, SemanticModelOptions::default());
+
     services.insert_service(Arc::new(AriaRoles));
     services.insert_service(source_type);
     services.insert_service(module_graph);
@@ -170,6 +173,7 @@ where
     services.insert_service(file_path);
     services.insert_service(type_resolver);
     services.insert_service(project_layout);
+    services.insert_service(semantic_model);
 
     (
         analyzer.run(AnalyzerContext {

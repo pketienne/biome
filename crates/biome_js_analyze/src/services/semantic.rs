@@ -1,9 +1,8 @@
 use biome_analyze::{
     AddVisitor, FromServices, Phase, Phases, QueryKey, QueryMatch, Queryable, RuleKey,
     RuleMetadata, ServiceBag, ServicesDiagnostic, SyntaxVisitor, Visitor, VisitorContext,
-    VisitorFinishContext,
 };
-use biome_js_semantic::{SemanticEventExtractor, SemanticModel, SemanticModelBuilder};
+use biome_js_semantic::SemanticModel;
 use biome_js_syntax::{AnyJsRoot, JsLanguage, JsSyntaxNode, TextRange, WalkEvent};
 use biome_rowan::AstNode;
 
@@ -35,7 +34,7 @@ impl FromServices for SemanticServices {
 
 impl Phase for SemanticServices {
     fn phase() -> Phases {
-        Phases::Semantic
+        Phases::Syntax
     }
 }
 
@@ -49,8 +48,7 @@ impl Queryable for SemanticServices {
     type Services = Self;
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, root: &AnyJsRoot) {
-        analyzer.add_visitor(Phases::Syntax, || SemanticModelBuilderVisitor::new(root));
-        analyzer.add_visitor(Phases::Semantic, || SemanticModelVisitor);
+        analyzer.add_visitor(Phases::Syntax, || SemanticModelVisitor);
     }
 
     fn unwrap_match(services: &ServiceBag, _: &SemanticModelEvent) -> Self::Output {
@@ -76,8 +74,7 @@ where
     type Services = SemanticServices;
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, root: &AnyJsRoot) {
-        analyzer.add_visitor(Phases::Syntax, || SemanticModelBuilderVisitor::new(root));
-        analyzer.add_visitor(Phases::Semantic, SyntaxVisitor::default);
+        analyzer.add_visitor(Phases::Syntax, SyntaxVisitor::default);
     }
 
     fn key() -> QueryKey<Self::Language> {
@@ -88,46 +85,6 @@ where
         N::unwrap_cast(node.clone())
     }
 }
-
-pub struct SemanticModelBuilderVisitor {
-    extractor: SemanticEventExtractor,
-    builder: SemanticModelBuilder,
-}
-
-impl SemanticModelBuilderVisitor {
-    pub(crate) fn new(root: &AnyJsRoot) -> Self {
-        Self {
-            extractor: SemanticEventExtractor::default(),
-            builder: SemanticModelBuilder::new(root.clone()),
-        }
-    }
-}
-
-impl Visitor for SemanticModelBuilderVisitor {
-    type Language = JsLanguage;
-
-    fn visit(&mut self, event: &WalkEvent<JsSyntaxNode>, _ctx: VisitorContext<JsLanguage>) {
-        match event {
-            WalkEvent::Enter(node) => {
-                self.builder.push_node(node);
-                self.extractor.enter(node);
-            }
-            WalkEvent::Leave(node) => {
-                self.extractor.leave(node);
-            }
-        }
-
-        while let Some(e) = self.extractor.pop() {
-            self.builder.push_event(e);
-        }
-    }
-
-    fn finish(self: Box<Self>, ctx: VisitorFinishContext<JsLanguage>) {
-        let model = self.builder.build();
-        ctx.services.insert_service(model);
-    }
-}
-
 pub struct SemanticModelVisitor;
 
 pub struct SemanticModelEvent(TextRange);
