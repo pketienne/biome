@@ -173,7 +173,7 @@ where
     services.insert_service(file_path);
     services.insert_service(type_resolver);
     services.insert_service(project_layout);
-    services.insert_service(semantic_model);
+    services.insert_service(Arc::new(semantic_model));
 
     (
         analyzer.run(AnalyzerContext {

@@ -5,9 +5,10 @@ use biome_analyze::{
 use biome_js_semantic::SemanticModel;
 use biome_js_syntax::{AnyJsRoot, JsLanguage, JsSyntaxNode, TextRange, WalkEvent};
 use biome_rowan::AstNode;
+use std::sync::Arc;
 
 pub struct SemanticServices {
-    model: SemanticModel,
+    model: Arc<SemanticModel>,
 }
 
 impl SemanticServices {
@@ -23,7 +24,7 @@ impl FromServices for SemanticServices {
 
         services: &ServiceBag,
     ) -> Result<Self, ServicesDiagnostic> {
-        let model: &SemanticModel = services
+        let model: &Arc<SemanticModel> = services
             .get_service()
             .ok_or_else(|| ServicesDiagnostic::new(rule_key.rule_name(), &["SemanticModel"]))?;
         Ok(Self {
@@ -42,18 +43,18 @@ impl Phase for SemanticServices {
 /// of the whole [SemanticModel] without matching on a specific AST node
 impl Queryable for SemanticServices {
     type Input = SemanticModelEvent;
-    type Output = SemanticModel;
+    type Output = Arc<SemanticModel>;
 
     type Language = JsLanguage;
     type Services = Self;
 
-    fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, root: &AnyJsRoot) {
+    fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, _root: &AnyJsRoot) {
         analyzer.add_visitor(Phases::Syntax, || SemanticModelVisitor);
     }
 
     fn unwrap_match(services: &ServiceBag, _: &SemanticModelEvent) -> Self::Output {
         services
-            .get_service::<SemanticModel>()
+            .get_service::<Arc<SemanticModel>>()
             .expect("SemanticModel service is not registered")
             .clone()
     }
@@ -73,7 +74,7 @@ where
     type Language = JsLanguage;
     type Services = SemanticServices;
 
-    fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, root: &AnyJsRoot) {
+    fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, _root: &AnyJsRoot) {
         analyzer.add_visitor(Phases::Syntax, SyntaxVisitor::default);
     }
 

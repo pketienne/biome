@@ -407,7 +407,7 @@ impl Queryable for FunctionCall {
 
     fn build_visitor(
         analyzer: &mut impl AddVisitor<Self::Language>,
-        root: &<Self::Language as Language>::Root,
+        _root: &<Self::Language as Language>::Root,
     ) {
         analyzer.add_visitor(Phases::Syntax, || SemanticModelVisitor);
         analyzer.add_visitor(Phases::Syntax, EarlyReturnDetectionVisitor::default);
