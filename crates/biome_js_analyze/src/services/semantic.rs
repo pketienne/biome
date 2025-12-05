@@ -88,11 +88,11 @@ where
 }
 pub struct SemanticModelVisitor;
 
-pub struct SemanticModelEvent(TextRange);
+pub struct SemanticModelEvent(AnyJsRoot);
 
 impl QueryMatch for SemanticModelEvent {
     fn text_range(&self) -> TextRange {
-        self.0
+        self.0.syntax().text_range_with_trivia()
     }
 }
 
@@ -102,16 +102,15 @@ impl Visitor for SemanticModelVisitor {
     fn visit(&mut self, event: &WalkEvent<JsSyntaxNode>, mut ctx: VisitorContext<JsLanguage>) {
         let root = match event {
             WalkEvent::Enter(node) => {
-                if node.parent().is_some() {
+                let Some(node) = AnyJsRoot::cast_ref(node) else {
                     return;
-                }
+                };
 
                 node
             }
             WalkEvent::Leave(_) => return,
         };
 
-        let text_range = root.text_range_with_trivia();
-        ctx.match_query(SemanticModelEvent(text_range));
+        ctx.match_query(SemanticModelEvent(root.clone()));
     }
 }

@@ -10,8 +10,8 @@ use biome_analyze::{
 };
 use biome_aria::AriaRoles;
 use biome_diagnostics::Error as DiagnosticError;
-use biome_js_semantic::{SemanticModelOptions, semantic_model};
-use biome_js_syntax::{JsFileSource, JsLanguage};
+use biome_js_semantic::{SemanticModel, SemanticModelOptions, semantic_model};
+use biome_js_syntax::{AnyJsRoot, JsFileSource, JsLanguage};
 use biome_module_graph::{ModuleGraph, ModuleResolver};
 use biome_project_layout::ProjectLayout;
 use biome_rowan::TextRange;
@@ -49,20 +49,44 @@ pub struct JsAnalyzerServices {
     module_graph: Arc<ModuleGraph>,
     project_layout: Arc<ProjectLayout>,
     source_type: JsFileSource,
+    semantic_model: Option<Arc<SemanticModel>>,
 }
 
-impl From<(Arc<ModuleGraph>, Arc<ProjectLayout>, JsFileSource)> for JsAnalyzerServices {
+impl
+    From<(
+        Arc<ModuleGraph>,
+        Arc<ProjectLayout>,
+        JsFileSource,
+        Option<Arc<SemanticModel>>,
+    )> for JsAnalyzerServices
+{
     fn from(
-        (module_graph, project_layout, source_type): (
+        (module_graph, project_layout, source_type, semantic_model): (
             Arc<ModuleGraph>,
             Arc<ProjectLayout>,
             JsFileSource,
+            Option<Arc<SemanticModel>>,
         ),
     ) -> Self {
         Self {
             module_graph,
             project_layout,
             source_type,
+            semantic_model,
+        }
+    }
+}
+
+impl From<&AnyJsRoot> for JsAnalyzerServices {
+    fn from(value: &AnyJsRoot) -> Self {
+        Self {
+            module_graph: Arc::new(ModuleGraph::default()),
+            project_layout: Arc::new(ProjectLayout::default()),
+            source_type: JsFileSource::default(),
+            semantic_model: Some(Arc::new(semantic_model(
+                value,
+                SemanticModelOptions::default(),
+            ))),
         }
     }
 }
@@ -120,6 +144,7 @@ where
         module_graph,
         project_layout,
         source_type,
+        semantic_model,
     } = services;
 
     let (registry, mut services, diagnostics, visitors) = registry.build();
@@ -164,8 +189,6 @@ where
         .map(|module_info| ModuleResolver::for_module(module_info, module_graph.clone()))
         .map(Arc::new);
 
-    let semantic_model = semantic_model(root, SemanticModelOptions::default());
-
     services.insert_service(Arc::new(AriaRoles));
     services.insert_service(source_type);
     services.insert_service(module_graph);
@@ -173,7 +196,13 @@ where
     services.insert_service(file_path);
     services.insert_service(type_resolver);
     services.insert_service(project_layout);
-    services.insert_service(Arc::new(semantic_model));
+    if let Some(semantic_model) = semantic_model {
+        services.insert_service(semantic_model);
+    } else {
+        let semantic_model =
+            biome_js_semantic::semantic_model(root, SemanticModelOptions::default());
+        services.insert_service(Arc::new(semantic_model));
+    }
 
     (
         analyzer.run(AnalyzerContext {
