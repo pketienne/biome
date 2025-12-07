@@ -1,5 +1,5 @@
 use crate::react::hooks::{is_react_hook_call, is_react_hook_name};
-use crate::services::semantic::{SemanticModelVisitor, SemanticServices};
+use crate::services::semantic::SemanticModelVisitor;
 use biome_analyze::{
     AddVisitor, FromServices, Phase, Phases, QueryMatch, Queryable, Rule, RuleDiagnostic, RuleKey,
     RuleMetadata, ServiceBag, ServicesDiagnostic, Visitor, VisitorContext, VisitorFinishContext,

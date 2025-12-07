@@ -1,4 +1,4 @@
-use crate::services::semantic::{SemanticModelVisitor, SemanticServices};
+use crate::services::semantic::SemanticModelVisitor;
 use crate::{
     JsRuleAction,
     react::{ReactLibrary, is_global_react_import},
