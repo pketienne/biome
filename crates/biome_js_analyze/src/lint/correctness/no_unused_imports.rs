@@ -201,7 +201,7 @@ fn load_jsdoc_types_from_jsdoc_comment(model: &mut JsDocTypeModel, comment: &str
 
 pub struct JsDocTypeServices {
     jsdoc_types: JsDocTypeModel,
-    semantic_services: SemanticServices,
+    semantic_model: SemanticModel,
 }
 impl JsDocTypeServices {
     fn jsdoc_types(&self) -> &JsDocTypeModel {
@@ -209,22 +209,25 @@ impl JsDocTypeServices {
     }
 
     fn semantic_model(&self) -> &SemanticModel {
-        self.semantic_services.model()
+        &self.semantic_model
     }
 }
 
 impl FromServices for JsDocTypeServices {
     fn from_services(
         rule_key: &RuleKey,
-        rule_metadata: &RuleMetadata,
+        _rule_metadata: &RuleMetadata,
         services: &ServiceBag,
     ) -> Result<Self, ServicesDiagnostic> {
         let jsdoc_types: &JsDocTypeModel = services
             .get_service()
             .ok_or_else(|| ServicesDiagnostic::new(rule_key.rule_name(), &["JsDocTypeModel"]))?;
+        let semantic_model: &SemanticModel = services
+            .get_service()
+            .ok_or_else(|| ServicesDiagnostic::new(rule_key.rule_name(), &["SemanticModel"]))?;
         Ok(Self {
             jsdoc_types: jsdoc_types.clone(),
-            semantic_services: SemanticServices::from_services(rule_key, rule_metadata, services)?,
+            semantic_model: semantic_model.clone(),
         })
     }
 }

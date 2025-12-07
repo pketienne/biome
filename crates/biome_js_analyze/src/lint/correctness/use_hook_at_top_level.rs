@@ -355,7 +355,7 @@ impl Visitor for FunctionCallVisitor {
 
 pub struct FunctionCallServices {
     early_returns: EarlyReturnsModel,
-    semantic_services: SemanticServices,
+    semantic_model: SemanticModel,
 }
 
 impl FunctionCallServices {
@@ -364,22 +364,26 @@ impl FunctionCallServices {
     }
 
     fn semantic_model(&self) -> &SemanticModel {
-        self.semantic_services.model()
+        &self.semantic_model
     }
 }
 
 impl FromServices for FunctionCallServices {
     fn from_services(
         rule_key: &RuleKey,
-        rule_metadata: &RuleMetadata,
+        _rule_metadata: &RuleMetadata,
         services: &ServiceBag,
     ) -> Result<Self, ServicesDiagnostic> {
         let early_returns: &EarlyReturnsModel = services
             .get_service()
             .ok_or_else(|| ServicesDiagnostic::new(rule_key.rule_name(), &["EarlyReturnsModel"]))?;
+
+        let semantic_model: &SemanticModel = services
+            .get_service()
+            .ok_or_else(|| ServicesDiagnostic::new(rule_key.rule_name(), &["SemanticModel"]))?;
         Ok(Self {
             early_returns: early_returns.clone(),
-            semantic_services: SemanticServices::from_services(rule_key, rule_metadata, services)?,
+            semantic_model: semantic_model.clone(),
         })
     }
 }
