@@ -760,8 +760,7 @@ pub(crate) fn lint(params: LintParams) -> LintResults {
     let semantic_model = params
         .document_services
         .as_js_services()
-        .and_then(|services| services.semantic_model.clone())
-        .map(Arc::new);
+        .and_then(|services| services.semantic_model.clone());
     let services = JsAnalyzerServices::from((
         params.module_graph,
         params.project_layout,
@@ -833,8 +832,7 @@ pub(crate) fn code_actions(params: CodeActionsParams) -> PullActionsResult {
     };
     let semantic_model = document_services
         .as_js_services()
-        .and_then(|services| services.semantic_model.clone())
-        .map(Arc::new);
+        .and_then(|services| services.semantic_model.clone());
     let services =
         JsAnalyzerServices::from((module_graph, project_layout, source_type, semantic_model));
 
@@ -1066,8 +1064,7 @@ pub(crate) fn pull_diagnostics_and_actions(
     };
     let semantic_model = document_services
         .as_js_services()
-        .and_then(|services| services.semantic_model.clone())
-        .map(Arc::new);
+        .and_then(|services| services.semantic_model.clone());
     let services =
         JsAnalyzerServices::from((module_graph, project_layout, source_type, semantic_model));
     let mut process_pull_diagnostics_and_actions =

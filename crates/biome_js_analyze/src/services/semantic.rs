@@ -5,10 +5,9 @@ use biome_analyze::{
 use biome_js_semantic::SemanticModel;
 use biome_js_syntax::{AnyJsRoot, JsLanguage, JsSyntaxNode, TextRange, WalkEvent};
 use biome_rowan::AstNode;
-use std::sync::Arc;
 
 pub struct SemanticServices {
-    model: Arc<SemanticModel>,
+    model: SemanticModel,
 }
 
 impl SemanticServices {
@@ -24,7 +23,7 @@ impl FromServices for SemanticServices {
 
         services: &ServiceBag,
     ) -> Result<Self, ServicesDiagnostic> {
-        let model: &Arc<SemanticModel> = services
+        let model: &SemanticModel = services
             .get_service()
             .ok_or_else(|| ServicesDiagnostic::new(rule_key.rule_name(), &["SemanticModel"]))?;
         Ok(Self {
@@ -35,7 +34,7 @@ impl FromServices for SemanticServices {
 
 impl Phase for SemanticServices {
     fn phase() -> Phases {
-        Phases::Syntax
+        Phases::Semantic
     }
 }
 
@@ -43,18 +42,18 @@ impl Phase for SemanticServices {
 /// of the whole [SemanticModel] without matching on a specific AST node
 impl Queryable for SemanticServices {
     type Input = SemanticModelEvent;
-    type Output = Arc<SemanticModel>;
+    type Output = SemanticModel;
 
     type Language = JsLanguage;
     type Services = Self;
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, _root: &AnyJsRoot) {
-        analyzer.add_visitor(Phases::Syntax, || SemanticModelVisitor);
+        analyzer.add_visitor(Phases::Semantic, || SemanticModelVisitor);
     }
 
     fn unwrap_match(services: &ServiceBag, _: &SemanticModelEvent) -> Self::Output {
         services
-            .get_service::<Arc<SemanticModel>>()
+            .get_service::<SemanticModel>()
             .expect("SemanticModel service is not registered")
             .clone()
     }
@@ -75,7 +74,7 @@ where
     type Services = SemanticServices;
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, _root: &AnyJsRoot) {
-        analyzer.add_visitor(Phases::Syntax, SyntaxVisitor::default);
+        analyzer.add_visitor(Phases::Semantic, SyntaxVisitor::default);
     }
 
     fn key() -> QueryKey<Self::Language> {

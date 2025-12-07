@@ -26,7 +26,7 @@ fn quick_test() {
         Default::default(),
         project_layout_with_top_level_dependencies(dependencies),
         JsFileSource::tsx(),
-        Some(Arc::new(semantic_model)),
+        Some(semantic_model),
     ));
 
     crate::analyze(
@@ -816,7 +816,7 @@ const foo0 = function (bar: string) {
         Default::default(),
         Default::default(),
         JsFileSource::ts(),
-        Some(Arc::new(semantic_model)),
+        Some(semantic_model),
     ));
 
     crate::analyze(&root, filter, &options, &[], services, |signal| {

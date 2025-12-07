@@ -49,7 +49,7 @@ pub struct JsAnalyzerServices {
     module_graph: Arc<ModuleGraph>,
     project_layout: Arc<ProjectLayout>,
     source_type: JsFileSource,
-    semantic_model: Option<Arc<SemanticModel>>,
+    semantic_model: Option<SemanticModel>,
 }
 
 impl
@@ -57,7 +57,7 @@ impl
         Arc<ModuleGraph>,
         Arc<ProjectLayout>,
         JsFileSource,
-        Option<Arc<SemanticModel>>,
+        Option<SemanticModel>,
     )> for JsAnalyzerServices
 {
     fn from(
@@ -65,7 +65,7 @@ impl
             Arc<ModuleGraph>,
             Arc<ProjectLayout>,
             JsFileSource,
-            Option<Arc<SemanticModel>>,
+            Option<SemanticModel>,
         ),
     ) -> Self {
         Self {
@@ -83,10 +83,7 @@ impl From<&AnyJsRoot> for JsAnalyzerServices {
             module_graph: Arc::new(ModuleGraph::default()),
             project_layout: Arc::new(ProjectLayout::default()),
             source_type: JsFileSource::default(),
-            semantic_model: Some(Arc::new(semantic_model(
-                value,
-                SemanticModelOptions::default(),
-            ))),
+            semantic_model: Some(semantic_model(value, SemanticModelOptions::default())),
         }
     }
 }
@@ -201,7 +198,7 @@ where
     } else {
         let semantic_model =
             biome_js_semantic::semantic_model(root, SemanticModelOptions::default());
-        services.insert_service(Arc::new(semantic_model));
+        services.insert_service(semantic_model);
     }
 
     (

@@ -364,7 +364,7 @@ impl FunctionCallServices {
     }
 
     fn semantic_model(&self) -> &SemanticModel {
-        &self.semantic_services.model()
+        self.semantic_services.model()
     }
 }
 

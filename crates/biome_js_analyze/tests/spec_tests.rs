@@ -194,7 +194,7 @@ pub(crate) fn analyze_and_snap(
         module_graph,
         project_layout,
         source_type,
-        Some(Arc::new(semantic_model)),
+        Some(semantic_model),
     ));
 
     let (_, errors) =

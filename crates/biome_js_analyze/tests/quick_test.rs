@@ -63,7 +63,7 @@ export function f(options: PostcssOptions) {
         module_graph_for_test_file(file_path.as_path(), project_layout.as_ref()),
         project_layout,
         JsFileSource::tsx(),
-        Some(Arc::new(semantic_model)),
+        Some(semantic_model),
     ));
 
     analyze(
