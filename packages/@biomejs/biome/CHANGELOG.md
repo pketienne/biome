@@ -1,5 +1,19 @@
 # @biomejs/biome
 
+## 2.3.15
+
+### Patch Changes
+
+- [#8646](https://github.com/biomejs/biome/pull/8646) [`16fd71d`](https://github.com/biomejs/biome/commit/16fd71da5692f863112e302078325d3be4d79b24) Thanks [@siketyan](https://github.com/siketyan)! - Fixed [#8605](https://github.com/biomejs/biome/issues/8605): Text expressions in some template languages (`{{ expr }}` or `{ expr }`) at the top level of an HTML document no longer causes panicking.
+
+- [#8930](https://github.com/biomejs/biome/pull/8930) [`51c158e`](https://github.com/biomejs/biome/commit/51c158e803f9bad561cf5b79365c339e9069d614) Thanks [@ANKANJAGTAP](https://github.com/ANKANJAGTAP)! - Fixed #8917
+  [useExhaustiveDependencies](https://biomejs.dev/linter/rules/use-exhaustive-dependencies/) now correctly detects JSX component identifiers as hook dependencies.
+
+- [#8848](https://github.com/biomejs/biome/pull/8848) [`2cba2b3`](https://github.com/biomejs/biome/commit/2cba2b3996447dab1d653dd8c8ee97eddd0bb63b) Thanks [@LouisLau-art](https://github.com/LouisLau-art)! - Fixed [#8845](https://github.com/biomejs/biome/issues/8845). Now `useGenericFontNames` doesn't trigger when `font` is declared inside the `@supports` at-rule.
+
+- [#8978](https://github.com/biomejs/biome/pull/8978) [`cc7a478`](https://github.com/biomejs/biome/commit/cc7a4785f47a2c2a5ba3ea4ef90937742a2cd347) Thanks [@FrankFMY](https://github.com/FrankFMY)! - Fixed [#8645](https://github.com/biomejs/biome/issues/8645).
+  [useAwait](https://biomejs.dev/linter/rules/use-await/) no longer reports `async` generator functions that use `yield*`, since `yield*` in an async generator delegates to an `AsyncIterable` and requires the `async` modifier.
+
 ## 2.3.14
 
 ### Patch Changes
