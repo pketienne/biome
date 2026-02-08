@@ -1,0 +1,33 @@
+[package]
+name                 = "biome_turtle_parser"
+version              = "0.0.1"
+authors.workspace    = true
+edition.workspace    = true
+description          = "Biome's Turtle (RDF) parser"
+homepage.workspace   = true
+repository.workspace = true
+license.workspace    = true
+keywords.workspace   = true
+categories.workspace = true
+publish              = true
+
+[dependencies]
+biome_console         = { workspace = true }
+biome_diagnostics     = { workspace = true }
+biome_turtle_factory  = { workspace = true }
+biome_turtle_syntax   = { workspace = true }
+biome_parser          = { workspace = true }
+biome_rowan           = { workspace = true }
+biome_unicode_table   = { workspace = true }
+tracing               = { workspace = true }
+unicode-bom           = { workspace = true }
+
+[dev-dependencies]
+biome_test_utils  = { workspace = true }
+insta             = { workspace = true }
+quickcheck        = { workspace = true }
+quickcheck_macros = { workspace = true }
+tests_macros      = { workspace = true }
+
+[lints]
+workspace = true

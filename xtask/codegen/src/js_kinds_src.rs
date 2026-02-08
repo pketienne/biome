@@ -704,6 +704,7 @@ impl Field {
                     ("{#", LanguageKind::Html) => "sv_curly_hash",
                     ("{/", LanguageKind::Html) => "sv_curly_slash",
                     ("{:", LanguageKind::Html) => "sv_curly_colon",
+                    ("^^", LanguageKind::Turtle) => "caret_caret",
                     _ => name,
                 };
 

@@ -1,0 +1,30 @@
+[package]
+name                 = "biome_turtle_analyze"
+version              = "0.0.1"
+authors.workspace    = true
+edition.workspace    = true
+description          = "Biome's Turtle (RDF) linter"
+homepage.workspace   = true
+repository.workspace = true
+license.workspace    = true
+keywords.workspace   = true
+categories.workspace = true
+publish              = true
+
+[dependencies]
+biome_analyze        = { workspace = true }
+biome_analyze_macros = { workspace = true }
+biome_console        = { workspace = true }
+biome_diagnostics    = { workspace = true }
+biome_rowan          = { workspace = true }
+biome_suppression    = { workspace = true }
+biome_turtle_syntax  = { workspace = true }
+
+[dev-dependencies]
+biome_turtle_parser = { path = "../biome_turtle_parser" }
+biome_test_utils    = { path = "../biome_test_utils" }
+insta               = { workspace = true, features = ["glob"] }
+tests_macros        = { path = "../tests_macros" }
+
+[lints]
+workspace = true

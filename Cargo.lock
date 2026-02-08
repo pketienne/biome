@@ -1795,6 +1795,77 @@ dependencies = [
 ]
 
 [[package]]
+name = "biome_turtle_analyze"
+version = "0.0.1"
+dependencies = [
+ "biome_analyze",
+ "biome_analyze_macros",
+ "biome_console",
+ "biome_diagnostics",
+ "biome_rowan",
+ "biome_suppression",
+ "biome_test_utils",
+ "biome_turtle_parser",
+ "biome_turtle_syntax",
+ "insta",
+ "tests_macros",
+]
+
+[[package]]
+name = "biome_turtle_factory"
+version = "0.0.1"
+dependencies = [
+ "biome_rowan",
+ "biome_turtle_syntax",
+]
+
+[[package]]
+name = "biome_turtle_formatter"
+version = "0.0.1"
+dependencies = [
+ "biome_diagnostics",
+ "biome_formatter",
+ "biome_parser",
+ "biome_rowan",
+ "biome_suppression",
+ "biome_test_utils",
+ "biome_turtle_parser",
+ "biome_turtle_syntax",
+ "tests_macros",
+]
+
+[[package]]
+name = "biome_turtle_parser"
+version = "0.0.1"
+dependencies = [
+ "biome_console",
+ "biome_diagnostics",
+ "biome_parser",
+ "biome_rowan",
+ "biome_test_utils",
+ "biome_turtle_factory",
+ "biome_turtle_syntax",
+ "biome_unicode_table",
+ "insta",
+ "quickcheck",
+ "quickcheck_macros",
+ "tests_macros",
+ "tracing",
+ "unicode-bom",
+]
+
+[[package]]
+name = "biome_turtle_syntax"
+version = "0.0.1"
+dependencies = [
+ "biome_rowan",
+ "biome_string_case",
+ "camino",
+ "schemars",
+ "serde",
+]
+
+[[package]]
 name = "biome_ungrammar"
 version = "0.3.1"
 

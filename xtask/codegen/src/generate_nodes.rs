@@ -1195,6 +1195,7 @@ pub fn should_token_be_quoted(token: &str) -> bool {
             | "__"
             | "`"
             | "```"
+            | "^^"
             | "{{"
             | "}}"
             | "{@"

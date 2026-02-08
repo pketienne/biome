@@ -20,6 +20,7 @@ mod js_kinds_src;
 mod json_kinds_src;
 mod markdown_kinds_src;
 mod tailwind_kinds_src;
+mod turtle_kinds_src;
 mod yaml_kinds_src;
 
 #[cfg(feature = "schema")]

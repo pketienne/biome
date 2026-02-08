@@ -570,6 +570,7 @@ enum NodeDialect {
     Vue,
     Tailwind,
     Md,
+    Turtle,
 }
 
 impl NodeDialect {
@@ -584,6 +585,7 @@ impl NodeDialect {
             Self::Graphql,
             Self::Html,
             Self::Md,
+            Self::Turtle,
         ]
     }
 
@@ -606,6 +608,7 @@ impl NodeDialect {
             Self::Vue => "vue",
             Self::Tailwind => "tailwind",
             Self::Md => "md",
+            Self::Turtle => "turtle",
         }
     }
 
@@ -624,6 +627,7 @@ impl NodeDialect {
             "Vue" => Self::Vue,
             "Tw" => Self::Tailwind,
             "Md" => Self::Md,
+            "Turtle" => Self::Turtle,
             _ => {
                 eprintln!("missing prefix {name}");
                 Self::Js
@@ -804,6 +808,12 @@ fn get_node_concept(
                 _ => NodeConcept::Auxiliary,
             },
             LanguageKind::Markdown => NodeConcept::Auxiliary,
+
+            LanguageKind::Turtle => match name {
+                _ if name.ends_with("Declaration") => NodeConcept::Declaration,
+                _ if name.ends_with("Literal") => NodeConcept::Value,
+                _ => NodeConcept::Auxiliary,
+            },
             LanguageKind::Css => match name {
                 _ if name.ends_with("AtRule") => NodeConcept::Statement,
                 _ if name.ends_with("Selector") => NodeConcept::Selector,
@@ -921,6 +931,7 @@ impl LanguageKind {
             Self::Yaml => "YamlFormatter",
             Self::Markdown => "MarkdownFormatter",
             Self::Tailwind => "TailwindFormatter",
+            Self::Turtle => "TurtleFormatter",
         };
 
         Ident::new(name, Span::call_site())
@@ -937,6 +948,7 @@ impl LanguageKind {
             Self::Yaml => "YamlFormatContext",
             Self::Markdown => "MarkdownFormatContext",
             Self::Tailwind => "TailwindFormatContext",
+            Self::Turtle => "TurtleFormatContext",
         };
 
         Ident::new(name, Span::call_site())

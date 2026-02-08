@@ -9,11 +9,12 @@ use crate::json_kinds_src::JSON_KINDS_SRC;
 use crate::kind_src::KindsSrc;
 use crate::markdown_kinds_src::MARKDOWN_KINDS_SRC;
 use crate::tailwind_kinds_src::TAILWIND_KINDS_SRC;
+use crate::turtle_kinds_src::TURTLE_KINDS_SRC;
 use crate::yaml_kinds_src::YAML_KINDS_SRC;
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::{format_ident, quote};
 
-pub const LANGUAGE_PREFIXES: [&str; 11] = [
+pub const LANGUAGE_PREFIXES: [&str; 12] = [
     "js_",
     "ts_",
     "jsx_",
@@ -25,6 +26,7 @@ pub const LANGUAGE_PREFIXES: [&str; 11] = [
     "yaml_",
     "markdown_",
     "tailwind_",
+    "turtle_",
 ];
 
 #[derive(Debug, Eq, Copy, Clone, PartialEq)]
@@ -38,6 +40,7 @@ pub enum LanguageKind {
     Yaml,
     Markdown,
     Tailwind,
+    Turtle,
 }
 
 impl std::fmt::Display for LanguageKind {
@@ -52,11 +55,12 @@ impl std::fmt::Display for LanguageKind {
             Self::Yaml => write!(f, "yaml"),
             Self::Markdown => write!(f, "markdown"),
             Self::Tailwind => write!(f, "tailwind"),
+            Self::Turtle => write!(f, "turtle"),
         }
     }
 }
 
-pub const ALL_LANGUAGE_KIND: [LanguageKind; 9] = [
+pub const ALL_LANGUAGE_KIND: [LanguageKind; 10] = [
     LanguageKind::Js,
     LanguageKind::Css,
     LanguageKind::Json,
@@ -66,6 +70,7 @@ pub const ALL_LANGUAGE_KIND: [LanguageKind; 9] = [
     LanguageKind::Yaml,
     LanguageKind::Markdown,
     LanguageKind::Tailwind,
+    LanguageKind::Turtle,
 ];
 
 impl FromStr for LanguageKind {
@@ -82,8 +87,9 @@ impl FromStr for LanguageKind {
             "yaml" => Ok(Self::Yaml),
             "markdown" => Ok(Self::Markdown),
             "tailwind" => Ok(Self::Tailwind),
+            "turtle" => Ok(Self::Turtle),
             _ => Err(format!(
-                "Language {kind} not supported, please use: `js`, `css`, `json`, `grit`, `graphql`, `html`, `yaml`, `markdown`, or `tailwind`"
+                "Language {kind} not supported, please use: `js`, `css`, `json`, `grit`, `graphql`, `html`, `yaml`, `markdown`, `tailwind`, or `turtle`"
             )),
         }
     }
@@ -119,7 +125,7 @@ macro_rules! define_language_kind_functions {
 }
 
 impl LanguageKind {
-    define_language_kind_functions!([Js, Css, Json, Graphql, Grit, Html, Yaml, Markdown, Tailwind]);
+    define_language_kind_functions!([Js, Css, Json, Graphql, Grit, Html, Yaml, Markdown, Tailwind, Turtle]);
 
     pub(crate) fn syntax_crate_ident(&self) -> Ident {
         Ident::new(self.syntax_crate_name().as_str(), Span::call_site())
@@ -152,6 +158,7 @@ impl LanguageKind {
             Self::Yaml => YAML_KINDS_SRC,
             Self::Markdown => MARKDOWN_KINDS_SRC,
             Self::Tailwind => TAILWIND_KINDS_SRC,
+            Self::Turtle => TURTLE_KINDS_SRC,
         }
     }
 
@@ -166,6 +173,7 @@ impl LanguageKind {
             Self::Yaml => include_str!("../yaml.ungram"),
             Self::Markdown => include_str!("../markdown.ungram"),
             Self::Tailwind => include_str!("../tailwind.ungram"),
+            Self::Turtle => include_str!("../turtle.ungram"),
         }
     }
 

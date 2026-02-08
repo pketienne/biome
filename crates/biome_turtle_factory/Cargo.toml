@@ -1,0 +1,19 @@
+[package]
+name                 = "biome_turtle_factory"
+version              = "0.0.1"
+authors.workspace    = true
+edition.workspace    = true
+description          = "Utilities to create Turtle AST for biome_turtle_parser"
+homepage.workspace   = true
+repository.workspace = true
+license.workspace    = true
+keywords.workspace   = true
+categories.workspace = true
+publish              = true
+
+[dependencies]
+biome_turtle_syntax = { workspace = true }
+biome_rowan         = { workspace = true }
+
+[lints]
+workspace = true

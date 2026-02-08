@@ -1,0 +1,198 @@
+// Turtle Un-Grammar.
+//
+// This grammar specifies the structure of the Turtle (RDF) concrete syntax tree.
+// Based on the W3C Turtle grammar: https://www.w3.org/TR/turtle/#sec-grammar
+//
+// Legend:
+//
+//   //                  -- comment
+//   Name =              -- non-terminal definition
+//   'ident'             -- token (terminal)
+//   A B                 -- sequence
+//   A | B               -- alternation
+//   A*                  -- zero or more repetition
+//   A?                  -- zero or one repetition
+//   (A)                 -- same as A
+//   label:A             -- suggested name for field of AST node
+
+// NOTES
+//
+// - SyntaxNode, SyntaxToken and SyntaxElement will be stripped from the codegen
+// - Bogus nodes are special nodes used to keep track of broken code; they are
+//   not part of the grammar but they will appear inside the green tree
+
+
+///////////////
+// BOGUS NODES
+///////////////
+SyntaxElement = SyntaxElement
+
+TurtleBogus = SyntaxElement*
+TurtleBogusStatement = SyntaxElement*
+
+// Root
+// https://www.w3.org/TR/turtle/#grammar-production-turtleDoc
+TurtleRoot =
+	bom: 'UNICODE_BOM'?
+	statements: TurtleStatementList
+	eof: 'EOF'
+
+// Statement list
+TurtleStatementList = AnyTurtleStatement*
+
+// https://www.w3.org/TR/turtle/#grammar-production-statement
+AnyTurtleStatement =
+	AnyTurtleDirective
+	| TurtleTriples
+	| TurtleBogusStatement
+
+// Directives
+// https://www.w3.org/TR/turtle/#grammar-production-directive
+AnyTurtleDirective =
+	TurtlePrefixDeclaration
+	| TurtleBaseDeclaration
+	| TurtleSparqlPrefixDeclaration
+	| TurtleSparqlBaseDeclaration
+
+// https://www.w3.org/TR/turtle/#grammar-production-prefixID
+// '@prefix' PNAME_NS IRIREF '.'
+TurtlePrefixDeclaration =
+	'prefix'
+	namespace: 'turtle_pname_ns_literal'
+	iri: 'turtle_iriref_literal'
+	'.'
+
+// https://www.w3.org/TR/turtle/#grammar-production-base
+// '@base' IRIREF '.'
+TurtleBaseDeclaration =
+	'base'
+	iri: 'turtle_iriref_literal'
+	'.'
+
+// https://www.w3.org/TR/turtle/#grammar-production-sparqlPrefix
+// "PREFIX" PNAME_NS IRIREF
+TurtleSparqlPrefixDeclaration =
+	'SPARQL_PREFIX'
+	namespace: 'turtle_pname_ns_literal'
+	iri: 'turtle_iriref_literal'
+
+// https://www.w3.org/TR/turtle/#grammar-production-sparqlBase
+// "BASE" IRIREF
+TurtleSparqlBaseDeclaration =
+	'SPARQL_BASE'
+	iri: 'turtle_iriref_literal'
+
+// Triples
+// https://www.w3.org/TR/turtle/#grammar-production-triples
+TurtleTriples =
+	subject: TurtleSubject
+	predicates: TurtlePredicateObjectList
+	'.'
+
+// https://www.w3.org/TR/turtle/#grammar-production-subject
+TurtleSubject =
+	AnyTurtleSubject
+
+AnyTurtleSubject =
+	TurtleIri
+	| TurtleBlankNode
+	| TurtleCollection
+	| TurtleBlankNodePropertyList
+
+// https://www.w3.org/TR/turtle/#grammar-production-predicateObjectList
+// verb objectList (';' (verb objectList)?)*
+TurtlePredicateObjectList =
+	pairs: TurtlePredicateObjectPairList
+
+TurtlePredicateObjectPairList = (TurtlePredicateObjectPair (';' TurtlePredicateObjectPair)* ';'?)
+
+// A single verb + objectList pair
+TurtlePredicateObjectPair =
+	verb: TurtleVerb
+	objects: TurtleObjectList
+
+// https://www.w3.org/TR/turtle/#grammar-production-verb
+// predicate | 'a'
+TurtleVerb =
+	AnyTurtleVerb
+
+AnyTurtleVerb =
+	TurtleIri
+	| TurtleBogus
+
+// https://www.w3.org/TR/turtle/#grammar-production-objectList
+// object (',' object)*
+TurtleObjectList = (TurtleObject (',' TurtleObject)*)
+
+// https://www.w3.org/TR/turtle/#grammar-production-object
+TurtleObject =
+	AnyTurtleObject
+
+AnyTurtleObject =
+	TurtleIri
+	| TurtleBlankNode
+	| TurtleCollection
+	| TurtleBlankNodePropertyList
+	| TurtleRdfLiteral
+	| TurtleNumericLiteral
+	| TurtleBooleanLiteral
+	| TurtleBogus
+
+// IRI
+// https://www.w3.org/TR/turtle/#grammar-production-iri
+TurtleIri =
+	value: AnyTurtleIriValue
+
+AnyTurtleIriValue =
+	TurtlePrefixedName
+	| TurtleBogus
+
+// https://www.w3.org/TR/turtle/#grammar-production-PrefixedName
+TurtlePrefixedName =
+	value: ('turtle_pname_ln_literal' | 'turtle_pname_ns_literal')
+
+// Blank nodes
+// https://www.w3.org/TR/turtle/#grammar-production-BlankNode
+TurtleBlankNode =
+	value: ('turtle_blank_node_label_literal' | 'turtle_anon_token')
+
+// https://www.w3.org/TR/turtle/#grammar-production-blankNodePropertyList
+TurtleBlankNodePropertyList =
+	'['
+	predicates: TurtlePredicateObjectList
+	']'
+
+// Collections
+// https://www.w3.org/TR/turtle/#grammar-production-collection
+TurtleCollection =
+	'('
+	objects: TurtleCollectionObjectList
+	')'
+
+TurtleCollectionObjectList = TurtleObject*
+
+// Literals
+// https://www.w3.org/TR/turtle/#grammar-production-RDFLiteral
+// String (LANGTAG | '^^' iri)?
+TurtleRdfLiteral =
+	value: TurtleString
+	language: 'turtle_langtag_literal'?
+	datatype: TurtleDatatypeAnnotation?
+
+// https://www.w3.org/TR/turtle/#grammar-production-NumericLiteral
+TurtleNumericLiteral =
+	value: ('turtle_integer_literal' | 'turtle_decimal_literal' | 'turtle_double_literal')
+
+// https://www.w3.org/TR/turtle/#grammar-production-BooleanLiteral
+TurtleBooleanLiteral =
+	value_token: ('true' | 'false')
+
+// Datatype annotation '^^' iri
+TurtleDatatypeAnnotation =
+	'^^'
+	datatype: TurtleIri
+
+// String value (4 variants)
+// https://www.w3.org/TR/turtle/#grammar-production-String
+TurtleString =
+	value: ('turtle_string_literal_quote' | 'turtle_string_literal_single_quote' | 'turtle_string_literal_long_quote' | 'turtle_string_literal_long_single_quote')
