@@ -15,9 +15,11 @@ biome_diagnostics     = { workspace = true, optional = true }
 biome_graphql_analyze = { workspace = true, optional = true }
 biome_graphql_parser  = { workspace = true, optional = true }
 biome_graphql_syntax  = { workspace = true, optional = true }
-biome_html_analyze    = { workspace = true, optional = true }
-biome_html_parser     = { workspace = true, optional = true }
-biome_html_syntax     = { workspace = true, optional = true }
+biome_html_analyze      = { workspace = true, optional = true }
+biome_html_parser       = { workspace = true, optional = true }
+biome_html_syntax       = { workspace = true, optional = true }
+biome_markdown_analyze  = { workspace = true, optional = true }
+biome_markdown_syntax   = { workspace = true, optional = true }
 biome_js_analyze      = { workspace = true, optional = true }
 biome_js_factory      = { workspace = true, optional = true }
 biome_js_formatter    = { workspace = true, optional = true }
@@ -54,6 +56,8 @@ configuration = [
   "biome_graphql_syntax",
   "biome_html_analyze",
   "biome_html_syntax",
+  "biome_markdown_analyze",
+  "biome_markdown_syntax",
   "biome_js_analyze",
   "biome_js_syntax",
   "biome_json_analyze",

@@ -108,6 +108,7 @@ pub fn generate_analyzer() -> Result<()> {
     generate_css_analyzer()?;
     generate_graphql_analyzer()?;
     generate_html_analyzer()?;
+    generate_markdown_analyzer()?;
     Ok(())
 }
 
@@ -449,6 +450,47 @@ fn update_html_registry_builder(analyzers: BTreeMap<&'static str, TokenStream>) 
         use biome_html_syntax::HtmlLanguage;
 
         pub fn visit_registry<V: RegistryVisitor<HtmlLanguage>>(registry: &mut V) {
+            #( #categories )*
+        }
+    })?;
+
+    fs2::write(path, tokens)?;
+
+    Ok(())
+}
+
+fn generate_markdown_analyzer() -> Result<()> {
+    let base_path = project_root().join("crates/biome_markdown_analyze/src");
+    let mut analyzers = BTreeMap::new();
+    let mut categories_and_groups = BTreeMap::new();
+
+    // Check if lint directory exists
+    let lint_path = base_path.join("lint");
+    if lint_path.exists() {
+        let lint_groups = generate_category("lint", &mut analyzers, &base_path)?;
+        if !lint_groups.is_empty() {
+            categories_and_groups.insert("lint", lint_groups);
+        }
+    }
+
+    // Generate and write build.rs
+    let build_script = generate_build_script(&categories_and_groups)?;
+    let build_rs_path = project_root().join("crates/biome_markdown_analyze/build.rs");
+    fs2::write(build_rs_path, build_script)?;
+
+    update_markdown_registry_builder(analyzers)
+}
+
+fn update_markdown_registry_builder(analyzers: BTreeMap<&'static str, TokenStream>) -> Result<()> {
+    let path = project_root().join("crates/biome_markdown_analyze/src/registry.rs");
+
+    let categories = analyzers.into_values();
+
+    let tokens = xtask_glue::reformat(quote! {
+        use biome_analyze::RegistryVisitor;
+        use biome_markdown_syntax::MarkdownLanguage;
+
+        pub fn visit_registry<V: RegistryVisitor<MarkdownLanguage>>(registry: &mut V) {
             #( #categories )*
         }
     })?;

@@ -2,7 +2,7 @@
 
 use biome_markdown_factory::MarkdownSyntaxFactory;
 use biome_markdown_syntax::{MarkdownLanguage, MarkdownSyntaxNode, MdDocument};
-use biome_parser::{prelude::ParseDiagnostic, tree_sink::LosslessTreeSink};
+use biome_parser::{AnyParse, NodeParse, prelude::ParseDiagnostic, tree_sink::LosslessTreeSink};
 use biome_rowan::{AstNode, NodeCache};
 use parser::MarkdownParser;
 use syntax::parse_document;
@@ -73,5 +73,18 @@ impl MarkdownParse {
     /// Panics if the node represented by this parse result mismatches.
     pub fn tree(&self) -> MdDocument {
         MdDocument::unwrap_cast(self.syntax())
+    }
+}
+
+impl From<MarkdownParse> for AnyParse {
+    fn from(parse: MarkdownParse) -> Self {
+        let root = parse.syntax();
+        let diagnostics = parse.into_diagnostics();
+        NodeParse::new(
+            // SAFETY: the parser should always return a root node
+            root.as_send().unwrap(),
+            diagnostics,
+        )
+        .into()
     }
 }

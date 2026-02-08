@@ -7,6 +7,7 @@ use biome_configuration::bool::Bool;
 use biome_configuration::diagnostics::InvalidIgnorePattern;
 use biome_configuration::formatter::{FormatWithErrorsEnabled, FormatterEnabled};
 use biome_configuration::html::{ExperimentalFullSupportEnabled, HtmlConfiguration};
+use biome_configuration::markdown::MarkdownConfiguration;
 use biome_configuration::javascript::JsxRuntime;
 use biome_configuration::max_size::MaxSize;
 use biome_configuration::vcs::{VcsClientKind, VcsConfiguration, VcsEnabled, VcsUseIgnoreFile};
@@ -34,6 +35,7 @@ use biome_grit_syntax::GritLanguage;
 use biome_html_formatter::HtmlFormatOptions;
 use biome_html_parser::HtmlParseOptions;
 use biome_html_syntax::HtmlLanguage;
+use biome_markdown_syntax::MarkdownLanguage;
 use biome_js_formatter::context::JsFormatOptions;
 use biome_js_parser::JsParserOptions;
 use biome_js_syntax::JsLanguage;
@@ -174,6 +176,10 @@ impl Settings {
         if let Some(html) = configuration.html {
             self.experimental_full_html_support = html.experimental_full_support_enabled;
             self.languages.html = html.into();
+        }
+        // markdown settings
+        if let Some(markdown) = configuration.markdown {
+            self.languages.markdown = markdown.into();
         }
 
         // plugin settings
@@ -502,6 +508,7 @@ pub struct LanguageListSettings {
     pub graphql: LanguageSettings<GraphqlLanguage>,
     pub html: LanguageSettings<HtmlLanguage>,
     pub grit: LanguageSettings<GritLanguage>,
+    pub markdown: LanguageSettings<MarkdownLanguage>,
 }
 
 impl From<JsConfiguration> for LanguageSettings<JsLanguage> {
@@ -641,6 +648,22 @@ impl From<HtmlConfiguration> for LanguageSettings<HtmlLanguage> {
             language_setting.assist = assist.into();
         }
 
+        language_setting
+    }
+}
+
+impl From<MarkdownConfiguration> for LanguageSettings<MarkdownLanguage> {
+    fn from(markdown: MarkdownConfiguration) -> Self {
+        let mut language_setting: Self = Self::default();
+        if let Some(formatter) = markdown.formatter {
+            language_setting.formatter = formatter.into();
+        }
+        if let Some(linter) = markdown.linter {
+            language_setting.linter = linter.into();
+        }
+        if let Some(assist) = markdown.assist {
+            language_setting.assist = assist.into();
+        }
         language_setting
     }
 }

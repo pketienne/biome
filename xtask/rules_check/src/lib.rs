@@ -528,6 +528,10 @@ fn assert_lint(
         }
         DocumentFileSource::Grit(..) => todo!("Grit analysis is not yet supported"),
 
+        DocumentFileSource::Markdown(..) => {
+            // Markdown analysis in rule doc tests is not yet supported
+        }
+
         // Unknown code blocks should be ignored by tests
         DocumentFileSource::Unknown | DocumentFileSource::Ignore => {}
     }

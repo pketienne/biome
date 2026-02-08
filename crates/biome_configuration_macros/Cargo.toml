@@ -18,9 +18,11 @@ biome_css_analyze     = { workspace = true }
 biome_css_syntax      = { workspace = true }
 biome_graphql_analyze = { workspace = true }
 biome_graphql_syntax  = { workspace = true }
-biome_html_analyze    = { workspace = true }
-biome_html_syntax     = { workspace = true }
-biome_js_analyze      = { workspace = true }
+biome_html_analyze      = { workspace = true }
+biome_html_syntax       = { workspace = true }
+biome_markdown_analyze  = { workspace = true }
+biome_markdown_syntax   = { workspace = true }
+biome_js_analyze        = { workspace = true }
 biome_js_syntax       = { workspace = true }
 biome_json_analyze    = { workspace = true }
 biome_json_syntax     = { workspace = true }

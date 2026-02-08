@@ -26,6 +26,7 @@ const KNOWN_PATHS: &[&str] = &[
     "crates/biome_html_analyze",
     "crates/biome_graphql_analyze",
     "crates/biome_json_analyze",
+    "crates/biome_markdown_analyze",
 ];
 
 pub fn move_rule(rule_name: &str, new_group: &str) {

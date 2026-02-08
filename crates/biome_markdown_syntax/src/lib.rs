@@ -2,6 +2,7 @@
 
 #[macro_use]
 mod generated;
+pub mod file_source;
 mod syntax_node;
 
 pub use self::generated::*;
@@ -37,7 +38,7 @@ impl SyntaxKind for MarkdownSyntaxKind {
     }
 
     fn is_root(&self) -> bool {
-        todo!()
+        matches!(self, Self::MD_DOCUMENT)
     }
 
     fn is_list(&self) -> bool {

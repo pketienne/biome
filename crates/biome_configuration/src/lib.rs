@@ -18,6 +18,7 @@ pub mod grit;
 pub mod html;
 pub mod javascript;
 pub mod json;
+pub mod markdown;
 pub mod max_size;
 mod overrides;
 pub mod vcs;
@@ -59,6 +60,7 @@ pub use graphql::{GraphqlConfiguration, graphql_configuration};
 pub use html::{HtmlConfiguration, html_configuration};
 pub use javascript::{JsConfiguration, js_configuration};
 pub use json::{JsonConfiguration, json_configuration};
+pub use markdown::{MarkdownConfiguration, markdown_configuration};
 pub use overrides::{
     OverrideAssistConfiguration, OverrideFilesConfiguration, OverrideFormatterConfiguration,
     OverrideGlobs, OverrideLinterConfiguration, OverridePattern, Overrides,
@@ -168,6 +170,11 @@ pub struct Configuration {
     #[bpaf(external(html_configuration), optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub html: Option<HtmlConfiguration>,
+
+    /// Specific configuration for the Markdown language
+    #[bpaf(external(markdown_configuration), optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub markdown: Option<MarkdownConfiguration>,
 
     /// A list of granular patterns that should be applied only to a sub set of files
     #[bpaf(hide, pure(Default::default()))]

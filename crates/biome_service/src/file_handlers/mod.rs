@@ -34,6 +34,9 @@ use biome_graphql_syntax::{GraphqlFileSource, GraphqlLanguage};
 use biome_grit_patterns::{GritQuery, GritQueryEffect, GritTargetFile};
 use biome_grit_syntax::file_source::GritFileSource;
 use biome_html_syntax::{HtmlFileSource, HtmlLanguage};
+use biome_markdown_analyze::METADATA as markdown_metadata;
+use biome_markdown_syntax::file_source::MarkdownFileSource;
+use biome_markdown_syntax::MarkdownLanguage;
 use biome_js_analyze::METADATA as js_metadata;
 use biome_js_parser::{JsParserOptions, parse};
 use biome_js_syntax::{
@@ -52,6 +55,7 @@ use camino::Utf8Path;
 use either::Either;
 use grit::GritFileHandler;
 use html::HtmlFileHandler;
+use markdown::MarkdownFileHandler;
 pub use javascript::JsFormatterSettings;
 use rustc_hash::FxHashSet;
 use std::borrow::Cow;
@@ -67,6 +71,7 @@ pub(crate) mod html;
 mod ignore;
 pub(crate) mod javascript;
 pub(crate) mod json;
+pub(crate) mod markdown;
 pub mod svelte;
 mod unknown;
 pub mod vue;
@@ -82,6 +87,7 @@ pub enum DocumentFileSource {
     Graphql(GraphqlFileSource),
     Html(HtmlFileSource),
     Grit(GritFileSource),
+    Markdown(MarkdownFileSource),
     // Ignore files
     Ignore,
     #[default]
@@ -121,6 +127,12 @@ impl From<HtmlFileSource> for DocumentFileSource {
 impl From<GritFileSource> for DocumentFileSource {
     fn from(value: GritFileSource) -> Self {
         Self::Grit(value)
+    }
+}
+
+impl From<MarkdownFileSource> for DocumentFileSource {
+    fn from(value: MarkdownFileSource) -> Self {
+        Self::Markdown(value)
     }
 }
 
@@ -204,6 +216,9 @@ impl DocumentFileSource {
         if let Ok(file_source) = GritFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
+        if let Ok(file_source) = MarkdownFileSource::try_from_extension(extension) {
+            return Ok(file_source.into());
+        }
         Err(FileSourceError::UnknownExtension)
     }
 
@@ -230,6 +245,9 @@ impl DocumentFileSource {
             return Ok(file_source.into());
         }
         if let Ok(file_source) = GritFileSource::try_from_language_id(language_id) {
+            return Ok(file_source.into());
+        }
+        if let Ok(file_source) = MarkdownFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
         Err(FileSourceError::UnknownLanguageId)
@@ -370,6 +388,13 @@ impl DocumentFileSource {
         }
     }
 
+    pub fn to_markdown_file_source(&self) -> Option<MarkdownFileSource> {
+        match self {
+            Self::Markdown(md) => Some(*md),
+            _ => None,
+        }
+    }
+
     /// The file can be parsed
     pub fn can_parse(path: &Utf8Path) -> bool {
         let file_source = Self::from(path);
@@ -379,7 +404,8 @@ impl DocumentFileSource {
             | Self::Graphql(_)
             | Self::Json(_)
             | Self::Html(_)
-            | Self::Grit(_) => true,
+            | Self::Grit(_)
+            | Self::Markdown(_) => true,
             Self::Ignore => false,
             Self::Unknown => false,
         }
@@ -394,7 +420,8 @@ impl DocumentFileSource {
             | Self::Graphql(_)
             | Self::Json(_)
             | Self::Html(_)
-            | Self::Grit(_) => true,
+            | Self::Grit(_)
+            | Self::Markdown(_) => true,
             Self::Ignore => true,
             Self::Unknown => false,
         }
@@ -410,6 +437,7 @@ impl DocumentFileSource {
             | Self::Graphql(_)
             | Self::Json(_)
             | Self::Grit(_)
+            | Self::Markdown(_)
             | Self::Ignore
             | Self::Unknown => false,
         }
@@ -444,6 +472,7 @@ impl std::fmt::Display for DocumentFileSource {
             Self::Graphql(_) => write!(fmt, "GraphQL"),
             Self::Html(_) => write!(fmt, "HTML"),
             Self::Grit(_) => write!(fmt, "Grit"),
+            Self::Markdown(_) => write!(fmt, "Markdown"),
             Self::Ignore => write!(fmt, "Ignore"),
             Self::Unknown => write!(fmt, "Unknown"),
         }
@@ -1030,6 +1059,7 @@ pub(crate) struct Features {
     graphql: GraphqlFileHandler,
     html: HtmlFileHandler,
     grit: GritFileHandler,
+    markdown: MarkdownFileHandler,
     ignore: IgnoreFileHandler,
 }
 
@@ -1045,6 +1075,7 @@ impl Features {
             graphql: GraphqlFileHandler {},
             html: HtmlFileHandler {},
             grit: GritFileHandler {},
+            markdown: MarkdownFileHandler {},
             ignore: IgnoreFileHandler {},
             unknown: UnknownFileHandler::default(),
         }
@@ -1065,6 +1096,7 @@ impl Features {
             DocumentFileSource::Graphql(_) => self.graphql.capabilities(),
             DocumentFileSource::Html(_) => self.html.capabilities(),
             DocumentFileSource::Grit(_) => self.grit.capabilities(),
+            DocumentFileSource::Markdown(_) => self.markdown.capabilities(),
             DocumentFileSource::Ignore => self.ignore.capabilities(),
             DocumentFileSource::Unknown => self.unknown.capabilities(),
         }
@@ -1301,6 +1333,25 @@ impl RegistryVisitor<HtmlLanguage> for SyntaxVisitor<'_> {
     fn record_rule<R>(&mut self)
     where
         R: Rule<Options: Default, Query: Queryable<Language = HtmlLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.enabled_rules.push(RuleFilter::Rule(
+            <R::Group as RuleGroup>::NAME,
+            R::METADATA.name,
+        ))
+    }
+}
+
+impl RegistryVisitor<MarkdownLanguage> for SyntaxVisitor<'_> {
+    fn record_category<C: GroupCategory<Language = MarkdownLanguage>>(&mut self) {
+        if C::CATEGORY == RuleCategory::Syntax {
+            C::record_groups(self)
+        }
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = MarkdownLanguage, Output: Clone>>
             + 'static,
     {
         self.enabled_rules.push(RuleFilter::Rule(
@@ -1648,6 +1699,30 @@ impl RegistryVisitor<HtmlLanguage> for LintVisitor<'_, '_> {
     }
 }
 
+impl RegistryVisitor<MarkdownLanguage> for LintVisitor<'_, '_> {
+    fn record_category<C: GroupCategory<Language = MarkdownLanguage>>(&mut self) {
+        if C::CATEGORY == RuleCategory::Lint {
+            C::record_groups(self)
+        }
+    }
+
+    fn record_group<G: RuleGroup<Language = MarkdownLanguage>>(&mut self) {
+        G::record_rules(self)
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = MarkdownLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.push_rule::<R, <R::Query as Queryable>::Language>(
+            markdown_metadata
+                .find_rule(R::Group::NAME, R::METADATA.name)
+                .map(RuleFilter::from),
+        )
+    }
+}
+
 struct AssistsVisitor<'a, 'b> {
     settings: &'b Settings,
     enabled_rules: Vec<RuleFilter<'a>>,
@@ -1816,6 +1891,22 @@ impl RegistryVisitor<HtmlLanguage> for AssistsVisitor<'_, '_> {
     }
 }
 
+impl RegistryVisitor<MarkdownLanguage> for AssistsVisitor<'_, '_> {
+    fn record_category<C: GroupCategory<Language = MarkdownLanguage>>(&mut self) {
+        if C::CATEGORY == RuleCategory::Action {
+            C::record_groups(self)
+        }
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = MarkdownLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.push_rule::<R, <R::Query as Queryable>::Language>();
+    }
+}
+
 pub(crate) struct AnalyzerVisitorBuilder<'a> {
     settings: &'a Settings,
     only: Option<&'a [AnalyzerSelector]>,
@@ -1894,6 +1985,7 @@ impl<'b> AnalyzerVisitorBuilder<'b> {
         biome_json_analyze::visit_registry(&mut syntax);
         biome_graphql_analyze::visit_registry(&mut syntax);
         biome_html_analyze::visit_registry(&mut syntax);
+        biome_markdown_analyze::visit_registry(&mut syntax);
         enabled_rules.extend(syntax.enabled_rules);
 
         let package_json = self
@@ -1915,6 +2007,7 @@ impl<'b> AnalyzerVisitorBuilder<'b> {
         biome_json_analyze::visit_registry(&mut lint);
         biome_graphql_analyze::visit_registry(&mut lint);
         biome_html_analyze::visit_registry(&mut lint);
+        biome_markdown_analyze::visit_registry(&mut lint);
         let (linter_enabled_rules, linter_disabled_rules) = lint.finish();
         enabled_rules.extend(linter_enabled_rules);
         disabled_rules.extend(linter_disabled_rules);
@@ -1926,6 +2019,7 @@ impl<'b> AnalyzerVisitorBuilder<'b> {
         biome_json_analyze::visit_registry(&mut assist);
         biome_graphql_analyze::visit_registry(&mut assist);
         biome_html_analyze::visit_registry(&mut assist);
+        biome_markdown_analyze::visit_registry(&mut assist);
         let (assists_enabled_rules, assists_disabled_rules) = assist.finish();
         enabled_rules.extend(assists_enabled_rules);
         disabled_rules.extend(assists_disabled_rules);

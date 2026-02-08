@@ -1,0 +1,30 @@
+[package]
+name        = "biome_markdown_formatter"
+version     = "0.0.1"
+authors.workspace    = true
+edition.workspace    = true
+description = "Biome's Markdown formatter"
+homepage.workspace   = true
+repository.workspace = true
+license.workspace    = true
+keywords.workspace   = true
+categories.workspace = true
+publish     = false
+
+[dependencies]
+biome_deserialize        = { workspace = true }
+biome_deserialize_macros = { workspace = true }
+biome_diagnostics        = { workspace = true }
+biome_formatter          = { workspace = true }
+biome_markdown_syntax    = { workspace = true }
+biome_rowan              = { workspace = true }
+biome_suppression        = { workspace = true }
+camino                   = { workspace = true }
+
+[dev-dependencies]
+biome_formatter      = { workspace = true, features = ["countme"] }
+biome_markdown_parser = { path = "../biome_markdown_parser" }
+biome_parser         = { path = "../biome_parser" }
+
+[lints]
+workspace = true

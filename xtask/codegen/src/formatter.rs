@@ -569,6 +569,7 @@ enum NodeDialect {
     Svelte,
     Vue,
     Tailwind,
+    Md,
 }
 
 impl NodeDialect {
@@ -582,6 +583,7 @@ impl NodeDialect {
             Self::Grit,
             Self::Graphql,
             Self::Html,
+            Self::Md,
         ]
     }
 
@@ -603,6 +605,7 @@ impl NodeDialect {
             Self::Svelte => "svelte",
             Self::Vue => "vue",
             Self::Tailwind => "tailwind",
+            Self::Md => "md",
         }
     }
 
@@ -620,6 +623,7 @@ impl NodeDialect {
             "Svelte" => Self::Svelte,
             "Vue" => Self::Vue,
             "Tw" => Self::Tailwind,
+            "Md" => Self::Md,
             _ => {
                 eprintln!("missing prefix {name}");
                 Self::Js
@@ -915,7 +919,7 @@ impl LanguageKind {
             Self::Grit => "GritFormatter",
             Self::Html => "HtmlFormatter",
             Self::Yaml => "YamlFormatter",
-            Self::Markdown => "DemoFormatter",
+            Self::Markdown => "MarkdownFormatter",
             Self::Tailwind => "TailwindFormatter",
         };
 
@@ -931,7 +935,7 @@ impl LanguageKind {
             Self::Grit => "GritFormatContext",
             Self::Html => "HtmlFormatContext",
             Self::Yaml => "YamlFormatContext",
-            Self::Markdown => "DemoFormatterContext",
+            Self::Markdown => "MarkdownFormatContext",
             Self::Tailwind => "TailwindFormatContext",
         };
 
