@@ -1,0 +1,1190 @@
+@prefix : <https://pke.dev/ontology/lint#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://pke.dev/ontology/lint/markdown-rules>
+	a owl:Ontology ;
+	owl:imports <https://pke.dev/ontology/lint> ;
+	rdfs:label "Markdown Lint Rules for Biome"@en ;
+	rdfs:comment """Generic markdown lint rules ontology aligned with biome's rule metadata. Deduplicated from markdownlint and remark-lint into a single canonical rule set of 100 rules."""@en ;
+	owl:versionInfo "2.0.0" .
+
+:MarkdownRule
+	a owl:Class ;
+	rdfs:subClassOf :Rule ;
+	rdfs:label "Markdown Rule"@en ;
+	rdfs:comment "A generic markdown lint rule, independent of any specific tool implementation."@en .
+
+:RuleGroup
+	a owl:Class ;
+	rdfs:label "Rule Group"@en ;
+	rdfs:comment "A biome-style rule group that organizes rules by intent."@en .
+
+:biomeName
+	a owl:DatatypeProperty ;
+	rdfs:domain :MarkdownRule ;
+	rdfs:range xsd:string ;
+	rdfs:label "biome name"@en ;
+	rdfs:comment "The camelCase rule name for biome configuration (e.g. noDuplicateHeadings)."@en .
+
+:belongsToGroup
+	a owl:ObjectProperty ;
+	rdfs:domain :MarkdownRule ;
+	rdfs:range :RuleGroup ;
+	rdfs:label "belongs to group"@en ;
+	rdfs:comment "Links a rule to its biome rule group."@en .
+
+:fixKind
+	a owl:DatatypeProperty ;
+	rdfs:domain :MarkdownRule ;
+	rdfs:range xsd:string ;
+	rdfs:label "fix kind"@en ;
+	rdfs:comment "The fix kind: none, safe, or unsafe."@en .
+
+:severity
+	a owl:DatatypeProperty ;
+	rdfs:domain :MarkdownRule ;
+	rdfs:range xsd:string ;
+	rdfs:label "severity"@en ;
+	rdfs:comment "The severity level: error, warning, or information."@en .
+
+:recommended
+	a owl:DatatypeProperty ;
+	rdfs:domain :MarkdownRule ;
+	rdfs:range xsd:boolean ;
+	rdfs:label "recommended"@en ;
+	rdfs:comment "Whether this rule is included in the recommended configuration."@en .
+
+:implementationStatus
+	a owl:DatatypeProperty ;
+	rdfs:domain :MarkdownRule ;
+	rdfs:range xsd:string ;
+	rdfs:label "implementation status"@en ;
+	rdfs:comment "The implementation status in biome: implemented, planned, or deferred."@en .
+
+:Correctness
+	a :RuleGroup ;
+	rdfs:label "Correctness"@en ;
+	rdfs:comment "Catches definite bugs: empty URLs, undefined references, reversed links, invalid heading levels."@en .
+
+:Style
+	a :RuleGroup ;
+	rdfs:label "Style"@en ;
+	rdfs:comment "Enforces formatting conventions: heading style, list markers, whitespace, code fences."@en .
+
+:A11y
+	a :RuleGroup ;
+	rdfs:label "Accessibility"@en ;
+	rdfs:comment "Accessibility rules: alt text, descriptive link text."@en .
+
+:Suspicious
+	a :RuleGroup ;
+	rdfs:label "Suspicious"@en ;
+	rdfs:comment "Likely mistakes: duplicate headings, emphasis used as heading."@en .
+
+:Nursery
+	a :RuleGroup ;
+	rdfs:label "Nursery"@en ;
+	rdfs:comment "Experimental rules not yet assigned to a stable group."@en .
+
+:useHeadingIncrement
+	a :MarkdownRule ;
+	rdfs:label "Heading Increment"@en ;
+	rdfs:comment "Heading levels should only increment by one level at a time."@en ;
+	:biomeName "useHeadingIncrement" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useConsistentHeadingStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent Heading Style"@en ;
+	rdfs:comment "Heading style should be consistent (atx, atx_closed, setext, or consistent)."@en ;
+	:biomeName "useConsistentHeadingStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "unsafe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noDuplicateHeadings
+	a :MarkdownRule ;
+	rdfs:label "No Duplicate Headings"@en ;
+	rdfs:comment "Multiple headings with the same content."@en ;
+	:biomeName "noDuplicateHeadings" ;
+	:belongsToGroup :Suspicious ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "implemented" .
+
+:noMultipleTopLevelHeadings
+	a :MarkdownRule ;
+	rdfs:label "No Multiple Top-Level Headings"@en ;
+	rdfs:comment "Multiple top-level headings in the same document."@en ;
+	:biomeName "noMultipleTopLevelHeadings" ;
+	:belongsToGroup :Suspicious ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noHeadingTrailingPunctuation
+	a :MarkdownRule ;
+	rdfs:label "No Heading Trailing Punctuation"@en ;
+	rdfs:comment "Headings should not end with trailing punctuation."@en ;
+	:biomeName "noHeadingTrailingPunctuation" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noEmphasisAsHeading
+	a :MarkdownRule ;
+	rdfs:label "No Emphasis as Heading"@en ;
+	rdfs:comment "Emphasis or strong emphasis used instead of a heading."@en ;
+	:biomeName "noEmphasisAsHeading" ;
+	:belongsToGroup :Suspicious ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useFirstLineHeading
+	a :MarkdownRule ;
+	rdfs:label "Use First Line Heading"@en ;
+	rdfs:comment "First line in a file should be a top-level heading."@en ;
+	:biomeName "useFirstLineHeading" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noHeadingIndent
+	a :MarkdownRule ;
+	rdfs:label "No Heading Indent"@en ;
+	rdfs:comment "Headings must start at the beginning of the line."@en ;
+	:biomeName "noHeadingIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useConsistentUnorderedListMarker
+	a :MarkdownRule ;
+	rdfs:label "Consistent Unordered List Marker"@en ;
+	rdfs:comment "Unordered list style should be consistent."@en ;
+	:biomeName "useConsistentUnorderedListMarker" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentOrderedListMarker
+	a :MarkdownRule ;
+	rdfs:label "Consistent Ordered List Marker"@en ;
+	rdfs:comment "Ordered list item prefix style should be consistent."@en ;
+	:biomeName "useConsistentOrderedListMarker" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentListItemIndent
+	a :MarkdownRule ;
+	rdfs:label "Consistent List Item Indent"@en ;
+	rdfs:comment "Spacing between list item markers and content should be consistent."@en ;
+	:biomeName "useConsistentListItemIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noReversedLinks
+	a :MarkdownRule ;
+	rdfs:label "No Reversed Links"@en ;
+	rdfs:comment "Reversed link syntax (text)[url] should be [text](url)."@en ;
+	:biomeName "noReversedLinks" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "safe" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "implemented" .
+
+:noBareUrls
+	a :MarkdownRule ;
+	rdfs:label "No Bare URLs"@en ;
+	rdfs:comment "Bare URLs should be wrapped in angle brackets or proper link syntax."@en ;
+	:biomeName "noBareUrls" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noEmptyLinks
+	a :MarkdownRule ;
+	rdfs:label "No Empty Links"@en ;
+	rdfs:comment "Links and images should not have empty URLs."@en ;
+	:biomeName "noEmptyLinks" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "implemented" .
+
+:noUndefinedReferences
+	a :MarkdownRule ;
+	rdfs:label "No Undefined References"@en ;
+	rdfs:comment "Reference links and images should use a label that is defined."@en ;
+	:biomeName "noUndefinedReferences" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noUnusedDefinitions
+	a :MarkdownRule ;
+	rdfs:label "No Unused Definitions"@en ;
+	rdfs:comment "Link and image reference definitions should be needed."@en ;
+	:biomeName "noUnusedDefinitions" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noShellDollarPrompt
+	a :MarkdownRule ;
+	rdfs:label "No Shell Dollar Prompt"@en ;
+	rdfs:comment "Dollar signs used before commands without showing output."@en ;
+	:biomeName "noShellDollarPrompt" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noMissingLanguage
+	a :MarkdownRule ;
+	rdfs:label "No Missing Language"@en ;
+	rdfs:comment "Fenced code blocks should have a language specified."@en ;
+	:biomeName "noMissingLanguage" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "implemented" .
+
+:useConsistentCodeBlockStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent Code Block Style"@en ;
+	rdfs:comment "Code block style should be consistent (fenced or indented)."@en ;
+	:biomeName "useConsistentCodeBlockStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentCodeFenceMarker
+	a :MarkdownRule ;
+	rdfs:label "Consistent Code Fence Marker"@en ;
+	rdfs:comment "Code fence style should be consistent (backtick or tilde)."@en ;
+	:biomeName "useConsistentCodeFenceMarker" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentTablePipeStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent Table Pipe Style"@en ;
+	rdfs:comment "Table rows should be fenced with pipes consistently."@en ;
+	:biomeName "useConsistentTablePipeStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentTableCellPadding
+	a :MarkdownRule ;
+	rdfs:label "Consistent Table Cell Padding"@en ;
+	rdfs:comment "Table cell padding should be consistent."@en ;
+	:biomeName "useConsistentTableCellPadding" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentEmphasisMarker
+	a :MarkdownRule ;
+	rdfs:label "Consistent Emphasis Marker"@en ;
+	rdfs:comment "Emphasis style should be consistent (asterisk or underscore)."@en ;
+	:biomeName "useConsistentEmphasisMarker" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentStrongMarker
+	a :MarkdownRule ;
+	rdfs:label "Consistent Strong Marker"@en ;
+	rdfs:comment "Strong style should be consistent (asterisk or underscore)."@en ;
+	:biomeName "useConsistentStrongMarker" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noTrailingHardBreakSpaces
+	a :MarkdownRule ;
+	rdfs:label "No Trailing Hard Break Spaces"@en ;
+	rdfs:comment "Too many spaces used to create a hard break."@en ;
+	:biomeName "noTrailingHardBreakSpaces" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noHardTabs
+	a :MarkdownRule ;
+	rdfs:label "No Hard Tabs"@en ;
+	rdfs:comment "Hard tabs should not be used."@en ;
+	:biomeName "noHardTabs" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noConsecutiveBlankLines
+	a :MarkdownRule ;
+	rdfs:label "No Consecutive Blank Lines"@en ;
+	rdfs:comment "Multiple consecutive blank lines are not allowed."@en ;
+	:biomeName "noConsecutiveBlankLines" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noLongLines
+	a :MarkdownRule ;
+	rdfs:label "No Long Lines"@en ;
+	rdfs:comment "Line length should not exceed the configured maximum."@en ;
+	:biomeName "noLongLines" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useFinalNewline
+	a :MarkdownRule ;
+	rdfs:label "Use Final Newline"@en ;
+	rdfs:comment "Files should end with a single newline character."@en ;
+	:biomeName "useFinalNewline" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useConsistentBlockquoteIndent
+	a :MarkdownRule ;
+	rdfs:label "Consistent Blockquote Indent"@en ;
+	rdfs:comment "Whitespace after block quote markers should be consistent."@en ;
+	:biomeName "useConsistentBlockquoteIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noBlockquoteBrokenContinuation
+	a :MarkdownRule ;
+	rdfs:label "No Blockquote Broken Continuation"@en ;
+	rdfs:comment "Blank lines inside blockquotes should have markers."@en ;
+	:biomeName "noBlockquoteBrokenContinuation" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noInlineHtml
+	a :MarkdownRule ;
+	rdfs:label "No Inline HTML"@en ;
+	rdfs:comment "Inline HTML should not be used in markdown."@en ;
+	:biomeName "noInlineHtml" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentHorizontalRuleStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent Horizontal Rule Style"@en ;
+	rdfs:comment "Horizontal rule style should be consistent."@en ;
+	:biomeName "useConsistentHorizontalRuleStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentListIndent
+	a :MarkdownRule ;
+	rdfs:label "Consistent List Indent"@en ;
+	rdfs:comment "Indentation for list items at the same level should be consistent."@en ;
+	:biomeName "useConsistentListIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useConsistentUnorderedListIndent
+	a :MarkdownRule ;
+	rdfs:label "Consistent Unordered List Indent"@en ;
+	rdfs:comment "Unordered list indentation should use consistent spacing."@en ;
+	:biomeName "useConsistentUnorderedListIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noMissingSpaceAtxHeading
+	a :MarkdownRule ;
+	rdfs:label "No Missing Space Atx Heading"@en ;
+	rdfs:comment "Atx style headings must have a space after the hash character."@en ;
+	:biomeName "noMissingSpaceAtxHeading" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "safe" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noMultipleSpaceAtxHeading
+	a :MarkdownRule ;
+	rdfs:label "No Multiple Space Atx Heading"@en ;
+	rdfs:comment "Multiple spaces after hash on atx style heading."@en ;
+	:biomeName "noMultipleSpaceAtxHeading" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noMissingSpaceClosedAtxHeading
+	a :MarkdownRule ;
+	rdfs:label "No Missing Space Closed Atx Heading"@en ;
+	rdfs:comment "Closed atx style headings must have a space inside hashes."@en ;
+	:biomeName "noMissingSpaceClosedAtxHeading" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "safe" ;
+	:severity "error" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noMultipleSpaceClosedAtxHeading
+	a :MarkdownRule ;
+	rdfs:label "No Multiple Space Closed Atx Heading"@en ;
+	rdfs:comment "Multiple spaces inside hashes on closed atx style heading."@en ;
+	:biomeName "noMultipleSpaceClosedAtxHeading" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useBlanksAroundHeadings
+	a :MarkdownRule ;
+	rdfs:label "Use Blanks Around Headings"@en ;
+	rdfs:comment "Headings should be surrounded by blank lines."@en ;
+	:biomeName "useBlanksAroundHeadings" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useBlanksAroundCodeFences
+	a :MarkdownRule ;
+	rdfs:label "Use Blanks Around Code Fences"@en ;
+	rdfs:comment "Fenced code blocks should be surrounded by blank lines."@en ;
+	:biomeName "useBlanksAroundCodeFences" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useBlanksAroundLists
+	a :MarkdownRule ;
+	rdfs:label "Use Blanks Around Lists"@en ;
+	rdfs:comment "Lists should be surrounded by blank lines."@en ;
+	:biomeName "useBlanksAroundLists" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noSpaceInEmphasis
+	a :MarkdownRule ;
+	rdfs:label "No Space in Emphasis"@en ;
+	rdfs:comment "Spaces inside emphasis markers."@en ;
+	:biomeName "noSpaceInEmphasis" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "safe" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noSpaceInCode
+	a :MarkdownRule ;
+	rdfs:label "No Space in Code"@en ;
+	rdfs:comment "Spaces inside code span elements."@en ;
+	:biomeName "noSpaceInCode" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noSpaceInLinks
+	a :MarkdownRule ;
+	rdfs:label "No Space in Links"@en ;
+	rdfs:comment "Spaces inside link text."@en ;
+	:biomeName "noSpaceInLinks" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useRequiredHeadings
+	a :MarkdownRule ;
+	rdfs:label "Use Required Headings"@en ;
+	rdfs:comment "Document must contain the required heading structure."@en ;
+	:biomeName "useRequiredHeadings" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:useProperNames
+	a :MarkdownRule ;
+	rdfs:label "Use Proper Names"@en ;
+	rdfs:comment "Proper names should have the correct capitalization."@en ;
+	:biomeName "useProperNames" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:noMissingAltText
+	a :MarkdownRule ;
+	rdfs:label "No Missing Alt Text"@en ;
+	rdfs:comment "Images should have alternate text (alt text)."@en ;
+	:biomeName "noMissingAltText" ;
+	:belongsToGroup :A11y ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noInvalidLinkFragments
+	a :MarkdownRule ;
+	rdfs:label "No Invalid Link Fragments"@en ;
+	rdfs:comment "Link fragments should be valid."@en ;
+	:biomeName "noInvalidLinkFragments" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useConsistentLinkStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent Link Style"@en ;
+	rdfs:comment "Link and image style should be consistent (inline vs reference)."@en ;
+	:biomeName "useConsistentLinkStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noMismatchedTableColumnCount
+	a :MarkdownRule ;
+	rdfs:label "No Mismatched Table Column Count"@en ;
+	rdfs:comment "Table rows should have equal cell counts."@en ;
+	:biomeName "noMismatchedTableColumnCount" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useBlanksAroundTables
+	a :MarkdownRule ;
+	rdfs:label "Use Blanks Around Tables"@en ;
+	rdfs:comment "Tables should be surrounded by blank lines."@en ;
+	:biomeName "useBlanksAroundTables" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useDescriptiveLinkText
+	a :MarkdownRule ;
+	rdfs:label "Use Descriptive Link Text"@en ;
+	rdfs:comment """Link text should be descriptive, not generic phrases like 'click here'."""@en ;
+	:biomeName "useDescriptiveLinkText" ;
+	:belongsToGroup :A11y ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noInvalidHeadingLevel
+	a :MarkdownRule ;
+	rdfs:label "No Invalid Heading Level"@en ;
+	rdfs:comment "Headings with more than 6 hashes are not valid."@en ;
+	:biomeName "noInvalidHeadingLevel" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "implemented" .
+
+:noDuplicateHeadingsInSection
+	a :MarkdownRule ;
+	rdfs:label "No Duplicate Headings in Section"@en ;
+	rdfs:comment "Duplicate headings within the same section."@en ;
+	:biomeName "noDuplicateHeadingsInSection" ;
+	:belongsToGroup :Suspicious ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noHeadingContentIndent
+	a :MarkdownRule ;
+	rdfs:label "No Heading Content Indent"@en ;
+	rdfs:comment "Extra whitespace in heading content after the hash characters."@en ;
+	:biomeName "noHeadingContentIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noLongHeadings
+	a :MarkdownRule ;
+	rdfs:label "No Long Headings"@en ;
+	rdfs:comment "Headings should not exceed a maximum length."@en ;
+	:biomeName "noLongHeadings" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noCheckboxCharacterStyleMismatch
+	a :MarkdownRule ;
+	rdfs:label "No Checkbox Character Style Mismatch"@en ;
+	rdfs:comment "List item checkbox characters should be consistent."@en ;
+	:biomeName "noCheckboxCharacterStyleMismatch" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noCheckboxContentIndent
+	a :MarkdownRule ;
+	rdfs:label "No Checkbox Content Indent"@en ;
+	rdfs:comment "Too much whitespace after list item checkboxes."@en ;
+	:biomeName "noCheckboxContentIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noListItemBulletIndent
+	a :MarkdownRule ;
+	rdfs:label "No List Item Bullet Indent"@en ;
+	rdfs:comment "List item bullets should not be indented."@en ;
+	:biomeName "noListItemBulletIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useConsistentListItemContentIndent
+	a :MarkdownRule ;
+	rdfs:label "Consistent List Item Content Indent"@en ;
+	rdfs:comment "Content of a list item should have consistent indentation."@en ;
+	:biomeName "useConsistentListItemContentIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useConsistentListItemSpacing
+	a :MarkdownRule ;
+	rdfs:label "Consistent List Item Spacing"@en ;
+	rdfs:comment "List looseness (tight vs loose) should be consistent."@en ;
+	:biomeName "useConsistentListItemSpacing" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentOrderedListMarkerValue
+	a :MarkdownRule ;
+	rdfs:label "Consistent Ordered List Marker Value"@en ;
+	rdfs:comment "Ordered list item numbering should be consistent."@en ;
+	:biomeName "useConsistentOrderedListMarkerValue" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentLinkTitleStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent Link Title Style"@en ;
+	rdfs:comment "Link and definition titles should use consistent quote characters."@en ;
+	:biomeName "useConsistentLinkTitleStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentMediaStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent Media Style"@en ;
+	rdfs:comment "Links and images should consistently use references or resources."@en ;
+	:biomeName "useConsistentMediaStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noReferenceLikeUrl
+	a :MarkdownRule ;
+	rdfs:label "No Reference-Like URL"@en ;
+	rdfs:comment "URLs should not also be defined identifiers (likely a reference syntax mistake)."@en ;
+	:biomeName "noReferenceLikeUrl" ;
+	:belongsToGroup :Suspicious ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noShortcutReferenceImage
+	a :MarkdownRule ;
+	rdfs:label "No Shortcut Reference Image"@en ;
+	rdfs:comment "Shortcut reference images should not be used."@en ;
+	:biomeName "noShortcutReferenceImage" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noShortcutReferenceLink
+	a :MarkdownRule ;
+	rdfs:label "No Shortcut Reference Link"@en ;
+	rdfs:comment "Shortcut reference links should not be used."@en ;
+	:biomeName "noShortcutReferenceLink" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noUnneededFullReferenceImage
+	a :MarkdownRule ;
+	rdfs:label "No Unneeded Full Reference Image"@en ;
+	rdfs:comment "Full reference images that can be collapsed should use collapsed form."@en ;
+	:biomeName "noUnneededFullReferenceImage" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noUnneededFullReferenceLink
+	a :MarkdownRule ;
+	rdfs:label "No Unneeded Full Reference Link"@en ;
+	rdfs:comment "Full reference links that can be collapsed should use collapsed form."@en ;
+	:biomeName "noUnneededFullReferenceLink" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useLowercaseDefinitionLabels
+	a :MarkdownRule ;
+	rdfs:label "Use Lowercase Definition Labels"@en ;
+	rdfs:comment "Definition labels should be lowercase."@en ;
+	:biomeName "useLowercaseDefinitionLabels" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useSortedDefinitions
+	a :MarkdownRule ;
+	rdfs:label "Use Sorted Definitions"@en ;
+	rdfs:comment "Definitions should be sorted alphabetically."@en ;
+	:biomeName "useSortedDefinitions" ;
+	:belongsToGroup :Style ;
+	:fixKind "unsafe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noDefinitionSpacingIssues
+	a :MarkdownRule ;
+	rdfs:label "No Definition Spacing Issues"@en ;
+	rdfs:comment "Consecutive whitespace in a definition should be avoided."@en ;
+	:biomeName "noDefinitionSpacingIssues" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useDefinitionsAtEnd
+	a :MarkdownRule ;
+	rdfs:label "Use Definitions at End"@en ;
+	rdfs:comment "Definitions should be placed at the end of the file."@en ;
+	:biomeName "useDefinitionsAtEnd" ;
+	:belongsToGroup :Style ;
+	:fixKind "unsafe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noDuplicateDefinedUrls
+	a :MarkdownRule ;
+	rdfs:label "No Duplicate Defined URLs"@en ;
+	rdfs:comment "Definitions should not define the same URL."@en ;
+	:biomeName "noDuplicateDefinedUrls" ;
+	:belongsToGroup :Suspicious ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noDuplicateDefinitions
+	a :MarkdownRule ;
+	rdfs:label "No Duplicate Definitions"@en ;
+	rdfs:comment "Duplicate definitions are not allowed."@en ;
+	:biomeName "noDuplicateDefinitions" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:useConsistentStrikethroughMarker
+	a :MarkdownRule ;
+	rdfs:label "Consistent Strikethrough Marker"@en ;
+	rdfs:comment "Strikethrough markers should use a consistent style."@en ;
+	:biomeName "useConsistentStrikethroughMarker" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noHiddenTableCell
+	a :MarkdownRule ;
+	rdfs:label "No Hidden Table Cell"@en ;
+	rdfs:comment "Superfluous table cells that are hidden from rendering."@en ;
+	:biomeName "noHiddenTableCell" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended true ;
+	:implementationStatus "planned" .
+
+:noTableIndentation
+	a :MarkdownRule ;
+	rdfs:label "No Table Indentation"@en ;
+	rdfs:comment "Tables should not be indented."@en ;
+	:biomeName "noTableIndentation" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentTablePipeAlignment
+	a :MarkdownRule ;
+	rdfs:label "Consistent Table Pipe Alignment"@en ;
+	rdfs:comment "Table pipes should be aligned."@en ;
+	:biomeName "useConsistentTablePipeAlignment" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentLinebreakStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent Linebreak Style"@en ;
+	rdfs:comment "Linebreaks should use a consistent style."@en ;
+	:biomeName "useConsistentLinebreakStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useBlanksBeforeBlockContent
+	a :MarkdownRule ;
+	rdfs:label "Use Blanks Before Block Content"@en ;
+	rdfs:comment "Block content should be preceded by blank lines."@en ;
+	:biomeName "useBlanksBeforeBlockContent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:noParagraphContentIndent
+	a :MarkdownRule ;
+	rdfs:label "No Paragraph Content Indent"@en ;
+	rdfs:comment "Content in paragraphs should not be indented."@en ;
+	:biomeName "noParagraphContentIndent" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "planned" .
+
+:useConsistentFileExtension
+	a :MarkdownRule ;
+	rdfs:label "Consistent File Extension"@en ;
+	rdfs:comment "Markdown files should use a consistent file extension."@en ;
+	:biomeName "useConsistentFileExtension" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:noFileNameArticles
+	a :MarkdownRule ;
+	rdfs:label "No File Name Articles"@en ;
+	rdfs:comment "File names should not start with an article."@en ;
+	:biomeName "noFileNameArticles" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:noFileNameConsecutiveDashes
+	a :MarkdownRule ;
+	rdfs:label "No File Name Consecutive Dashes"@en ;
+	rdfs:comment "File names should not contain consecutive dashes."@en ;
+	:biomeName "noFileNameConsecutiveDashes" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:noFileNameIrregularCharacters
+	a :MarkdownRule ;
+	rdfs:label "No File Name Irregular Characters"@en ;
+	rdfs:comment "File names should not contain irregular characters."@en ;
+	:biomeName "noFileNameIrregularCharacters" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:noFileNameMixedCase
+	a :MarkdownRule ;
+	rdfs:label "No File Name Mixed Case"@en ;
+	rdfs:comment "File names should not use mixed case."@en ;
+	:biomeName "noFileNameMixedCase" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:noFileNameOuterDashes
+	a :MarkdownRule ;
+	rdfs:label "No File Name Outer Dashes"@en ;
+	rdfs:comment "File names should not contain initial or final dashes."@en ;
+	:biomeName "noFileNameOuterDashes" ;
+	:belongsToGroup :Style ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:useSortedDirectiveAttributes
+	a :MarkdownRule ;
+	rdfs:label "Sorted Directive Attributes"@en ;
+	rdfs:comment "Directive attributes should be sorted."@en ;
+	:biomeName "useSortedDirectiveAttributes" ;
+	:belongsToGroup :Style ;
+	:fixKind "unsafe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:useCollapsedDirectiveAttribute
+	a :MarkdownRule ;
+	rdfs:label "Use Collapsed Directive Attribute"@en ;
+	rdfs:comment "Collapsed attributes should be used in directives."@en ;
+	:biomeName "useCollapsedDirectiveAttribute" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:useConsistentDirectiveQuoteStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent Directive Quote Style"@en ;
+	rdfs:comment "Directive attribute quotes should use a consistent style."@en ;
+	:biomeName "useConsistentDirectiveQuoteStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:useShortcutDirectiveAttribute
+	a :MarkdownRule ;
+	rdfs:label "Use Shortcut Directive Attribute"@en ;
+	rdfs:comment "Shortcut attributes should be used in directives."@en ;
+	:biomeName "useShortcutDirectiveAttribute" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:noDuplicateDirectiveAttributeName
+	a :MarkdownRule ;
+	rdfs:label "No Duplicate Directive Attribute Name"@en ;
+	rdfs:comment "Directive attribute names must be unique."@en ;
+	:biomeName "noDuplicateDirectiveAttributeName" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:useSortedMdxJsxAttributes
+	a :MarkdownRule ;
+	rdfs:label "Sorted MDX JSX Attributes"@en ;
+	rdfs:comment "MDX JSX attributes should be sorted."@en ;
+	:biomeName "useSortedMdxJsxAttributes" ;
+	:belongsToGroup :Style ;
+	:fixKind "unsafe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:noMdxJsxVoidChildren
+	a :MarkdownRule ;
+	rdfs:label "No MDX JSX Void Children"@en ;
+	rdfs:comment "MDX JSX void elements should not have children."@en ;
+	:biomeName "noMdxJsxVoidChildren" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:useConsistentMdxJsxQuoteStyle
+	a :MarkdownRule ;
+	rdfs:label "Consistent MDX JSX Quote Style"@en ;
+	rdfs:comment "MDX JSX quotes should use a consistent style."@en ;
+	:biomeName "useConsistentMdxJsxQuoteStyle" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:useMdxJsxSelfClose
+	a :MarkdownRule ;
+	rdfs:label "Use MDX JSX Self Close"@en ;
+	rdfs:comment "Self-closing tags should be used for MDX JSX elements when possible."@en ;
+	:biomeName "useMdxJsxSelfClose" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:useShorthandMdxJsxAttribute
+	a :MarkdownRule ;
+	rdfs:label "Use Shorthand MDX JSX Attribute"@en ;
+	rdfs:comment "Shorthand attributes should be used in MDX JSX."@en ;
+	:biomeName "useShorthandMdxJsxAttribute" ;
+	:belongsToGroup :Style ;
+	:fixKind "safe" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
+
+:noDuplicateMdxJsxAttributeName
+	a :MarkdownRule ;
+	rdfs:label "No Duplicate MDX JSX Attribute Name"@en ;
+	rdfs:comment "MDX JSX attribute names must be unique."@en ;
+	:biomeName "noDuplicateMdxJsxAttributeName" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "error" ;
+	:recommended false ;
+	:implementationStatus "deferred" .
