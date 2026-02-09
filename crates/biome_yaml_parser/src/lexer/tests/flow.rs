@@ -604,3 +604,41 @@ a:
         MAPPING_END:0,
     );
 }
+
+#[test]
+fn lex_reserved_indicator_at() {
+    assert_lex!(
+        "@value",
+        ERROR_TOKEN:1,
+        FLOW_START:0,
+        PLAIN_LITERAL:5,
+        FLOW_END:0,
+    );
+}
+
+#[test]
+fn lex_reserved_indicator_backtick() {
+    assert_lex!(
+        "`value",
+        ERROR_TOKEN:1,
+        FLOW_START:0,
+        PLAIN_LITERAL:5,
+        FLOW_END:0,
+    );
+}
+
+#[test]
+fn lex_reserved_indicator_in_flow_collection() {
+    assert_lex!(
+        "[a, @b]",
+        FLOW_START:0,
+        L_BRACK:1,
+        PLAIN_LITERAL:1,
+        COMMA:1,
+        WHITESPACE:1,
+        ERROR_TOKEN:1,
+        PLAIN_LITERAL:1,
+        R_BRACK:1,
+        FLOW_END:0,
+    );
+}

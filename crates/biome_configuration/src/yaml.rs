@@ -1,6 +1,6 @@
 use crate::bool::Bool;
 use biome_deserialize_macros::{Deserializable, Merge};
-use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth, QuoteStyle};
+use biome_formatter::{Expand, IndentStyle, IndentWidth, LineEnding, LineWidth, QuoteStyle};
 use bpaf::Bpaf;
 use serde::{Deserialize, Serialize};
 
@@ -67,6 +67,14 @@ pub struct YamlFormatterConfiguration {
     #[bpaf(long("yaml-formatter-quote-style"), argument("double|single"), optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quote_style: Option<QuoteStyle>,
+
+    /// Whether to expand flow collections onto multiple lines.
+    /// When set to `auto`, the formatter decides based on line width.
+    /// When set to `always`, flow collections are always expanded.
+    /// Defaults to "auto".
+    #[bpaf(long("yaml-formatter-expand"), argument("auto|always|never"), optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Expand>,
 }
 
 /// Options that changes how the YAML linter behaves

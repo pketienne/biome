@@ -1,0 +1,117 @@
+---
+source: crates/biome_yaml_parser/tests/spec_test.rs
+expression: snapshot
+---
+## Input
+```yaml
+key: @value
+other: `backtick`
+
+```
+
+## AST
+
+```
+YamlRoot {
+    documents: YamlDocumentList [
+        YamlDocument {
+            bom_token: missing (optional),
+            directives: YamlDirectiveList [],
+            dashdashdash_token: missing (optional),
+            node: YamlBlockMapping {
+                properties: missing (optional),
+                mapping_start_token: MAPPING_START@0..0 "" [] [],
+                entries: YamlBlockMapEntryList [
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@0..3 "key" [] [],
+                            },
+                        },
+                        colon_token: COLON@3..5 ":" [] [Whitespace(" ")],
+                        value: missing (optional),
+                    },
+                    YamlBogusBlockMapEntry {
+                        items: [
+                            ERROR_TOKEN@5..6 "@" [] [],
+                            FLOW_START@6..6 "" [] [],
+                            PLAIN_LITERAL@6..11 "value" [] [],
+                            FLOW_END@11..11 "" [] [],
+                            PLAIN_LITERAL@11..17 "other" [Newline("\n")] [],
+                            COLON@17..19 ":" [] [Whitespace(" ")],
+                            ERROR_TOKEN@19..20 "`" [] [],
+                            FLOW_START@20..20 "" [] [],
+                            PLAIN_LITERAL@20..29 "backtick`" [] [],
+                            FLOW_END@29..29 "" [] [],
+                        ],
+                    },
+                ],
+                mapping_end_token: MAPPING_END@29..30 "" [Newline("\n")] [],
+            },
+            dotdotdot_token: missing (optional),
+        },
+    ],
+    eof_token: EOF@30..30 "" [] [],
+}
+```
+
+## CST
+
+```
+0: YAML_ROOT@0..30
+  0: YAML_DOCUMENT_LIST@0..30
+    0: YAML_DOCUMENT@0..30
+      0: (empty)
+      1: YAML_DIRECTIVE_LIST@0..0
+      2: (empty)
+      3: YAML_BLOCK_MAPPING@0..30
+        0: (empty)
+        1: MAPPING_START@0..0 "" [] []
+        2: YAML_BLOCK_MAP_ENTRY_LIST@0..29
+          0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@0..5
+            0: YAML_FLOW_YAML_NODE@0..3
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@0..3
+                0: PLAIN_LITERAL@0..3 "key" [] []
+            1: COLON@3..5 ":" [] [Whitespace(" ")]
+            2: (empty)
+          1: YAML_BOGUS_BLOCK_MAP_ENTRY@5..29
+            0: ERROR_TOKEN@5..6 "@" [] []
+            1: FLOW_START@6..6 "" [] []
+            2: PLAIN_LITERAL@6..11 "value" [] []
+            3: FLOW_END@11..11 "" [] []
+            4: PLAIN_LITERAL@11..17 "other" [Newline("\n")] []
+            5: COLON@17..19 ":" [] [Whitespace(" ")]
+            6: ERROR_TOKEN@19..20 "`" [] []
+            7: FLOW_START@20..20 "" [] []
+            8: PLAIN_LITERAL@20..29 "backtick`" [] []
+            9: FLOW_END@29..29 "" [] []
+        3: MAPPING_END@29..30 "" [Newline("\n")] []
+      4: (empty)
+  1: EOF@30..30 "" [] []
+
+```
+
+## Diagnostics
+
+```
+reserved_indicators.yaml:1:6 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × `@` is a reserved YAML indicator and cannot be used here
+  
+  > 1 │ key: @value
+      │      ^
+    2 │ other: `backtick`
+    3 │ 
+  
+reserved_indicators.yaml:2:8 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × ``` is a reserved YAML indicator and cannot be used here
+  
+    1 │ key: @value
+  > 2 │ other: `backtick`
+      │        ^
+    3 │ 
+  
+```

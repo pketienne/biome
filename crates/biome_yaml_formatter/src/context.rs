@@ -2,8 +2,8 @@ use crate::YamlCommentStyle;
 use crate::comments::{FormatYamlLeadingComment, YamlComments};
 use biome_formatter::prelude::*;
 use biome_formatter::{
-    CstFormatContext, FormatContext, FormatOptions, IndentStyle, IndentWidth, LineEnding, LineWidth,
-    QuoteStyle, TransformSourceMap,
+    CstFormatContext, Expand, FormatContext, FormatOptions, IndentStyle, IndentWidth, LineEnding,
+    LineWidth, QuoteStyle, TransformSourceMap,
 };
 use biome_yaml_syntax::YamlLanguage;
 use std::fmt;
@@ -60,6 +60,7 @@ pub struct YamlFormatOptions {
     line_ending: LineEnding,
     line_width: LineWidth,
     quote_style: QuoteStyle,
+    expand: Expand,
 }
 
 impl Default for YamlFormatOptions {
@@ -70,6 +71,7 @@ impl Default for YamlFormatOptions {
             line_ending: LineEnding::default(),
             line_width: LineWidth::default(),
             quote_style: QuoteStyle::default(),
+            expand: Expand::default(),
         }
     }
 }
@@ -123,6 +125,19 @@ impl YamlFormatOptions {
     pub fn quote_style(&self) -> QuoteStyle {
         self.quote_style
     }
+
+    pub fn with_expand(mut self, expand: Expand) -> Self {
+        self.expand = expand;
+        self
+    }
+
+    pub fn set_expand(&mut self, expand: Expand) {
+        self.expand = expand;
+    }
+
+    pub fn expand(&self) -> Expand {
+        self.expand
+    }
 }
 
 impl FormatOptions for YamlFormatOptions {
@@ -154,6 +169,7 @@ impl fmt::Display for YamlFormatOptions {
         writeln!(f, "Line ending: {}", self.line_ending)?;
         writeln!(f, "Line width: {}", self.line_width.value())?;
         writeln!(f, "Quote style: {}", self.quote_style)?;
+        writeln!(f, "Expand: {:?}", self.expand)?;
         Ok(())
     }
 }

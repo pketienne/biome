@@ -1769,6 +1769,9 @@ impl OverrideSettingPattern {
         if let Some(quote_style) = yaml_formatter.quote_style {
             options.set_quote_style(quote_style);
         }
+        if let Some(expand) = yaml_formatter.expand.or(formatter.expand) {
+            options.set_expand(expand);
+        }
     }
 
     fn apply_overrides_to_js_parser_options(&self, options: &mut JsParserOptions) {

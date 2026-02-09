@@ -474,6 +474,63 @@ mod tests {
     }
 
     #[test]
+    fn flow_sequence_wraps_at_line_width() {
+        use biome_formatter::LineWidth;
+        let src = "key: [aaaa, bbbb, cccc, dddd, eeee, ffff, gggg, hhhh]\n";
+        let parse = parse_yaml(src);
+        let options =
+            YamlFormatOptions::default().with_line_width(LineWidth::try_from(30).unwrap());
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // With line_width=30, the flow sequence should wrap
+        assert!(
+            result.as_code().contains('\n'),
+            "Expected wrapping but got: {:?}",
+            result.as_code()
+        );
+    }
+
+    #[test]
+    fn flow_mapping_wraps_at_line_width() {
+        use biome_formatter::LineWidth;
+        let src = "key: {alpha: one, beta: two, gamma: three, delta: four}\n";
+        let parse = parse_yaml(src);
+        let options =
+            YamlFormatOptions::default().with_line_width(LineWidth::try_from(30).unwrap());
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // With line_width=30, the flow mapping should wrap
+        assert!(
+            result.as_code().contains("{\n"),
+            "Expected wrapping but got: {:?}",
+            result.as_code()
+        );
+    }
+
+    #[test]
+    fn flow_mapping_expand_always() {
+        use biome_formatter::Expand;
+        let src = "key: {a: 1, b: 2}\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default().with_expand(Expand::Always);
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Expand::Always forces flow collections to multiline
+        assert_eq!(result.as_code(), "key: {\n  a: 1,\n  b: 2\n}\n");
+    }
+
+    #[test]
+    fn flow_sequence_expand_always() {
+        use biome_formatter::Expand;
+        let src = "key: [1, 2, 3]\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default().with_expand(Expand::Always);
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "key: [\n  1,\n  2,\n  3\n]\n");
+    }
+
+    #[test]
     fn preserves_blank_lines_between_entries() {
         let src = "key1: value1\n\nkey2: value2\n\n\nkey3: value3\n";
         let parse = parse_yaml(src);

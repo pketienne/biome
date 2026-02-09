@@ -86,6 +86,7 @@ impl<'src> YamlLexer<'src> {
                 tokens
             }
             b'%' if self.is_at_directive() => self.consume_directive(),
+            b'@' | b'`' => self.consume_reserved_indicator().into(),
             _ => self.consume_unexpected_token().into(),
         };
         self.tokens.append(&mut tokens);
@@ -468,6 +469,7 @@ impl<'src> YamlLexer<'src> {
                 (b'&', _) => self.consume_anchor_property(),
                 (b'!', _) => self.consume_tag_property(),
                 (b'*', _) => self.consume_alias(),
+                (b'@' | b'`', _) => self.consume_reserved_indicator(),
                 _ => self.consume_unexpected_token(),
             };
             collection_tokens.push_back(token);
@@ -777,6 +779,19 @@ impl<'src> YamlLexer<'src> {
             self.advance(1);
         }
         LexToken::new(COMMENT, start, self.current_coordinate)
+    }
+
+    fn consume_reserved_indicator(&mut self) -> LexToken {
+        self.assert_current_char_boundary();
+        let start = self.current_coordinate;
+        let char = self.current_char_unchecked();
+        let err = ParseDiagnostic::new(
+            std::format!("`{char}` is a reserved YAML indicator and cannot be used here"),
+            self.text_position()..self.text_position() + char.text_len(),
+        );
+        self.diagnostics.push(err);
+        self.advance(char.len_utf8());
+        LexToken::new(ERROR_TOKEN, start, self.current_coordinate)
     }
 
     fn consume_unexpected_token(&mut self) -> LexToken {
