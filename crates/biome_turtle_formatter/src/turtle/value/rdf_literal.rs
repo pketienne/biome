@@ -161,8 +161,12 @@ fn is_valid_double(s: &str) -> bool {
             // Form: '.' [0-9]+ EXPONENT
             !after.is_empty() && after.chars().all(|c| c.is_ascii_digit())
         } else {
-            // Form: [0-9]+ '.' [0-9]* EXPONENT
+            // Form: [0-9]+ '.' [0-9]+ EXPONENT
+            // Note: the grammar allows [0-9]* after dot, but we require [0-9]+
+            // because the Turtle lexer greedily matches "1." as DECIMAL, making
+            // forms like "1.E3" unparseable in short notation.
             before.chars().all(|c| c.is_ascii_digit())
+                && !after.is_empty()
                 && after.chars().all(|c| c.is_ascii_digit())
         }
     } else {

@@ -19,10 +19,32 @@ ex:l ex:value "-1.5e3"^^xsd:double .
 ex:m ex:value ".5E2"^^xsd:double .
 ex:n ex:value "7E4"^^xsd:double .
 
+# Positive sign prefix
+ex:p ex:count "+42"^^xsd:integer .
+ex:q ex:value "+3.14"^^xsd:decimal .
+ex:r ex:value "+1.5E2"^^xsd:double .
+
+# Zero values
+ex:s ex:count "0"^^xsd:integer .
+ex:t ex:value "0.0"^^xsd:decimal .
+
+# Double edge cases
+ex:u ex:value "1.0E-5"^^xsd:double .
+ex:v ex:value "42E0"^^xsd:double .
+
+# Full IRI datatype form (should also be shortened)
+ex:x ex:active "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+ex:y ex:count "99"^^<http://www.w3.org/2001/XMLSchema#integer> .
+
 # Should NOT be shortened (invalid values for type)
 ex:g ex:count "abc"^^xsd:integer .
 ex:h ex:active "yes"^^xsd:boolean .
 ex:o ex:value "not_a_double"^^xsd:double .
+ex:w ex:value "1.E3"^^xsd:double .
+
+# Invalid: empty string for numeric types
+ex:z1 ex:count ""^^xsd:integer .
+ex:z2 ex:value ""^^xsd:double .
 
 # Regular literals without datatype stay unchanged
 ex:i ex:name "Alice" .

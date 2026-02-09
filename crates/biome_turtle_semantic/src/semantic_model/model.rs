@@ -1,6 +1,7 @@
 use biome_rowan::{SendNode, TextRange};
 use biome_turtle_syntax::TurtleRoot;
 use rustc_hash::{FxHashMap, FxHashSet};
+use std::fmt;
 use std::sync::Arc;
 
 /// The facade for all semantic information of a Turtle document.
@@ -131,6 +132,97 @@ impl SemanticModel {
     /// Returns all IRI references in document order.
     pub fn iri_references(&self) -> &[IriRef] {
         &self.data.iri_references
+    }
+}
+
+impl fmt::Display for SemanticModel {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "=== Turtle Semantic Model ===")?;
+        writeln!(f)?;
+
+        // Base URI
+        if let Some(base) = self.base_uri() {
+            writeln!(f, "Base URI: <{base}>")?;
+            writeln!(f)?;
+        }
+
+        // Prefix declarations
+        let decls = self.prefix_declarations();
+        writeln!(f, "Prefix Declarations ({}):", decls.len())?;
+        if decls.is_empty() {
+            writeln!(f, "  (none)")?;
+        } else {
+            let max_ns_len = decls.iter().map(|d| d.namespace.len()).max().unwrap_or(0);
+            for decl in decls {
+                let padding = " ".repeat(max_ns_len.saturating_sub(decl.namespace.len()));
+                let mut markers = Vec::new();
+                if !self.is_prefix_used(&decl.namespace) {
+                    markers.push("unused");
+                }
+                if decl.is_duplicate {
+                    markers.push("duplicate");
+                }
+                let suffix = if markers.is_empty() {
+                    String::new()
+                } else {
+                    format!("  [{}]", markers.join(", "))
+                };
+                writeln!(
+                    f,
+                    "  {}{padding} -> {}{suffix}",
+                    decl.namespace, decl.expansion
+                )?;
+            }
+        }
+        writeln!(f)?;
+
+        // Triples
+        let triples = self.triples();
+        writeln!(f, "Triples ({}):", triples.len())?;
+        if triples.is_empty() {
+            writeln!(f, "  (none)")?;
+        } else {
+            for triple in triples {
+                let pred = if triple.is_rdf_type {
+                    "a".to_string()
+                } else {
+                    triple.predicate.clone()
+                };
+                writeln!(f, "  {} {pred} {}", triple.subject, triple.object)?;
+            }
+        }
+
+        // Duplicate triples
+        let dups = self.duplicate_triples();
+        if !dups.is_empty() {
+            writeln!(f)?;
+            writeln!(f, "Duplicate Triples ({}):", dups.len())?;
+            for &(first, dup) in dups {
+                let t = &triples[first];
+                let pred = if t.is_rdf_type {
+                    "a".to_string()
+                } else {
+                    t.predicate.clone()
+                };
+                writeln!(f, "  #{first} == #{dup}: {} {pred} {}", t.subject, t.object)?;
+            }
+        }
+
+        // Expandable IRIs
+        let expandable: Vec<_> = self.expandable_iris().collect();
+        if !expandable.is_empty() {
+            writeln!(f)?;
+            writeln!(f, "Expandable IRIs ({}):", expandable.len())?;
+            for iri in &expandable {
+                if let Some(suggested) = &iri.suggested_prefixed {
+                    writeln!(f, "  <{}> -> {suggested}", iri.iri)?;
+                } else {
+                    writeln!(f, "  <{}>", iri.iri)?;
+                }
+            }
+        }
+
+        Ok(())
     }
 }
 

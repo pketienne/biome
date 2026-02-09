@@ -353,7 +353,7 @@ fn debug_formatter_ir(
 fn debug_semantic_model(_path: &BiomePath, parse: AnyParse) -> Result<String, WorkspaceError> {
     let tree: TurtleRoot = parse.tree();
     let model = biome_turtle_semantic::semantic_model(&tree);
-    Ok(format!("{model:#?}"))
+    Ok(model.to_string())
 }
 
 #[tracing::instrument(level = "debug", skip(parse, settings))]
