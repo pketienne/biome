@@ -204,6 +204,9 @@ The configuration that is contained inside the file `biome.json`
                               files.
         --html-assist-enabled=<true|false>  Control the assist for HTML (and its super languages)
                               files.
+        --markdown-formatter-enabled=<true|false>  Control the formatter for Markdown files.
+        --markdown-linter-enabled=<true|false>  Control the linter for Markdown files.
+        --markdown-assist-enabled=<true|false>  Control the assist for Markdown files.
         --assist-enabled=<true|false>  Whether Biome should enable assist via LSP and CLI.
 
 Global options applied to all commands

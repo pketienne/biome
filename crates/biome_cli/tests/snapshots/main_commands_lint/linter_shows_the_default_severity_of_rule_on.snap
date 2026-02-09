@@ -50,28 +50,59 @@ biome.json:5:17 deserialize ━━━━━━━━━━━━━━━━━�
   i Known keys:
   
   - recommended
+  - noBareUrls
+  - noCheckboxCharacterStyleMismatch
+  - noCheckboxContentIndent
   - noCommonJs
+  - noConsecutiveBlankLines
   - noDefaultExport
+  - noDefinitionSpacingIssues
   - noDescendingSpecificity
   - noDoneCallback
   - noEnum
   - noExportedImports
+  - noFileNameArticles
+  - noFileNameConsecutiveDashes
+  - noFileNameIrregularCharacters
+  - noFileNameMixedCase
+  - noFileNameOuterDashes
+  - noHardTabs
   - noHeadElement
+  - noHeadingContentIndent
+  - noHeadingIndent
+  - noHeadingTrailingPunctuation
   - noImplicitBoolean
   - noInferrableTypes
+  - noInlineHtml
+  - noListItemBulletIndent
+  - noLongHeadings
+  - noLongLines
   - noMagicNumbers
+  - noMissingLanguage
+  - noMultipleSpaceAtxHeading
+  - noMultipleSpaceClosedAtxHeading
   - noNamespace
   - noNegationElse
   - noNestedTernary
   - noNonNullAssertion
+  - noParagraphContentIndent
   - noParameterAssign
   - noParameterProperties
   - noProcessEnv
   - noRestrictedGlobals
   - noRestrictedImports
   - noRestrictedTypes
+  - noShellDollarPrompt
+  - noShortcutReferenceImage
+  - noShortcutReferenceLink
   - noShoutyConstants
+  - noSpaceInCode
+  - noSpaceInLinks
   - noSubstr
+  - noTableIndentation
+  - noTrailingHardBreakSpaces
+  - noUnneededFullReferenceImage
+  - noUnneededFullReferenceLink
   - noUnusedTemplateLiteral
   - noUselessElse
   - noValueAtRule
@@ -79,44 +110,88 @@ biome.json:5:17 deserialize ━━━━━━━━━━━━━━━━━�
   - useArrayLiterals
   - useAsConstAssertion
   - useAtIndex
+  - useBlanksAroundCodeFences
+  - useBlanksAroundHeadings
+  - useBlanksAroundLists
+  - useBlanksAroundTables
+  - useBlanksBeforeBlockContent
   - useBlockStatements
   - useCollapsedElseIf
   - useCollapsedIf
   - useComponentExportOnlyModules
   - useConsistentArrayType
+  - useConsistentBlockquoteIndent
   - useConsistentBuiltinInstantiation
+  - useConsistentCodeBlockStyle
+  - useConsistentCodeFenceMarker
   - useConsistentCurlyBraces
+  - useConsistentDirectiveQuoteStyle
+  - useConsistentEmphasisMarker
+  - useConsistentHeadingStyle
+  - useConsistentHorizontalRuleStyle
+  - useConsistentLinebreakStyle
+  - useConsistentLinkStyle
+  - useConsistentLinkTitleStyle
+  - useConsistentListIndent
+  - useConsistentListItemContentIndent
+  - useConsistentListItemIndent
+  - useConsistentListItemSpacing
+  - useConsistentMdxJsxQuoteStyle
+  - useConsistentMediaStyle
   - useConsistentMemberAccessibility
   - useConsistentObjectDefinitions
+  - useConsistentOrderedListMarker
+  - useConsistentOrderedListMarkerValue
+  - useConsistentStrikethroughMarker
+  - useConsistentStrongMarker
+  - useConsistentTableCellPadding
+  - useConsistentTablePipeAlignment
+  - useConsistentTablePipeStyle
   - useConsistentTypeDefinitions
+  - useConsistentUnorderedListIndent
+  - useConsistentUnorderedListMarker
   - useConst
   - useDefaultParameterLast
   - useDefaultSwitchClause
+  - useDefinitionsAtEnd
   - useDeprecatedReason
+  - useDirectiveCollapsedAttribute
+  - useDirectiveShortcutAttribute
   - useEnumInitializers
   - useExplicitLengthCheck
   - useExponentiationOperator
   - useExportType
   - useExportsLast
+  - useFileExtension
   - useFilenamingConvention
+  - useFinalNewline
+  - useFirstLineHeading
   - useForOf
   - useFragmentSyntax
   - useGraphqlNamingConvention
   - useGroupedAccessorPairs
   - useImportType
   - useLiteralEnumMembers
+  - useLowercaseDefinitionLabels
+  - useMdxJsxSelfClosing
+  - useMdxJsxShorthandAttribute
   - useNamingConvention
   - useNodeAssertStrict
   - useNodejsImportProtocol
   - useNumberNamespace
   - useNumericSeparators
   - useObjectSpread
+  - useProperNames
   - useReactFunctionComponents
   - useReadonlyClassProperties
+  - useRequiredHeadings
   - useSelfClosingElements
   - useShorthandAssign
   - useShorthandFunctionType
   - useSingleVarDeclarator
+  - useSortedDefinitions
+  - useSortedDirectiveAttributes
+  - useSortedMdxJsxAttributes
   - useSymbolDescription
   - useTemplate
   - useThrowNewError
