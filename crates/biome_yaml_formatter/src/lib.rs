@@ -432,4 +432,15 @@ mod tests {
         let result = formatted.print().unwrap();
         assert_eq!(result.as_code(), "key: \"it's here\"\n");
     }
+
+    #[test]
+    fn preserves_blank_lines_between_entries() {
+        let src = "key1: value1\n\nkey2: value2\n\n\nkey3: value3\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Blank lines between entries should be preserved (collapsed to single blank line)
+        assert_eq!(result.as_code(), "key1: value1\n\nkey2: value2\n\nkey3: value3\n");
+    }
 }
