@@ -6,7 +6,7 @@
 |-----------|--------|
 | Parser (YAML 1.2.2) | **Complete** — 42 test files, full spec coverage, `---` document start fix applied |
 | Syntax/Factory | **Complete** — code generated |
-| Formatter | **Infrastructure only** — all nodes output verbatim (no formatting). `cargo codegen formatter yaml` not yet supported. |
+| Formatter | **Codegen unblocked** — 55 per-node stub files generated via `cargo codegen formatter`. All nodes still output verbatim; formatting logic needs implementation. |
 | Analyzer/Linter | **23 lint rules implemented** — all gap analysis rules complete |
 | Configuration | **Complete** — formatter/linter/assist toggles |
 | Service Integration | **Complete** — parse, format, lint, code actions wired |
@@ -217,7 +217,7 @@ Domain-specific GitHub Actions workflow validator. Comprehensive expression type
 
 ### Formatter — Per-Node Rules
 
-The formatter currently passes all nodes through verbatim mode. `cargo codegen formatter yaml` is not yet supported by the codegen tool. Every popular tool handles these:
+The formatter codegen has been unblocked — `Yaml` was added to the `NodeDialect` enum in `xtask/codegen/src/formatter.rs` and 55 per-node stub files were generated under `crates/biome_yaml_formatter/src/yaml/`. All stubs currently use `format_verbatim_node!()`. Actual formatting logic needs to be implemented in each stub. Every popular tool handles these:
 
 | Formatting Capability | Implemented By | Priority | Status |
 |---|---|---|---|
@@ -304,14 +304,18 @@ Opinionated rules for code consistency:
 
 ## Remaining Implementation Order
 
-### Phase 1: Formatter (Blocked)
+### Phase 1: Formatter (Unblocked — Ready for Implementation)
 
-The YAML formatter codegen is not yet supported (`cargo codegen formatter yaml` returns an error). This blocks all formatter work. Options:
-1. Extend the codegen tool to support YAML
-2. Manually create per-node format rule stubs (labor-intensive but possible)
-3. Wait for upstream codegen support
+The YAML formatter codegen is now supported. `Yaml` was added to the `NodeDialect` enum in `xtask/codegen/src/formatter.rs`, and `cargo codegen formatter` successfully generated 55 per-node stub files under `crates/biome_yaml_formatter/src/yaml/` (auxiliary, any, bogus, lists). All stubs use `format_verbatim_node!()` and need actual formatting logic.
 
-If unblocked, the priority order would be:
+**Generated file structure:**
+- `src/yaml/auxiliary/` — 30 per-node formatters (e.g., `block_mapping.rs`, `plain_scalar.rs`)
+- `src/yaml/any/` — 13 union type formatters
+- `src/yaml/bogus/` — 5 bogus node handlers
+- `src/yaml/lists/` — 7 list formatters
+- `src/generated.rs` — 1725 lines of `AsFormat`/`IntoFormat`/`FormatRule` boilerplate
+
+**Implementation priority order:**
 1. Indentation normalization
 2. Whitespace handling (trailing spaces, blank lines, final newline)
 3. Colon/comma/hyphen spacing
@@ -336,7 +340,7 @@ All 22 unique lint rules (23 including `noDuplicateFlowKeys`) from the gap analy
 
 1. **Linting is complete.** With 23 rules implemented, Biome covers 100% of core bug-prevention rules and 100% of style rules identified in the gap analysis. No lint rule gaps remain.
 
-2. **The formatter is the critical gap.** Zero formatting actually happens — all nodes output verbatim. This is blocked by missing codegen support for YAML in the formatter pipeline.
+2. **The formatter is the critical gap.** Zero formatting actually happens — all nodes output verbatim. The codegen blocker has been resolved (`Yaml` added to `NodeDialect`), and 55 per-node stub files are generated. The next step is implementing actual formatting logic in each stub.
 
 3. **Parser `---` fix landed.** The lexer now correctly produces `DIRECTIVE_END` tokens for `---` (document start markers), fixing trivia attachment for comments after `---`.
 
