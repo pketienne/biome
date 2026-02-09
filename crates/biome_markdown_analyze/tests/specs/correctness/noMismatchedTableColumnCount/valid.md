@@ -1,4 +1,11 @@
 <!-- should not generate diagnostics -->
-# Hello
+# Matched tables
 
-Plain text.
+| A | B |
+| --- | --- |
+| 1 | 2 |
+
+| X | Y | Z |
+| --- | --- | --- |
+| a | b | c |
+| d | e | f |

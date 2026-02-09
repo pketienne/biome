@@ -1,4 +1,6 @@
 <!-- should not generate diagnostics -->
-# Emphasis
+# Consistent emphasis markers
 
-Some plain text without emphasis markers.
+This has *star emphasis* text.
+
+And *another star* emphasis.

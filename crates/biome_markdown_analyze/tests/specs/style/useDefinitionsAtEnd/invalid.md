@@ -1,3 +1,9 @@
-Some text here.
+# Definitions not at end
 
-More text here.
+[example]: https://example.com
+
+Some text after the definition.
+
+[other]: https://other.com
+
+More text after.

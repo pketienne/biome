@@ -152,12 +152,12 @@ pub fn find_emphasis_markers(line: &str, code_spans: &[CodeSpan]) -> Vec<Emphasi
             let preceded_by_space = start == 0 || bytes[start - 1] == b' ';
             let followed_by_space = i >= bytes.len() || bytes[i] == b' ';
 
-            let is_opening = !followed_by_space;
-
-            // Skip if both sides are spaces (not a valid delimiter)
+            // If preceded and followed by spaces, this is not an emphasis marker at all
             if preceded_by_space && followed_by_space {
                 continue;
             }
+
+            let is_opening = !followed_by_space;
 
             markers.push(EmphasisMarker {
                 start,

@@ -6,6 +6,95 @@ expression: invalid.md
 ```md
 # Inline HTML
 
-This has plain text only for now.
+This has <em>inline emphasis</em> tags.
+
+And a <strong>bold</strong> tag.
+
+A <br> break too.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:10 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Inline HTML element "em" is not allowed.
+  
+    1 │ # Inline HTML
+    2 │ 
+  > 3 │ This has <em>inline emphasis</em> tags.
+      │          ^^^^
+    4 │ 
+    5 │ And a <strong>bold</strong> tag.
+  
+  i Use markdown syntax instead of inline HTML.
+  
+
+```
+
+```
+invalid.md:3:29 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Inline HTML element "em" is not allowed.
+  
+    1 │ # Inline HTML
+    2 │ 
+  > 3 │ This has <em>inline emphasis</em> tags.
+      │                             ^^^^^
+    4 │ 
+    5 │ And a <strong>bold</strong> tag.
+  
+  i Use markdown syntax instead of inline HTML.
+  
+
+```
+
+```
+invalid.md:5:7 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Inline HTML element "strong" is not allowed.
+  
+    3 │ This has <em>inline emphasis</em> tags.
+    4 │ 
+  > 5 │ And a <strong>bold</strong> tag.
+      │       ^^^^^^^^
+    6 │ 
+    7 │ A <br> break too.
+  
+  i Use markdown syntax instead of inline HTML.
+  
+
+```
+
+```
+invalid.md:5:19 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Inline HTML element "strong" is not allowed.
+  
+    3 │ This has <em>inline emphasis</em> tags.
+    4 │ 
+  > 5 │ And a <strong>bold</strong> tag.
+      │                   ^^^^^^^^^
+    6 │ 
+    7 │ A <br> break too.
+  
+  i Use markdown syntax instead of inline HTML.
+  
+
+```
+
+```
+invalid.md:7:3 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Inline HTML element "br" is not allowed.
+  
+    5 │ And a <strong>bold</strong> tag.
+    6 │ 
+  > 7 │ A <br> break too.
+      │   ^^^^
+    8 │ 
+  
+  i Use markdown syntax instead of inline HTML.
+  
 
 ```

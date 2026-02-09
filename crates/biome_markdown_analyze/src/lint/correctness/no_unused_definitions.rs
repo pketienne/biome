@@ -65,6 +65,10 @@ impl Rule for NoUnusedDefinitions {
             return Vec::new();
         }
 
+        // Collect definition line indices so we can skip them during reference scanning
+        let definition_lines: std::collections::HashSet<usize> =
+            definitions.iter().map(|d| d.line_index).collect();
+
         // Collect all referenced labels
         let mut referenced_labels = std::collections::HashSet::new();
         let mut tracker = FenceTracker::new();
@@ -72,7 +76,7 @@ impl Rule for NoUnusedDefinitions {
         for (line_idx, line) in text.lines().enumerate() {
             tracker.process_line(line_idx, line);
 
-            if !tracker.is_inside_fence() {
+            if !tracker.is_inside_fence() && !definition_lines.contains(&line_idx) {
                 let code_spans = find_code_spans(line);
                 let refs = find_reference_links(line, &code_spans);
 

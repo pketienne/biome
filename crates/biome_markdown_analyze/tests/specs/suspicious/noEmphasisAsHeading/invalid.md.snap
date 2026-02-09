@@ -1,15 +1,18 @@
 ---
 source: crates/biome_markdown_analyze/tests/spec_tests.rs
-assertion_line: 70
 expression: invalid.md
 ---
 # Input
 ```md
-# Hello
+# Emphasis as heading
 
-**This is emphasis as heading**
+**This looks like a heading**
 
-Some text.
+Some paragraph text.
+
+__Another emphasis heading__
+
+More text here.
 
 ```
 
@@ -19,12 +22,29 @@ invalid.md:3:1 lint/suspicious/noEmphasisAsHeading ━━━━━━━━━�
 
   ! Emphasis used as a heading substitute.
   
-    1 │ # Hello
+    1 │ # Emphasis as heading
     2 │ 
-  > 3 │ **This is emphasis as heading**
-      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 3 │ **This looks like a heading**
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     4 │ 
-    5 │ Some text.
+    5 │ Some paragraph text.
+  
+  i Use a proper heading (e.g. ## Heading) instead of bold/italic text.
+  
+
+```
+
+```
+invalid.md:7:1 lint/suspicious/noEmphasisAsHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Emphasis used as a heading substitute.
+  
+    5 │ Some paragraph text.
+    6 │ 
+  > 7 │ __Another emphasis heading__
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    8 │ 
+    9 │ More text here.
   
   i Use a proper heading (e.g. ## Heading) instead of bold/italic text.
   

@@ -4,8 +4,59 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Strong
+# Inconsistent strong markers
 
-Some plain text for now.
+This has **star strong** text.
+
+This has __underscore strong__ text.
+
+```
+
+# Diagnostics
+```
+invalid.md:5:10 lint/style/useConsistentStrongMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected strong marker "**" but found "__".
+  
+    3 │ This has **star strong** text.
+    4 │ 
+  > 5 │ This has __underscore strong__ text.
+      │          ^^
+    6 │ 
+  
+  i Use consistent strong emphasis markers throughout the document.
+  
+  i Safe fix: Use the consistent strong marker.
+  
+    3 3 │   This has **star strong** text.
+    4 4 │   
+    5   │ - This·has·__underscore·strong__·text.
+      5 │ + This·has·**underscore·strong__·text.
+    6 6 │   
+  
+
+```
+
+```
+invalid.md:5:29 lint/style/useConsistentStrongMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected strong marker "**" but found "__".
+  
+    3 │ This has **star strong** text.
+    4 │ 
+  > 5 │ This has __underscore strong__ text.
+      │                             ^^
+    6 │ 
+  
+  i Use consistent strong emphasis markers throughout the document.
+  
+  i Safe fix: Use the consistent strong marker.
+  
+    3 3 │   This has **star strong** text.
+    4 4 │   
+    5   │ - This·has·__underscore·strong__·text.
+      5 │ + This·has·__underscore·strong**·text.
+    6 6 │   
+  
 
 ```

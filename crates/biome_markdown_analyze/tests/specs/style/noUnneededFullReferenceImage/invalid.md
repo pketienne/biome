@@ -1,3 +1,8 @@
-# Full Reference Images
+# Unneeded full reference images
 
-No full reference images here (parser limitation).
+![image][image]
+
+![photo][photo]
+
+[image]: image.png
+[photo]: photo.jpg

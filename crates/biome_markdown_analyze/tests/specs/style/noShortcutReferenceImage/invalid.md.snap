@@ -4,8 +4,66 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Shortcut Images
+# Shortcut reference images
 
-No shortcut images here since parser can't handle them.
+![image]
+
+![photo]
+
+[image]: image.png
+[photo]: photo.jpg
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/noShortcutReferenceImage  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Shortcut reference images should use collapsed or full form.
+  
+    1 │ # Shortcut reference images
+    2 │ 
+  > 3 │ ![image]
+      │ ^^^^^^^^
+    4 │ 
+    5 │ ![photo]
+  
+  i Use ![text][] or ![text][label] instead.
+  
+  i Safe fix: Expand to collapsed reference image.
+  
+    1 1 │   # Shortcut reference images
+    2 2 │   
+    3   │ - ![image]
+      3 │ + ![image][]
+    4 4 │   
+    5 5 │   ![photo]
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/noShortcutReferenceImage  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Shortcut reference images should use collapsed or full form.
+  
+    3 │ ![image]
+    4 │ 
+  > 5 │ ![photo]
+      │ ^^^^^^^^
+    6 │ 
+    7 │ [image]: image.png
+  
+  i Use ![text][] or ![text][label] instead.
+  
+  i Safe fix: Expand to collapsed reference image.
+  
+    3 3 │   ![image]
+    4 4 │   
+    5   │ - ![photo]
+      5 │ + ![photo][]
+    6 6 │   
+    7 7 │   [image]: image.png
+  
 
 ```

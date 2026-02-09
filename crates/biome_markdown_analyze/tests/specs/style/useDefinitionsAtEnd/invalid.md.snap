@@ -4,8 +4,57 @@ expression: invalid.md
 ---
 # Input
 ```md
-Some text here.
+# Definitions not at end
 
-More text here.
+[example]: https://example.com
+
+Some text after the definition.
+
+[other]: https://other.com
+
+More text after.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/useDefinitionsAtEnd  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Definition "example" is not at the end of the document.
+  
+    1 │ # Definitions not at end
+    2 │ 
+  > 3 │ [example]: https://example.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+    5 │ Some text after the definition.
+  
+  i Move link reference definitions to the end of the document.
+  
+  i Unsafe fix: Remove definition from current position.
+  
+    3 │ [example]:·https://example.com
+      │ ------------------------------
+
+```
+
+```
+invalid.md:7:1 lint/style/useDefinitionsAtEnd  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Definition "other" is not at the end of the document.
+  
+    5 │ Some text after the definition.
+    6 │ 
+  > 7 │ [other]: https://other.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    8 │ 
+    9 │ More text after.
+  
+  i Move link reference definitions to the end of the document.
+  
+  i Unsafe fix: Remove definition from current position.
+  
+    7 │ [other]:·https://other.com
+      │ --------------------------
 
 ```

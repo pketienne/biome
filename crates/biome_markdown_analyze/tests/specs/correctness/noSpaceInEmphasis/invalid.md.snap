@@ -4,8 +4,181 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Emphasis spacing
+# Spaced emphasis
 
-Text with spaced markers here.
+This has * spaced emphasis * markers.
+
+Also ** spaced strong ** markers.
+
+And _ underscore emphasis _ too.
+
+Plus __ strong underscore __ markers.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:10 lint/correctness/noSpaceInEmphasis  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space after opening emphasis marker.
+  
+    1 │ # Spaced emphasis
+    2 │ 
+  > 3 │ This has * spaced emphasis * markers.
+      │          ^^
+    4 │ 
+    5 │ Also ** spaced strong ** markers.
+  
+  i Remove the space to ensure emphasis renders correctly.
+  
+  i Safe fix: Remove space from emphasis marker.
+  
+    3 │ This·has·*·spaced·emphasis·*·markers.
+      │           -                          
+
+```
+
+```
+invalid.md:3:27 lint/correctness/noSpaceInEmphasis  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space before closing emphasis marker.
+  
+    1 │ # Spaced emphasis
+    2 │ 
+  > 3 │ This has * spaced emphasis * markers.
+      │                           ^^
+    4 │ 
+    5 │ Also ** spaced strong ** markers.
+  
+  i Remove the space to ensure emphasis renders correctly.
+  
+  i Safe fix: Remove space from emphasis marker.
+  
+    3 │ This·has·*·spaced·emphasis·*·markers.
+      │                           -          
+
+```
+
+```
+invalid.md:5:6 lint/correctness/noSpaceInEmphasis  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space after opening emphasis marker.
+  
+    3 │ This has * spaced emphasis * markers.
+    4 │ 
+  > 5 │ Also ** spaced strong ** markers.
+      │      ^^^
+    6 │ 
+    7 │ And _ underscore emphasis _ too.
+  
+  i Remove the space to ensure emphasis renders correctly.
+  
+  i Safe fix: Remove space from emphasis marker.
+  
+    5 │ Also·**·spaced·strong·**·markers.
+      │        -                         
+
+```
+
+```
+invalid.md:5:22 lint/correctness/noSpaceInEmphasis  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space before closing emphasis marker.
+  
+    3 │ This has * spaced emphasis * markers.
+    4 │ 
+  > 5 │ Also ** spaced strong ** markers.
+      │                      ^^^
+    6 │ 
+    7 │ And _ underscore emphasis _ too.
+  
+  i Remove the space to ensure emphasis renders correctly.
+  
+  i Safe fix: Remove space from emphasis marker.
+  
+    5 │ Also·**·spaced·strong·**·markers.
+      │                      -           
+
+```
+
+```
+invalid.md:7:5 lint/correctness/noSpaceInEmphasis  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space after opening emphasis marker.
+  
+    5 │ Also ** spaced strong ** markers.
+    6 │ 
+  > 7 │ And _ underscore emphasis _ too.
+      │     ^^
+    8 │ 
+    9 │ Plus __ strong underscore __ markers.
+  
+  i Remove the space to ensure emphasis renders correctly.
+  
+  i Safe fix: Remove space from emphasis marker.
+  
+    7 │ And·_·underscore·emphasis·_·too.
+      │      -                          
+
+```
+
+```
+invalid.md:7:26 lint/correctness/noSpaceInEmphasis  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space before closing emphasis marker.
+  
+    5 │ Also ** spaced strong ** markers.
+    6 │ 
+  > 7 │ And _ underscore emphasis _ too.
+      │                          ^^
+    8 │ 
+    9 │ Plus __ strong underscore __ markers.
+  
+  i Remove the space to ensure emphasis renders correctly.
+  
+  i Safe fix: Remove space from emphasis marker.
+  
+    7 │ And·_·underscore·emphasis·_·too.
+      │                          -      
+
+```
+
+```
+invalid.md:9:6 lint/correctness/noSpaceInEmphasis  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space after opening emphasis marker.
+  
+     7 │ And _ underscore emphasis _ too.
+     8 │ 
+   > 9 │ Plus __ strong underscore __ markers.
+       │      ^^^
+    10 │ 
+  
+  i Remove the space to ensure emphasis renders correctly.
+  
+  i Safe fix: Remove space from emphasis marker.
+  
+    9 │ Plus·__·strong·underscore·__·markers.
+      │        -                             
+
+```
+
+```
+invalid.md:9:26 lint/correctness/noSpaceInEmphasis  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space before closing emphasis marker.
+  
+     7 │ And _ underscore emphasis _ too.
+     8 │ 
+   > 9 │ Plus __ strong underscore __ markers.
+       │                          ^^^
+    10 │ 
+  
+  i Remove the space to ensure emphasis renders correctly.
+  
+  i Safe fix: Remove space from emphasis marker.
+  
+    9 │ Plus·__·strong·underscore·__·markers.
+      │                          -           
 
 ```

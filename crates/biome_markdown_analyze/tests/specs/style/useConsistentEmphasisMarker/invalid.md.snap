@@ -4,8 +4,59 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Emphasis
+# Inconsistent emphasis markers
 
-Some plain text for now.
+This has *star emphasis* text.
+
+This has _underscore emphasis_ text.
+
+```
+
+# Diagnostics
+```
+invalid.md:5:10 lint/style/useConsistentEmphasisMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected emphasis marker "*" but found "_".
+  
+    3 │ This has *star emphasis* text.
+    4 │ 
+  > 5 │ This has _underscore emphasis_ text.
+      │          ^
+    6 │ 
+  
+  i Use consistent emphasis markers throughout the document.
+  
+  i Safe fix: Use the consistent emphasis marker.
+  
+    3 3 │   This has *star emphasis* text.
+    4 4 │   
+    5   │ - This·has·_underscore·emphasis_·text.
+      5 │ + This·has·*underscore·emphasis_·text.
+    6 6 │   
+  
+
+```
+
+```
+invalid.md:5:30 lint/style/useConsistentEmphasisMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected emphasis marker "*" but found "_".
+  
+    3 │ This has *star emphasis* text.
+    4 │ 
+  > 5 │ This has _underscore emphasis_ text.
+      │                              ^
+    6 │ 
+  
+  i Use consistent emphasis markers throughout the document.
+  
+  i Safe fix: Use the consistent emphasis marker.
+  
+    3 3 │   This has *star emphasis* text.
+    4 4 │   
+    5   │ - This·has·_underscore·emphasis_·text.
+      5 │ + This·has·_underscore·emphasis*·text.
+    6 6 │   
+  
 
 ```

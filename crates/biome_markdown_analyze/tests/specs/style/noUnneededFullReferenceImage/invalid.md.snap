@@ -4,8 +4,66 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Full Reference Images
+# Unneeded full reference images
 
-No full reference images here (parser limitation).
+![image][image]
+
+![photo][photo]
+
+[image]: image.png
+[photo]: photo.jpg
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/noUnneededFullReferenceImage  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Full reference image can be collapsed when text and label match.
+  
+    1 │ # Unneeded full reference images
+    2 │ 
+  > 3 │ ![image][image]
+      │ ^^^^^^^^^^^^^^^
+    4 │ 
+    5 │ ![photo][photo]
+  
+  i Use ![text][] instead of ![text][text].
+  
+  i Safe fix: Collapse to short reference image.
+  
+    1 1 │   # Unneeded full reference images
+    2 2 │   
+    3   │ - ![image][image]
+      3 │ + ![image][]
+    4 4 │   
+    5 5 │   ![photo][photo]
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/noUnneededFullReferenceImage  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Full reference image can be collapsed when text and label match.
+  
+    3 │ ![image][image]
+    4 │ 
+  > 5 │ ![photo][photo]
+      │ ^^^^^^^^^^^^^^^
+    6 │ 
+    7 │ [image]: image.png
+  
+  i Use ![text][] instead of ![text][text].
+  
+  i Safe fix: Collapse to short reference image.
+  
+    3 3 │   ![image][image]
+    4 4 │   
+    5   │ - ![photo][photo]
+      5 │ + ![photo][]
+    6 6 │   
+    7 7 │   [image]: image.png
+  
 
 ```

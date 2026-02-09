@@ -1,4 +1,9 @@
 <!-- should not generate diagnostics -->
-# Hello
+# Collapsed reference images
 
-No images in this document.
+![image][]
+
+![photo][]
+
+[image]: image.png
+[photo]: photo.jpg

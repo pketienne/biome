@@ -4,10 +4,77 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Unused Definitions
+# Unused definitions
 
 Some text without any references.
 
 [unused]: https://example.com
+
+[also-unused]: https://example.com "Title"
+
+[third]: /path/to/page
+
+```
+
+# Diagnostics
+```
+invalid.md:5:1 lint/correctness/noUnusedDefinitions  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Definition "unused" is not used anywhere in the document.
+  
+    3 │ Some text without any references.
+    4 │ 
+  > 5 │ [unused]: https://example.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    6 │ 
+    7 │ [also-unused]: https://example.com "Title"
+  
+  i Remove the unused definition or add a reference to it.
+  
+  i Unsafe fix: Remove the unused definition.
+  
+    5 │ [unused]:·https://example.com
+      │ -----------------------------
+
+```
+
+```
+invalid.md:7:1 lint/correctness/noUnusedDefinitions  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Definition "also-unused" is not used anywhere in the document.
+  
+    5 │ [unused]: https://example.com
+    6 │ 
+  > 7 │ [also-unused]: https://example.com "Title"
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    8 │ 
+    9 │ [third]: /path/to/page
+  
+  i Remove the unused definition or add a reference to it.
+  
+  i Unsafe fix: Remove the unused definition.
+  
+    7 │ [also-unused]:·https://example.com·"Title"
+      │ ------------------------------------------
+
+```
+
+```
+invalid.md:9:1 lint/correctness/noUnusedDefinitions  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Definition "third" is not used anywhere in the document.
+  
+     7 │ [also-unused]: https://example.com "Title"
+     8 │ 
+   > 9 │ [third]: /path/to/page
+       │ ^^^^^^^^^^^^^^^^^^^^^^
+    10 │ 
+  
+  i Remove the unused definition or add a reference to it.
+  
+  i Unsafe fix: Remove the unused definition.
+  
+    9 │ [third]:·/path/to/page
+      │ ----------------------
 
 ```

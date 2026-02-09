@@ -1,4 +1,8 @@
 <!-- should not generate diagnostics -->
-# No HTML
+# No inline HTML
 
-This is plain markdown text.
+This has *emphasis* instead.
+
+And **strong** too.
+
+Code: `<em>` in backticks is fine.

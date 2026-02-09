@@ -1,5 +1,9 @@
 <!-- should not generate diagnostics -->
+# Definitions at end
 
-Some text here.
+See [example][] for details.
 
-More text here.
+Visit [other][] link.
+
+[example]: https://example.com
+[other]: https://other.com

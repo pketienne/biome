@@ -1,5 +1,7 @@
-# Media Style
+# Inconsistent media style
 
-This has no images. The rule defaults to inline style.
+![inline image](image.png)
 
-No violations in this minimal test.
+![ref image][img]
+
+[img]: other.png

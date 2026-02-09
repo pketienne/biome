@@ -1,4 +1,8 @@
 <!-- should not generate diagnostics -->
-# Hello
+# Proper headings
 
-Plain text.
+## This is a heading
+
+Some text with **bold words** in it.
+
+A paragraph with __strong text__ inline.

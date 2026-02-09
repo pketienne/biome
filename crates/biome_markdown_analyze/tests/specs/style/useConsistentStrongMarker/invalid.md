@@ -1,3 +1,5 @@
-# Strong
+# Inconsistent strong markers
 
-Some plain text for now.
+This has **star strong** text.
+
+This has __underscore strong__ text.

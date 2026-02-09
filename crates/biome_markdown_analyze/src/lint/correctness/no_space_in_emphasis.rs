@@ -9,7 +9,7 @@ use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
 use crate::MarkdownRuleAction;
 
 use crate::utils::fence_utils::FenceTracker;
-use crate::utils::inline_utils::{find_code_spans, find_emphasis_markers};
+use crate::utils::inline_utils::{find_code_spans, is_in_code_span};
 
 declare_lint_rule! {
     /// Disallow spaces inside emphasis markers.
@@ -43,6 +43,7 @@ declare_lint_rule! {
 pub struct SpaceInEmphasis {
     range: TextRange,
     is_opening: bool,
+    space_pos: TextSize,
 }
 
 impl Rule for NoSpaceInEmphasis {
@@ -68,32 +69,86 @@ impl Rule for NoSpaceInEmphasis {
 
             let bytes = line.as_bytes();
             let code_spans = find_code_spans(line);
-            let markers = find_emphasis_markers(line, &code_spans);
 
-            for m in &markers {
-                if m.is_opening {
-                    // Check for space after opening marker
-                    let after = m.start + m.count;
-                    if after < bytes.len() && bytes[after] == b' ' {
-                        signals.push(SpaceInEmphasis {
-                            range: TextRange::new(
-                                base + TextSize::from((offset + m.start) as u32),
-                                base + TextSize::from((offset + after + 1) as u32),
-                            ),
-                            is_opening: true,
-                        });
+            // Collect marker runs: (start, count, marker_byte)
+            let mut runs: Vec<(usize, usize, u8)> = Vec::new();
+            let mut i = 0;
+            while i < bytes.len() {
+                if is_in_code_span(i, &code_spans) {
+                    i += 1;
+                    continue;
+                }
+                if bytes[i] == b'\\' && i + 1 < bytes.len() {
+                    i += 2;
+                    continue;
+                }
+                if bytes[i] == b'*' || bytes[i] == b'_' {
+                    let marker_byte = bytes[i];
+                    let start = i;
+                    while i < bytes.len() && bytes[i] == marker_byte {
+                        i += 1;
+                    }
+                    let count = i - start;
+                    if count <= 3 {
+                        runs.push((start, count, marker_byte));
                     }
                 } else {
-                    // Check for space before closing marker
-                    if m.start > 0 && bytes[m.start - 1] == b' ' {
-                        signals.push(SpaceInEmphasis {
-                            range: TextRange::new(
-                                base + TextSize::from((offset + m.start - 1) as u32),
-                                base + TextSize::from((offset + m.start + m.count) as u32),
-                            ),
-                            is_opening: false,
-                        });
+                    i += 1;
+                }
+            }
+
+            // Find matched pairs: opening marker with trailing space,
+            // closing marker with leading space (same char and count).
+            let mut used = vec![false; runs.len()];
+            for idx in 0..runs.len() {
+                if used[idx] {
+                    continue;
+                }
+                let (start, count, marker) = runs[idx];
+                let after = start + count;
+                // Opening marker must be followed by a space
+                if after >= bytes.len() || bytes[after] != b' ' {
+                    continue;
+                }
+
+                for jdx in (idx + 1)..runs.len() {
+                    if used[jdx] {
+                        continue;
                     }
+                    let (close_start, close_count, close_marker) = runs[jdx];
+                    if close_marker != marker || close_count != count {
+                        continue;
+                    }
+                    // Closing marker must be preceded by a space
+                    if close_start == 0 || bytes[close_start - 1] != b' ' {
+                        continue;
+                    }
+
+                    used[idx] = true;
+                    used[jdx] = true;
+
+                    // Report opening space (after opening markers)
+                    signals.push(SpaceInEmphasis {
+                        range: TextRange::new(
+                            base + TextSize::from((offset + start) as u32),
+                            base + TextSize::from((offset + after + 1) as u32),
+                        ),
+                        is_opening: true,
+                        space_pos: base + TextSize::from((offset + after) as u32),
+                    });
+
+                    // Report closing space (before closing markers)
+                    let close_end = close_start + close_count;
+                    signals.push(SpaceInEmphasis {
+                        range: TextRange::new(
+                            base + TextSize::from((offset + close_start - 1) as u32),
+                            base + TextSize::from((offset + close_end) as u32),
+                        ),
+                        is_opening: false,
+                        space_pos: base + TextSize::from((offset + close_start - 1) as u32),
+                    });
+
+                    break;
                 }
             }
 
@@ -105,27 +160,22 @@ impl Rule for NoSpaceInEmphasis {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
         let root = ctx.root();
+        // Find the token containing the space character
         let token = root
             .syntax()
-            .token_at_offset(state.range.start())
+            .token_at_offset(state.space_pos)
             .right_biased()?;
         let token_text = token.text().to_string();
         let token_start = token.text_range().start();
-        let rel_start = u32::from(state.range.start() - token_start) as usize;
-        let rel_end = u32::from(state.range.end() - token_start) as usize;
-        // For opening markers, the space is at the end of the range (after markers).
-        // For closing markers, the space is at the start of the range (before markers).
-        // In both cases, remove just the space character.
-        let mut new_text = String::with_capacity(token_text.len());
-        if state.is_opening {
-            // Range is: markers + space. Remove the last byte (the space).
-            new_text.push_str(&token_text[..rel_end - 1]);
-            new_text.push_str(&token_text[rel_end..]);
-        } else {
-            // Range is: space + markers. Remove the first byte (the space).
-            new_text.push_str(&token_text[..rel_start]);
-            new_text.push_str(&token_text[rel_start + 1..]);
+        let rel = u32::from(state.space_pos - token_start) as usize;
+
+        if rel >= token_text.len() {
+            return None;
         }
+
+        // Remove the space character at the relative position
+        let new_text = format!("{}{}", &token_text[..rel], &token_text[rel + 1..]);
+
         let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
             token.kind(),
             &new_text,

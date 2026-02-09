@@ -1,3 +1,8 @@
-# Shortcut Images
+# Shortcut reference images
 
-No shortcut images here since parser can't handle them.
+![image]
+
+![photo]
+
+[image]: image.png
+[photo]: photo.jpg

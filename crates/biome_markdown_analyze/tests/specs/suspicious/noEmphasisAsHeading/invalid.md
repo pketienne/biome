@@ -1,5 +1,9 @@
-# Hello
+# Emphasis as heading
 
-**This is emphasis as heading**
+**This looks like a heading**
 
-Some text.
+Some paragraph text.
+
+__Another emphasis heading__
+
+More text here.

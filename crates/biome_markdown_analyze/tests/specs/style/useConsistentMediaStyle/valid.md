@@ -1,4 +1,6 @@
 <!-- should not generate diagnostics -->
-# Hello
+# Consistent media style
 
-No images in this document.
+![first image](image.png)
+
+![second image](other.png)

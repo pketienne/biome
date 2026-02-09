@@ -4,10 +4,39 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Media Style
+# Inconsistent media style
 
-This has no images. The rule defaults to inline style.
+![inline image](image.png)
 
-No violations in this minimal test.
+![ref image][img]
+
+[img]: other.png
+
+```
+
+# Diagnostics
+```
+invalid.md:5:1 lint/style/useConsistentMediaStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected inline image style but found reference.
+  
+    3 │ ![inline image](image.png)
+    4 │ 
+  > 5 │ ![ref image][img]
+      │ ^^^^^^^^^^^^^^^^^
+    6 │ 
+    7 │ [img]: other.png
+  
+  i Use a consistent image style throughout the document.
+  
+  i Unsafe fix: Convert to inline image style.
+  
+    3 3 │   ![inline image](image.png)
+    4 4 │   
+    5   │ - ![ref·image][img]
+      5 │ + ![ref·image](other.png)
+    6 6 │   
+    7 7 │   [img]: other.png
+  
 
 ```
