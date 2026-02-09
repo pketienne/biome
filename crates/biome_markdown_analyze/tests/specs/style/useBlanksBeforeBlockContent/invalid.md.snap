@@ -11,7 +11,7 @@ Some text.
 
 # Diagnostics
 ```
-invalid.md:2:1 lint/style/useBlanksBeforeBlockContent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:2:1 lint/style/useBlanksBeforeBlockContent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing blank line before heading.
   
@@ -21,6 +21,14 @@ invalid.md:2:1 lint/style/useBlanksBeforeBlockContent ━━━━━━━━�
     3 │ 
   
   i Add a blank line before block-level content.
+  
+  i Safe fix: Insert blank line before heading.
+  
+    1 1 │   Some text.
+    2   │ - #·Heading·without·blank·line
+      2 │ + 
+      3 │ + #·Heading·without·blank·line
+    3 4 │   
   
 
 ```

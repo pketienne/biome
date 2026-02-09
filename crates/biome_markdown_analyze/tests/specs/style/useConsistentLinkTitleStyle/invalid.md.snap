@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useConsistentLinkTitleStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useConsistentLinkTitleStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected double-quote for link title but found single quotes.
   
@@ -23,6 +23,14 @@ invalid.md:3:1 lint/style/useConsistentLinkTitleStyle ━━━━━━━━�
     4 │ 
   
   i Use consistent title delimiters throughout the document.
+  
+  i Safe fix: Use the consistent link title delimiter.
+  
+    1 1 │   # Title Style
+    2 2 │   
+    3   │ - [foo]:·https://example.com·'wrong·title·style'
+      3 │ + [foo]:·https://example.com·"wrong·title·style"
+    4 4 │   
   
 
 ```

@@ -14,7 +14,7 @@ Content
 
 # Diagnostics
 ```
-invalid.md:1:19 lint/style/useSortedDirectiveAttributes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:19 lint/style/useSortedDirectiveAttributes  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Attribute "alpha" should come before "zebra".
   
@@ -25,11 +25,18 @@ invalid.md:1:19 lint/style/useSortedDirectiveAttributes ━━━━━━━━
   
   i Sort directive attributes alphabetically.
   
+  i Unsafe fix: Sort directive attributes alphabetically.
+  
+    1   │ - ::video{zebra="1"·alpha="2"}
+      1 │ + ::video{alpha="2"·zebra="1"}
+    2 2 │   
+    3 3 │   :::note{title="hello" class="info"}
+  
 
 ```
 
 ```
-invalid.md:3:23 lint/style/useSortedDirectiveAttributes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:23 lint/style/useSortedDirectiveAttributes  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Attribute "class" should come before "title".
   
@@ -41,6 +48,15 @@ invalid.md:3:23 lint/style/useSortedDirectiveAttributes ━━━━━━━━
     5 │ :::
   
   i Sort directive attributes alphabetically.
+  
+  i Unsafe fix: Sort directive attributes alphabetically.
+  
+    1 1 │   ::video{zebra="1" alpha="2"}
+    2 2 │   
+    3   │ - :::note{title="hello"·class="info"}
+      3 │ + :::note{class="info"·title="hello"}
+    4 4 │   Content
+    5 5 │   :::
   
 
 ```

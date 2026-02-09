@@ -15,7 +15,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/style/useConsistentOrderedListMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/useConsistentOrderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected "." but found ")" as ordered list delimiter.
   
@@ -27,11 +27,20 @@ invalid.md:4:1 lint/style/useConsistentOrderedListMarker ━━━━━━━�
   
   i Use a consistent ordered list delimiter.
   
+  i Safe fix: Use the consistent ordered list delimiter.
+  
+    2 2 │   
+    3 3 │   1. first item
+    4   │ - 2)·second·item
+      4 │ + 2.
+    5 5 │   3. third item
+    6 6 │   4) fourth item
+  
 
 ```
 
 ```
-invalid.md:6:1 lint/style/useConsistentOrderedListMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:6:1 lint/style/useConsistentOrderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected "." but found ")" as ordered list delimiter.
   
@@ -42,6 +51,14 @@ invalid.md:6:1 lint/style/useConsistentOrderedListMarker ━━━━━━━�
     7 │ 
   
   i Use a consistent ordered list delimiter.
+  
+  i Safe fix: Use the consistent ordered list delimiter.
+  
+    4 4 │   2) second item
+    5 5 │   3. third item
+    6   │ - 4)·fourth·item
+      6 │ + 4.
+    7 7 │   
   
 
 ```

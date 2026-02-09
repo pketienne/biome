@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:1 lint/style/useMdxJsxSelfClosing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:1 lint/style/useMdxJsxSelfClosing  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Element "Component" has no children and should be self-closing.
   
@@ -23,11 +23,18 @@ invalid.md:1:1 lint/style/useMdxJsxSelfClosing ━━━━━━━━━━━
   
   i Use a self-closing tag: <Component />.
   
+  i Safe fix: Convert to self-closing tag.
+  
+    1   │ - <Component></Component>
+      1 │ + <Component·/>
+    2 2 │   
+    3 3 │   <Button label="Click"></Button>
+  
 
 ```
 
 ```
-invalid.md:3:1 lint/style/useMdxJsxSelfClosing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useMdxJsxSelfClosing  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Element "Button" has no children and should be self-closing.
   
@@ -38,6 +45,14 @@ invalid.md:3:1 lint/style/useMdxJsxSelfClosing ━━━━━━━━━━━
     4 │ 
   
   i Use a self-closing tag: <Button />.
+  
+  i Safe fix: Convert to self-closing tag.
+  
+    1 1 │   <Component></Component>
+    2 2 │   
+    3   │ - <Button·label="Click"></Button>
+      3 │ + <Button·label="Click"·/>
+    4 4 │   
   
 
 ```

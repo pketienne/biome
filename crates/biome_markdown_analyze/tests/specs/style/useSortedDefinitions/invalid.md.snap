@@ -13,7 +13,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/style/useSortedDefinitions ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/useSortedDefinitions  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Definition "alpha" should come before "beta".
   
@@ -24,5 +24,9 @@ invalid.md:4:1 lint/style/useSortedDefinitions ━━━━━━━━━━━
   
   i Sort definitions alphabetically by their label.
   
+  i Unsafe fix: Remove definition from current position.
+  
+    4 │ [alpha]:·https://alpha.com
+      │ --------------------------
 
 ```

@@ -16,7 +16,7 @@ ___
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useConsistentHorizontalRuleStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useConsistentHorizontalRuleStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Horizontal rule style '***' does not match expected '---'.
   
@@ -29,11 +29,20 @@ invalid.md:3:1 lint/style/useConsistentHorizontalRuleStyle ━━━━━━━
   
   i Use '---' for horizontal rules.
   
+  i Safe fix: Use the consistent horizontal rule style.
+  
+    1 1 │   # Heading
+    2 2 │   
+    3   │ - ***
+      3 │ + ---
+    4 4 │   
+    5 5 │   More content.
+  
 
 ```
 
 ```
-invalid.md:7:1 lint/style/useConsistentHorizontalRuleStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:7:1 lint/style/useConsistentHorizontalRuleStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Horizontal rule style '___' does not match expected '---'.
   
@@ -44,6 +53,14 @@ invalid.md:7:1 lint/style/useConsistentHorizontalRuleStyle ━━━━━━━
     8 │ 
   
   i Use '---' for horizontal rules.
+  
+  i Safe fix: Use the consistent horizontal rule style.
+  
+    5 5 │   More content.
+    6 6 │   
+    7   │ - ___
+      7 │ + ---
+    8 8 │   
   
 
 ```

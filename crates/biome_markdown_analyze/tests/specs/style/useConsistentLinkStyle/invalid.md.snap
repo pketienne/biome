@@ -14,7 +14,7 @@ See [ref][label] for details.
 
 # Diagnostics
 ```
-invalid.md:3:5 lint/style/useConsistentLinkStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:5 lint/style/useConsistentLinkStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected inline link style but found reference.
   
@@ -27,11 +27,20 @@ invalid.md:3:5 lint/style/useConsistentLinkStyle ━━━━━━━━━━�
   
   i Use a consistent link style throughout the document.
   
+  i Unsafe fix: Convert to inline link style.
+  
+    1 1 │   # Mixed Links
+    2 2 │   
+    3   │ - See·[ref][label]·for·details.
+      3 │ + See·[ref](https://example.com)·for·details.
+    4 4 │   
+    5 5 │   [label]: https://example.com
+  
 
 ```
 
 ```
-invalid.md:5:1 lint/style/useConsistentLinkStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/style/useConsistentLinkStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected inline link style but found reference.
   
@@ -42,6 +51,14 @@ invalid.md:5:1 lint/style/useConsistentLinkStyle ━━━━━━━━━━�
     6 │ 
   
   i Use a consistent link style throughout the document.
+  
+  i Unsafe fix: Convert to inline link style.
+  
+    3 3 │   See [ref][label] for details.
+    4 4 │   
+    5   │ - [label]:·https://example.com
+      5 │ + [label](https://example.com):·https://example.com
+    6 6 │   
   
 
 ```

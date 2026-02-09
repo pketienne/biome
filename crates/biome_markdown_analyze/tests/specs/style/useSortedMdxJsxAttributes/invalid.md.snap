@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:22 lint/style/useSortedMdxJsxAttributes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:22 lint/style/useSortedMdxJsxAttributes  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Attribute "alpha" should come before "zebra".
   
@@ -23,11 +23,18 @@ invalid.md:1:22 lint/style/useSortedMdxJsxAttributes ━━━━━━━━━
   
   i Sort JSX attributes alphabetically.
   
+  i Unsafe fix: Sort JSX attributes alphabetically.
+  
+    1   │ - <Component·zebra="1"·alpha="2"·/>
+      1 │ + <Component·alpha="2"·zebra="1"·/>
+    2 2 │   
+    3 3 │   <Button label="Click" disabled />
+  
 
 ```
 
 ```
-invalid.md:3:23 lint/style/useSortedMdxJsxAttributes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:23 lint/style/useSortedMdxJsxAttributes  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Attribute "disabled" should come before "label".
   
@@ -38,6 +45,14 @@ invalid.md:3:23 lint/style/useSortedMdxJsxAttributes ━━━━━━━━━
     4 │ 
   
   i Sort JSX attributes alphabetically.
+  
+  i Unsafe fix: Sort JSX attributes alphabetically.
+  
+    1 1 │   <Component zebra="1" alpha="2" />
+    2 2 │   
+    3   │ - <Button·label="Click"·disabled·/>
+      3 │ + <Button·disabled·label="Click"·/>
+    4 4 │   
   
 
 ```

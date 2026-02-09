@@ -15,7 +15,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useConsistentUnorderedListMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useConsistentUnorderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected "-" but found "+" as list marker.
   
@@ -28,11 +28,20 @@ invalid.md:3:1 lint/style/useConsistentUnorderedListMarker ━━━━━━━
   
   i Use a consistent unordered list marker.
   
+  i Safe fix: Use the consistent list marker.
+  
+    1 1 │   # Mixed list markers
+    2 2 │   
+    3   │ - +·first·item
+      3 │ + -
+    4 4 │   1. second item
+    5 5 │   + third item
+  
 
 ```
 
 ```
-invalid.md:5:1 lint/style/useConsistentUnorderedListMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/style/useConsistentUnorderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected "-" but found "+" as list marker.
   
@@ -44,6 +53,15 @@ invalid.md:5:1 lint/style/useConsistentUnorderedListMarker ━━━━━━━
     7 │ 
   
   i Use a consistent unordered list marker.
+  
+  i Safe fix: Use the consistent list marker.
+  
+    3 3 │   + first item
+    4 4 │   1. second item
+    5   │ - +·third·item
+      5 │ + -
+    6 6 │   2) fourth item
+    7 7 │   
   
 
 ```

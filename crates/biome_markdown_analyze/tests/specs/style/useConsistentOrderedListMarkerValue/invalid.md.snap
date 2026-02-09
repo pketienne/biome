@@ -15,7 +15,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/style/useConsistentOrderedListMarkerValue ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/useConsistentOrderedListMarkerValue  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected ordered list value 2 but found 1.
   
@@ -27,11 +27,20 @@ invalid.md:4:1 lint/style/useConsistentOrderedListMarkerValue ━━━━━━
   
   i Use consistent ordered list marker values.
   
+  i Safe fix: Renumber the ordered list item.
+  
+    2 2 │   
+    3 3 │   1. first item
+    4   │ - 1.·second·item
+      4 │ + 2.·second·item
+    5 5 │   1. third item
+    6 6 │   1. fourth item
+  
 
 ```
 
 ```
-invalid.md:5:1 lint/style/useConsistentOrderedListMarkerValue ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/style/useConsistentOrderedListMarkerValue  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected ordered list value 3 but found 1.
   
@@ -44,11 +53,20 @@ invalid.md:5:1 lint/style/useConsistentOrderedListMarkerValue ━━━━━━
   
   i Use consistent ordered list marker values.
   
+  i Safe fix: Renumber the ordered list item.
+  
+    3 3 │   1. first item
+    4 4 │   1. second item
+    5   │ - 1.·third·item
+      5 │ + 3.·third·item
+    6 6 │   1. fourth item
+    7 7 │   
+  
 
 ```
 
 ```
-invalid.md:6:1 lint/style/useConsistentOrderedListMarkerValue ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:6:1 lint/style/useConsistentOrderedListMarkerValue  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected ordered list value 4 but found 1.
   
@@ -59,6 +77,14 @@ invalid.md:6:1 lint/style/useConsistentOrderedListMarkerValue ━━━━━━
     7 │ 
   
   i Use consistent ordered list marker values.
+  
+  i Safe fix: Renumber the ordered list item.
+  
+    4 4 │   1. second item
+    5 5 │   1. third item
+    6   │ - 1.·fourth·item
+      6 │ + 4.·fourth·item
+    7 7 │   
   
 
 ```

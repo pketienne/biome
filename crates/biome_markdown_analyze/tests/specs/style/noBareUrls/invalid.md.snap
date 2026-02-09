@@ -14,7 +14,7 @@ Also check http://test.org here.
 
 # Diagnostics
 ```
-invalid.md:3:7 lint/style/noBareUrls ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:7 lint/style/noBareUrls  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Bare URL found. Wrap it in angle brackets or use link syntax.
   
@@ -27,11 +27,20 @@ invalid.md:3:7 lint/style/noBareUrls ━━━━━━━━━━━━━━�
   
   i Use <url> or [text](url) instead of a bare URL.
   
+  i Safe fix: Wrap URL in angle brackets.
+  
+    1 1 │   # Bare URLs
+    2 2 │   
+    3   │ - Visit·https://example.com·for·details.
+      3 │ + Visit·<https://example.com>·for·details.
+    4 4 │   
+    5 5 │   Also check http://test.org here.
+  
 
 ```
 
 ```
-invalid.md:5:12 lint/style/noBareUrls ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:12 lint/style/noBareUrls  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Bare URL found. Wrap it in angle brackets or use link syntax.
   
@@ -42,6 +51,14 @@ invalid.md:5:12 lint/style/noBareUrls ━━━━━━━━━━━━━━
     6 │ 
   
   i Use <url> or [text](url) instead of a bare URL.
+  
+  i Safe fix: Wrap URL in angle brackets.
+  
+    3 3 │   Visit https://example.com for details.
+    4 4 │   
+    5   │ - Also·check·http://test.org·here.
+      5 │ + Also·check·<http://test.org>·here.
+    6 6 │   
   
 
 ```

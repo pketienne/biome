@@ -14,7 +14,7 @@ See [link][link] for details.
 
 # Diagnostics
 ```
-invalid.md:3:5 lint/style/noUnneededFullReferenceLink ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:5 lint/style/noUnneededFullReferenceLink  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Full reference link can be collapsed when text and label match.
   
@@ -26,6 +26,15 @@ invalid.md:3:5 lint/style/noUnneededFullReferenceLink ━━━━━━━━�
     5 │ [link]: https://example.com
   
   i Use [text][] instead of [text][text].
+  
+  i Safe fix: Collapse to short reference link.
+  
+    1 1 │   # Full Reference Links
+    2 2 │   
+    3   │ - See·[link][link]·for·details.
+      3 │ + See·[link][]·for·details.
+    4 4 │   
+    5 5 │   [link]: https://example.com
   
 
 ```

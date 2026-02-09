@@ -10,7 +10,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:25 lint/style/useConsistentMdxJsxQuoteStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:25 lint/style/useConsistentMdxJsxQuoteStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Attribute uses single quotes but double quotes are expected.
   
@@ -19,6 +19,12 @@ invalid.md:1:25 lint/style/useConsistentMdxJsxQuoteStyle ━━━━━━━�
     2 │ 
   
   i Use a consistent quote style for JSX attributes.
+  
+  i Safe fix: Use consistent quote style.
+  
+    1   │ - <Component·name="hello"·title='world'·/>
+      1 │ + <Component·name="hello"·title="world"·/>
+    2 2 │   
   
 
 ```

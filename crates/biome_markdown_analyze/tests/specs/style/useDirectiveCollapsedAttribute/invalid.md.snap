@@ -12,7 +12,7 @@ Content
 
 # Diagnostics
 ```
-invalid.md:1:9 lint/style/useDirectiveCollapsedAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:9 lint/style/useDirectiveCollapsedAttribute  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Use collapsed class shorthand instead of class="warning".
   
@@ -22,6 +22,13 @@ invalid.md:1:9 lint/style/useDirectiveCollapsedAttribute ━━━━━━━�
     3 │ :::
   
   i Use the shorthand form: .warning instead.
+  
+  i Safe fix: Use collapsed class shorthand.
+  
+    1   │ - :::note{class="warning"}
+      1 │ + :::note{.warning}
+    2 2 │   Content
+    3 3 │   :::
   
 
 ```

@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:12 lint/style/useMdxJsxShorthandAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:12 lint/style/useMdxJsxShorthandAttribute  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Attribute "disabled" uses longhand "{true}" instead of shorthand.
   
@@ -23,11 +23,18 @@ invalid.md:1:12 lint/style/useMdxJsxShorthandAttribute ━━━━━━━━�
   
   i Use the shorthand form: just "disabled" without a value.
   
+  i Safe fix: Use shorthand boolean attribute.
+  
+    1   │ - <Component·disabled={true}·/>
+      1 │ + <Component·disabled·/>
+    2 2 │   
+    3 3 │   <Button active={true} name="test" />
+  
 
 ```
 
 ```
-invalid.md:3:9 lint/style/useMdxJsxShorthandAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:9 lint/style/useMdxJsxShorthandAttribute  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Attribute "active" uses longhand "{true}" instead of shorthand.
   
@@ -38,6 +45,14 @@ invalid.md:3:9 lint/style/useMdxJsxShorthandAttribute ━━━━━━━━�
     4 │ 
   
   i Use the shorthand form: just "active" without a value.
+  
+  i Safe fix: Use shorthand boolean attribute.
+  
+    1 1 │   <Component disabled={true} />
+    2 2 │   
+    3   │ - <Button·active={true}·name="test"·/>
+      3 │ + <Button·active·name="test"·/>
+    4 4 │   
   
 
 ```

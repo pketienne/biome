@@ -14,7 +14,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useConsistentListItemIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useConsistentListItemIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! List item has 2 space(s) between marker and content.
   
@@ -27,11 +27,20 @@ invalid.md:3:1 lint/style/useConsistentListItemIndent ━━━━━━━━�
   
   i Use consistent spacing between list marker and content.
   
+  i Safe fix: Fix spacing between list marker and content.
+  
+    1 1 │   # Inconsistent list item indent
+    2 2 │   
+    3   │ - +··first·item·with·two·spaces
+      3 │ + +·first·item·with·two·spaces
+    4 4 │   + second item with one space
+    5 5 │   +   third item with three spaces
+  
 
 ```
 
 ```
-invalid.md:5:1 lint/style/useConsistentListItemIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/style/useConsistentListItemIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! List item has 3 space(s) between marker and content.
   
@@ -42,6 +51,14 @@ invalid.md:5:1 lint/style/useConsistentListItemIndent ━━━━━━━━�
     6 │ 
   
   i Use consistent spacing between list marker and content.
+  
+  i Safe fix: Fix spacing between list marker and content.
+  
+    3 3 │   +  first item with two spaces
+    4 4 │   + second item with one space
+    5   │ - +···third·item·with·three·spaces
+      5 │ + +·third·item·with·three·spaces
+    6 6 │   
   
 
 ```

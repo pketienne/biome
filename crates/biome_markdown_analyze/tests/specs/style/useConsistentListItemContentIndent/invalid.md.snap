@@ -15,7 +15,7 @@ continuation not indented
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/style/useConsistentListItemContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/useConsistentListItemContentIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected content indentation of 2 but found 0.
   
@@ -27,11 +27,20 @@ invalid.md:4:1 lint/style/useConsistentListItemContentIndent ━━━━━━�
   
   i Align continuation content with the first line of the list item.
   
+  i Safe fix: Fix continuation line indentation.
+  
+    2 2 │   
+    3 3 │   + first item
+    4   │ - continuation·not·indented
+      4 │ + ··continuation·not·indented
+    5 5 │   + second item
+    6 6 │    continuation with wrong indent
+  
 
 ```
 
 ```
-invalid.md:6:1 lint/style/useConsistentListItemContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:6:1 lint/style/useConsistentListItemContentIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected content indentation of 2 but found 1.
   
@@ -42,6 +51,14 @@ invalid.md:6:1 lint/style/useConsistentListItemContentIndent ━━━━━━�
     7 │ 
   
   i Align continuation content with the first line of the list item.
+  
+  i Safe fix: Fix continuation line indentation.
+  
+    4 4 │   continuation not indented
+    5 5 │   + second item
+    6   │ - ·continuation·with·wrong·indent
+      6 │ + ··continuation·with·wrong·indent
+    7 7 │   
   
 
 ```

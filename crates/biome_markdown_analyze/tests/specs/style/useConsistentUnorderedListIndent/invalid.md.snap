@@ -16,7 +16,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/style/useConsistentUnorderedListIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/useConsistentUnorderedListIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Unordered list item has odd indentation of 3 spaces.
   
@@ -28,11 +28,20 @@ invalid.md:4:1 lint/style/useConsistentUnorderedListIndent ━━━━━━━
   
   i Use a consistent multiple of 2 spaces for nested list indentation.
   
+  i Safe fix: Fix list item indentation to nearest even number.
+  
+    2 2 │   
+    3 3 │   + first item
+    4   │ - ···+·nested·with·3·spaces
+      4 │ + ····+·nested·with·3·spaces
+    5 5 │         + deeply nested with 6 spaces
+    6 6 │   + another item
+  
 
 ```
 
 ```
-invalid.md:7:1 lint/style/useConsistentUnorderedListIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:7:1 lint/style/useConsistentUnorderedListIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Unordered list item has odd indentation of 5 spaces.
   
@@ -43,6 +52,14 @@ invalid.md:7:1 lint/style/useConsistentUnorderedListIndent ━━━━━━━
     8 │ 
   
   i Use a consistent multiple of 2 spaces for nested list indentation.
+  
+  i Safe fix: Fix list item indentation to nearest even number.
+  
+    5 5 │         + deeply nested with 6 spaces
+    6 6 │   + another item
+    7   │ - ·····+·nested·with·5·spaces
+      7 │ + ······+·nested·with·5·spaces
+    8 8 │   
   
 
 ```

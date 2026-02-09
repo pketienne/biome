@@ -16,7 +16,7 @@ Some text after list.
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/style/useBlanksAroundLists ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/useBlanksAroundLists  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing blank line before list block.
   
@@ -31,11 +31,25 @@ invalid.md:4:1 lint/style/useBlanksAroundLists ━━━━━━━━━━━
   
   i Add a blank line before and after list blocks.
   
+  i Safe fix: Insert blank line before list block.
+  
+    2 2 │   
+    3 3 │   Some text before list.
+    4   │ - +·first·item
+    5   │ - +·second·item
+    6   │ - +·third·item
+      4 │ + 
+      5 │ + +·first·item
+      6 │ + +·second·item
+      7 │ + +·third·item
+    7 8 │   Some text after list.
+    8 9 │   
+  
 
 ```
 
 ```
-invalid.md:4:1 lint/style/useBlanksAroundLists ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/useBlanksAroundLists  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing blank line after list block.
   
@@ -49,6 +63,20 @@ invalid.md:4:1 lint/style/useBlanksAroundLists ━━━━━━━━━━━
     8 │ 
   
   i Add a blank line before and after list blocks.
+  
+  i Safe fix: Insert blank line after list block.
+  
+    2 2 │   
+    3 3 │   Some text before list.
+    4   │ - +·first·item
+    5   │ - +·second·item
+    6   │ - +·third·item
+      4 │ + +·first·item
+      5 │ + +·second·item
+      6 │ + +·third·item
+      7 │ + 
+    7 8 │   Some text after list.
+    8 9 │   
   
 
 ```

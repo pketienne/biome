@@ -16,7 +16,7 @@ Some text after.
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/style/useBlanksAroundCodeFences ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/useBlanksAroundCodeFences  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing blank line before code fence.
   
@@ -28,11 +28,21 @@ invalid.md:4:1 lint/style/useBlanksAroundCodeFences ━━━━━━━━━�
   
   i Add a blank line around fenced code blocks for readability.
   
+  i Safe fix: Insert blank line before code fence.
+  
+    2 2 │   
+    3 3 │   Some text before.
+    4   │ - ```js
+      4 │ + 
+      5 │ + ```js
+    5 6 │   const x = 1;
+    6 7 │   ```
+  
 
 ```
 
 ```
-invalid.md:6:1 lint/style/useBlanksAroundCodeFences ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:6:1 lint/style/useBlanksAroundCodeFences  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing blank line after code fence.
   
@@ -44,6 +54,16 @@ invalid.md:6:1 lint/style/useBlanksAroundCodeFences ━━━━━━━━━�
     8 │ 
   
   i Add a blank line around fenced code blocks for readability.
+  
+  i Safe fix: Insert blank line after code fence.
+  
+    4 4 │   ```js
+    5 5 │   const x = 1;
+    6   │ - ```
+      6 │ + ```
+      7 │ + 
+    7 8 │   Some text after.
+    8 9 │   
   
 
 ```

@@ -13,7 +13,7 @@ More text.
 
 # Diagnostics
 ```
-invalid.md:1:1 lint/style/useBlanksAroundHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:1 lint/style/useBlanksAroundHeadings  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing blank line after heading.
   
@@ -24,11 +24,19 @@ invalid.md:1:1 lint/style/useBlanksAroundHeadings ━━━━━━━━━━
   
   i Add a blank line around headings for readability.
   
+  i Safe fix: Insert blank line after heading.
+  
+    1   │ - #·Heading
+      1 │ + #·Heading
+      2 │ + 
+    2 3 │   Some text without blank line.
+    3 4 │   ## Another heading
+  
 
 ```
 
 ```
-invalid.md:3:1 lint/style/useBlanksAroundHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useBlanksAroundHeadings  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing blank line before heading.
   
@@ -41,11 +49,21 @@ invalid.md:3:1 lint/style/useBlanksAroundHeadings ━━━━━━━━━━
   
   i Add a blank line around headings for readability.
   
+  i Safe fix: Insert blank line before heading.
+  
+    1 1 │   # Heading
+    2 2 │   Some text without blank line.
+    3   │ - ##·Another·heading
+      3 │ + 
+      4 │ + ##·Another·heading
+    4 5 │   More text.
+    5 6 │   
+  
 
 ```
 
 ```
-invalid.md:3:1 lint/style/useBlanksAroundHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useBlanksAroundHeadings  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing blank line after heading.
   
@@ -57,6 +75,16 @@ invalid.md:3:1 lint/style/useBlanksAroundHeadings ━━━━━━━━━━
     5 │ 
   
   i Add a blank line around headings for readability.
+  
+  i Safe fix: Insert blank line after heading.
+  
+    1 1 │   # Heading
+    2 2 │   Some text without blank line.
+    3   │ - ##·Another·heading
+      3 │ + ##·Another·heading
+      4 │ + 
+    4 5 │   More text.
+    5 6 │   
   
 
 ```

@@ -11,7 +11,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:2:1 lint/style/useConsistentBlockquoteIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:2:1 lint/style/useConsistentBlockquoteIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected 1 space(s) after > but found 2.
   
@@ -21,6 +21,13 @@ invalid.md:2:1 lint/style/useConsistentBlockquoteIndent ━━━━━━━━
     3 │ 
   
   i Use consistent spacing after the blockquote marker.
+  
+  i Safe fix: Normalize blockquote indentation.
+  
+    1 1 │   > first line
+    2   │ - >··second·line·with·extra·space
+      2 │ + >·second·line·with·extra·space
+    3 3 │   
   
 
 ```

@@ -13,7 +13,7 @@ Second heading
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useConsistentHeadingStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useConsistentHeadingStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected atx heading style but found setext.
   
@@ -21,10 +21,20 @@ invalid.md:3:1 lint/style/useConsistentHeadingStyle ━━━━━━━━━�
     2 │ 
   > 3 │ Second heading
       │ ^^^^^^^^^^^^^^
-    4 │ ==============
+  > 4 │ ==============
+      │ ^^^^^^^^^^^^^^
     5 │ 
   
   i Use a consistent heading style throughout the document.
+  
+  i Unsafe fix: Convert to atx heading style.
+  
+    1 1 │   # First heading
+    2 2 │   
+    3   │ - Second·heading
+    4   │ - ==============
+      3 │ + #·Second·heading
+    5 4 │   
   
 
 ```

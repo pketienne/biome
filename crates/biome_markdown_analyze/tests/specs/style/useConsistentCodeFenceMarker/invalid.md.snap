@@ -14,7 +14,7 @@ const x = 1;
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useConsistentCodeFenceMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useConsistentCodeFenceMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected backticks but found tildes for code fence marker.
   
@@ -26,6 +26,15 @@ invalid.md:3:1 lint/style/useConsistentCodeFenceMarker ━━━━━━━━�
     5 │ ~~~
   
   i Use consistent code fence markers throughout the document.
+  
+  i Safe fix: Use the consistent code fence marker.
+  
+    1 1 │   # Code fences
+    2 2 │   
+    3   │ - ~~~js
+      3 │ + ```js
+    4 4 │   const x = 1;
+    5 5 │   ~~~
   
 
 ```
