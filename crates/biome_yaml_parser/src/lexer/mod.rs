@@ -85,6 +85,7 @@ impl<'src> YamlLexer<'src> {
                 tokens.push_back(LexToken::pseudo(FLOW_END, self.current_coordinate));
                 tokens
             }
+            b'%' if self.is_at_directive() => self.consume_directive(),
             _ => self.consume_unexpected_token().into(),
         };
         self.tokens.append(&mut tokens);
@@ -624,6 +625,34 @@ impl<'src> YamlLexer<'src> {
             }
         };
         LexToken::new(SINGLE_QUOTED_LITERAL, start, token_end)
+    }
+
+    fn is_at_directive(&self) -> bool {
+        // A YAML directive (%YAML, %TAG) must start at column 0
+        self.current_coordinate.column == 0
+            && self.current_byte() == Some(b'%')
+    }
+
+    fn consume_directive(&mut self) -> LinkedList<LexToken> {
+        self.assert_byte(b'%');
+        let start = self.current_coordinate;
+        let mut tokens = self.close_all_scopes();
+
+        // Consume the entire directive line as DIRECTIVE_LITERAL
+        while let Some(c) = self.current_byte() {
+            if is_break(c) {
+                break;
+            }
+            if c == b'#' {
+                break; // comment starts
+            }
+            self.advance(1);
+        }
+
+        tokens.push_back(LexToken::new(DIRECTIVE_LITERAL, start, self.current_coordinate));
+        let mut trivia = self.consume_trailing_trivia();
+        tokens.append(&mut trivia);
+        tokens
     }
 
     fn is_at_doc_start(&self) -> bool {

@@ -1,0 +1,101 @@
+---
+source: crates/biome_yaml_parser/tests/spec_test.rs
+expression: snapshot
+---
+## Input
+```yaml
+%TAG !app! tag:example.com,2014:app/
+---
+key: !app!type value
+
+```
+
+## AST
+
+```
+YamlRoot {
+    documents: YamlDocumentList [
+        YamlDocument {
+            bom_token: missing (optional),
+            directives: YamlDirectiveList [
+                YamlDirective {
+                    value_token: DIRECTIVE_LITERAL@0..36 "%TAG !app! tag:example.com,2014:app/" [] [],
+                },
+            ],
+            dashdashdash_token: DIRECTIVE_END@36..40 "---" [Newline("\n")] [],
+            node: YamlBlockMapping {
+                properties: missing (optional),
+                mapping_start_token: MAPPING_START@40..41 "" [Newline("\n")] [],
+                entries: YamlBlockMapEntryList [
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@41..44 "key" [] [],
+                            },
+                        },
+                        colon_token: COLON@44..46 ":" [] [Whitespace(" ")],
+                        value: YamlFlowInBlockNode {
+                            properties: YamlPropertiesTagFirst {
+                                tag: YamlTagProperty {
+                                    value_token: TAG_PROPERTY_LITERAL@46..56 "!app!type" [] [Whitespace(" ")],
+                                },
+                                anchor: missing (optional),
+                            },
+                            flow_start_token: FLOW_START@56..56 "" [] [],
+                            flow: YamlFlowYamlNode {
+                                properties: missing (optional),
+                                content: YamlPlainScalar {
+                                    value_token: PLAIN_LITERAL@56..61 "value" [] [],
+                                },
+                            },
+                            flow_end_token: FLOW_END@61..61 "" [] [],
+                        },
+                    },
+                ],
+                mapping_end_token: MAPPING_END@61..62 "" [Newline("\n")] [],
+            },
+            dotdotdot_token: missing (optional),
+        },
+    ],
+    eof_token: EOF@62..62 "" [] [],
+}
+```
+
+## CST
+
+```
+0: YAML_ROOT@0..62
+  0: YAML_DOCUMENT_LIST@0..62
+    0: YAML_DOCUMENT@0..62
+      0: (empty)
+      1: YAML_DIRECTIVE_LIST@0..36
+        0: YAML_DIRECTIVE@0..36
+          0: DIRECTIVE_LITERAL@0..36 "%TAG !app! tag:example.com,2014:app/" [] []
+      2: DIRECTIVE_END@36..40 "---" [Newline("\n")] []
+      3: YAML_BLOCK_MAPPING@40..62
+        0: (empty)
+        1: MAPPING_START@40..41 "" [Newline("\n")] []
+        2: YAML_BLOCK_MAP_ENTRY_LIST@41..61
+          0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@41..61
+            0: YAML_FLOW_YAML_NODE@41..44
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@41..44
+                0: PLAIN_LITERAL@41..44 "key" [] []
+            1: COLON@44..46 ":" [] [Whitespace(" ")]
+            2: YAML_FLOW_IN_BLOCK_NODE@46..61
+              0: YAML_PROPERTIES_TAG_FIRST@46..56
+                0: YAML_TAG_PROPERTY@46..56
+                  0: TAG_PROPERTY_LITERAL@46..56 "!app!type" [] [Whitespace(" ")]
+                1: (empty)
+              1: FLOW_START@56..56 "" [] []
+              2: YAML_FLOW_YAML_NODE@56..61
+                0: (empty)
+                1: YAML_PLAIN_SCALAR@56..61
+                  0: PLAIN_LITERAL@56..61 "value" [] []
+              3: FLOW_END@61..61 "" [] []
+        3: MAPPING_END@61..62 "" [Newline("\n")] []
+      4: (empty)
+  1: EOF@62..62 "" [] []
+
+```

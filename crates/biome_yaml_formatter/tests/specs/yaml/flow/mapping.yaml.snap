@@ -8,6 +8,8 @@ info: yaml/flow/mapping.yaml
 ```yaml
 simple: {key: value}
 multi: {a: 1, b: 2, c: 3}
+empty: {}
+nested: {outer: {inner: value}}
 
 ```
 
@@ -27,6 +29,8 @@ Quote style: Double Quotes
 -----
 
 ```yaml
-simple: {key: value}
-multi: {a: 1, b: 2, c: 3}
+simple: { key: value }
+multi: { a: 1, b: 2, c: 3 }
+empty: {}
+nested: { outer: { inner: value } }
 ```

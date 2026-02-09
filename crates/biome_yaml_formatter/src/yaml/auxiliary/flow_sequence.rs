@@ -7,13 +7,11 @@ pub(crate) struct FormatYamlFlowSequence;
 
 impl FormatNodeRule<YamlFlowSequence> for FormatYamlFlowSequence {
     fn fmt_fields(&self, node: &YamlFlowSequence, f: &mut YamlFormatter) -> FormatResult<()> {
-        write!(
-            f,
-            [
-                node.l_brack_token()?.format(),
-                node.entries().format(),
-                node.r_brack_token()?.format(),
-            ]
-        )
+        let entries = node.entries();
+        write!(f, [node.l_brack_token()?.format()])?;
+        if !entries.is_empty() {
+            write!(f, [space(), entries.format(), space()])?;
+        }
+        write!(f, [node.r_brack_token()?.format()])
     }
 }

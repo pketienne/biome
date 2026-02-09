@@ -1,15 +1,21 @@
 ---
 source: crates/biome_formatter_test/src/snapshot_builder.rs
-info: yaml/flow/sequence.yaml
+info: yaml/document/separated_by_doc_end.yaml
 ---
 
 # Input
 
 ```yaml
-simple: [1, 2, 3]
-strings: [hello, world]
-empty: []
-nested: [[1, 2], [3, 4]]
+first: 1
+...
+---
+second: 2
+...
+---
+third: 3
+...
+---
+fourth: 4
 
 ```
 
@@ -29,8 +35,14 @@ Quote style: Double Quotes
 -----
 
 ```yaml
-simple: [ 1, 2, 3 ]
-strings: [ hello, world ]
-empty: []
-nested: [ [ 1, 2 ], [ 3, 4 ] ]
+first: 1
+...
+---
+second: 2
+...
+---
+third: 3
+...
+---
+fourth: 4
 ```

@@ -7,13 +7,11 @@ pub(crate) struct FormatYamlFlowMapping;
 
 impl FormatNodeRule<YamlFlowMapping> for FormatYamlFlowMapping {
     fn fmt_fields(&self, node: &YamlFlowMapping, f: &mut YamlFormatter) -> FormatResult<()> {
-        write!(
-            f,
-            [
-                node.l_curly_token()?.format(),
-                node.entries().format(),
-                node.r_curly_token()?.format(),
-            ]
-        )
+        let entries = node.entries();
+        write!(f, [node.l_curly_token()?.format()])?;
+        if !entries.is_empty() {
+            write!(f, [space(), entries.format(), space()])?;
+        }
+        write!(f, [node.r_curly_token()?.format()])
     }
 }

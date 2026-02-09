@@ -1,0 +1,22 @@
+%YAML 1.2
+---
+# First document with directive
+first: document
+items:
+  - one
+  - two
+...
+---
+# Second document
+second: document
+nested:
+  key: value
+...
+---
+# Third document - bare content
+third: document
+list:
+  - a: 1
+    b: 2
+  - c: 3
+    d: 4

@@ -42,7 +42,7 @@ nested:
   level2:
     level3: deep
   sibling: here
-mixed_flow: {a: 1, b: [2, 3]}
+mixed_flow: { a: 1, b: [ 2, 3 ] }
 empty_value:
 list_of_maps:
   - name: first

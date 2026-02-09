@@ -1,0 +1,93 @@
+---
+source: crates/biome_yaml_parser/tests/spec_test.rs
+expression: snapshot
+---
+## Input
+```yaml
+%YAML 1.2
+---
+key: value
+
+```
+
+## AST
+
+```
+YamlRoot {
+    documents: YamlDocumentList [
+        YamlDocument {
+            bom_token: missing (optional),
+            directives: YamlDirectiveList [
+                YamlDirective {
+                    value_token: DIRECTIVE_LITERAL@0..9 "%YAML 1.2" [] [],
+                },
+            ],
+            dashdashdash_token: DIRECTIVE_END@9..13 "---" [Newline("\n")] [],
+            node: YamlBlockMapping {
+                properties: missing (optional),
+                mapping_start_token: MAPPING_START@13..14 "" [Newline("\n")] [],
+                entries: YamlBlockMapEntryList [
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@14..17 "key" [] [],
+                            },
+                        },
+                        colon_token: COLON@17..19 ":" [] [Whitespace(" ")],
+                        value: YamlFlowInBlockNode {
+                            properties: missing (optional),
+                            flow_start_token: FLOW_START@19..19 "" [] [],
+                            flow: YamlFlowYamlNode {
+                                properties: missing (optional),
+                                content: YamlPlainScalar {
+                                    value_token: PLAIN_LITERAL@19..24 "value" [] [],
+                                },
+                            },
+                            flow_end_token: FLOW_END@24..24 "" [] [],
+                        },
+                    },
+                ],
+                mapping_end_token: MAPPING_END@24..25 "" [Newline("\n")] [],
+            },
+            dotdotdot_token: missing (optional),
+        },
+    ],
+    eof_token: EOF@25..25 "" [] [],
+}
+```
+
+## CST
+
+```
+0: YAML_ROOT@0..25
+  0: YAML_DOCUMENT_LIST@0..25
+    0: YAML_DOCUMENT@0..25
+      0: (empty)
+      1: YAML_DIRECTIVE_LIST@0..9
+        0: YAML_DIRECTIVE@0..9
+          0: DIRECTIVE_LITERAL@0..9 "%YAML 1.2" [] []
+      2: DIRECTIVE_END@9..13 "---" [Newline("\n")] []
+      3: YAML_BLOCK_MAPPING@13..25
+        0: (empty)
+        1: MAPPING_START@13..14 "" [Newline("\n")] []
+        2: YAML_BLOCK_MAP_ENTRY_LIST@14..24
+          0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@14..24
+            0: YAML_FLOW_YAML_NODE@14..17
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@14..17
+                0: PLAIN_LITERAL@14..17 "key" [] []
+            1: COLON@17..19 ":" [] [Whitespace(" ")]
+            2: YAML_FLOW_IN_BLOCK_NODE@19..24
+              0: (empty)
+              1: FLOW_START@19..19 "" [] []
+              2: YAML_FLOW_YAML_NODE@19..24
+                0: (empty)
+                1: YAML_PLAIN_SCALAR@19..24
+                  0: PLAIN_LITERAL@19..24 "value" [] []
+              3: FLOW_END@24..24 "" [] []
+        3: MAPPING_END@24..25 "" [Newline("\n")] []
+      4: (empty)
+  1: EOF@25..25 "" [] []
+
+```

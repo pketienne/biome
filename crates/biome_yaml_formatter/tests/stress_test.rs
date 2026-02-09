@@ -133,3 +133,8 @@ fn stress_edge_cases() {
 fn stress_helm_values() {
     stress_test_file(&stress_path("helm_values.yaml"));
 }
+
+#[test]
+fn stress_multi_document() {
+    stress_test_file(&stress_path("multi_document.yaml"));
+}

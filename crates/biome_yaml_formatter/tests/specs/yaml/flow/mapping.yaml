@@ -1,2 +1,4 @@
 simple: {key: value}
 multi: {a: 1, b: 2, c: 3}
+empty: {}
+nested: {outer: {inner: value}}

@@ -1,9 +1,9 @@
 # YAML Implementation — Next Phase Status
 
 ## Completed (Previous Phases)
-- Parser (YAML 1.2.2 with anchors/tags/aliases, multiline plain scalars)
-- Formatter (58 per-node formatters, 22+ snapshot tests, all bugs fixed)
-- Linter (23 lint rules, all with docs and tests)
+- Parser (YAML 1.2.2 with anchors/tags/aliases, multiline plain scalars, directives)
+- Formatter (58 per-node formatters, 24 snapshot tests, 7 stress tests, all bugs fixed)
+- Linter (28 lint rules, all with docs and tests)
 - Lint rules registered in CLI config system
 - CLI integration tests (format, format --write, lint, check)
 - Lint rule AST refactor
@@ -24,6 +24,9 @@
 | 12 | Compact block sequence form (`- key: value` via `align(2)`) | COMPLETE |
 | 13 | `quote_style` formatter option (single/double with safe conversion) | COMPLETE |
 | 14 | JSON Schema validation (lint rule + jsonschema crate) | PENDING (future phase) |
+| 15 | Additional formatter polish (flow collection spacing, test expansion) | COMPLETE |
+| 16 | Lint rule expansion (5 new rules: noEmptyKeys, noEmptySequenceEntries, useConsistentIndentation, noAnchorReferences, useQuotedStrings) | COMPLETE |
+| 17 | Multi-document support hardening (directive lexing, edge case tests) | COMPLETE |
 
 ## Remaining Deferred Items
 - JSON Schema validation (Plan 14) — requires new `jsonschema` crate dependency, YAML-to-JSON converter, error range mapping; estimated 8-15 days
