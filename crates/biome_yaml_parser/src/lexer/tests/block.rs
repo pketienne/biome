@@ -1,4 +1,5 @@
 use crate::assert_lex;
+use biome_parser::lexer::Lexer;
 
 #[test]
 fn lex_simple_mapping_key() {
@@ -591,5 +592,83 @@ fn lex_block_scalar_mixed_indentation() {
  line2",
         PIPE:1,
         BLOCK_CONTENT_LITERAL:28,
+    );
+}
+
+#[test]
+fn lex_tab_in_indentation_emits_diagnostic() {
+    let src = "key:\n\tvalue";
+    let mut lexer = crate::lexer::YamlLexer::from_str(src);
+    while lexer.next_token(()) != biome_yaml_syntax::YamlSyntaxKind::EOF {}
+    let diagnostics = lexer.finish();
+    assert!(
+        diagnostics
+            .iter()
+            .any(|d| format!("{d:?}").contains("Tabs are not allowed")),
+        "Expected tab indentation diagnostic, got: {diagnostics:?}"
+    );
+}
+
+#[test]
+fn lex_tab_after_content_no_diagnostic() {
+    // Tabs after content (inline separation) are allowed in YAML
+    let src = "key:\tvalue";
+    let mut lexer = crate::lexer::YamlLexer::from_str(src);
+    while lexer.next_token(()) != biome_yaml_syntax::YamlSyntaxKind::EOF {}
+    let diagnostics = lexer.finish();
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|d| format!("{d:?}").contains("Tabs are not allowed")),
+        "Did not expect tab indentation diagnostic for inline tab, got: {diagnostics:?}"
+    );
+}
+
+#[test]
+fn lex_mixed_space_tab_indentation_emits_diagnostic() {
+    // Spaces followed by tab in indentation
+    let src = "key:\n  \tvalue";
+    let mut lexer = crate::lexer::YamlLexer::from_str(src);
+    while lexer.next_token(()) != biome_yaml_syntax::YamlSyntaxKind::EOF {}
+    let diagnostics = lexer.finish();
+    assert!(
+        diagnostics
+            .iter()
+            .any(|d| format!("{d:?}").contains("Tabs are not allowed")),
+        "Expected tab indentation diagnostic for mixed space+tab, got: {diagnostics:?}"
+    );
+}
+
+#[test]
+fn lex_tab_in_indentation_tokens_still_lossless() {
+    // Ensure tab indentation still produces correct tokens (lossless)
+    assert_lex!(
+        "key:\n\tvalue",
+        MAPPING_START:0,
+        PLAIN_LITERAL:3,
+        COLON:1,
+        NEWLINE:1,
+        WHITESPACE:1,
+        FLOW_START:0,
+        PLAIN_LITERAL:5,
+        FLOW_END:0,
+        MAPPING_END:0,
+    );
+}
+
+#[test]
+fn lex_multiple_tabs_in_indentation_single_diagnostic() {
+    let src = "key:\n\t\t\tvalue";
+    let mut lexer = crate::lexer::YamlLexer::from_str(src);
+    while lexer.next_token(()) != biome_yaml_syntax::YamlSyntaxKind::EOF {}
+    let diagnostics = lexer.finish();
+    let tab_diagnostics: Vec<_> = diagnostics
+        .iter()
+        .filter(|d| format!("{d:?}").contains("Tabs are not allowed"))
+        .collect();
+    assert_eq!(
+        tab_diagnostics.len(),
+        1,
+        "Expected exactly one diagnostic for consecutive tabs, got: {tab_diagnostics:?}"
     );
 }

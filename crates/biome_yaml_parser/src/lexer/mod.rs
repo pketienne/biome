@@ -84,7 +84,7 @@ impl<'src> YamlLexer<'src> {
                 let mut tokens = Vec::with_capacity(4);
                 tokens.push(LexToken::pseudo(FLOW_START, start));
                 tokens.push(alias);
-                tokens.extend(self.consume_trivia(true));
+                tokens.extend(self.consume_trivia(true, false));
                 tokens.push(LexToken::pseudo(FLOW_END, self.current_coordinate));
                 tokens
             }
@@ -162,7 +162,7 @@ impl<'src> YamlLexer<'src> {
                 tokens.insert(0, LexToken::pseudo(FLOW_START, start));
                 // Consume any trailing trivia remaining before closing the flow, as we must not
                 // have trailing trivia followed FLOW_END token
-                tokens.extend(self.consume_trivia(true));
+                tokens.extend(self.consume_trivia(true, false));
                 tokens.push(LexToken::pseudo(FLOW_END, self.current_coordinate));
             }
         } else if self.is_at_mapping_indicator() {
@@ -343,7 +343,7 @@ impl<'src> YamlLexer<'src> {
     fn evaluate_block_scope(&mut self) -> Vec<LexToken> {
         debug_assert!(self.current_byte().is_some_and(is_break));
         let start = self.current_coordinate;
-        let trivia = self.consume_trivia(false);
+        let trivia = self.consume_trivia(false, true);
         let mut scope_end_tokens = self.close_breached_scopes(start);
         scope_end_tokens.extend(trivia);
         scope_end_tokens
@@ -414,7 +414,7 @@ impl<'src> YamlLexer<'src> {
         while let Some(current) = self.current_byte() {
             if is_break(current) {
                 let start = self.current_coordinate;
-                let trivia = self.consume_trivia(false);
+                let trivia = self.consume_trivia(false, false);
                 if self.breach_parent_scope() {
                     // The lexed trivia is actually significant and signals the end of current
                     // block scope
@@ -752,18 +752,28 @@ impl<'src> YamlLexer<'src> {
         LexToken::new(tok, start, self.current_coordinate)
     }
 
-    fn consume_trivia(&mut self, trailing: bool) -> Vec<LexToken> {
+    fn consume_trivia(&mut self, trailing: bool, check_tab_indent: bool) -> Vec<LexToken> {
         let mut trivia = Vec::new();
+        let mut at_line_start = false;
         while let Some(current) = self.current_byte() {
             if is_space(current) {
-                trivia.push(self.consume_whitespace_token());
+                if at_line_start && check_tab_indent {
+                    let start = self.current_coordinate;
+                    self.consume_indentation_whitespace();
+                    trivia.push(LexToken::new(WHITESPACE, start, self.current_coordinate));
+                } else {
+                    trivia.push(self.consume_whitespace_token());
+                }
+                at_line_start = false;
             } else if is_break(current) {
                 if trailing {
                     break;
                 }
                 trivia.push(self.consume_newline_token());
+                at_line_start = true;
             } else if current == b'#' {
                 trivia.push(self.consume_comment());
+                at_line_start = false;
             } else {
                 break;
             }
@@ -796,6 +806,32 @@ impl<'src> YamlLexer<'src> {
         let start = self.current_coordinate;
         self.consume_whitespaces();
         LexToken::new(WHITESPACE, start, self.current_coordinate)
+    }
+
+    /// Consumes whitespace at the start of a line, emitting diagnostics for tabs.
+    /// YAML 1.2.2 §6.1: "tab characters must not be used in indentation"
+    fn consume_indentation_whitespace(&mut self) {
+        while let Some(c) = self.current_byte() {
+            if c == b'\t' {
+                let start = self.text_position();
+                while self.current_byte() == Some(b'\t') {
+                    self.advance(1);
+                }
+                let err = ParseDiagnostic::new(
+                    "Tabs are not allowed in YAML indentation",
+                    start..self.text_position(),
+                )
+                .with_hint(
+                    "YAML 1.2.2 forbids tab characters in indentation. Use spaces instead. \
+                     See https://yaml.org/spec/1.2.2/#61-indentation-spaces",
+                );
+                self.diagnostics.push(err);
+            } else if c == b' ' {
+                self.advance(1);
+            } else {
+                break;
+            }
+        }
     }
 
     fn consume_newline_token(&mut self) -> LexToken {
@@ -868,7 +904,7 @@ impl<'src> YamlLexer<'src> {
     fn consume_trailing_trivia(&mut self) -> Vec<LexToken> {
         self.assert_current_char_boundary();
 
-        let mut tokens = self.consume_trivia(true);
+        let mut tokens = self.consume_trivia(true, false);
 
         if self.current_byte().is_none_or(is_break) {
             return tokens;

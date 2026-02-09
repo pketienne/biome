@@ -1,4 +1,5 @@
 use crate::assert_lex;
+use biome_parser::lexer::Lexer;
 
 #[test]
 fn lex_double_quoted_literal() {
@@ -694,5 +695,21 @@ fn lex_reserved_indicator_in_flow_collection() {
         PLAIN_LITERAL:1,
         R_BRACK:1,
         FLOW_END:0,
+    );
+}
+
+#[test]
+fn lex_tab_in_flow_collection_no_indentation_diagnostic() {
+    // Tabs inside flow collections (after newline) should not trigger indentation diagnostic
+    // because flow collections don't use indentation for structure
+    let src = "[\n\ta,\n\tb]";
+    let mut lexer = crate::lexer::YamlLexer::from_str(src);
+    while lexer.next_token(()) != biome_yaml_syntax::YamlSyntaxKind::EOF {}
+    let diagnostics = lexer.finish();
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|d| format!("{d:?}").contains("Tabs are not allowed")),
+        "Did not expect tab indentation diagnostic in flow context, got: {diagnostics:?}"
     );
 }
