@@ -1,6 +1,6 @@
 # Full Test Suite Validation
 
-**Status:** Planned
+**Status:** Completed
 **Created:** 2026-02-09
 **Effort:** Low
 **Impact:** Confidence that all 100 rules + formatter work correctly
@@ -76,10 +76,34 @@ Some paragraph text.
 
 Record pass/fail counts, any failures found, and whether they need fixing.
 
+## Results (2026-02-09)
+
+### Parser tests
+- **8 passed, 0 failed** (7 lexer unit tests + 1 spec test, 1 ignored quick_test)
+- Note: 1 snapshot in legacy format (cosmetic only)
+
+### Formatter tests
+- **16 passed, 0 failed** (11 inline + 5 spec)
+- 9 compiler warnings (tracked in plan #01)
+
+### Analyzer tests
+- **281 passed, 0 failed** (81 unit + 200 spec, 2 ignored)
+- All 100 rules' valid + invalid fixtures pass
+
+### Binary build
+- Builds successfully
+- 9 warnings from `biome_markdown_formatter` (tracked in plan #01)
+
+### Smoke test (CLI)
+- `biome lint test.md` — works, detects `useConsistentHorizontalRuleStyle` with code fix
+- `biome format test.md` — works, detects thematic break normalization (`***` → `---`)
+- `biome check test.md` — works, reports both lint and format findings
+- Note: requires a `biome.json` in the project directory (markdown files outside a project are ignored)
+
 ## Success Criteria
 
-- All analyzer tests pass
-- All formatter tests pass
-- All parser tests pass
-- Full binary builds
-- `biome check` runs without crashes on sample markdown
+- [x] All analyzer tests pass
+- [x] All formatter tests pass
+- [x] All parser tests pass
+- [x] Full binary builds
+- [x] `biome check` runs without crashes on sample markdown
