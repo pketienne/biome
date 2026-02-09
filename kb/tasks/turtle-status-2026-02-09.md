@@ -1,19 +1,23 @@
 # Turtle Language Support — Status Report
 
 ## Date: 2026-02-09
-## Branch: `turtle` (9 commits ahead of `main`)
+## Branch: `turtle` (13 commits ahead of `main`)
 
 ---
 
 ## Executive Summary
 
-Full W3C Turtle 1.1 language support has been implemented in a Biome fork across 10+ crates. The implementation includes a complete parser with error recovery, a formatter with 8 configurable options and 30 node formatters, 14 nursery lint rules (6 with auto-fix), 4 assist actions, and full service integration for LSP capabilities. All 62+ tests pass.
+Full W3C Turtle 1.1 language support has been implemented in a Biome fork across 10+ crates. The implementation includes a complete parser with error recovery, a formatter with 8 configurable options and 30 node formatters, 14 nursery lint rules (6 with auto-fix, 1 with `ignoredPrefixes` option), 8 assist actions, and full service integration for LSP capabilities. All 72+ tests pass.
 
 ---
 
 ## Commit History
 
 ```
+d11f33ce58 feat(turtle): implement remaining P3 items — ignoredPrefixes option and 4 assist actions
+e35b5e643c docs: add implementation plan for remaining feasible P3 items
+2a019b8d36 docs: add gap analysis review with coverage summary
+b62d4b4a13 docs: add comprehensive Turtle implementation status report
 cd1f87a7e0 feat(turtle): add literal short notation, 3 assist actions, and doc polish
 777af6c8e0 feat(turtle): add directiveStyle option, escape normalization, assist actions, and suppression tests
 2cc58dc01c docs: update remaining work task file with completed items
@@ -100,26 +104,40 @@ a_keyword, blank_node, blank_node_property_list, boolean_literal, collection, fu
 
 ### Nursery Lint Rules (14)
 
-| # | Rule | Severity | Rec. | Fix | Description |
-|---|------|----------|------|-----|-------------|
-| 1 | `noUndefinedPrefix` | Error | Yes | — | Disallow undeclared prefix usage |
-| 2 | `noInvalidIri` | Error | Yes | — | Disallow invalid IRI characters |
-| 3 | `noInvalidLanguageTag` | Warning | Yes | — | Validate BCP47 language tags |
-| 4 | `noDuplicateTriple` | Warning | Yes | — | Detect duplicate triples |
-| 5 | `noDuplicatePrefixDeclaration` | Error | Yes | Safe | Remove duplicate prefix declarations |
-| 6 | `noUnusedPrefix` | Warning | Yes | Safe | Remove unused prefix declarations |
-| 7 | `noLiteralTrimIssues` | Warning | No | Unsafe | Trim whitespace from string literals |
-| 8 | `noMalformedDatatype` | Error | Yes | — | Validate XSD datatype literal values |
-| 9 | `useShorthandRdfType` | Info | Yes | Safe | Replace `rdf:type` with `a` |
-| 10 | `useConsistentQuotes` | Info | No | Safe | Enforce double/single quote consistency |
-| 11 | `useConsistentDirectiveStyle` | Warning | Yes | Safe | Enforce `@prefix`/`PREFIX` consistency |
-| 12 | `useSortedPrefixes` | Info | No | — | Enforce alphabetical prefix order |
-| 13 | `useGroupedSubjects` | Info | No | — | Suggest grouping same-subject triples |
-| 14 | `usePrefixedNames` | Info | No | — | Suggest prefixed names over full IRIs |
+| # | Rule | Severity | Rec. | Fix | Options | Description |
+|---|------|----------|------|-----|---------|-------------|
+| 1 | `noUndefinedPrefix` | Error | Yes | — | — | Disallow undeclared prefix usage |
+| 2 | `noInvalidIri` | Error | Yes | — | — | Disallow invalid IRI characters |
+| 3 | `noInvalidLanguageTag` | Warning | Yes | — | — | Validate BCP47 language tags |
+| 4 | `noDuplicateTriple` | Warning | Yes | — | — | Detect duplicate triples |
+| 5 | `noDuplicatePrefixDeclaration` | Error | Yes | Safe | — | Remove duplicate prefix declarations |
+| 6 | `noUnusedPrefix` | Warning | Yes | Safe | `ignoredPrefixes` | Remove unused prefix declarations |
+| 7 | `noLiteralTrimIssues` | Warning | No | Unsafe | — | Trim whitespace from string literals |
+| 8 | `noMalformedDatatype` | Error | Yes | — | — | Validate XSD datatype literal values |
+| 9 | `useShorthandRdfType` | Info | Yes | Safe | — | Replace `rdf:type` with `a` |
+| 10 | `useConsistentQuotes` | Info | No | Safe | — | Enforce double/single quote consistency |
+| 11 | `useConsistentDirectiveStyle` | Warning | Yes | Safe | — | Enforce `@prefix`/`PREFIX` consistency |
+| 12 | `useSortedPrefixes` | Info | No | — | — | Enforce alphabetical prefix order |
+| 13 | `useGroupedSubjects` | Info | No | — | — | Suggest grouping same-subject triples |
+| 14 | `usePrefixedNames` | Info | No | — | — | Suggest prefixed names over full IRIs |
 
 **Summary**: 9 recommended, 6 with auto-fix (5 Safe, 1 Unsafe), 4 Error / 4 Warning / 6 Info severity
 
-### Assist Actions (4)
+#### Rule Options
+
+**`noUnusedPrefix`** — `ignoredPrefixes` option:
+```jsonc
+{
+  "linter": { "rules": { "nursery": {
+    "noUnusedPrefix": {
+      "level": "warn",
+      "options": { "ignoredPrefixes": ["owl:", "skos:"] }
+    }
+  }}}
+}
+```
+
+### Assist Actions (8)
 
 | Assist | Category | Fix | Description |
 |--------|----------|-----|-------------|
@@ -127,6 +145,10 @@ a_keyword, blank_node, blank_node_property_list, boolean_literal, collection, fu
 | `removeUnusedPrefixes` | source | Safe | Bulk-remove all unused prefix declarations |
 | `convertIriToPrefixedName` | source | Safe | Convert full IRIs to prefixed names |
 | `convertRdfTypeToShorthand` | source | Safe | Replace all `rdf:type` with `a` keyword |
+| `sortPredicates` | source | Safe | Sort predicate-object pairs alphabetically within subject blocks |
+| `sortTriples` | source | Safe | Sort triple statement blocks by subject text |
+| `expandTriples` | source | Safe | Expand compound triples into one-triple-per-line form (diff-optimized) |
+| `mergeTriples` | source | Safe | Merge triples sharing subject/predicate into `;`/`,` form |
 
 ---
 
@@ -202,27 +224,39 @@ a_keyword, blank_node, blank_node_property_list, boolean_literal, collection, fu
 | Category | Count | Location |
 |----------|-------|----------|
 | Lint rule specs (valid + invalid) | 14 rules x 2 | `tests/specs/nursery/` |
-| Assist specs (valid + invalid) | 4 assists x 2 | `tests/specs/source/` |
+| Assist specs (valid + invalid) | 8 assists x 2 | `tests/specs/source/` |
 | Suppression tests | 8 rules | `tests/suppression/nursery/` |
 | Formatter specs | 15 fixtures | `tests/specs/turtle/` |
 | Unit tests (analyzer) | 3 | `biome_turtle_analyze/src/lib.rs` |
-| **Total passing** | **62+** | All crates |
+| **Total passing** | **72+** | All crates |
 
 All tests verified passing:
-- `cargo test -p biome_turtle_analyze` — 44 passed
+- `cargo test -p biome_turtle_analyze` — 52 passed
 - `cargo test -p biome_turtle_formatter` — 15 passed
 - All snapshots accepted
 
 ---
 
-## Remaining / Deferred Items
+## Gap Coverage Summary
+
+**37/41 items implemented (90%)** — all P0, P1, P2 complete, 5/9 P3 complete.
+
+| Priority | Total | Done | Remaining |
+|----------|-------|------|-----------|
+| P0 (Critical) | 7 | 7 | 0 |
+| P1 (Important) | 9 | 9 | 0 |
+| P2 (Moderate) | 11 | 11 | 0 |
+| P3 (Nice-to-have) | 14 | 10 | 4 |
+| **Total** | **41** | **37** | **4** |
+
+### Remaining / Deferred Items (4)
 
 | Item | Status | Reason |
 |------|--------|--------|
-| `alignPredicates` option | Deferred | Not feasible — Biome's single-pass IR formatter has no sibling width measurement |
-| `prefixOrder` / `predicateOrder` options | Deferred | Low priority — requires string array serialization in config schema |
-| Semantic model | Not started | Would enable: rename, go-to-definition, cross-file analysis |
-| Website documentation | Not started | Requires PR against biomejs/website `next` branch |
+| `alignPredicates` option | Infeasible | Biome's single-pass IR formatter has no sibling width measurement |
+| `alignObjects` option | Infeasible | Same alignment limitation as `alignPredicates` |
+| `alignComments` option | Infeasible | Same alignment limitation |
+| `noUndefinedSubjectReference` rule | Skipped | High false-positive risk without full semantic model |
 
 ---
 
@@ -231,7 +265,7 @@ All tests verified passing:
 ```
 biome_turtle_syntax ─┬─► biome_turtle_parser
                      ├─► biome_turtle_formatter ─► biome_turtle_factory
-                     └─► biome_turtle_analyze
+                     └─► biome_turtle_analyze ──► biome_turtle_parser (for re-parsing in assists)
                                 ↓
                          biome_service (file_handlers/turtle.rs)
                                 ↓
@@ -247,3 +281,5 @@ biome_turtle_syntax ─┬─► biome_turtle_parser
 3. **String normalization**: Quote style, unicode escapes, and triple-quote demotion all handled in `FormatTurtleString` with safety checks to prevent escaping issues
 4. **Assist vs lint pattern**: Assists use `declare_source_rule!` and query `Ast<TurtleRoot>` for document-wide bulk transformations; lint rules use `declare_lint_rule!` and query individual nodes
 5. **`alignPredicates` infeasibility**: Biome's formatter is single-pass IR-based; `align()` only supports fixed-width alignment, not dynamic vertical alignment across siblings
+6. **Re-parsing in assists**: `expandTriples` and `mergeTriples` build replacement text and re-parse with `biome_turtle_parser::parse_turtle()` because Biome's mutation API only supports 1:1 node replacement, not inserting/removing sibling nodes
+7. **Rule options**: `noUnusedPrefix` uses `NoUnusedPrefixOptions` from `biome_rule_options` crate with `Option<Box<[Box<str>]>>` for the `ignoredPrefixes` array, following the established `NoLabelWithoutControlOptions` pattern
