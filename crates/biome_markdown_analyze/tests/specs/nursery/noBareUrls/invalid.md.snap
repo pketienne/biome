@@ -1,0 +1,51 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Bare URLs
+
+Visit https://example.com for details.
+
+Also check http://test.org here.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:7 lint/nursery/noBareUrls ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Bare URL found. Wrap it in angle brackets or use link syntax.
+  
+    1 │ # Bare URLs
+    2 │ 
+  > 3 │ Visit https://example.com for details.
+      │       ^^^^^^^^^^^^^^^^^^^
+    4 │ 
+    5 │ Also check http://test.org here.
+  
+  i Use <url> or [text](url) instead of a bare URL.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:5:12 lint/nursery/noBareUrls ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Bare URL found. Wrap it in angle brackets or use link syntax.
+  
+    3 │ Visit https://example.com for details.
+    4 │ 
+  > 5 │ Also check http://test.org here.
+      │            ^^^^^^^^^^^^^^^
+    6 │ 
+  
+  i Use <url> or [text](url) instead of a bare URL.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

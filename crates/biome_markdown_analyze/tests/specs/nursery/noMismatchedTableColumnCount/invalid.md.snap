@@ -1,0 +1,14 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Mismatched columns
+
+| A | B | C |
+| --- | --- | --- |
+| 1 | 2 |
+| 4 | 5 | 6 | 7 |
+
+```

@@ -1,0 +1,29 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+Some text before any heading.
+
+# Title
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/nursery/useFirstLineHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! First content should be a heading.
+  
+  > 1 │ Some text before any heading.
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    2 │ 
+    3 │ # Title
+  
+  i Add a level 1 heading as the first content.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

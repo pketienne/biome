@@ -60,9 +60,6 @@ pub(crate) trait FormatAstSeparatedListExtension:
     }
 }
 
-impl<T> FormatAstSeparatedListExtension for T where
-    T: AstSeparatedList<Language = MarkdownLanguage>
-{
-}
+impl<T> FormatAstSeparatedListExtension for T where T: AstSeparatedList<Language = MarkdownLanguage> {}
 
 use crate::trivia::{on_removed, on_skipped};

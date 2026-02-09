@@ -1,0 +1,68 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Heading
+Some text without blank line.
+## Another heading
+More text.
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/nursery/useBlanksAroundHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line after heading.
+  
+  > 1 │ # Heading
+      │ ^^^^^^^^^
+    2 │ Some text without blank line.
+    3 │ ## Another heading
+  
+  i Add a blank line around headings for readability.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:3:1 lint/nursery/useBlanksAroundHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line before heading.
+  
+    1 │ # Heading
+    2 │ Some text without blank line.
+  > 3 │ ## Another heading
+      │ ^^^^^^^^^^^^^^^^^^
+    4 │ More text.
+    5 │ 
+  
+  i Add a blank line around headings for readability.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:3:1 lint/nursery/useBlanksAroundHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line after heading.
+  
+    1 │ # Heading
+    2 │ Some text without blank line.
+  > 3 │ ## Another heading
+      │ ^^^^^^^^^^^^^^^^^^
+    4 │ More text.
+    5 │ 
+  
+  i Add a blank line around headings for readability.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

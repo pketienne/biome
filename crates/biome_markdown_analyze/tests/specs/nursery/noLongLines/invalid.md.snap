@@ -1,0 +1,30 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Heading
+
+This is a very long line that exceeds the default maximum line length of eighty characters set by this lint rule.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/nursery/noLongLines ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Line length 113 exceeds maximum 80.
+  
+    1 │ # Heading
+    2 │ 
+  > 3 │ This is a very long line that exceeds the default maximum line length of eighty characters set by this lint rule.
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Keep lines within 80 characters.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

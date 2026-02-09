@@ -1,0 +1,13 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Misaligned pipes
+
+| A | BB | CCC |
+| --- | --- | --- |
+| long value | b | c |
+
+```

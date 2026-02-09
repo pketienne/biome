@@ -1,0 +1,51 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Shortcut Links
+
+See [shortcut] for details.
+
+[shortcut]: https://example.com
+
+```
+
+# Diagnostics
+```
+invalid.md:3:5 lint/nursery/noShortcutReferenceLink ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Shortcut reference links should use collapsed or full form.
+  
+    1 │ # Shortcut Links
+    2 │ 
+  > 3 │ See [shortcut] for details.
+      │     ^^^^^^^^^^
+    4 │ 
+    5 │ [shortcut]: https://example.com
+  
+  i Use [text][] or [text][label] instead.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:5:1 lint/nursery/noShortcutReferenceLink ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Shortcut reference links should use collapsed or full form.
+  
+    3 │ See [shortcut] for details.
+    4 │ 
+  > 5 │ [shortcut]: https://example.com
+      │ ^^^^^^^^^^
+    6 │ 
+  
+  i Use [text][] or [text][label] instead.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

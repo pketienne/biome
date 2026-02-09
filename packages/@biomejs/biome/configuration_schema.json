@@ -55,6 +55,10 @@
 			"description": "The configuration for the linter",
 			"anyOf": [{ "$ref": "#/$defs/LinterConfiguration" }, { "type": "null" }]
 		},
+		"markdown": {
+			"description": "Specific configuration for the Markdown language",
+			"anyOf": [{ "$ref": "#/$defs/MarkdownConfiguration" }, { "type": "null" }]
+		},
 		"overrides": {
 			"description": "A list of granular patterns that should be applied only to a sub set of files",
 			"anyOf": [{ "$ref": "#/$defs/Overrides" }, { "type": "null" }]
@@ -2448,6 +2452,67 @@
 			},
 			"additionalProperties": false
 		},
+		"MarkdownAssistConfiguration": {
+			"description": "Options that changes how the Markdown assist behaves",
+			"type": "object",
+			"properties": {
+				"enabled": {
+					"description": "Control the assist for Markdown files.",
+					"anyOf": [{ "$ref": "#/$defs/Bool" }, { "type": "null" }]
+				}
+			},
+			"additionalProperties": false
+		},
+		"MarkdownConfiguration": {
+			"description": "Options applied to Markdown files",
+			"type": "object",
+			"properties": {
+				"assist": {
+					"description": "Markdown assist options",
+					"anyOf": [
+						{ "$ref": "#/$defs/MarkdownAssistConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"formatter": {
+					"description": "Markdown formatter options",
+					"anyOf": [
+						{ "$ref": "#/$defs/MarkdownFormatterConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"linter": {
+					"description": "Markdown linter options",
+					"anyOf": [
+						{ "$ref": "#/$defs/MarkdownLinterConfiguration" },
+						{ "type": "null" }
+					]
+				}
+			},
+			"additionalProperties": false
+		},
+		"MarkdownFormatterConfiguration": {
+			"description": "Options that changes how the Markdown formatter behaves",
+			"type": "object",
+			"properties": {
+				"enabled": {
+					"description": "Control the formatter for Markdown files.",
+					"anyOf": [{ "$ref": "#/$defs/Bool" }, { "type": "null" }]
+				}
+			},
+			"additionalProperties": false
+		},
+		"MarkdownLinterConfiguration": {
+			"description": "Options that changes how the Markdown linter behaves",
+			"type": "object",
+			"properties": {
+				"enabled": {
+					"description": "Control the linter for Markdown files.",
+					"anyOf": [{ "$ref": "#/$defs/Bool" }, { "type": "null" }]
+				}
+			},
+			"additionalProperties": false
+		},
 		"MaxSize": { "type": "integer", "format": "uint64", "minimum": 1 },
 		"MethodSignatureStyle": {
 			"oneOf": [
@@ -2630,6 +2695,13 @@
 			]
 		},
 		"NoBannedTypesOptions": { "type": "object", "additionalProperties": false },
+		"NoBareUrlsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoBareUrlsOptions" }
+			]
+		},
+		"NoBareUrlsOptions": { "type": "object", "additionalProperties": false },
 		"NoBarrelFileConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -2697,6 +2769,16 @@
 			},
 			"additionalProperties": false
 		},
+		"NoBlockquoteBrokenContinuationConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoBlockquoteBrokenContinuationOptions" }
+			]
+		},
+		"NoBlockquoteBrokenContinuationOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoCatchAssignConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -2704,6 +2786,32 @@
 			]
 		},
 		"NoCatchAssignOptions": { "type": "object", "additionalProperties": false },
+		"NoCheckboxCharacterStyleMismatchConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoCheckboxCharacterStyleMismatchOptions" }
+			]
+		},
+		"NoCheckboxCharacterStyleMismatchOptions": {
+			"type": "object",
+			"properties": {
+				"checked": {
+					"description": "The style to use for checked checkbox characters (default: \"lowercase\"). Allowed values: \"lowercase\", \"uppercase\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"NoCheckboxContentIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoCheckboxContentIndentOptions" }
+			]
+		},
+		"NoCheckboxContentIndentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoChildrenPropConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -2780,6 +2888,24 @@
 		},
 		"NoConfusingVoidTypeOptions": {
 			"type": "object",
+			"additionalProperties": false
+		},
+		"NoConsecutiveBlankLinesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoConsecutiveBlankLinesOptions" }
+			]
+		},
+		"NoConsecutiveBlankLinesOptions": {
+			"type": "object",
+			"properties": {
+				"maxConsecutive": {
+					"description": "Maximum number of consecutive blank lines allowed (default: 1).",
+					"type": ["integer", "null"],
+					"format": "uint32",
+					"minimum": 0
+				}
+			},
 			"additionalProperties": false
 		},
 		"NoConsoleConfiguration": {
@@ -2906,6 +3032,16 @@
 			]
 		},
 		"NoDefaultExportOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoDefinitionSpacingIssuesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoDefinitionSpacingIssuesOptions" }
+			]
+		},
+		"NoDefinitionSpacingIssuesOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -3076,6 +3212,26 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoDuplicateDefinedUrlsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoDuplicateDefinedUrlsOptions" }
+			]
+		},
+		"NoDuplicateDefinedUrlsOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoDuplicateDefinitionsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoDuplicateDefinitionsOptions" }
+			]
+		},
+		"NoDuplicateDefinitionsOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoDuplicateDependenciesConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3153,6 +3309,26 @@
 			]
 		},
 		"NoDuplicateGraphqlOperationNameOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoDuplicateHeadingsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoDuplicateHeadingsOptions" }
+			]
+		},
+		"NoDuplicateHeadingsInSectionConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoDuplicateHeadingsInSectionOptions" }
+			]
+		},
+		"NoDuplicateHeadingsInSectionOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoDuplicateHeadingsOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -3256,6 +3432,16 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoEmphasisAsHeadingConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoEmphasisAsHeadingOptions" }
+			]
+		},
+		"NoEmphasisAsHeadingOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoEmptyBlockConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3293,6 +3479,13 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoEmptyLinksConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoEmptyLinksOptions" }
+			]
+		},
+		"NoEmptyLinksOptions": { "type": "object", "additionalProperties": false },
 		"NoEmptyPatternConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3639,6 +3832,22 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoHardTabsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoHardTabsOptions" }
+			]
+		},
+		"NoHardTabsOptions": {
+			"type": "object",
+			"properties": {
+				"allowInCodeBlocks": {
+					"description": "Whether to allow hard tabs inside fenced code blocks (default: false).",
+					"type": ["boolean", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
 		"NoHeadElementConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3663,6 +3872,42 @@
 			]
 		},
 		"NoHeaderScopeOptions": { "type": "object", "additionalProperties": false },
+		"NoHeadingContentIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoHeadingContentIndentOptions" }
+			]
+		},
+		"NoHeadingContentIndentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoHeadingIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoHeadingIndentOptions" }
+			]
+		},
+		"NoHeadingIndentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoHeadingTrailingPunctuationConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoHeadingTrailingPunctuationOptions" }
+			]
+		},
+		"NoHeadingTrailingPunctuationOptions": {
+			"type": "object",
+			"properties": {
+				"punctuation": {
+					"description": "Characters considered trailing punctuation (default: `\".,;:!?\"`).",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
 		"NoHexColorsConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3670,6 +3915,16 @@
 			]
 		},
 		"NoHexColorsOptions": { "type": "object", "additionalProperties": false },
+		"NoHiddenTableCellConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoHiddenTableCellOptions" }
+			]
+		},
+		"NoHiddenTableCellOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoImgElementConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3779,6 +4034,23 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoInlineHtmlConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoInlineHtmlOptions" }
+			]
+		},
+		"NoInlineHtmlOptions": {
+			"type": "object",
+			"properties": {
+				"allowedElements": {
+					"description": "List of HTML elements that are allowed in markdown (default: empty).",
+					"type": ["array", "null"],
+					"items": { "type": "string" }
+				}
+			},
+			"additionalProperties": false
+		},
 		"NoInnerDeclarationsConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3838,6 +4110,16 @@
 			]
 		},
 		"NoInvalidGridAreasOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoInvalidLinkFragmentsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoInvalidLinkFragmentsOptions" }
+			]
+		},
+		"NoInvalidLinkFragmentsOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -3947,6 +4229,60 @@
 			]
 		},
 		"NoLeakedRenderOptions": { "type": "object" },
+		"NoListItemBulletIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoListItemBulletIndentOptions" }
+			]
+		},
+		"NoListItemBulletIndentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoLongHeadingsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoLongHeadingsOptions" }
+			]
+		},
+		"NoLongHeadingsOptions": {
+			"type": "object",
+			"properties": {
+				"maxLength": {
+					"description": "The maximum allowed length for headings (default: 60).",
+					"type": ["integer", "null"],
+					"format": "uint32",
+					"minimum": 0
+				}
+			},
+			"additionalProperties": false
+		},
+		"NoLongLinesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoLongLinesOptions" }
+			]
+		},
+		"NoLongLinesOptions": {
+			"type": "object",
+			"properties": {
+				"allowInCodeBlocks": {
+					"description": "Whether to allow long lines inside fenced code blocks (default: true).",
+					"type": ["boolean", "null"]
+				},
+				"allowUrls": {
+					"description": "Whether to allow long lines that contain URLs (default: true).",
+					"type": ["boolean", "null"]
+				},
+				"maxLength": {
+					"description": "Maximum line length (default: 80).",
+					"type": ["integer", "null"],
+					"format": "uint32",
+					"minimum": 0
+				}
+			},
+			"additionalProperties": false
+		},
 		"NoMagicNumbersConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3977,6 +4313,16 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoMismatchedTableColumnCountConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMismatchedTableColumnCountOptions" }
+			]
+		},
+		"NoMismatchedTableColumnCountOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoMisplacedAssertionConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3994,6 +4340,46 @@
 			]
 		},
 		"NoMisrefactoredShorthandAssignOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoMissingAltTextConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMissingAltTextOptions" }
+			]
+		},
+		"NoMissingAltTextOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoMissingLanguageConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMissingLanguageOptions" }
+			]
+		},
+		"NoMissingLanguageOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoMissingSpaceAtxHeadingConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMissingSpaceAtxHeadingOptions" }
+			]
+		},
+		"NoMissingSpaceAtxHeadingOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoMissingSpaceClosedAtxHeadingConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMissingSpaceClosedAtxHeadingOptions" }
+			]
+		},
+		"NoMissingSpaceClosedAtxHeadingOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -4031,6 +4417,36 @@
 			]
 		},
 		"NoMultiStrOptions": { "type": "object", "additionalProperties": false },
+		"NoMultipleSpaceAtxHeadingConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMultipleSpaceAtxHeadingOptions" }
+			]
+		},
+		"NoMultipleSpaceAtxHeadingOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoMultipleSpaceClosedAtxHeadingConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMultipleSpaceClosedAtxHeadingOptions" }
+			]
+		},
+		"NoMultipleSpaceClosedAtxHeadingOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoMultipleTopLevelHeadingsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMultipleTopLevelHeadingsOptions" }
+			]
+		},
+		"NoMultipleTopLevelHeadingsOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoNamespaceConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -4167,6 +4583,16 @@
 			]
 		},
 		"NoOctalEscapeOptions": { "type": "object", "additionalProperties": false },
+		"NoParagraphContentIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoParagraphContentIndentOptions" }
+			]
+		},
+		"NoParagraphContentIndentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoParameterAssignConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -4388,6 +4814,16 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoReferenceLikeUrlConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoReferenceLikeUrlOptions" }
+			]
+		},
+		"NoReferenceLikeUrlOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoRenderReturnValueConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -4482,6 +4918,16 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoReversedLinksConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoReversedLinksOptions" }
+			]
+		},
+		"NoReversedLinksOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoRootTypeConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -4566,6 +5012,36 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoShellDollarPromptConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoShellDollarPromptOptions" }
+			]
+		},
+		"NoShellDollarPromptOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoShortcutReferenceImageConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoShortcutReferenceImageOptions" }
+			]
+		},
+		"NoShortcutReferenceImageOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoShortcutReferenceLinkConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoShortcutReferenceLinkOptions" }
+			]
+		},
+		"NoShortcutReferenceLinkOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoShorthandPropertyOverridesConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -4603,6 +5079,33 @@
 			]
 		},
 		"NoSolidDestructuredPropsOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoSpaceInCodeConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoSpaceInCodeOptions" }
+			]
+		},
+		"NoSpaceInCodeOptions": { "type": "object", "additionalProperties": false },
+		"NoSpaceInEmphasisConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoSpaceInEmphasisOptions" }
+			]
+		},
+		"NoSpaceInEmphasisOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoSpaceInLinksConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoSpaceInLinksOptions" }
+			]
+		},
+		"NoSpaceInLinksOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -4687,6 +5190,16 @@
 			]
 		},
 		"NoSyncScriptsOptions": { "type": "object", "additionalProperties": false },
+		"NoTableIndentationConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoTableIndentationOptions" }
+			]
+		},
+		"NoTableIndentationOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoTemplateCurlyInStringConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -4721,6 +5234,16 @@
 			]
 		},
 		"NoThisInStaticOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoTrailingHardBreakSpacesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoTrailingHardBreakSpacesOptions" }
+			]
+		},
+		"NoTrailingHardBreakSpacesOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -4805,6 +5328,16 @@
 					"type": ["boolean", "null"]
 				}
 			},
+			"additionalProperties": false
+		},
+		"NoUndefinedReferencesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoUndefinedReferencesOptions" }
+			]
+		},
+		"NoUndefinedReferencesOptions": {
+			"type": "object",
 			"additionalProperties": false
 		},
 		"NoUnknownAtRulesConfiguration": {
@@ -4924,6 +5457,26 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoUnneededFullReferenceImageConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoUnneededFullReferenceImageOptions" }
+			]
+		},
+		"NoUnneededFullReferenceImageOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoUnneededFullReferenceLinkConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoUnneededFullReferenceLinkOptions" }
+			]
+		},
+		"NoUnneededFullReferenceLinkOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoUnreachableConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -4988,6 +5541,16 @@
 			]
 		},
 		"NoUnsafeOptionalChainingOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoUnusedDefinitionsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoUnusedDefinitionsOptions" }
+			]
+		},
+		"NoUnusedDefinitionsOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -5444,6 +6007,13 @@
 						{ "type": "null" }
 					]
 				},
+				"noBareUrls": {
+					"description": "Disallow bare URLs in markdown text.\nSee https://biomejs.dev/linter/rules/no-bare-urls",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoBareUrlsConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noBeforeInteractiveScriptOutsideDocument": {
 					"description": "Prevent usage of next/script's beforeInteractive strategy outside of pages/_document.js in a Next.js project.\nSee https://biomejs.dev/linter/rules/no-before-interactive-script-outside-document",
 					"anyOf": [
@@ -5453,10 +6023,45 @@
 						{ "type": "null" }
 					]
 				},
+				"noBlockquoteBrokenContinuation": {
+					"description": "Disallow broken blockquote continuation.\nSee https://biomejs.dev/linter/rules/no-blockquote-broken-continuation",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoBlockquoteBrokenContinuationConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noCheckboxCharacterStyleMismatch": {
+					"description": "Enforce consistent checkbox character style.\nSee https://biomejs.dev/linter/rules/no-checkbox-character-style-mismatch",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoCheckboxCharacterStyleMismatchConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noCheckboxContentIndent": {
+					"description": "Disallow extra spacing after checkbox brackets.\nSee https://biomejs.dev/linter/rules/no-checkbox-content-indent",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoCheckboxContentIndentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noConsecutiveBlankLines": {
+					"description": "Limit the number of consecutive blank lines.\nSee https://biomejs.dev/linter/rules/no-consecutive-blank-lines",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoConsecutiveBlankLinesConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noContinue": {
 					"description": "Disallow continue statements.\nSee https://biomejs.dev/linter/rules/no-continue",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoContinueConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noDefinitionSpacingIssues": {
+					"description": "Disallow spacing issues in link reference definitions.\nSee https://biomejs.dev/linter/rules/no-definition-spacing-issues",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoDefinitionSpacingIssuesConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5495,6 +6100,20 @@
 						{ "type": "null" }
 					]
 				},
+				"noDuplicateDefinedUrls": {
+					"description": "Disallow multiple definitions that resolve to the same URL.\nSee https://biomejs.dev/linter/rules/no-duplicate-defined-urls",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoDuplicateDefinedUrlsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noDuplicateDefinitions": {
+					"description": "Disallow duplicate link reference definitions.\nSee https://biomejs.dev/linter/rules/no-duplicate-definitions",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoDuplicateDefinitionsConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noDuplicateDependencies": {
 					"description": "Prevent the listing of duplicate dependencies. The rule supports the following dependency groups: \"bundledDependencies\", \"bundleDependencies\", \"dependencies\", \"devDependencies\", \"overrides\", \"optionalDependencies\", and \"peerDependencies\".\nSee https://biomejs.dev/linter/rules/no-duplicate-dependencies",
 					"anyOf": [
@@ -5530,6 +6149,20 @@
 						{ "type": "null" }
 					]
 				},
+				"noDuplicateHeadings": {
+					"description": "Disallow duplicate heading text.\nSee https://biomejs.dev/linter/rules/no-duplicate-headings",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoDuplicateHeadingsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noDuplicateHeadingsInSection": {
+					"description": "Disallow duplicate headings within the same section.\nSee https://biomejs.dev/linter/rules/no-duplicate-headings-in-section",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoDuplicateHeadingsInSectionConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noDuplicateInputFieldNames": {
 					"description": "Require fields within an input object to be unique.\nSee https://biomejs.dev/linter/rules/no-duplicate-input-field-names",
 					"anyOf": [
@@ -5548,6 +6181,20 @@
 					"description": "Disallow JSX prop spreading the same identifier multiple times.\nSee https://biomejs.dev/linter/rules/no-duplicated-spread-props",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoDuplicatedSpreadPropsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noEmphasisAsHeading": {
+					"description": "Disallow using emphasis or bold as a heading substitute.\nSee https://biomejs.dev/linter/rules/no-emphasis-as-heading",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoEmphasisAsHeadingConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noEmptyLinks": {
+					"description": "Disallow links with empty URLs.\nSee https://biomejs.dev/linter/rules/no-empty-links",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoEmptyLinksConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5600,10 +6247,45 @@
 						{ "type": "null" }
 					]
 				},
+				"noHardTabs": {
+					"description": "Disallow hard tabs in markdown files.\nSee https://biomejs.dev/linter/rules/no-hard-tabs",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoHardTabsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noHeadingContentIndent": {
+					"description": "Disallow extra spaces between heading markers and content.\nSee https://biomejs.dev/linter/rules/no-heading-content-indent",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoHeadingContentIndentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noHeadingIndent": {
+					"description": "Disallow indentation before headings.\nSee https://biomejs.dev/linter/rules/no-heading-indent",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoHeadingIndentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noHeadingTrailingPunctuation": {
+					"description": "Disallow trailing punctuation in headings.\nSee https://biomejs.dev/linter/rules/no-heading-trailing-punctuation",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoHeadingTrailingPunctuationConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noHexColors": {
 					"description": "Disallow hex colors.\nSee https://biomejs.dev/linter/rules/no-hex-colors",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoHexColorsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noHiddenTableCell": {
+					"description": "Disallow hidden table cells.\nSee https://biomejs.dev/linter/rules/no-hidden-table-cell",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoHiddenTableCellConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5618,6 +6300,20 @@
 					"description": "Disallows the usage of the unary operators ++ and --.\nSee https://biomejs.dev/linter/rules/no-increment-decrement",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoIncrementDecrementConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noInlineHtml": {
+					"description": "Disallow inline HTML in markdown.\nSee https://biomejs.dev/linter/rules/no-inline-html",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoInlineHtmlConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noInvalidLinkFragments": {
+					"description": "Disallow links with invalid fragment identifiers.\nSee https://biomejs.dev/linter/rules/no-invalid-link-fragments",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoInvalidLinkFragmentsConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5642,6 +6338,62 @@
 						{ "type": "null" }
 					]
 				},
+				"noListItemBulletIndent": {
+					"description": "Disallow indentation on top-level list item bullets.\nSee https://biomejs.dev/linter/rules/no-list-item-bullet-indent",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoListItemBulletIndentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noLongHeadings": {
+					"description": "Enforce a maximum heading length.\nSee https://biomejs.dev/linter/rules/no-long-headings",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoLongHeadingsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noLongLines": {
+					"description": "Enforce a maximum line length.\nSee https://biomejs.dev/linter/rules/no-long-lines",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoLongLinesConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noMismatchedTableColumnCount": {
+					"description": "Disallow table rows with mismatched column counts.\nSee https://biomejs.dev/linter/rules/no-mismatched-table-column-count",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMismatchedTableColumnCountConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noMissingAltText": {
+					"description": "Require alt text for images.\nSee https://biomejs.dev/linter/rules/no-missing-alt-text",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMissingAltTextConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noMissingLanguage": {
+					"description": "Require a language tag on fenced code blocks.\nSee https://biomejs.dev/linter/rules/no-missing-language",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMissingLanguageConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noMissingSpaceAtxHeading": {
+					"description": "Require a space after the hash characters in atx headings.\nSee https://biomejs.dev/linter/rules/no-missing-space-atx-heading",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMissingSpaceAtxHeadingConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noMissingSpaceClosedAtxHeading": {
+					"description": "Require a space before the closing hashes in closed ATX headings.\nSee https://biomejs.dev/linter/rules/no-missing-space-closed-atx-heading",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMissingSpaceClosedAtxHeadingConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noMisusedPromises": {
 					"description": "Disallow Promises to be used in places where they are almost certainly a mistake.\nSee https://biomejs.dev/linter/rules/no-misused-promises",
 					"anyOf": [
@@ -5663,10 +6415,38 @@
 						{ "type": "null" }
 					]
 				},
+				"noMultipleSpaceAtxHeading": {
+					"description": "Disallow multiple spaces after hash characters in atx headings.\nSee https://biomejs.dev/linter/rules/no-multiple-space-atx-heading",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMultipleSpaceAtxHeadingConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noMultipleSpaceClosedAtxHeading": {
+					"description": "Disallow multiple spaces before closing hashes in closed ATX headings.\nSee https://biomejs.dev/linter/rules/no-multiple-space-closed-atx-heading",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMultipleSpaceClosedAtxHeadingConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noMultipleTopLevelHeadings": {
+					"description": "Disallow multiple top-level headings in a document.\nSee https://biomejs.dev/linter/rules/no-multiple-top-level-headings",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMultipleTopLevelHeadingsConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noNextAsyncClientComponent": {
 					"description": "Prevent client components from being async functions.\nSee https://biomejs.dev/linter/rules/no-next-async-client-component",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoNextAsyncClientComponentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noParagraphContentIndent": {
+					"description": "Disallow indentation on paragraph content lines.\nSee https://biomejs.dev/linter/rules/no-paragraph-content-indent",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoParagraphContentIndentConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5698,10 +6478,24 @@
 						{ "type": "null" }
 					]
 				},
+				"noReferenceLikeUrl": {
+					"description": "Disallow reference-like URLs in inline links.\nSee https://biomejs.dev/linter/rules/no-reference-like-url",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoReferenceLikeUrlConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noReturnAssign": {
 					"description": "Disallow assignments in return statements.\nSee https://biomejs.dev/linter/rules/no-return-assign",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoReturnAssignConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noReversedLinks": {
+					"description": "Disallow reversed link syntax.\nSee https://biomejs.dev/linter/rules/no-reversed-links",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoReversedLinksConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5726,10 +6520,59 @@
 						{ "type": "null" }
 					]
 				},
+				"noShellDollarPrompt": {
+					"description": "Disallow dollar signs in shell code fence content.\nSee https://biomejs.dev/linter/rules/no-shell-dollar-prompt",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoShellDollarPromptConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noShortcutReferenceImage": {
+					"description": "Disallow shortcut reference images.\nSee https://biomejs.dev/linter/rules/no-shortcut-reference-image",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoShortcutReferenceImageConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noShortcutReferenceLink": {
+					"description": "Disallow shortcut reference links.\nSee https://biomejs.dev/linter/rules/no-shortcut-reference-link",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoShortcutReferenceLinkConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noSpaceInCode": {
+					"description": "Disallow spaces at the edges of inline code spans.\nSee https://biomejs.dev/linter/rules/no-space-in-code",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoSpaceInCodeConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noSpaceInEmphasis": {
+					"description": "Disallow spaces inside emphasis markers.\nSee https://biomejs.dev/linter/rules/no-space-in-emphasis",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoSpaceInEmphasisConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noSpaceInLinks": {
+					"description": "Disallow spaces inside link text brackets.\nSee https://biomejs.dev/linter/rules/no-space-in-links",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoSpaceInLinksConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noSyncScripts": {
 					"description": "Prevent the usage of synchronous scripts.\nSee https://biomejs.dev/linter/rules/no-sync-scripts",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoSyncScriptsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noTableIndentation": {
+					"description": "Disallow indentation in table rows.\nSee https://biomejs.dev/linter/rules/no-table-indentation",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoTableIndentationConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5740,10 +6583,24 @@
 						{ "type": "null" }
 					]
 				},
+				"noTrailingHardBreakSpaces": {
+					"description": "Disallow trailing spaces used for hard line breaks.\nSee https://biomejs.dev/linter/rules/no-trailing-hard-break-spaces",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoTrailingHardBreakSpacesConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noUndeclaredEnvVars": {
 					"description": "Disallow the use of undeclared environment variables.\nSee https://biomejs.dev/linter/rules/no-undeclared-env-vars",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoUndeclaredEnvVarsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noUndefinedReferences": {
+					"description": "Disallow reference links and images that use an undefined label.\nSee https://biomejs.dev/linter/rules/no-undefined-references",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoUndefinedReferencesConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5761,10 +6618,31 @@
 						{ "type": "null" }
 					]
 				},
+				"noUnneededFullReferenceImage": {
+					"description": "Disallow full reference images when collapsed form would suffice.\nSee https://biomejs.dev/linter/rules/no-unneeded-full-reference-image",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoUnneededFullReferenceImageConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noUnneededFullReferenceLink": {
+					"description": "Disallow full reference links when collapsed form would suffice.\nSee https://biomejs.dev/linter/rules/no-unneeded-full-reference-link",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoUnneededFullReferenceLinkConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noUnresolvedImports": {
 					"description": "Warn when importing non-existing exports.\nSee https://biomejs.dev/linter/rules/no-unresolved-imports",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoUnresolvedImportsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noUnusedDefinitions": {
+					"description": "Disallow unused link reference definitions.\nSee https://biomejs.dev/linter/rules/no-unused-definitions",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoUnusedDefinitionsConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5863,10 +6741,73 @@
 						{ "type": "null" }
 					]
 				},
+				"useBlanksAroundCodeFences": {
+					"description": "Require blank lines around fenced code blocks.\nSee https://biomejs.dev/linter/rules/use-blanks-around-code-fences",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseBlanksAroundCodeFencesConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useBlanksAroundHeadings": {
+					"description": "Require blank lines around headings.\nSee https://biomejs.dev/linter/rules/use-blanks-around-headings",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseBlanksAroundHeadingsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useBlanksAroundLists": {
+					"description": "Enforce blank lines around list blocks.\nSee https://biomejs.dev/linter/rules/use-blanks-around-lists",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseBlanksAroundListsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useBlanksAroundTables": {
+					"description": "Require blank lines around tables.\nSee https://biomejs.dev/linter/rules/use-blanks-around-tables",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseBlanksAroundTablesConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useBlanksBeforeBlockContent": {
+					"description": "Enforce blank lines before block-level content.\nSee https://biomejs.dev/linter/rules/use-blanks-before-block-content",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseBlanksBeforeBlockContentConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useConsistentArrowReturn": {
 					"description": "Enforce consistent arrow function bodies.\nSee https://biomejs.dev/linter/rules/use-consistent-arrow-return",
 					"anyOf": [
 						{ "$ref": "#/$defs/UseConsistentArrowReturnConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentBlockquoteIndent": {
+					"description": "Enforce consistent blockquote indentation.\nSee https://biomejs.dev/linter/rules/use-consistent-blockquote-indent",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentBlockquoteIndentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentCodeBlockStyle": {
+					"description": "Enforce consistent code block style.\nSee https://biomejs.dev/linter/rules/use-consistent-code-block-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentCodeBlockStyleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentCodeFenceMarker": {
+					"description": "Enforce consistent code fence markers.\nSee https://biomejs.dev/linter/rules/use-consistent-code-fence-marker",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentCodeFenceMarkerConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentEmphasisMarker": {
+					"description": "Enforce consistent emphasis markers.\nSee https://biomejs.dev/linter/rules/use-consistent-emphasis-marker",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentEmphasisMarkerConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5884,6 +6825,78 @@
 						{ "type": "null" }
 					]
 				},
+				"useConsistentHeadingStyle": {
+					"description": "Enforce consistent heading style.\nSee https://biomejs.dev/linter/rules/use-consistent-heading-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentHeadingStyleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentHorizontalRuleStyle": {
+					"description": "Enforce a consistent style for horizontal rules.\nSee https://biomejs.dev/linter/rules/use-consistent-horizontal-rule-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentHorizontalRuleStyleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentLinebreakStyle": {
+					"description": "Enforce consistent line endings.\nSee https://biomejs.dev/linter/rules/use-consistent-linebreak-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentLinebreakStyleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentLinkStyle": {
+					"description": "Enforce consistent link style.\nSee https://biomejs.dev/linter/rules/use-consistent-link-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentLinkStyleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentLinkTitleStyle": {
+					"description": "Enforce consistent link title delimiter style.\nSee https://biomejs.dev/linter/rules/use-consistent-link-title-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentLinkTitleStyleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentListIndent": {
+					"description": "Enforce consistent indentation for list items at the same level.\nSee https://biomejs.dev/linter/rules/use-consistent-list-indent",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentListIndentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentListItemContentIndent": {
+					"description": "Enforce consistent content indentation for continuation lines.\nSee https://biomejs.dev/linter/rules/use-consistent-list-item-content-indent",
+					"anyOf": [
+						{
+							"$ref": "#/$defs/UseConsistentListItemContentIndentConfiguration"
+						},
+						{ "type": "null" }
+					]
+				},
+				"useConsistentListItemIndent": {
+					"description": "Enforce consistent spacing between list marker and content.\nSee https://biomejs.dev/linter/rules/use-consistent-list-item-indent",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentListItemIndentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentListItemSpacing": {
+					"description": "Enforce consistent spacing between list items.\nSee https://biomejs.dev/linter/rules/use-consistent-list-item-spacing",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentListItemSpacingConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentMediaStyle": {
+					"description": "Enforce consistent image/media style.\nSee https://biomejs.dev/linter/rules/use-consistent-media-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentMediaStyleConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useConsistentMethodSignatures": {
 					"description": "Enforce consistent use of either method signatures or function properties within interfaces and type aliases.\nSee https://biomejs.dev/linter/rules/use-consistent-method-signatures",
 					"anyOf": [
@@ -5891,10 +6904,89 @@
 						{ "type": "null" }
 					]
 				},
+				"useConsistentOrderedListMarker": {
+					"description": "Enforce consistent ordered list marker delimiter.\nSee https://biomejs.dev/linter/rules/use-consistent-ordered-list-marker",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentOrderedListMarkerConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentOrderedListMarkerValue": {
+					"description": "Enforce consistent ordered list marker values.\nSee https://biomejs.dev/linter/rules/use-consistent-ordered-list-marker-value",
+					"anyOf": [
+						{
+							"$ref": "#/$defs/UseConsistentOrderedListMarkerValueConfiguration"
+						},
+						{ "type": "null" }
+					]
+				},
+				"useConsistentStrikethroughMarker": {
+					"description": "Enforce consistent strikethrough marker style.\nSee https://biomejs.dev/linter/rules/use-consistent-strikethrough-marker",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentStrikethroughMarkerConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentStrongMarker": {
+					"description": "Enforce consistent strong emphasis markers.\nSee https://biomejs.dev/linter/rules/use-consistent-strong-marker",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentStrongMarkerConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentTableCellPadding": {
+					"description": "Enforce consistent table cell padding.\nSee https://biomejs.dev/linter/rules/use-consistent-table-cell-padding",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentTableCellPaddingConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentTablePipeAlignment": {
+					"description": "Enforce aligned table pipe characters.\nSee https://biomejs.dev/linter/rules/use-consistent-table-pipe-alignment",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentTablePipeAlignmentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentTablePipeStyle": {
+					"description": "Enforce consistent table pipe style.\nSee https://biomejs.dev/linter/rules/use-consistent-table-pipe-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentTablePipeStyleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentUnorderedListIndent": {
+					"description": "Enforce consistent indentation for nested unordered list items.\nSee https://biomejs.dev/linter/rules/use-consistent-unordered-list-indent",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentUnorderedListIndentConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentUnorderedListMarker": {
+					"description": "Enforce consistent unordered list marker style.\nSee https://biomejs.dev/linter/rules/use-consistent-unordered-list-marker",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentUnorderedListMarkerConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useDefinitionsAtEnd": {
+					"description": "Enforce that link reference definitions are placed at the end.\nSee https://biomejs.dev/linter/rules/use-definitions-at-end",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseDefinitionsAtEndConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useDeprecatedDate": {
 					"description": "Require the @deprecated directive to specify a deletion date.\nSee https://biomejs.dev/linter/rules/use-deprecated-date",
 					"anyOf": [
 						{ "$ref": "#/$defs/UseDeprecatedDateConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useDescriptiveLinkText": {
+					"description": "Require descriptive link text.\nSee https://biomejs.dev/linter/rules/use-descriptive-link-text",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseDescriptiveLinkTextConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5926,6 +7018,13 @@
 						{ "type": "null" }
 					]
 				},
+				"useFinalNewline": {
+					"description": "Require files to end with a single newline character.\nSee https://biomejs.dev/linter/rules/use-final-newline",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseFinalNewlineConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useFind": {
 					"description": "Enforce the use of Array.prototype.find() over Array.prototype.filter() followed by [0] when looking for a single result.\nSee https://biomejs.dev/linter/rules/use-find",
 					"anyOf": [
@@ -5933,10 +7032,24 @@
 						{ "type": "null" }
 					]
 				},
+				"useFirstLineHeading": {
+					"description": "Require a heading as the first content in a document.\nSee https://biomejs.dev/linter/rules/use-first-line-heading",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseFirstLineHeadingConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useGlobalThis": {
 					"description": "Enforce the use of globalThis over window, self, and global.\nSee https://biomejs.dev/linter/rules/use-global-this",
 					"anyOf": [
 						{ "$ref": "#/$defs/UseGlobalThisConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useHeadingIncrement": {
+					"description": "Heading levels should only increment by one level at a time.\nSee https://biomejs.dev/linter/rules/use-heading-increment",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseHeadingIncrementConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -5965,6 +7078,13 @@
 					"description": "Require queries, mutations, subscriptions or fragments each to be located in separate files.\nSee https://biomejs.dev/linter/rules/use-lone-executable-definition",
 					"anyOf": [
 						{ "$ref": "#/$defs/UseLoneExecutableDefinitionConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useLowercaseDefinitionLabels": {
+					"description": "Enforce lowercase labels in link reference definitions.\nSee https://biomejs.dev/linter/rules/use-lowercase-definition-labels",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseLowercaseDefinitionLabelsConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -6007,6 +7127,13 @@
 					"description": "Enforce the sorting of CSS utility classes.\nSee https://biomejs.dev/linter/rules/use-sorted-classes",
 					"anyOf": [
 						{ "$ref": "#/$defs/UseSortedClassesConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useSortedDefinitions": {
+					"description": "Enforce alphabetically sorted link reference definitions.\nSee https://biomejs.dev/linter/rules/use-sorted-definitions",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseSortedDefinitionsConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -6810,6 +7937,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoBareUrlsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoBareUrlsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoBarrelFileOptions": {
 			"type": "object",
 			"properties": {
@@ -6859,11 +7995,38 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoBlockquoteBrokenContinuationOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoBlockquoteBrokenContinuationOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoCatchAssignOptions": {
 			"type": "object",
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoCatchAssignOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoCheckboxCharacterStyleMismatchOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoCheckboxCharacterStyleMismatchOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoCheckboxContentIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoCheckboxContentIndentOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -6939,6 +8102,15 @@
 				"fix": { "anyOf": [{ "$ref": "#/$defs/FixKind" }, { "type": "null" }] },
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoConfusingVoidTypeOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoConsecutiveBlankLinesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoConsecutiveBlankLinesOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -7063,6 +8235,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoDefaultExportOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoDefinitionSpacingIssuesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoDefinitionSpacingIssuesOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -7215,6 +8396,24 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoDuplicateDefinedUrlsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoDuplicateDefinedUrlsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoDuplicateDefinitionsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoDuplicateDefinitionsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoDuplicateDependenciesOptions": {
 			"type": "object",
 			"properties": {
@@ -7283,6 +8482,24 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoDuplicateGraphqlOperationNameOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoDuplicateHeadingsInSectionOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoDuplicateHeadingsInSectionOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoDuplicateHeadingsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoDuplicateHeadingsOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -7379,6 +8596,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoEmphasisAsHeadingOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoEmphasisAsHeadingOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoEmptyBlockOptions": {
 			"type": "object",
 			"properties": {
@@ -7412,6 +8638,15 @@
 				"fix": { "anyOf": [{ "$ref": "#/$defs/FixKind" }, { "type": "null" }] },
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoEmptyInterfaceOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoEmptyLinksOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoEmptyLinksOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -7695,6 +8930,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoHardTabsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoHardTabsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoHeadElementOptions": {
 			"type": "object",
 			"properties": {
@@ -7723,11 +8967,47 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoHeadingContentIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoHeadingContentIndentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoHeadingIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoHeadingIndentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoHeadingTrailingPunctuationOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoHeadingTrailingPunctuationOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoHexColorsOptions": {
 			"type": "object",
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoHexColorsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoHiddenTableCellOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoHiddenTableCellOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -7826,6 +9106,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoInlineHtmlOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoInlineHtmlOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoInnerDeclarationsOptions": {
 			"type": "object",
 			"properties": {
@@ -7882,6 +9171,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoInvalidGridAreasOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoInvalidLinkFragmentsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoInvalidLinkFragmentsOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -7958,6 +9256,33 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoListItemBulletIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoListItemBulletIndentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoLongHeadingsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoLongHeadingsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoLongLinesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoLongLinesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoMagicNumbersOptions": {
 			"type": "object",
 			"properties": {
@@ -7986,6 +9311,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoMismatchedTableColumnCountOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMismatchedTableColumnCountOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoMisplacedAssertionOptions": {
 			"type": "object",
 			"properties": {
@@ -8001,6 +9335,42 @@
 				"fix": { "anyOf": [{ "$ref": "#/$defs/FixKind" }, { "type": "null" }] },
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoMisrefactoredShorthandAssignOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoMissingAltTextOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMissingAltTextOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoMissingLanguageOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMissingLanguageOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoMissingSpaceAtxHeadingOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMissingSpaceAtxHeadingOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoMissingSpaceClosedAtxHeadingOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMissingSpaceClosedAtxHeadingOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -8038,6 +9408,33 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoMultiStrOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoMultipleSpaceAtxHeadingOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMultipleSpaceAtxHeadingOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoMultipleSpaceClosedAtxHeadingOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMultipleSpaceClosedAtxHeadingOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoMultipleTopLevelHeadingsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMultipleTopLevelHeadingsOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -8174,6 +9571,15 @@
 				"fix": { "anyOf": [{ "$ref": "#/$defs/FixKind" }, { "type": "null" }] },
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoOctalEscapeOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoParagraphContentIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoParagraphContentIndentOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -8376,6 +9782,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoReferenceLikeUrlOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoReferenceLikeUrlOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoRenderReturnValueOptions": {
 			"type": "object",
 			"properties": {
@@ -8427,6 +9842,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoReturnAssignOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoReversedLinksOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoReversedLinksOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -8503,6 +9927,33 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoShellDollarPromptOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoShellDollarPromptOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoShortcutReferenceImageOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoShortcutReferenceImageOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoShortcutReferenceLinkOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoShortcutReferenceLinkOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoShorthandPropertyOverridesOptions": {
 			"type": "object",
 			"properties": {
@@ -8537,6 +9988,33 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoSolidDestructuredPropsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoSpaceInCodeOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoSpaceInCodeOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoSpaceInEmphasisOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoSpaceInEmphasisOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoSpaceInLinksOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoSpaceInLinksOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -8626,6 +10104,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoTableIndentationOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoTableIndentationOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoTemplateCurlyInStringOptions": {
 			"type": "object",
 			"properties": {
@@ -8659,6 +10146,15 @@
 				"fix": { "anyOf": [{ "$ref": "#/$defs/FixKind" }, { "type": "null" }] },
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoThisInStaticOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoTrailingHardBreakSpacesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoTrailingHardBreakSpacesOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -8705,6 +10201,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoUndeclaredVariablesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoUndefinedReferencesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoUndefinedReferencesOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -8808,6 +10313,24 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoUnneededFullReferenceImageOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoUnneededFullReferenceImageOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoUnneededFullReferenceLinkOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoUnneededFullReferenceLinkOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoUnreachableOptions": {
 			"type": "object",
 			"properties": {
@@ -8868,6 +10391,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoUnsafeOptionalChainingOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoUnusedDefinitionsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoUnusedDefinitionsOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -9433,6 +10965,51 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseBlanksAroundCodeFencesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseBlanksAroundCodeFencesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseBlanksAroundHeadingsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseBlanksAroundHeadingsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseBlanksAroundListsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseBlanksAroundListsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseBlanksAroundTablesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseBlanksAroundTablesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseBlanksBeforeBlockContentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseBlanksBeforeBlockContentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseBlockStatementsOptions": {
 			"type": "object",
 			"properties": {
@@ -9501,6 +11078,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseConsistentBlockquoteIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentBlockquoteIndentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseConsistentBuiltinInstantiationOptions": {
 			"type": "object",
 			"properties": {
@@ -9513,12 +11099,39 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseConsistentCodeBlockStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentCodeBlockStyleOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentCodeFenceMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentCodeFenceMarkerOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseConsistentCurlyBracesOptions": {
 			"type": "object",
 			"properties": {
 				"fix": { "anyOf": [{ "$ref": "#/$defs/FixKind" }, { "type": "null" }] },
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseConsistentCurlyBracesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentEmphasisMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentEmphasisMarkerOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -9537,6 +11150,98 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseConsistentGraphqlDescriptionsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentHeadingStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentHeadingStyleOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentHorizontalRuleStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentHorizontalRuleStyleOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentLinebreakStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentLinebreakStyleOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentLinkStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentLinkStyleOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentLinkTitleStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentLinkTitleStyleOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentListIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentListIndentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentListItemContentIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": {
+					"$ref": "#/$defs/UseConsistentListItemContentIndentOptions"
+				}
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentListItemIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentListItemIndentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentListItemSpacingOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentListItemSpacingOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentMediaStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentMediaStyleOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -9569,12 +11274,95 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseConsistentOrderedListMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentOrderedListMarkerOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentOrderedListMarkerValueOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": {
+					"$ref": "#/$defs/UseConsistentOrderedListMarkerValueOptions"
+				}
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentStrikethroughMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentStrikethroughMarkerOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentStrongMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentStrongMarkerOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentTableCellPaddingOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentTableCellPaddingOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentTablePipeAlignmentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentTablePipeAlignmentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentTablePipeStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentTablePipeStyleOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseConsistentTypeDefinitionsOptions": {
 			"type": "object",
 			"properties": {
 				"fix": { "anyOf": [{ "$ref": "#/$defs/FixKind" }, { "type": "null" }] },
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseConsistentTypeDefinitionsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentUnorderedListIndentOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentUnorderedListIndentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentUnorderedListMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentUnorderedListMarkerOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -9627,6 +11415,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseDefinitionsAtEndOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseDefinitionsAtEndOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseDeprecatedDateOptions": {
 			"type": "object",
 			"properties": {
@@ -9641,6 +11438,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseDeprecatedReasonOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseDescriptiveLinkTextOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseDescriptiveLinkTextOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -9759,11 +11565,29 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseFinalNewlineOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseFinalNewlineOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseFindOptions": {
 			"type": "object",
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseFindOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseFirstLineHeadingOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseFirstLineHeadingOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -9894,6 +11718,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseHeadingContentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseHeadingIncrementOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseHeadingIncrementOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -10081,6 +11914,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseLoneExecutableDefinitionOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseLowercaseDefinitionLabelsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseLowercaseDefinitionLabelsOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -10381,6 +12223,15 @@
 				"fix": { "anyOf": [{ "$ref": "#/$defs/FixKind" }, { "type": "null" }] },
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseSortedClassesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseSortedDefinitionsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseSortedDefinitionsOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -12355,6 +14206,56 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"UseBlanksAroundCodeFencesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseBlanksAroundCodeFencesOptions" }
+			]
+		},
+		"UseBlanksAroundCodeFencesOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseBlanksAroundHeadingsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseBlanksAroundHeadingsOptions" }
+			]
+		},
+		"UseBlanksAroundHeadingsOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseBlanksAroundListsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseBlanksAroundListsOptions" }
+			]
+		},
+		"UseBlanksAroundListsOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseBlanksAroundTablesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseBlanksAroundTablesOptions" }
+			]
+		},
+		"UseBlanksAroundTablesOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseBlanksBeforeBlockContentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseBlanksBeforeBlockContentOptions" }
+			]
+		},
+		"UseBlanksBeforeBlockContentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"UseBlockStatementsConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -12475,6 +14376,16 @@
 				}
 			]
 		},
+		"UseConsistentBlockquoteIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentBlockquoteIndentOptions" }
+			]
+		},
+		"UseConsistentBlockquoteIndentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"UseConsistentBuiltinInstantiationConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -12485,6 +14396,38 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"UseConsistentCodeBlockStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentCodeBlockStyleOptions" }
+			]
+		},
+		"UseConsistentCodeBlockStyleOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The style to use for code blocks (default: \"fenced\"). Allowed values: \"fenced\" or \"indented\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentCodeFenceMarkerConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentCodeFenceMarkerOptions" }
+			]
+		},
+		"UseConsistentCodeFenceMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"marker": {
+					"description": "The marker to use for fenced code blocks (default: \"backtick\"). Allowed values: \"backtick\" or \"tilde\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
 		"UseConsistentCurlyBracesConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -12493,6 +14436,22 @@
 		},
 		"UseConsistentCurlyBracesOptions": {
 			"type": "object",
+			"additionalProperties": false
+		},
+		"UseConsistentEmphasisMarkerConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentEmphasisMarkerOptions" }
+			]
+		},
+		"UseConsistentEmphasisMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"marker": {
+					"description": "The marker to use for emphasis (default: \"star\"). Allowed values: \"star\", \"underscore\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
 			"additionalProperties": false
 		},
 		"UseConsistentEnumValueTypeConfiguration": {
@@ -12529,6 +14488,154 @@
 			"description": "The GraphQL description style to enforce.",
 			"type": "string",
 			"enum": ["block", "inline"]
+		},
+		"UseConsistentHeadingStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentHeadingStyleOptions" }
+			]
+		},
+		"UseConsistentHeadingStyleOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The heading style to enforce (default: \"consistent\"). Allowed values: \"atx\", \"setext\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentHorizontalRuleStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentHorizontalRuleStyleOptions" }
+			]
+		},
+		"UseConsistentHorizontalRuleStyleOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The expected horizontal rule style (default: `\"---\"`).\nCommon styles: `\"---\"`, `\"***\"`, `\"___\"`.",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentLinebreakStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentLinebreakStyleOptions" }
+			]
+		},
+		"UseConsistentLinebreakStyleOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The linebreak style to enforce (default: \"lf\"). Allowed values: \"lf\" or \"crlf\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentLinkStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentLinkStyleOptions" }
+			]
+		},
+		"UseConsistentLinkStyleOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The style to use for links (default: \"inline\"). Allowed values: \"inline\", \"reference\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentLinkTitleStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentLinkTitleStyleOptions" }
+			]
+		},
+		"UseConsistentLinkTitleStyleOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The style to use for link titles (default: \"double-quote\"). Allowed values: \"double-quote\", \"single-quote\", or \"parentheses\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentListIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentListIndentOptions" }
+			]
+		},
+		"UseConsistentListIndentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseConsistentListItemContentIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentListItemContentIndentOptions" }
+			]
+		},
+		"UseConsistentListItemContentIndentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseConsistentListItemIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentListItemIndentOptions" }
+			]
+		},
+		"UseConsistentListItemIndentOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "Which indent style to enforce: \"one\", \"tab\", or \"space\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentListItemSpacingConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentListItemSpacingOptions" }
+			]
+		},
+		"UseConsistentListItemSpacingOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The style to use for list item spacing (default: \"consistent\"). Allowed values: \"compact\", \"loose\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentMediaStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentMediaStyleOptions" }
+			]
+		},
+		"UseConsistentMediaStyleOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The style to use for media (default: \"inline\"). Allowed values: \"inline\" or \"reference\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
 		},
 		"UseConsistentMemberAccessibilityConfiguration": {
 			"oneOf": [
@@ -12585,6 +14692,112 @@
 			},
 			"additionalProperties": false
 		},
+		"UseConsistentOrderedListMarkerConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentOrderedListMarkerOptions" }
+			]
+		},
+		"UseConsistentOrderedListMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"delimiter": {
+					"description": "Which delimiter to enforce: \".\", \")\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentOrderedListMarkerValueConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentOrderedListMarkerValueOptions" }
+			]
+		},
+		"UseConsistentOrderedListMarkerValueOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The style to use for ordered list marker values (default: \"ordered\"). Allowed values: \"ordered\" or \"one\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentStrikethroughMarkerConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentStrikethroughMarkerOptions" }
+			]
+		},
+		"UseConsistentStrikethroughMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"marker": {
+					"description": "The marker style to enforce (default: \"consistent\"). Allowed values: \"tilde\", \"double-tilde\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentStrongMarkerConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentStrongMarkerOptions" }
+			]
+		},
+		"UseConsistentStrongMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"marker": {
+					"description": "The marker to use for strong emphasis (default: \"star\"). Allowed values: \"star\", \"underscore\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentTableCellPaddingConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentTableCellPaddingOptions" }
+			]
+		},
+		"UseConsistentTableCellPaddingOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The style to use for table cell padding (default: \"padded\"). Allowed values: \"padded\", \"compact\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentTablePipeAlignmentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentTablePipeAlignmentOptions" }
+			]
+		},
+		"UseConsistentTablePipeAlignmentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseConsistentTablePipeStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentTablePipeStyleOptions" }
+			]
+		},
+		"UseConsistentTablePipeStyleOptions": {
+			"type": "object",
+			"properties": {
+				"style": {
+					"description": "The style to use for table pipes (default: \"both\"). Allowed values: \"leading\", \"trailing\", \"both\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
 		"UseConsistentTypeDefinitionsConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -12599,6 +14812,32 @@
 						{ "$ref": "#/$defs/ConsistentTypeDefinition" },
 						{ "type": "null" }
 					]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentUnorderedListIndentConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentUnorderedListIndentOptions" }
+			]
+		},
+		"UseConsistentUnorderedListIndentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseConsistentUnorderedListMarkerConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentUnorderedListMarkerOptions" }
+			]
+		},
+		"UseConsistentUnorderedListMarkerOptions": {
+			"type": "object",
+			"properties": {
+				"marker": {
+					"description": "Which marker to enforce: \"-\", \"*\", \"+\", or \"consistent\".",
+					"type": ["string", "null"]
 				}
 			},
 			"additionalProperties": false
@@ -12647,6 +14886,16 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"UseDefinitionsAtEndConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseDefinitionsAtEndOptions" }
+			]
+		},
+		"UseDefinitionsAtEndOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"UseDeprecatedDateConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -12666,6 +14915,24 @@
 		},
 		"UseDeprecatedReasonOptions": {
 			"type": "object",
+			"additionalProperties": false
+		},
+		"UseDescriptiveLinkTextConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseDescriptiveLinkTextOptions" }
+			]
+		},
+		"UseDescriptiveLinkTextOptions": {
+			"type": "object",
+			"properties": {
+				"minimumLength": {
+					"description": "The minimum length of descriptive link text (default: 1).",
+					"type": ["integer", "null"],
+					"format": "uint32",
+					"minimum": 0
+				}
+			},
 			"additionalProperties": false
 		},
 		"UseDestructuringConfiguration": {
@@ -12826,6 +15093,16 @@
 			},
 			"additionalProperties": false
 		},
+		"UseFinalNewlineConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseFinalNewlineOptions" }
+			]
+		},
+		"UseFinalNewlineOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"UseFindConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -12833,6 +15110,25 @@
 			]
 		},
 		"UseFindOptions": { "type": "object", "additionalProperties": false },
+		"UseFirstLineHeadingConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseFirstLineHeadingOptions" }
+			]
+		},
+		"UseFirstLineHeadingOptions": {
+			"type": "object",
+			"properties": {
+				"level": {
+					"description": "The required heading level for the first heading (default: 1).",
+					"type": ["integer", "null"],
+					"format": "uint8",
+					"maximum": 255,
+					"minimum": 0
+				}
+			},
+			"additionalProperties": false
+		},
 		"UseFlatMapConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -12958,6 +15254,16 @@
 			]
 		},
 		"UseHeadingContentOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseHeadingIncrementConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseHeadingIncrementOptions" }
+			]
+		},
+		"UseHeadingIncrementOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -13175,6 +15481,16 @@
 			]
 		},
 		"UseLoneExecutableDefinitionOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseLowercaseDefinitionLabelsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseLowercaseDefinitionLabelsOptions" }
+			]
+		},
+		"UseLowercaseDefinitionLabelsOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -13550,6 +15866,16 @@
 					"items": { "type": "string" }
 				}
 			},
+			"additionalProperties": false
+		},
+		"UseSortedDefinitionsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseSortedDefinitionsOptions" }
+			]
+		},
+		"UseSortedDefinitionsOptions": {
+			"type": "object",
 			"additionalProperties": false
 		},
 		"UseSortedKeysConfiguration": {

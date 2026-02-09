@@ -3,15 +3,7 @@ use camino::Utf8Path;
 
 /// Represents the type of a Markdown file.
 #[derive(
-    Debug,
-    Clone,
-    Default,
-    Copy,
-    Eq,
-    PartialEq,
-    Hash,
-    serde::Serialize,
-    serde::Deserialize,
+    Debug, Clone, Default, Copy, Eq, PartialEq, Hash, serde::Serialize, serde::Deserialize,
 )]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct MarkdownFileSource {
@@ -19,15 +11,7 @@ pub struct MarkdownFileSource {
 }
 
 #[derive(
-    Debug,
-    Clone,
-    Default,
-    Copy,
-    Eq,
-    PartialEq,
-    Hash,
-    serde::Serialize,
-    serde::Deserialize,
+    Debug, Clone, Default, Copy, Eq, PartialEq, Hash, serde::Serialize, serde::Deserialize,
 )]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 enum MarkdownVariant {

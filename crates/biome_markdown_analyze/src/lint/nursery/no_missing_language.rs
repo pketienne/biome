@@ -4,6 +4,8 @@ use biome_diagnostics::Severity;
 use biome_markdown_syntax::MdDocument;
 use biome_rowan::{AstNode, TextRange, TextSize};
 
+use crate::utils::fence_utils::FenceTracker;
+
 declare_lint_rule! {
     /// Require a language tag on fenced code blocks.
     ///
@@ -51,57 +53,19 @@ impl Rule for NoMissingLanguage {
         let text = document.syntax().text_trimmed().to_string();
         let start = document.syntax().text_trimmed_range().start();
         let mut signals = Vec::new();
-        // Track whether we're inside a fenced code block
-        let mut in_fence: Option<(char, usize)> = None; // (fence_char, min_count)
+        let mut tracker = FenceTracker::new();
 
         for (line_idx, line) in text.lines().enumerate() {
-            let trimmed: &str = line.trim_start();
-
-            // Detect fence lines (both opening and closing)
-            let mut is_fence_line = false;
-            if let Some(fence_char) = if trimmed.starts_with("```") {
-                Some('`')
-            } else if trimmed.starts_with("~~~") {
-                Some('~')
-            } else {
-                None
-            } {
-                let fence_count = trimmed.chars().take_while(|&c| c == fence_char).count();
-                if fence_count >= 3 {
-                    is_fence_line = true;
-                    if let Some((open_char, open_count)) = in_fence {
-                        // We're inside a fence — check if this closes it
-                        let rest = trimmed[fence_count..].trim();
-                        if fence_char == open_char && fence_count >= open_count && rest.is_empty()
-                        {
-                            in_fence = None;
-                            continue;
-                        }
-                    } else {
-                        // Not inside a fence — this is an opening fence
-                        let info_string = trimmed[fence_count..].trim();
-                        in_fence = Some((fence_char, fence_count));
-
-                        if info_string.is_empty() {
-                            let line_offset: usize = text
-                                .lines()
-                                .take(line_idx)
-                                .map(|l: &str| l.len() + 1)
-                                .sum();
-                            let offset = TextSize::from(line_offset as u32);
-                            let len = TextSize::from(line.len() as u32);
-                            signals.push(MissingLanguage {
-                                range: TextRange::new(start + offset, start + offset + len),
-                            });
-                        }
-                        continue;
-                    }
+            if let Some(fence_open) = tracker.process_line(line_idx, line) {
+                if fence_open.info_string.is_empty() {
+                    let line_offset: usize =
+                        text.lines().take(line_idx).map(|l: &str| l.len() + 1).sum();
+                    let offset = TextSize::from(line_offset as u32);
+                    let len = TextSize::from(line.len() as u32);
+                    signals.push(MissingLanguage {
+                        range: TextRange::new(start + offset, start + offset + len),
+                    });
                 }
-            }
-
-            // Skip lines inside fenced code blocks
-            if in_fence.is_some() && !is_fence_line {
-                continue;
             }
         }
 

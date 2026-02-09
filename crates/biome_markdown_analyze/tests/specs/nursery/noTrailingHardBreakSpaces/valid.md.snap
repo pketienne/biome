@@ -1,0 +1,14 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: valid.md
+---
+# Input
+```md
+# Heading
+
+This line is fine.
+This line has one trailing space which is ok.
+This line uses backslash for hard break\
+Next line.
+
+```

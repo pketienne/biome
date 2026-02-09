@@ -38,9 +38,7 @@ impl CommentStyle for MarkdownCommentStyle {
             .any(|(key, ..)| key == biome_diagnostics::category!("format"))
     }
 
-    fn get_comment_kind(
-        _comment: &SyntaxTriviaPieceComments<Self::Language>,
-    ) -> CommentKind {
+    fn get_comment_kind(_comment: &SyntaxTriviaPieceComments<Self::Language>) -> CommentKind {
         CommentKind::Line
     }
 

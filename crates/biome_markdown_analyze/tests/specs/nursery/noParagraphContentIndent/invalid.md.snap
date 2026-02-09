@@ -1,0 +1,30 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Hello
+
+  Indented paragraph text.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/nursery/noParagraphContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Paragraph content has 2 space(s) of indentation.
+  
+    1 │ # Hello
+    2 │ 
+  > 3 │   Indented paragraph text.
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Remove leading indentation from paragraph text.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

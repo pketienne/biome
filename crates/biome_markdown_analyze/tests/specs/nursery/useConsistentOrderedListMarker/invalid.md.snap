@@ -1,0 +1,51 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Mixed ordered list markers
+
+1. first item
+2) second item
+3. third item
+4) fourth item
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/nursery/useConsistentOrderedListMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "." but found ")" as ordered list delimiter.
+  
+    3 │ 1. first item
+  > 4 │ 2) second item
+      │ ^^^^^^^^^^^^^^
+    5 │ 3. third item
+    6 │ 4) fourth item
+  
+  i Use a consistent ordered list delimiter.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:6:1 lint/nursery/useConsistentOrderedListMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "." but found ")" as ordered list delimiter.
+  
+    4 │ 2) second item
+    5 │ 3. third item
+  > 6 │ 4) fourth item
+      │ ^^^^^^^^^^^^^^
+    7 │ 
+  
+  i Use a consistent ordered list delimiter.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

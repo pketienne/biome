@@ -1,0 +1,17 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: valid.md
+---
+# Input
+```md
+# Code fences
+
+Some text before.
+
+```js
+const x = 1;
+```
+
+Some text after.
+
+```

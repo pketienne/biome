@@ -98,7 +98,7 @@
 	:fixKind "none" ;
 	:severity "error" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentHeadingStyle
 	a :MarkdownRule ;
@@ -109,7 +109,7 @@
 	:fixKind "unsafe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noDuplicateHeadings
 	a :MarkdownRule ;
@@ -131,7 +131,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noHeadingTrailingPunctuation
 	a :MarkdownRule ;
@@ -142,7 +142,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noEmphasisAsHeading
 	a :MarkdownRule ;
@@ -153,7 +153,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useFirstLineHeading
 	a :MarkdownRule ;
@@ -164,7 +164,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noHeadingIndent
 	a :MarkdownRule ;
@@ -175,7 +175,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentUnorderedListMarker
 	a :MarkdownRule ;
@@ -186,7 +186,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentOrderedListMarker
 	a :MarkdownRule ;
@@ -197,7 +197,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentListItemIndent
 	a :MarkdownRule ;
@@ -208,7 +208,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noReversedLinks
 	a :MarkdownRule ;
@@ -230,7 +230,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noEmptyLinks
 	a :MarkdownRule ;
@@ -252,7 +252,7 @@
 	:fixKind "none" ;
 	:severity "error" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noUnusedDefinitions
 	a :MarkdownRule ;
@@ -263,7 +263,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noShellDollarPrompt
 	a :MarkdownRule ;
@@ -274,7 +274,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noMissingLanguage
 	a :MarkdownRule ;
@@ -296,7 +296,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentCodeFenceMarker
 	a :MarkdownRule ;
@@ -307,7 +307,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentTablePipeStyle
 	a :MarkdownRule ;
@@ -318,7 +318,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentTableCellPadding
 	a :MarkdownRule ;
@@ -329,7 +329,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentEmphasisMarker
 	a :MarkdownRule ;
@@ -340,7 +340,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentStrongMarker
 	a :MarkdownRule ;
@@ -351,7 +351,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noTrailingHardBreakSpaces
 	a :MarkdownRule ;
@@ -362,7 +362,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noHardTabs
 	a :MarkdownRule ;
@@ -373,7 +373,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noConsecutiveBlankLines
 	a :MarkdownRule ;
@@ -384,7 +384,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noLongLines
 	a :MarkdownRule ;
@@ -395,7 +395,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useFinalNewline
 	a :MarkdownRule ;
@@ -406,7 +406,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentBlockquoteIndent
 	a :MarkdownRule ;
@@ -417,7 +417,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noBlockquoteBrokenContinuation
 	a :MarkdownRule ;
@@ -428,7 +428,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noInlineHtml
 	a :MarkdownRule ;
@@ -439,7 +439,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentHorizontalRuleStyle
 	a :MarkdownRule ;
@@ -450,7 +450,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentListIndent
 	a :MarkdownRule ;
@@ -461,7 +461,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentUnorderedListIndent
 	a :MarkdownRule ;
@@ -472,7 +472,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noMissingSpaceAtxHeading
 	a :MarkdownRule ;
@@ -483,7 +483,7 @@
 	:fixKind "safe" ;
 	:severity "error" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noMultipleSpaceAtxHeading
 	a :MarkdownRule ;
@@ -494,7 +494,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noMissingSpaceClosedAtxHeading
 	a :MarkdownRule ;
@@ -505,7 +505,7 @@
 	:fixKind "safe" ;
 	:severity "error" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noMultipleSpaceClosedAtxHeading
 	a :MarkdownRule ;
@@ -516,7 +516,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useBlanksAroundHeadings
 	a :MarkdownRule ;
@@ -527,7 +527,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useBlanksAroundCodeFences
 	a :MarkdownRule ;
@@ -538,7 +538,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useBlanksAroundLists
 	a :MarkdownRule ;
@@ -549,7 +549,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noSpaceInEmphasis
 	a :MarkdownRule ;
@@ -560,7 +560,7 @@
 	:fixKind "safe" ;
 	:severity "error" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noSpaceInCode
 	a :MarkdownRule ;
@@ -571,7 +571,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noSpaceInLinks
 	a :MarkdownRule ;
@@ -582,7 +582,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useRequiredHeadings
 	a :MarkdownRule ;
@@ -615,7 +615,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noInvalidLinkFragments
 	a :MarkdownRule ;
@@ -626,7 +626,7 @@
 	:fixKind "none" ;
 	:severity "error" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentLinkStyle
 	a :MarkdownRule ;
@@ -637,7 +637,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noMismatchedTableColumnCount
 	a :MarkdownRule ;
@@ -648,7 +648,7 @@
 	:fixKind "none" ;
 	:severity "error" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useBlanksAroundTables
 	a :MarkdownRule ;
@@ -659,7 +659,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useDescriptiveLinkText
 	a :MarkdownRule ;
@@ -670,18 +670,8 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
-
-:noInvalidHeadingLevel
-	a :MarkdownRule ;
-	rdfs:label "No Invalid Heading Level"@en ;
-	rdfs:comment "Headings with more than 6 hashes are not valid."@en ;
-	:biomeName "noInvalidHeadingLevel" ;
-	:belongsToGroup :Correctness ;
-	:fixKind "none" ;
-	:severity "error" ;
-	:recommended true ;
 	:implementationStatus "implemented" .
+
 
 :noDuplicateHeadingsInSection
 	a :MarkdownRule ;
@@ -692,7 +682,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noHeadingContentIndent
 	a :MarkdownRule ;
@@ -703,7 +693,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noLongHeadings
 	a :MarkdownRule ;
@@ -714,7 +704,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noCheckboxCharacterStyleMismatch
 	a :MarkdownRule ;
@@ -725,7 +715,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noCheckboxContentIndent
 	a :MarkdownRule ;
@@ -736,7 +726,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noListItemBulletIndent
 	a :MarkdownRule ;
@@ -747,7 +737,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentListItemContentIndent
 	a :MarkdownRule ;
@@ -758,7 +748,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentListItemSpacing
 	a :MarkdownRule ;
@@ -769,7 +759,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentOrderedListMarkerValue
 	a :MarkdownRule ;
@@ -780,7 +770,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentLinkTitleStyle
 	a :MarkdownRule ;
@@ -791,7 +781,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentMediaStyle
 	a :MarkdownRule ;
@@ -802,7 +792,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noReferenceLikeUrl
 	a :MarkdownRule ;
@@ -813,7 +803,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noShortcutReferenceImage
 	a :MarkdownRule ;
@@ -824,7 +814,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noShortcutReferenceLink
 	a :MarkdownRule ;
@@ -835,7 +825,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noUnneededFullReferenceImage
 	a :MarkdownRule ;
@@ -846,7 +836,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noUnneededFullReferenceLink
 	a :MarkdownRule ;
@@ -857,7 +847,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useLowercaseDefinitionLabels
 	a :MarkdownRule ;
@@ -868,7 +858,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useSortedDefinitions
 	a :MarkdownRule ;
@@ -879,7 +869,7 @@
 	:fixKind "unsafe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noDefinitionSpacingIssues
 	a :MarkdownRule ;
@@ -890,7 +880,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useDefinitionsAtEnd
 	a :MarkdownRule ;
@@ -901,7 +891,7 @@
 	:fixKind "unsafe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noDuplicateDefinedUrls
 	a :MarkdownRule ;
@@ -912,7 +902,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noDuplicateDefinitions
 	a :MarkdownRule ;
@@ -923,7 +913,7 @@
 	:fixKind "none" ;
 	:severity "error" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentStrikethroughMarker
 	a :MarkdownRule ;
@@ -934,7 +924,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noHiddenTableCell
 	a :MarkdownRule ;
@@ -945,7 +935,7 @@
 	:fixKind "none" ;
 	:severity "error" ;
 	:recommended true ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noTableIndentation
 	a :MarkdownRule ;
@@ -956,7 +946,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentTablePipeAlignment
 	a :MarkdownRule ;
@@ -967,7 +957,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentLinebreakStyle
 	a :MarkdownRule ;
@@ -978,7 +968,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useBlanksBeforeBlockContent
 	a :MarkdownRule ;
@@ -989,7 +979,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :noParagraphContentIndent
 	a :MarkdownRule ;
@@ -1000,7 +990,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "planned" .
+	:implementationStatus "implemented" .
 
 :useConsistentFileExtension
 	a :MarkdownRule ;

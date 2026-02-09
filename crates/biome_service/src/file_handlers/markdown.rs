@@ -408,7 +408,12 @@ pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceEr
 
         if result.is_none() {
             return process_fix_all.finish(|| {
-                Ok(Either::<biome_formatter::FormatResult<biome_formatter::Formatted<biome_formatter::SimpleFormatContext>>, String>::Right(tree.syntax().to_string()))
+                Ok(Either::<
+                    biome_formatter::FormatResult<
+                        biome_formatter::Formatted<biome_formatter::SimpleFormatContext>,
+                    >,
+                    String,
+                >::Right(tree.syntax().to_string()))
             });
         }
     }

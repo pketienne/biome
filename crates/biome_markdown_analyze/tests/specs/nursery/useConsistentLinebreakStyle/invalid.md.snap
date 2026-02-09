@@ -1,0 +1,69 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Linebreaks
+
+This file has CRLF line endings.
+
+```
+
+# Diagnostics
+```
+invalid.md:1:13 lint/nursery/useConsistentLinebreakStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected LF (\n) line endings.
+  
+  > 1 │ # Linebreaks
+      │             
+  > 2 │ 
+      │ 
+    3 │ This file has CRLF line endings.
+    4 │ 
+  
+  i Use consistent line endings throughout the document.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:2:1 lint/nursery/useConsistentLinebreakStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected LF (\n) line endings.
+  
+    1 │ # Linebreaks
+  > 2 │ 
+      │ 
+  > 3 │ This file has CRLF line endings.
+      │ 
+    4 │ 
+  
+  i Use consistent line endings throughout the document.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:3:33 lint/nursery/useConsistentLinebreakStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected LF (\n) line endings.
+  
+    1 │ # Linebreaks
+    2 │ 
+  > 3 │ This file has CRLF line endings.
+      │                                 
+  > 4 │ 
+      │ 
+  
+  i Use consistent line endings throughout the document.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

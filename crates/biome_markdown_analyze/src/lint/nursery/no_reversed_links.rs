@@ -4,6 +4,8 @@ use biome_diagnostics::Severity;
 use biome_markdown_syntax::{MdDocument, MdParagraph};
 use biome_rowan::{AstNode, TextRange, TextSize};
 
+use crate::utils::inline_utils::{find_matching_bracket, looks_like_url};
+
 declare_lint_rule! {
     /// Disallow reversed link syntax.
     ///
@@ -56,11 +58,13 @@ impl Rule for NoReversedLinks {
                 let mut i = 0;
                 while i < bytes.len() {
                     if bytes[i] == b'(' {
-                        if let Some(close_paren) = find_matching(bytes, i, b'(', b')') {
+                        if let Some(close_paren) =
+                            find_matching_bracket(bytes, i, b'(', b')')
+                        {
                             // Check if immediately followed by [
                             if close_paren + 1 < bytes.len() && bytes[close_paren + 1] == b'[' {
                                 if let Some(close_bracket) =
-                                    find_matching(bytes, close_paren + 1, b'[', b']')
+                                    find_matching_bracket(bytes, close_paren + 1, b'[', b']')
                                 {
                                     let paren_content = &text[i + 1..close_paren];
                                     let bracket_content = &text[close_paren + 2..close_bracket];
@@ -104,31 +108,4 @@ impl Rule for NoReversedLinks {
             }),
         )
     }
-}
-
-fn find_matching(bytes: &[u8], start: usize, open: u8, close: u8) -> Option<usize> {
-    let mut depth = 0;
-    for i in start..bytes.len() {
-        if bytes[i] == open {
-            depth += 1;
-        } else if bytes[i] == close {
-            depth -= 1;
-            if depth == 0 {
-                return Some(i);
-            }
-        }
-    }
-    None
-}
-
-fn looks_like_url(s: &str) -> bool {
-    s.starts_with("http://")
-        || s.starts_with("https://")
-        || s.starts_with("ftp://")
-        || s.starts_with("mailto:")
-        || s.starts_with('#')
-        || s.starts_with('/')
-        || s.starts_with("./")
-        || s.starts_with("../")
-        || s.contains('.')
 }

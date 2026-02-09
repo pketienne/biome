@@ -36,5 +36,8 @@ format                = "fmt --all --verbose"
 lint                  = "clippy --workspace --all-features --all-targets -- --deny warnings"
 new-crate             = "run -p xtask_codegen -- new-crate"
 
+[build]
+target-dir = "/srv/biome-targets/main"
+
 [profile.release]
 lto = true

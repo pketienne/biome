@@ -1,0 +1,116 @@
+use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_console::markup;
+use biome_diagnostics::Severity;
+use biome_markdown_syntax::MdDocument;
+use biome_rowan::{AstNode, TextRange, TextSize};
+
+use crate::utils::fence_utils::FenceTracker;
+use crate::utils::inline_utils::{find_code_spans, find_emphasis_markers};
+
+declare_lint_rule! {
+    /// Disallow using emphasis or bold as a heading substitute.
+    ///
+    /// A paragraph that consists entirely of bold or italic text
+    /// likely should be a proper heading instead.
+    ///
+    /// ## Examples
+    ///
+    /// ### Invalid
+    ///
+    /// ````md
+    /// **This should be a heading**
+    /// ````
+    ///
+    /// ### Valid
+    ///
+    /// ```md
+    /// ## This is a heading
+    /// ```
+    pub NoEmphasisAsHeading {
+        version: "next",
+        name: "noEmphasisAsHeading",
+        language: "md",
+        recommended: false,
+        severity: Severity::Warning,
+    }
+}
+
+pub struct EmphasisHeading {
+    range: TextRange,
+}
+
+impl Rule for NoEmphasisAsHeading {
+    type Query = Ast<MdDocument>;
+    type State = EmphasisHeading;
+    type Signals = Vec<Self::State>;
+    type Options = ();
+
+    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+        let document = ctx.query();
+        let text = document.syntax().text_with_trivia().to_string();
+        let base = document.syntax().text_range_with_trivia().start();
+        let mut signals = Vec::new();
+        let mut tracker = FenceTracker::new();
+        let lines: Vec<&str> = text.lines().collect();
+
+        for (line_idx, line) in lines.iter().enumerate() {
+            tracker.process_line(line_idx, line);
+            if tracker.is_inside_fence() {
+                continue;
+            }
+
+            let trimmed = line.trim();
+            if trimmed.is_empty() {
+                continue;
+            }
+
+            // Check if the line is a standalone bold/emphasis paragraph
+            // Pattern: **text** or __text__ or *text* or _text_ as entire line
+            let is_emphasis_line = (trimmed.starts_with("**") && trimmed.ends_with("**") && trimmed.len() > 4)
+                || (trimmed.starts_with("__") && trimmed.ends_with("__") && trimmed.len() > 4);
+
+            if !is_emphasis_line {
+                continue;
+            }
+
+            // Verify the line before is blank or start of document (standalone paragraph)
+            let prev_blank = line_idx == 0
+                || lines[line_idx - 1].trim().is_empty();
+            let next_blank = line_idx + 1 >= lines.len()
+                || lines[line_idx + 1].trim().is_empty();
+
+            if prev_blank && next_blank {
+                // Check it has actual emphasis markers, not just asterisks
+                let code_spans = find_code_spans(line);
+                let markers = find_emphasis_markers(line, &code_spans);
+                if markers.len() >= 2 {
+                    let line_offset: usize =
+                        lines[..line_idx].iter().map(|l| l.len() + 1).sum();
+                    signals.push(EmphasisHeading {
+                        range: TextRange::new(
+                            base + TextSize::from(line_offset as u32),
+                            base + TextSize::from((line_offset + line.len()) as u32),
+                        ),
+                    });
+                }
+            }
+        }
+
+        signals
+    }
+
+    fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+        Some(
+            RuleDiagnostic::new(
+                rule_category!(),
+                state.range,
+                markup! {
+                    "Emphasis used as a heading substitute."
+                },
+            )
+            .note(markup! {
+                "Use a proper heading (e.g. ## Heading) instead of bold/italic text."
+            }),
+        )
+    }
+}

@@ -1,0 +1,58 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Lists without blank lines
+
+Some text before list.
++ first item
++ second item
++ third item
+Some text after list.
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/nursery/useBlanksAroundLists ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line before list block.
+  
+    3 │ Some text before list.
+  > 4 │ + first item
+      │ ^^^^^^^^^^^^
+  > 5 │ + second item
+  > 6 │ + third item
+      │ ^^^^^^^^^^^^
+    7 │ Some text after list.
+    8 │ 
+  
+  i Add a blank line before and after list blocks.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:4:1 lint/nursery/useBlanksAroundLists ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line after list block.
+  
+    3 │ Some text before list.
+  > 4 │ + first item
+      │ ^^^^^^^^^^^^
+  > 5 │ + second item
+  > 6 │ + third item
+      │ ^^^^^^^^^^^^
+    7 │ Some text after list.
+    8 │ 
+  
+  i Add a blank line before and after list blocks.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

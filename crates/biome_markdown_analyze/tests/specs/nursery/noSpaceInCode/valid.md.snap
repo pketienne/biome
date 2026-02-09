@@ -1,0 +1,13 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: valid.md
+---
+# Input
+```md
+# Code spans
+
+Use `code` in your text.
+
+Use ``code with ` inside`` too.
+
+```

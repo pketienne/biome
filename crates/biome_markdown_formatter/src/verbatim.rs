@@ -4,8 +4,8 @@ use biome_formatter::formatter::Formatter;
 use biome_formatter::prelude::{Tag, text};
 use biome_formatter::trivia::{FormatLeadingComments, FormatTrailingComments};
 use biome_formatter::{
-    Buffer, CstFormatContext, Format, FormatContext, FormatElement, FormatResult,
-    LINE_TERMINATORS, normalize_newlines,
+    Buffer, CstFormatContext, Format, FormatContext, FormatElement, FormatResult, LINE_TERMINATORS,
+    normalize_newlines,
 };
 use biome_markdown_syntax::MarkdownSyntaxNode;
 use biome_rowan::{AstNode, Direction, SyntaxElement, TextRange};

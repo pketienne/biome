@@ -85,6 +85,10 @@ export interface Configuration {
 	 */
 	linter?: LinterConfiguration;
 	/**
+	 * Specific configuration for the Markdown language
+	 */
+	markdown?: MarkdownConfiguration;
+	/**
 	 * A list of granular patterns that should be applied only to a sub set of files
 	 */
 	overrides?: Overrides;
@@ -354,6 +358,23 @@ match these patterns.
 	 * List of rules
 	 */
 	rules?: Rules;
+}
+/**
+ * Options applied to Markdown files
+ */
+export interface MarkdownConfiguration {
+	/**
+	 * Markdown assist options
+	 */
+	assist?: MarkdownAssistConfiguration;
+	/**
+	 * Markdown formatter options
+	 */
+	formatter?: MarkdownFormatterConfiguration;
+	/**
+	 * Markdown linter options
+	 */
+	linter?: MarkdownLinterConfiguration;
 }
 export type Overrides = OverridePattern[];
 export type Plugins = PluginConfiguration[];
@@ -840,6 +861,33 @@ export interface Rules {
 	security?: SeverityOrSecurity;
 	style?: SeverityOrStyle;
 	suspicious?: SeverityOrSuspicious;
+}
+/**
+ * Options that changes how the Markdown assist behaves
+ */
+export interface MarkdownAssistConfiguration {
+	/**
+	 * Control the assist for Markdown files.
+	 */
+	enabled?: Bool;
+}
+/**
+ * Options that changes how the Markdown formatter behaves
+ */
+export interface MarkdownFormatterConfiguration {
+	/**
+	 * Control the formatter for Markdown files.
+	 */
+	enabled?: Bool;
+}
+/**
+ * Options that changes how the Markdown linter behaves
+ */
+export interface MarkdownLinterConfiguration {
+	/**
+	 * Control the linter for Markdown files.
+	 */
+	enabled?: Bool;
 }
 export interface OverridePattern {
 	/**
@@ -1864,15 +1912,45 @@ See https://biomejs.dev/linter/rules/no-ambiguous-anchor-text
 	 */
 	noAmbiguousAnchorText?: NoAmbiguousAnchorTextConfiguration;
 	/**
+	* Disallow bare URLs in markdown text.
+See https://biomejs.dev/linter/rules/no-bare-urls 
+	 */
+	noBareUrls?: NoBareUrlsConfiguration;
+	/**
 	* Prevent usage of next/script's beforeInteractive strategy outside of pages/_document.js in a Next.js project.
 See https://biomejs.dev/linter/rules/no-before-interactive-script-outside-document 
 	 */
 	noBeforeInteractiveScriptOutsideDocument?: NoBeforeInteractiveScriptOutsideDocumentConfiguration;
 	/**
+	* Disallow broken blockquote continuation.
+See https://biomejs.dev/linter/rules/no-blockquote-broken-continuation 
+	 */
+	noBlockquoteBrokenContinuation?: NoBlockquoteBrokenContinuationConfiguration;
+	/**
+	* Enforce consistent checkbox character style.
+See https://biomejs.dev/linter/rules/no-checkbox-character-style-mismatch 
+	 */
+	noCheckboxCharacterStyleMismatch?: NoCheckboxCharacterStyleMismatchConfiguration;
+	/**
+	* Disallow extra spacing after checkbox brackets.
+See https://biomejs.dev/linter/rules/no-checkbox-content-indent 
+	 */
+	noCheckboxContentIndent?: NoCheckboxContentIndentConfiguration;
+	/**
+	* Limit the number of consecutive blank lines.
+See https://biomejs.dev/linter/rules/no-consecutive-blank-lines 
+	 */
+	noConsecutiveBlankLines?: NoConsecutiveBlankLinesConfiguration;
+	/**
 	* Disallow continue statements.
 See https://biomejs.dev/linter/rules/no-continue 
 	 */
 	noContinue?: NoContinueConfiguration;
+	/**
+	* Disallow spacing issues in link reference definitions.
+See https://biomejs.dev/linter/rules/no-definition-spacing-issues 
+	 */
+	noDefinitionSpacingIssues?: NoDefinitionSpacingIssuesConfiguration;
 	/**
 	* Restrict imports of deprecated exports.
 See https://biomejs.dev/linter/rules/no-deprecated-imports 
@@ -1899,6 +1977,16 @@ See https://biomejs.dev/linter/rules/no-duplicate-attributes
 	 */
 	noDuplicateAttributes?: NoDuplicateAttributesConfiguration;
 	/**
+	* Disallow multiple definitions that resolve to the same URL.
+See https://biomejs.dev/linter/rules/no-duplicate-defined-urls 
+	 */
+	noDuplicateDefinedUrls?: NoDuplicateDefinedUrlsConfiguration;
+	/**
+	* Disallow duplicate link reference definitions.
+See https://biomejs.dev/linter/rules/no-duplicate-definitions 
+	 */
+	noDuplicateDefinitions?: NoDuplicateDefinitionsConfiguration;
+	/**
 	* Prevent the listing of duplicate dependencies. The rule supports the following dependency groups: "bundledDependencies", "bundleDependencies", "dependencies", "devDependencies", "overrides", "optionalDependencies", and "peerDependencies".
 See https://biomejs.dev/linter/rules/no-duplicate-dependencies 
 	 */
@@ -1924,6 +2012,16 @@ See https://biomejs.dev/linter/rules/no-duplicate-graphql-operation-name
 	 */
 	noDuplicateGraphqlOperationName?: NoDuplicateGraphqlOperationNameConfiguration;
 	/**
+	* Disallow duplicate heading text.
+See https://biomejs.dev/linter/rules/no-duplicate-headings 
+	 */
+	noDuplicateHeadings?: NoDuplicateHeadingsConfiguration;
+	/**
+	* Disallow duplicate headings within the same section.
+See https://biomejs.dev/linter/rules/no-duplicate-headings-in-section 
+	 */
+	noDuplicateHeadingsInSection?: NoDuplicateHeadingsInSectionConfiguration;
+	/**
 	* Require fields within an input object to be unique.
 See https://biomejs.dev/linter/rules/no-duplicate-input-field-names 
 	 */
@@ -1938,6 +2036,16 @@ See https://biomejs.dev/linter/rules/no-duplicate-variable-names
 See https://biomejs.dev/linter/rules/no-duplicated-spread-props 
 	 */
 	noDuplicatedSpreadProps?: NoDuplicatedSpreadPropsConfiguration;
+	/**
+	* Disallow using emphasis or bold as a heading substitute.
+See https://biomejs.dev/linter/rules/no-emphasis-as-heading 
+	 */
+	noEmphasisAsHeading?: NoEmphasisAsHeadingConfiguration;
+	/**
+	* Disallow links with empty URLs.
+See https://biomejs.dev/linter/rules/no-empty-links 
+	 */
+	noEmptyLinks?: NoEmptyLinksConfiguration;
 	/**
 	* Disallow empty sources.
 See https://biomejs.dev/linter/rules/no-empty-source 
@@ -1974,10 +2082,35 @@ See https://biomejs.dev/linter/rules/no-for-in
 	 */
 	noForIn?: NoForInConfiguration;
 	/**
+	* Disallow hard tabs in markdown files.
+See https://biomejs.dev/linter/rules/no-hard-tabs 
+	 */
+	noHardTabs?: NoHardTabsConfiguration;
+	/**
+	* Disallow extra spaces between heading markers and content.
+See https://biomejs.dev/linter/rules/no-heading-content-indent 
+	 */
+	noHeadingContentIndent?: NoHeadingContentIndentConfiguration;
+	/**
+	* Disallow indentation before headings.
+See https://biomejs.dev/linter/rules/no-heading-indent 
+	 */
+	noHeadingIndent?: NoHeadingIndentConfiguration;
+	/**
+	* Disallow trailing punctuation in headings.
+See https://biomejs.dev/linter/rules/no-heading-trailing-punctuation 
+	 */
+	noHeadingTrailingPunctuation?: NoHeadingTrailingPunctuationConfiguration;
+	/**
 	* Disallow hex colors.
 See https://biomejs.dev/linter/rules/no-hex-colors 
 	 */
 	noHexColors?: NoHexColorsConfiguration;
+	/**
+	* Disallow hidden table cells.
+See https://biomejs.dev/linter/rules/no-hidden-table-cell 
+	 */
+	noHiddenTableCell?: NoHiddenTableCellConfiguration;
 	/**
 	* Prevent import cycles.
 See https://biomejs.dev/linter/rules/no-import-cycles 
@@ -1988,6 +2121,16 @@ See https://biomejs.dev/linter/rules/no-import-cycles
 See https://biomejs.dev/linter/rules/no-increment-decrement 
 	 */
 	noIncrementDecrement?: NoIncrementDecrementConfiguration;
+	/**
+	* Disallow inline HTML in markdown.
+See https://biomejs.dev/linter/rules/no-inline-html 
+	 */
+	noInlineHtml?: NoInlineHtmlConfiguration;
+	/**
+	* Disallow links with invalid fragment identifiers.
+See https://biomejs.dev/linter/rules/no-invalid-link-fragments 
+	 */
+	noInvalidLinkFragments?: NoInvalidLinkFragmentsConfiguration;
 	/**
 	* Disallow string literals inside JSX elements.
 See https://biomejs.dev/linter/rules/no-jsx-literals 
@@ -2004,6 +2147,46 @@ See https://biomejs.dev/linter/rules/no-leaked-render
 	 */
 	noLeakedRender?: NoLeakedRenderConfiguration;
 	/**
+	* Disallow indentation on top-level list item bullets.
+See https://biomejs.dev/linter/rules/no-list-item-bullet-indent 
+	 */
+	noListItemBulletIndent?: NoListItemBulletIndentConfiguration;
+	/**
+	* Enforce a maximum heading length.
+See https://biomejs.dev/linter/rules/no-long-headings 
+	 */
+	noLongHeadings?: NoLongHeadingsConfiguration;
+	/**
+	* Enforce a maximum line length.
+See https://biomejs.dev/linter/rules/no-long-lines 
+	 */
+	noLongLines?: NoLongLinesConfiguration;
+	/**
+	* Disallow table rows with mismatched column counts.
+See https://biomejs.dev/linter/rules/no-mismatched-table-column-count 
+	 */
+	noMismatchedTableColumnCount?: NoMismatchedTableColumnCountConfiguration;
+	/**
+	* Require alt text for images.
+See https://biomejs.dev/linter/rules/no-missing-alt-text 
+	 */
+	noMissingAltText?: NoMissingAltTextConfiguration;
+	/**
+	* Require a language tag on fenced code blocks.
+See https://biomejs.dev/linter/rules/no-missing-language 
+	 */
+	noMissingLanguage?: NoMissingLanguageConfiguration;
+	/**
+	* Require a space after the hash characters in atx headings.
+See https://biomejs.dev/linter/rules/no-missing-space-atx-heading 
+	 */
+	noMissingSpaceAtxHeading?: NoMissingSpaceAtxHeadingConfiguration;
+	/**
+	* Require a space before the closing hashes in closed ATX headings.
+See https://biomejs.dev/linter/rules/no-missing-space-closed-atx-heading 
+	 */
+	noMissingSpaceClosedAtxHeading?: NoMissingSpaceClosedAtxHeadingConfiguration;
+	/**
 	* Disallow Promises to be used in places where they are almost certainly a mistake.
 See https://biomejs.dev/linter/rules/no-misused-promises 
 	 */
@@ -2019,10 +2202,30 @@ See https://biomejs.dev/linter/rules/no-multi-str
 	 */
 	noMultiStr?: NoMultiStrConfiguration;
 	/**
+	* Disallow multiple spaces after hash characters in atx headings.
+See https://biomejs.dev/linter/rules/no-multiple-space-atx-heading 
+	 */
+	noMultipleSpaceAtxHeading?: NoMultipleSpaceAtxHeadingConfiguration;
+	/**
+	* Disallow multiple spaces before closing hashes in closed ATX headings.
+See https://biomejs.dev/linter/rules/no-multiple-space-closed-atx-heading 
+	 */
+	noMultipleSpaceClosedAtxHeading?: NoMultipleSpaceClosedAtxHeadingConfiguration;
+	/**
+	* Disallow multiple top-level headings in a document.
+See https://biomejs.dev/linter/rules/no-multiple-top-level-headings 
+	 */
+	noMultipleTopLevelHeadings?: NoMultipleTopLevelHeadingsConfiguration;
+	/**
 	* Prevent client components from being async functions.
 See https://biomejs.dev/linter/rules/no-next-async-client-component 
 	 */
 	noNextAsyncClientComponent?: NoNextAsyncClientComponentConfiguration;
+	/**
+	* Disallow indentation on paragraph content lines.
+See https://biomejs.dev/linter/rules/no-paragraph-content-indent 
+	 */
+	noParagraphContentIndent?: NoParagraphContentIndentConfiguration;
 	/**
 	* Disallow function parameters that are only used in recursive calls.
 See https://biomejs.dev/linter/rules/no-parameters-only-used-in-recursion 
@@ -2044,10 +2247,20 @@ See https://biomejs.dev/linter/rules/no-redundant-default-export
 	 */
 	noRedundantDefaultExport?: NoRedundantDefaultExportConfiguration;
 	/**
+	* Disallow reference-like URLs in inline links.
+See https://biomejs.dev/linter/rules/no-reference-like-url 
+	 */
+	noReferenceLikeUrl?: NoReferenceLikeUrlConfiguration;
+	/**
 	* Disallow assignments in return statements.
 See https://biomejs.dev/linter/rules/no-return-assign 
 	 */
 	noReturnAssign?: NoReturnAssignConfiguration;
+	/**
+	* Disallow reversed link syntax.
+See https://biomejs.dev/linter/rules/no-reversed-links 
+	 */
+	noReversedLinks?: NoReversedLinksConfiguration;
 	/**
 	* Disallow the usage of specified root types.
 See https://biomejs.dev/linter/rules/no-root-type 
@@ -2064,20 +2277,65 @@ See https://biomejs.dev/linter/rules/no-shadow
 	 */
 	noShadow?: NoShadowConfiguration;
 	/**
+	* Disallow dollar signs in shell code fence content.
+See https://biomejs.dev/linter/rules/no-shell-dollar-prompt 
+	 */
+	noShellDollarPrompt?: NoShellDollarPromptConfiguration;
+	/**
+	* Disallow shortcut reference images.
+See https://biomejs.dev/linter/rules/no-shortcut-reference-image 
+	 */
+	noShortcutReferenceImage?: NoShortcutReferenceImageConfiguration;
+	/**
+	* Disallow shortcut reference links.
+See https://biomejs.dev/linter/rules/no-shortcut-reference-link 
+	 */
+	noShortcutReferenceLink?: NoShortcutReferenceLinkConfiguration;
+	/**
+	* Disallow spaces at the edges of inline code spans.
+See https://biomejs.dev/linter/rules/no-space-in-code 
+	 */
+	noSpaceInCode?: NoSpaceInCodeConfiguration;
+	/**
+	* Disallow spaces inside emphasis markers.
+See https://biomejs.dev/linter/rules/no-space-in-emphasis 
+	 */
+	noSpaceInEmphasis?: NoSpaceInEmphasisConfiguration;
+	/**
+	* Disallow spaces inside link text brackets.
+See https://biomejs.dev/linter/rules/no-space-in-links 
+	 */
+	noSpaceInLinks?: NoSpaceInLinksConfiguration;
+	/**
 	* Prevent the usage of synchronous scripts.
 See https://biomejs.dev/linter/rules/no-sync-scripts 
 	 */
 	noSyncScripts?: NoSyncScriptsConfiguration;
+	/**
+	* Disallow indentation in table rows.
+See https://biomejs.dev/linter/rules/no-table-indentation 
+	 */
+	noTableIndentation?: NoTableIndentationConfiguration;
 	/**
 	* Disallow ternary operators.
 See https://biomejs.dev/linter/rules/no-ternary 
 	 */
 	noTernary?: NoTernaryConfiguration;
 	/**
+	* Disallow trailing spaces used for hard line breaks.
+See https://biomejs.dev/linter/rules/no-trailing-hard-break-spaces 
+	 */
+	noTrailingHardBreakSpaces?: NoTrailingHardBreakSpacesConfiguration;
+	/**
 	* Disallow the use of undeclared environment variables.
 See https://biomejs.dev/linter/rules/no-undeclared-env-vars 
 	 */
 	noUndeclaredEnvVars?: NoUndeclaredEnvVarsConfiguration;
+	/**
+	* Disallow reference links and images that use an undefined label.
+See https://biomejs.dev/linter/rules/no-undefined-references 
+	 */
+	noUndefinedReferences?: NoUndefinedReferencesConfiguration;
 	/**
 	* Disallow unknown DOM properties.
 See https://biomejs.dev/linter/rules/no-unknown-attribute 
@@ -2089,10 +2347,25 @@ See https://biomejs.dev/linter/rules/no-unnecessary-conditions
 	 */
 	noUnnecessaryConditions?: NoUnnecessaryConditionsConfiguration;
 	/**
+	* Disallow full reference images when collapsed form would suffice.
+See https://biomejs.dev/linter/rules/no-unneeded-full-reference-image 
+	 */
+	noUnneededFullReferenceImage?: NoUnneededFullReferenceImageConfiguration;
+	/**
+	* Disallow full reference links when collapsed form would suffice.
+See https://biomejs.dev/linter/rules/no-unneeded-full-reference-link 
+	 */
+	noUnneededFullReferenceLink?: NoUnneededFullReferenceLinkConfiguration;
+	/**
 	* Warn when importing non-existing exports.
 See https://biomejs.dev/linter/rules/no-unresolved-imports 
 	 */
 	noUnresolvedImports?: NoUnresolvedImportsConfiguration;
+	/**
+	* Disallow unused link reference definitions.
+See https://biomejs.dev/linter/rules/no-unused-definitions 
+	 */
+	noUnusedDefinitions?: NoUnusedDefinitionsConfiguration;
 	/**
 	* Disallow expression statements that are neither a function call nor an assignment.
 See https://biomejs.dev/linter/rules/no-unused-expressions 
@@ -2163,10 +2436,55 @@ See https://biomejs.dev/linter/rules/use-await-thenable
 	 */
 	useAwaitThenable?: UseAwaitThenableConfiguration;
 	/**
+	* Require blank lines around fenced code blocks.
+See https://biomejs.dev/linter/rules/use-blanks-around-code-fences 
+	 */
+	useBlanksAroundCodeFences?: UseBlanksAroundCodeFencesConfiguration;
+	/**
+	* Require blank lines around headings.
+See https://biomejs.dev/linter/rules/use-blanks-around-headings 
+	 */
+	useBlanksAroundHeadings?: UseBlanksAroundHeadingsConfiguration;
+	/**
+	* Enforce blank lines around list blocks.
+See https://biomejs.dev/linter/rules/use-blanks-around-lists 
+	 */
+	useBlanksAroundLists?: UseBlanksAroundListsConfiguration;
+	/**
+	* Require blank lines around tables.
+See https://biomejs.dev/linter/rules/use-blanks-around-tables 
+	 */
+	useBlanksAroundTables?: UseBlanksAroundTablesConfiguration;
+	/**
+	* Enforce blank lines before block-level content.
+See https://biomejs.dev/linter/rules/use-blanks-before-block-content 
+	 */
+	useBlanksBeforeBlockContent?: UseBlanksBeforeBlockContentConfiguration;
+	/**
 	* Enforce consistent arrow function bodies.
 See https://biomejs.dev/linter/rules/use-consistent-arrow-return 
 	 */
 	useConsistentArrowReturn?: UseConsistentArrowReturnConfiguration;
+	/**
+	* Enforce consistent blockquote indentation.
+See https://biomejs.dev/linter/rules/use-consistent-blockquote-indent 
+	 */
+	useConsistentBlockquoteIndent?: UseConsistentBlockquoteIndentConfiguration;
+	/**
+	* Enforce consistent code block style.
+See https://biomejs.dev/linter/rules/use-consistent-code-block-style 
+	 */
+	useConsistentCodeBlockStyle?: UseConsistentCodeBlockStyleConfiguration;
+	/**
+	* Enforce consistent code fence markers.
+See https://biomejs.dev/linter/rules/use-consistent-code-fence-marker 
+	 */
+	useConsistentCodeFenceMarker?: UseConsistentCodeFenceMarkerConfiguration;
+	/**
+	* Enforce consistent emphasis markers.
+See https://biomejs.dev/linter/rules/use-consistent-emphasis-marker 
+	 */
+	useConsistentEmphasisMarker?: UseConsistentEmphasisMarkerConfiguration;
 	/**
 	* Disallow enums from having both number and string members.
 See https://biomejs.dev/linter/rules/use-consistent-enum-value-type 
@@ -2178,15 +2496,120 @@ See https://biomejs.dev/linter/rules/use-consistent-graphql-descriptions
 	 */
 	useConsistentGraphqlDescriptions?: UseConsistentGraphqlDescriptionsConfiguration;
 	/**
+	* Enforce consistent heading style.
+See https://biomejs.dev/linter/rules/use-consistent-heading-style 
+	 */
+	useConsistentHeadingStyle?: UseConsistentHeadingStyleConfiguration;
+	/**
+	* Enforce a consistent style for horizontal rules.
+See https://biomejs.dev/linter/rules/use-consistent-horizontal-rule-style 
+	 */
+	useConsistentHorizontalRuleStyle?: UseConsistentHorizontalRuleStyleConfiguration;
+	/**
+	* Enforce consistent line endings.
+See https://biomejs.dev/linter/rules/use-consistent-linebreak-style 
+	 */
+	useConsistentLinebreakStyle?: UseConsistentLinebreakStyleConfiguration;
+	/**
+	* Enforce consistent link style.
+See https://biomejs.dev/linter/rules/use-consistent-link-style 
+	 */
+	useConsistentLinkStyle?: UseConsistentLinkStyleConfiguration;
+	/**
+	* Enforce consistent link title delimiter style.
+See https://biomejs.dev/linter/rules/use-consistent-link-title-style 
+	 */
+	useConsistentLinkTitleStyle?: UseConsistentLinkTitleStyleConfiguration;
+	/**
+	* Enforce consistent indentation for list items at the same level.
+See https://biomejs.dev/linter/rules/use-consistent-list-indent 
+	 */
+	useConsistentListIndent?: UseConsistentListIndentConfiguration;
+	/**
+	* Enforce consistent content indentation for continuation lines.
+See https://biomejs.dev/linter/rules/use-consistent-list-item-content-indent 
+	 */
+	useConsistentListItemContentIndent?: UseConsistentListItemContentIndentConfiguration;
+	/**
+	* Enforce consistent spacing between list marker and content.
+See https://biomejs.dev/linter/rules/use-consistent-list-item-indent 
+	 */
+	useConsistentListItemIndent?: UseConsistentListItemIndentConfiguration;
+	/**
+	* Enforce consistent spacing between list items.
+See https://biomejs.dev/linter/rules/use-consistent-list-item-spacing 
+	 */
+	useConsistentListItemSpacing?: UseConsistentListItemSpacingConfiguration;
+	/**
+	* Enforce consistent image/media style.
+See https://biomejs.dev/linter/rules/use-consistent-media-style 
+	 */
+	useConsistentMediaStyle?: UseConsistentMediaStyleConfiguration;
+	/**
 	* Enforce consistent use of either method signatures or function properties within interfaces and type aliases.
 See https://biomejs.dev/linter/rules/use-consistent-method-signatures 
 	 */
 	useConsistentMethodSignatures?: UseConsistentMethodSignaturesConfiguration;
 	/**
+	* Enforce consistent ordered list marker delimiter.
+See https://biomejs.dev/linter/rules/use-consistent-ordered-list-marker 
+	 */
+	useConsistentOrderedListMarker?: UseConsistentOrderedListMarkerConfiguration;
+	/**
+	* Enforce consistent ordered list marker values.
+See https://biomejs.dev/linter/rules/use-consistent-ordered-list-marker-value 
+	 */
+	useConsistentOrderedListMarkerValue?: UseConsistentOrderedListMarkerValueConfiguration;
+	/**
+	* Enforce consistent strikethrough marker style.
+See https://biomejs.dev/linter/rules/use-consistent-strikethrough-marker 
+	 */
+	useConsistentStrikethroughMarker?: UseConsistentStrikethroughMarkerConfiguration;
+	/**
+	* Enforce consistent strong emphasis markers.
+See https://biomejs.dev/linter/rules/use-consistent-strong-marker 
+	 */
+	useConsistentStrongMarker?: UseConsistentStrongMarkerConfiguration;
+	/**
+	* Enforce consistent table cell padding.
+See https://biomejs.dev/linter/rules/use-consistent-table-cell-padding 
+	 */
+	useConsistentTableCellPadding?: UseConsistentTableCellPaddingConfiguration;
+	/**
+	* Enforce aligned table pipe characters.
+See https://biomejs.dev/linter/rules/use-consistent-table-pipe-alignment 
+	 */
+	useConsistentTablePipeAlignment?: UseConsistentTablePipeAlignmentConfiguration;
+	/**
+	* Enforce consistent table pipe style.
+See https://biomejs.dev/linter/rules/use-consistent-table-pipe-style 
+	 */
+	useConsistentTablePipeStyle?: UseConsistentTablePipeStyleConfiguration;
+	/**
+	* Enforce consistent indentation for nested unordered list items.
+See https://biomejs.dev/linter/rules/use-consistent-unordered-list-indent 
+	 */
+	useConsistentUnorderedListIndent?: UseConsistentUnorderedListIndentConfiguration;
+	/**
+	* Enforce consistent unordered list marker style.
+See https://biomejs.dev/linter/rules/use-consistent-unordered-list-marker 
+	 */
+	useConsistentUnorderedListMarker?: UseConsistentUnorderedListMarkerConfiguration;
+	/**
+	* Enforce that link reference definitions are placed at the end.
+See https://biomejs.dev/linter/rules/use-definitions-at-end 
+	 */
+	useDefinitionsAtEnd?: UseDefinitionsAtEndConfiguration;
+	/**
 	* Require the @deprecated directive to specify a deletion date.
 See https://biomejs.dev/linter/rules/use-deprecated-date 
 	 */
 	useDeprecatedDate?: UseDeprecatedDateConfiguration;
+	/**
+	* Require descriptive link text.
+See https://biomejs.dev/linter/rules/use-descriptive-link-text 
+	 */
+	useDescriptiveLinkText?: UseDescriptiveLinkTextConfiguration;
 	/**
 	* Require destructuring from arrays and/or objects.
 See https://biomejs.dev/linter/rules/use-destructuring 
@@ -2208,15 +2631,30 @@ See https://biomejs.dev/linter/rules/use-explicit-type
 	 */
 	useExplicitType?: UseExplicitTypeConfiguration;
 	/**
+	* Require files to end with a single newline character.
+See https://biomejs.dev/linter/rules/use-final-newline 
+	 */
+	useFinalNewline?: UseFinalNewlineConfiguration;
+	/**
 	* Enforce the use of Array.prototype.find() over Array.prototype.filter() followed by [0] when looking for a single result.
 See https://biomejs.dev/linter/rules/use-find 
 	 */
 	useFind?: UseFindConfiguration;
 	/**
+	* Require a heading as the first content in a document.
+See https://biomejs.dev/linter/rules/use-first-line-heading 
+	 */
+	useFirstLineHeading?: UseFirstLineHeadingConfiguration;
+	/**
 	* Enforce the use of globalThis over window, self, and global.
 See https://biomejs.dev/linter/rules/use-global-this 
 	 */
 	useGlobalThis?: UseGlobalThisConfiguration;
+	/**
+	* Heading levels should only increment by one level at a time.
+See https://biomejs.dev/linter/rules/use-heading-increment 
+	 */
+	useHeadingIncrement?: UseHeadingIncrementConfiguration;
 	/**
 	* Enforce id attribute on next/script components with inline content or dangerouslySetInnerHTML.
 See https://biomejs.dev/linter/rules/use-inline-script-id 
@@ -2237,6 +2675,11 @@ See https://biomejs.dev/linter/rules/use-lone-anonymous-operation
 See https://biomejs.dev/linter/rules/use-lone-executable-definition 
 	 */
 	useLoneExecutableDefinition?: UseLoneExecutableDefinitionConfiguration;
+	/**
+	* Enforce lowercase labels in link reference definitions.
+See https://biomejs.dev/linter/rules/use-lowercase-definition-labels 
+	 */
+	useLowercaseDefinitionLabels?: UseLowercaseDefinitionLabelsConfiguration;
 	/**
 	* Enforce a maximum number of parameters in function definitions.
 See https://biomejs.dev/linter/rules/use-max-params 
@@ -2267,6 +2710,11 @@ See https://biomejs.dev/linter/rules/use-required-scripts
 See https://biomejs.dev/linter/rules/use-sorted-classes 
 	 */
 	useSortedClasses?: UseSortedClassesConfiguration;
+	/**
+	* Enforce alphabetically sorted link reference definitions.
+See https://biomejs.dev/linter/rules/use-sorted-definitions 
+	 */
+	useSortedDefinitions?: UseSortedDefinitionsConfiguration;
 	/**
 	* Enforce the use of the spread operator over .apply().
 See https://biomejs.dev/linter/rules/use-spread 
@@ -3794,12 +4242,30 @@ export type UseYieldConfiguration =
 export type NoAmbiguousAnchorTextConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoAmbiguousAnchorTextOptions;
+export type NoBareUrlsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoBareUrlsOptions;
 export type NoBeforeInteractiveScriptOutsideDocumentConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoBeforeInteractiveScriptOutsideDocumentOptions;
+export type NoBlockquoteBrokenContinuationConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoBlockquoteBrokenContinuationOptions;
+export type NoCheckboxCharacterStyleMismatchConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoCheckboxCharacterStyleMismatchOptions;
+export type NoCheckboxContentIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoCheckboxContentIndentOptions;
+export type NoConsecutiveBlankLinesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoConsecutiveBlankLinesOptions;
 export type NoContinueConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoContinueOptions;
+export type NoDefinitionSpacingIssuesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoDefinitionSpacingIssuesOptions;
 export type NoDeprecatedImportsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoDeprecatedImportsOptions;
@@ -3815,6 +4281,12 @@ export type NoDuplicateArgumentNamesConfiguration =
 export type NoDuplicateAttributesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoDuplicateAttributesOptions;
+export type NoDuplicateDefinedUrlsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoDuplicateDefinedUrlsOptions;
+export type NoDuplicateDefinitionsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoDuplicateDefinitionsOptions;
 export type NoDuplicateDependenciesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoDuplicateDependenciesOptions;
@@ -3830,6 +4302,12 @@ export type NoDuplicateFieldDefinitionNamesConfiguration =
 export type NoDuplicateGraphqlOperationNameConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoDuplicateGraphqlOperationNameOptions;
+export type NoDuplicateHeadingsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoDuplicateHeadingsOptions;
+export type NoDuplicateHeadingsInSectionConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoDuplicateHeadingsInSectionOptions;
 export type NoDuplicateInputFieldNamesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoDuplicateInputFieldNamesOptions;
@@ -3839,6 +4317,12 @@ export type NoDuplicateVariableNamesConfiguration =
 export type NoDuplicatedSpreadPropsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoDuplicatedSpreadPropsOptions;
+export type NoEmphasisAsHeadingConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoEmphasisAsHeadingOptions;
+export type NoEmptyLinksConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoEmptyLinksOptions;
 export type NoEmptySourceConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoEmptySourceOptions;
@@ -3860,15 +4344,36 @@ export type NoFloatingPromisesConfiguration =
 export type NoForInConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoForInOptions;
+export type NoHardTabsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoHardTabsOptions;
+export type NoHeadingContentIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoHeadingContentIndentOptions;
+export type NoHeadingIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoHeadingIndentOptions;
+export type NoHeadingTrailingPunctuationConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoHeadingTrailingPunctuationOptions;
 export type NoHexColorsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoHexColorsOptions;
+export type NoHiddenTableCellConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoHiddenTableCellOptions;
 export type NoImportCyclesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoImportCyclesOptions;
 export type NoIncrementDecrementConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoIncrementDecrementOptions;
+export type NoInlineHtmlConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoInlineHtmlOptions;
+export type NoInvalidLinkFragmentsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoInvalidLinkFragmentsOptions;
 export type NoJsxLiteralsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoJsxLiteralsOptions;
@@ -3878,6 +4383,30 @@ export type NoJsxPropsBindConfiguration =
 export type NoLeakedRenderConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoLeakedRenderOptions;
+export type NoListItemBulletIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoListItemBulletIndentOptions;
+export type NoLongHeadingsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoLongHeadingsOptions;
+export type NoLongLinesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoLongLinesOptions;
+export type NoMismatchedTableColumnCountConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMismatchedTableColumnCountOptions;
+export type NoMissingAltTextConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMissingAltTextOptions;
+export type NoMissingLanguageConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMissingLanguageOptions;
+export type NoMissingSpaceAtxHeadingConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMissingSpaceAtxHeadingOptions;
+export type NoMissingSpaceClosedAtxHeadingConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMissingSpaceClosedAtxHeadingOptions;
 export type NoMisusedPromisesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoMisusedPromisesOptions;
@@ -3887,9 +4416,21 @@ export type NoMultiAssignConfiguration =
 export type NoMultiStrConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoMultiStrOptions;
+export type NoMultipleSpaceAtxHeadingConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMultipleSpaceAtxHeadingOptions;
+export type NoMultipleSpaceClosedAtxHeadingConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMultipleSpaceClosedAtxHeadingOptions;
+export type NoMultipleTopLevelHeadingsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMultipleTopLevelHeadingsOptions;
 export type NoNextAsyncClientComponentConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoNextAsyncClientComponentOptions;
+export type NoParagraphContentIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoParagraphContentIndentOptions;
 export type NoParametersOnlyUsedInRecursionConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoParametersOnlyUsedInRecursionOptions;
@@ -3902,9 +4443,15 @@ export type NoReactForwardRefConfiguration =
 export type NoRedundantDefaultExportConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoRedundantDefaultExportOptions;
+export type NoReferenceLikeUrlConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoReferenceLikeUrlOptions;
 export type NoReturnAssignConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoReturnAssignOptions;
+export type NoReversedLinksConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoReversedLinksOptions;
 export type NoRootTypeConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoRootTypeOptions;
@@ -3914,24 +4461,60 @@ export type NoScriptUrlConfiguration =
 export type NoShadowConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoShadowOptions;
+export type NoShellDollarPromptConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoShellDollarPromptOptions;
+export type NoShortcutReferenceImageConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoShortcutReferenceImageOptions;
+export type NoShortcutReferenceLinkConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoShortcutReferenceLinkOptions;
+export type NoSpaceInCodeConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoSpaceInCodeOptions;
+export type NoSpaceInEmphasisConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoSpaceInEmphasisOptions;
+export type NoSpaceInLinksConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoSpaceInLinksOptions;
 export type NoSyncScriptsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoSyncScriptsOptions;
+export type NoTableIndentationConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoTableIndentationOptions;
 export type NoTernaryConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoTernaryOptions;
+export type NoTrailingHardBreakSpacesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoTrailingHardBreakSpacesOptions;
 export type NoUndeclaredEnvVarsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoUndeclaredEnvVarsOptions;
+export type NoUndefinedReferencesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoUndefinedReferencesOptions;
 export type NoUnknownAttributeConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoUnknownAttributeOptions;
 export type NoUnnecessaryConditionsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoUnnecessaryConditionsOptions;
+export type NoUnneededFullReferenceImageConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoUnneededFullReferenceImageOptions;
+export type NoUnneededFullReferenceLinkConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoUnneededFullReferenceLinkOptions;
 export type NoUnresolvedImportsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoUnresolvedImportsOptions;
+export type NoUnusedDefinitionsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoUnusedDefinitionsOptions;
 export type NoUnusedExpressionsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoUnusedExpressionsOptions;
@@ -3971,21 +4554,111 @@ export type UseArraySortCompareConfiguration =
 export type UseAwaitThenableConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseAwaitThenableOptions;
+export type UseBlanksAroundCodeFencesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseBlanksAroundCodeFencesOptions;
+export type UseBlanksAroundHeadingsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseBlanksAroundHeadingsOptions;
+export type UseBlanksAroundListsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseBlanksAroundListsOptions;
+export type UseBlanksAroundTablesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseBlanksAroundTablesOptions;
+export type UseBlanksBeforeBlockContentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseBlanksBeforeBlockContentOptions;
 export type UseConsistentArrowReturnConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseConsistentArrowReturnOptions;
+export type UseConsistentBlockquoteIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentBlockquoteIndentOptions;
+export type UseConsistentCodeBlockStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentCodeBlockStyleOptions;
+export type UseConsistentCodeFenceMarkerConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentCodeFenceMarkerOptions;
+export type UseConsistentEmphasisMarkerConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentEmphasisMarkerOptions;
 export type UseConsistentEnumValueTypeConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseConsistentEnumValueTypeOptions;
 export type UseConsistentGraphqlDescriptionsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseConsistentGraphqlDescriptionsOptions;
+export type UseConsistentHeadingStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentHeadingStyleOptions;
+export type UseConsistentHorizontalRuleStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentHorizontalRuleStyleOptions;
+export type UseConsistentLinebreakStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentLinebreakStyleOptions;
+export type UseConsistentLinkStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentLinkStyleOptions;
+export type UseConsistentLinkTitleStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentLinkTitleStyleOptions;
+export type UseConsistentListIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentListIndentOptions;
+export type UseConsistentListItemContentIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentListItemContentIndentOptions;
+export type UseConsistentListItemIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentListItemIndentOptions;
+export type UseConsistentListItemSpacingConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentListItemSpacingOptions;
+export type UseConsistentMediaStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentMediaStyleOptions;
 export type UseConsistentMethodSignaturesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseConsistentMethodSignaturesOptions;
+export type UseConsistentOrderedListMarkerConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentOrderedListMarkerOptions;
+export type UseConsistentOrderedListMarkerValueConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentOrderedListMarkerValueOptions;
+export type UseConsistentStrikethroughMarkerConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentStrikethroughMarkerOptions;
+export type UseConsistentStrongMarkerConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentStrongMarkerOptions;
+export type UseConsistentTableCellPaddingConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentTableCellPaddingOptions;
+export type UseConsistentTablePipeAlignmentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentTablePipeAlignmentOptions;
+export type UseConsistentTablePipeStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentTablePipeStyleOptions;
+export type UseConsistentUnorderedListIndentConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentUnorderedListIndentOptions;
+export type UseConsistentUnorderedListMarkerConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentUnorderedListMarkerOptions;
+export type UseDefinitionsAtEndConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseDefinitionsAtEndOptions;
 export type UseDeprecatedDateConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseDeprecatedDateOptions;
+export type UseDescriptiveLinkTextConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseDescriptiveLinkTextOptions;
 export type UseDestructuringConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseDestructuringOptions;
@@ -3998,12 +4671,21 @@ export type UseExhaustiveSwitchCasesConfiguration =
 export type UseExplicitTypeConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseExplicitTypeOptions;
+export type UseFinalNewlineConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseFinalNewlineOptions;
 export type UseFindConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseFindOptions;
+export type UseFirstLineHeadingConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseFirstLineHeadingOptions;
 export type UseGlobalThisConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseGlobalThisOptions;
+export type UseHeadingIncrementConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseHeadingIncrementOptions;
 export type UseInlineScriptIdConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseInlineScriptIdOptions;
@@ -4016,6 +4698,9 @@ export type UseLoneAnonymousOperationConfiguration =
 export type UseLoneExecutableDefinitionConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseLoneExecutableDefinitionOptions;
+export type UseLowercaseDefinitionLabelsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseLowercaseDefinitionLabelsOptions;
 export type UseMaxParamsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseMaxParamsOptions;
@@ -4034,6 +4719,9 @@ export type UseRequiredScriptsConfiguration =
 export type UseSortedClassesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseSortedClassesOptions;
+export type UseSortedDefinitionsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseSortedDefinitionsOptions;
 export type UseSpreadConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseSpreadOptions;
@@ -5325,13 +6013,37 @@ export interface RuleWithNoAmbiguousAnchorTextOptions {
 	level: RulePlainConfiguration;
 	options?: NoAmbiguousAnchorTextOptions;
 }
+export interface RuleWithNoBareUrlsOptions {
+	level: RulePlainConfiguration;
+	options?: NoBareUrlsOptions;
+}
 export interface RuleWithNoBeforeInteractiveScriptOutsideDocumentOptions {
 	level: RulePlainConfiguration;
 	options?: NoBeforeInteractiveScriptOutsideDocumentOptions;
 }
+export interface RuleWithNoBlockquoteBrokenContinuationOptions {
+	level: RulePlainConfiguration;
+	options?: NoBlockquoteBrokenContinuationOptions;
+}
+export interface RuleWithNoCheckboxCharacterStyleMismatchOptions {
+	level: RulePlainConfiguration;
+	options?: NoCheckboxCharacterStyleMismatchOptions;
+}
+export interface RuleWithNoCheckboxContentIndentOptions {
+	level: RulePlainConfiguration;
+	options?: NoCheckboxContentIndentOptions;
+}
+export interface RuleWithNoConsecutiveBlankLinesOptions {
+	level: RulePlainConfiguration;
+	options?: NoConsecutiveBlankLinesOptions;
+}
 export interface RuleWithNoContinueOptions {
 	level: RulePlainConfiguration;
 	options?: NoContinueOptions;
+}
+export interface RuleWithNoDefinitionSpacingIssuesOptions {
+	level: RulePlainConfiguration;
+	options?: NoDefinitionSpacingIssuesOptions;
 }
 export interface RuleWithNoDeprecatedImportsOptions {
 	level: RulePlainConfiguration;
@@ -5354,6 +6066,14 @@ export interface RuleWithNoDuplicateAttributesOptions {
 	level: RulePlainConfiguration;
 	options?: NoDuplicateAttributesOptions;
 }
+export interface RuleWithNoDuplicateDefinedUrlsOptions {
+	level: RulePlainConfiguration;
+	options?: NoDuplicateDefinedUrlsOptions;
+}
+export interface RuleWithNoDuplicateDefinitionsOptions {
+	level: RulePlainConfiguration;
+	options?: NoDuplicateDefinitionsOptions;
+}
 export interface RuleWithNoDuplicateDependenciesOptions {
 	level: RulePlainConfiguration;
 	options?: NoDuplicateDependenciesOptions;
@@ -5374,6 +6094,14 @@ export interface RuleWithNoDuplicateGraphqlOperationNameOptions {
 	level: RulePlainConfiguration;
 	options?: NoDuplicateGraphqlOperationNameOptions;
 }
+export interface RuleWithNoDuplicateHeadingsOptions {
+	level: RulePlainConfiguration;
+	options?: NoDuplicateHeadingsOptions;
+}
+export interface RuleWithNoDuplicateHeadingsInSectionOptions {
+	level: RulePlainConfiguration;
+	options?: NoDuplicateHeadingsInSectionOptions;
+}
 export interface RuleWithNoDuplicateInputFieldNamesOptions {
 	level: RulePlainConfiguration;
 	options?: NoDuplicateInputFieldNamesOptions;
@@ -5385,6 +6113,14 @@ export interface RuleWithNoDuplicateVariableNamesOptions {
 export interface RuleWithNoDuplicatedSpreadPropsOptions {
 	level: RulePlainConfiguration;
 	options?: NoDuplicatedSpreadPropsOptions;
+}
+export interface RuleWithNoEmphasisAsHeadingOptions {
+	level: RulePlainConfiguration;
+	options?: NoEmphasisAsHeadingOptions;
+}
+export interface RuleWithNoEmptyLinksOptions {
+	level: RulePlainConfiguration;
+	options?: NoEmptyLinksOptions;
 }
 export interface RuleWithNoEmptySourceOptions {
 	level: RulePlainConfiguration;
@@ -5416,9 +6152,29 @@ export interface RuleWithNoForInOptions {
 	level: RulePlainConfiguration;
 	options?: NoForInOptions;
 }
+export interface RuleWithNoHardTabsOptions {
+	level: RulePlainConfiguration;
+	options?: NoHardTabsOptions;
+}
+export interface RuleWithNoHeadingContentIndentOptions {
+	level: RulePlainConfiguration;
+	options?: NoHeadingContentIndentOptions;
+}
+export interface RuleWithNoHeadingIndentOptions {
+	level: RulePlainConfiguration;
+	options?: NoHeadingIndentOptions;
+}
+export interface RuleWithNoHeadingTrailingPunctuationOptions {
+	level: RulePlainConfiguration;
+	options?: NoHeadingTrailingPunctuationOptions;
+}
 export interface RuleWithNoHexColorsOptions {
 	level: RulePlainConfiguration;
 	options?: NoHexColorsOptions;
+}
+export interface RuleWithNoHiddenTableCellOptions {
+	level: RulePlainConfiguration;
+	options?: NoHiddenTableCellOptions;
 }
 export interface RuleWithNoImportCyclesOptions {
 	level: RulePlainConfiguration;
@@ -5427,6 +6183,14 @@ export interface RuleWithNoImportCyclesOptions {
 export interface RuleWithNoIncrementDecrementOptions {
 	level: RulePlainConfiguration;
 	options?: NoIncrementDecrementOptions;
+}
+export interface RuleWithNoInlineHtmlOptions {
+	level: RulePlainConfiguration;
+	options?: NoInlineHtmlOptions;
+}
+export interface RuleWithNoInvalidLinkFragmentsOptions {
+	level: RulePlainConfiguration;
+	options?: NoInvalidLinkFragmentsOptions;
 }
 export interface RuleWithNoJsxLiteralsOptions {
 	level: RulePlainConfiguration;
@@ -5439,6 +6203,38 @@ export interface RuleWithNoJsxPropsBindOptions {
 export interface RuleWithNoLeakedRenderOptions {
 	level: RulePlainConfiguration;
 	options?: NoLeakedRenderOptions;
+}
+export interface RuleWithNoListItemBulletIndentOptions {
+	level: RulePlainConfiguration;
+	options?: NoListItemBulletIndentOptions;
+}
+export interface RuleWithNoLongHeadingsOptions {
+	level: RulePlainConfiguration;
+	options?: NoLongHeadingsOptions;
+}
+export interface RuleWithNoLongLinesOptions {
+	level: RulePlainConfiguration;
+	options?: NoLongLinesOptions;
+}
+export interface RuleWithNoMismatchedTableColumnCountOptions {
+	level: RulePlainConfiguration;
+	options?: NoMismatchedTableColumnCountOptions;
+}
+export interface RuleWithNoMissingAltTextOptions {
+	level: RulePlainConfiguration;
+	options?: NoMissingAltTextOptions;
+}
+export interface RuleWithNoMissingLanguageOptions {
+	level: RulePlainConfiguration;
+	options?: NoMissingLanguageOptions;
+}
+export interface RuleWithNoMissingSpaceAtxHeadingOptions {
+	level: RulePlainConfiguration;
+	options?: NoMissingSpaceAtxHeadingOptions;
+}
+export interface RuleWithNoMissingSpaceClosedAtxHeadingOptions {
+	level: RulePlainConfiguration;
+	options?: NoMissingSpaceClosedAtxHeadingOptions;
 }
 export interface RuleWithNoMisusedPromisesOptions {
 	fix?: FixKind;
@@ -5453,9 +6249,25 @@ export interface RuleWithNoMultiStrOptions {
 	level: RulePlainConfiguration;
 	options?: NoMultiStrOptions;
 }
+export interface RuleWithNoMultipleSpaceAtxHeadingOptions {
+	level: RulePlainConfiguration;
+	options?: NoMultipleSpaceAtxHeadingOptions;
+}
+export interface RuleWithNoMultipleSpaceClosedAtxHeadingOptions {
+	level: RulePlainConfiguration;
+	options?: NoMultipleSpaceClosedAtxHeadingOptions;
+}
+export interface RuleWithNoMultipleTopLevelHeadingsOptions {
+	level: RulePlainConfiguration;
+	options?: NoMultipleTopLevelHeadingsOptions;
+}
 export interface RuleWithNoNextAsyncClientComponentOptions {
 	level: RulePlainConfiguration;
 	options?: NoNextAsyncClientComponentOptions;
+}
+export interface RuleWithNoParagraphContentIndentOptions {
+	level: RulePlainConfiguration;
+	options?: NoParagraphContentIndentOptions;
 }
 export interface RuleWithNoParametersOnlyUsedInRecursionOptions {
 	fix?: FixKind;
@@ -5475,9 +6287,17 @@ export interface RuleWithNoRedundantDefaultExportOptions {
 	level: RulePlainConfiguration;
 	options?: NoRedundantDefaultExportOptions;
 }
+export interface RuleWithNoReferenceLikeUrlOptions {
+	level: RulePlainConfiguration;
+	options?: NoReferenceLikeUrlOptions;
+}
 export interface RuleWithNoReturnAssignOptions {
 	level: RulePlainConfiguration;
 	options?: NoReturnAssignOptions;
+}
+export interface RuleWithNoReversedLinksOptions {
+	level: RulePlainConfiguration;
+	options?: NoReversedLinksOptions;
 }
 export interface RuleWithNoRootTypeOptions {
 	level: RulePlainConfiguration;
@@ -5491,17 +6311,53 @@ export interface RuleWithNoShadowOptions {
 	level: RulePlainConfiguration;
 	options?: NoShadowOptions;
 }
+export interface RuleWithNoShellDollarPromptOptions {
+	level: RulePlainConfiguration;
+	options?: NoShellDollarPromptOptions;
+}
+export interface RuleWithNoShortcutReferenceImageOptions {
+	level: RulePlainConfiguration;
+	options?: NoShortcutReferenceImageOptions;
+}
+export interface RuleWithNoShortcutReferenceLinkOptions {
+	level: RulePlainConfiguration;
+	options?: NoShortcutReferenceLinkOptions;
+}
+export interface RuleWithNoSpaceInCodeOptions {
+	level: RulePlainConfiguration;
+	options?: NoSpaceInCodeOptions;
+}
+export interface RuleWithNoSpaceInEmphasisOptions {
+	level: RulePlainConfiguration;
+	options?: NoSpaceInEmphasisOptions;
+}
+export interface RuleWithNoSpaceInLinksOptions {
+	level: RulePlainConfiguration;
+	options?: NoSpaceInLinksOptions;
+}
 export interface RuleWithNoSyncScriptsOptions {
 	level: RulePlainConfiguration;
 	options?: NoSyncScriptsOptions;
+}
+export interface RuleWithNoTableIndentationOptions {
+	level: RulePlainConfiguration;
+	options?: NoTableIndentationOptions;
 }
 export interface RuleWithNoTernaryOptions {
 	level: RulePlainConfiguration;
 	options?: NoTernaryOptions;
 }
+export interface RuleWithNoTrailingHardBreakSpacesOptions {
+	level: RulePlainConfiguration;
+	options?: NoTrailingHardBreakSpacesOptions;
+}
 export interface RuleWithNoUndeclaredEnvVarsOptions {
 	level: RulePlainConfiguration;
 	options?: NoUndeclaredEnvVarsOptions;
+}
+export interface RuleWithNoUndefinedReferencesOptions {
+	level: RulePlainConfiguration;
+	options?: NoUndefinedReferencesOptions;
 }
 export interface RuleWithNoUnknownAttributeOptions {
 	level: RulePlainConfiguration;
@@ -5511,9 +6367,21 @@ export interface RuleWithNoUnnecessaryConditionsOptions {
 	level: RulePlainConfiguration;
 	options?: NoUnnecessaryConditionsOptions;
 }
+export interface RuleWithNoUnneededFullReferenceImageOptions {
+	level: RulePlainConfiguration;
+	options?: NoUnneededFullReferenceImageOptions;
+}
+export interface RuleWithNoUnneededFullReferenceLinkOptions {
+	level: RulePlainConfiguration;
+	options?: NoUnneededFullReferenceLinkOptions;
+}
 export interface RuleWithNoUnresolvedImportsOptions {
 	level: RulePlainConfiguration;
 	options?: NoUnresolvedImportsOptions;
+}
+export interface RuleWithNoUnusedDefinitionsOptions {
+	level: RulePlainConfiguration;
+	options?: NoUnusedDefinitionsOptions;
 }
 export interface RuleWithNoUnusedExpressionsOptions {
 	level: RulePlainConfiguration;
@@ -5571,10 +6439,46 @@ export interface RuleWithUseAwaitThenableOptions {
 	level: RulePlainConfiguration;
 	options?: UseAwaitThenableOptions;
 }
+export interface RuleWithUseBlanksAroundCodeFencesOptions {
+	level: RulePlainConfiguration;
+	options?: UseBlanksAroundCodeFencesOptions;
+}
+export interface RuleWithUseBlanksAroundHeadingsOptions {
+	level: RulePlainConfiguration;
+	options?: UseBlanksAroundHeadingsOptions;
+}
+export interface RuleWithUseBlanksAroundListsOptions {
+	level: RulePlainConfiguration;
+	options?: UseBlanksAroundListsOptions;
+}
+export interface RuleWithUseBlanksAroundTablesOptions {
+	level: RulePlainConfiguration;
+	options?: UseBlanksAroundTablesOptions;
+}
+export interface RuleWithUseBlanksBeforeBlockContentOptions {
+	level: RulePlainConfiguration;
+	options?: UseBlanksBeforeBlockContentOptions;
+}
 export interface RuleWithUseConsistentArrowReturnOptions {
 	fix?: FixKind;
 	level: RulePlainConfiguration;
 	options?: UseConsistentArrowReturnOptions;
+}
+export interface RuleWithUseConsistentBlockquoteIndentOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentBlockquoteIndentOptions;
+}
+export interface RuleWithUseConsistentCodeBlockStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentCodeBlockStyleOptions;
+}
+export interface RuleWithUseConsistentCodeFenceMarkerOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentCodeFenceMarkerOptions;
+}
+export interface RuleWithUseConsistentEmphasisMarkerOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentEmphasisMarkerOptions;
 }
 export interface RuleWithUseConsistentEnumValueTypeOptions {
 	level: RulePlainConfiguration;
@@ -5584,13 +6488,97 @@ export interface RuleWithUseConsistentGraphqlDescriptionsOptions {
 	level: RulePlainConfiguration;
 	options?: UseConsistentGraphqlDescriptionsOptions;
 }
+export interface RuleWithUseConsistentHeadingStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentHeadingStyleOptions;
+}
+export interface RuleWithUseConsistentHorizontalRuleStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentHorizontalRuleStyleOptions;
+}
+export interface RuleWithUseConsistentLinebreakStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentLinebreakStyleOptions;
+}
+export interface RuleWithUseConsistentLinkStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentLinkStyleOptions;
+}
+export interface RuleWithUseConsistentLinkTitleStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentLinkTitleStyleOptions;
+}
+export interface RuleWithUseConsistentListIndentOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentListIndentOptions;
+}
+export interface RuleWithUseConsistentListItemContentIndentOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentListItemContentIndentOptions;
+}
+export interface RuleWithUseConsistentListItemIndentOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentListItemIndentOptions;
+}
+export interface RuleWithUseConsistentListItemSpacingOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentListItemSpacingOptions;
+}
+export interface RuleWithUseConsistentMediaStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentMediaStyleOptions;
+}
 export interface RuleWithUseConsistentMethodSignaturesOptions {
 	level: RulePlainConfiguration;
 	options?: UseConsistentMethodSignaturesOptions;
 }
+export interface RuleWithUseConsistentOrderedListMarkerOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentOrderedListMarkerOptions;
+}
+export interface RuleWithUseConsistentOrderedListMarkerValueOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentOrderedListMarkerValueOptions;
+}
+export interface RuleWithUseConsistentStrikethroughMarkerOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentStrikethroughMarkerOptions;
+}
+export interface RuleWithUseConsistentStrongMarkerOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentStrongMarkerOptions;
+}
+export interface RuleWithUseConsistentTableCellPaddingOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentTableCellPaddingOptions;
+}
+export interface RuleWithUseConsistentTablePipeAlignmentOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentTablePipeAlignmentOptions;
+}
+export interface RuleWithUseConsistentTablePipeStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentTablePipeStyleOptions;
+}
+export interface RuleWithUseConsistentUnorderedListIndentOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentUnorderedListIndentOptions;
+}
+export interface RuleWithUseConsistentUnorderedListMarkerOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentUnorderedListMarkerOptions;
+}
+export interface RuleWithUseDefinitionsAtEndOptions {
+	level: RulePlainConfiguration;
+	options?: UseDefinitionsAtEndOptions;
+}
 export interface RuleWithUseDeprecatedDateOptions {
 	level: RulePlainConfiguration;
 	options?: UseDeprecatedDateOptions;
+}
+export interface RuleWithUseDescriptiveLinkTextOptions {
+	level: RulePlainConfiguration;
+	options?: UseDescriptiveLinkTextOptions;
 }
 export interface RuleWithUseDestructuringOptions {
 	level: RulePlainConfiguration;
@@ -5609,13 +6597,25 @@ export interface RuleWithUseExplicitTypeOptions {
 	level: RulePlainConfiguration;
 	options?: UseExplicitTypeOptions;
 }
+export interface RuleWithUseFinalNewlineOptions {
+	level: RulePlainConfiguration;
+	options?: UseFinalNewlineOptions;
+}
 export interface RuleWithUseFindOptions {
 	level: RulePlainConfiguration;
 	options?: UseFindOptions;
 }
+export interface RuleWithUseFirstLineHeadingOptions {
+	level: RulePlainConfiguration;
+	options?: UseFirstLineHeadingOptions;
+}
 export interface RuleWithUseGlobalThisOptions {
 	level: RulePlainConfiguration;
 	options?: UseGlobalThisOptions;
+}
+export interface RuleWithUseHeadingIncrementOptions {
+	level: RulePlainConfiguration;
+	options?: UseHeadingIncrementOptions;
 }
 export interface RuleWithUseInlineScriptIdOptions {
 	level: RulePlainConfiguration;
@@ -5632,6 +6632,10 @@ export interface RuleWithUseLoneAnonymousOperationOptions {
 export interface RuleWithUseLoneExecutableDefinitionOptions {
 	level: RulePlainConfiguration;
 	options?: UseLoneExecutableDefinitionOptions;
+}
+export interface RuleWithUseLowercaseDefinitionLabelsOptions {
+	level: RulePlainConfiguration;
+	options?: UseLowercaseDefinitionLabelsOptions;
 }
 export interface RuleWithUseMaxParamsOptions {
 	level: RulePlainConfiguration;
@@ -5657,6 +6661,10 @@ export interface RuleWithUseSortedClassesOptions {
 	fix?: FixKind;
 	level: RulePlainConfiguration;
 	options?: UseSortedClassesOptions;
+}
+export interface RuleWithUseSortedDefinitionsOptions {
+	level: RulePlainConfiguration;
+	options?: UseSortedDefinitionsOptions;
 }
 export interface RuleWithUseSpreadOptions {
 	fix?: FixKind;
@@ -6849,8 +7857,24 @@ export interface NoAmbiguousAnchorTextOptions {
 	 */
 	words?: string[];
 }
+export type NoBareUrlsOptions = {};
 export type NoBeforeInteractiveScriptOutsideDocumentOptions = {};
+export type NoBlockquoteBrokenContinuationOptions = {};
+export interface NoCheckboxCharacterStyleMismatchOptions {
+	/**
+	 * The style to use for checked checkbox characters (default: "lowercase"). Allowed values: "lowercase", "uppercase", or "consistent".
+	 */
+	checked?: string;
+}
+export type NoCheckboxContentIndentOptions = {};
+export interface NoConsecutiveBlankLinesOptions {
+	/**
+	 * Maximum number of consecutive blank lines allowed (default: 1).
+	 */
+	maxConsecutive?: number;
+}
 export type NoContinueOptions = {};
+export type NoDefinitionSpacingIssuesOptions = {};
 export type NoDeprecatedImportsOptions = {};
 export interface NoDeprecatedMediaTypeOptions {
 	/**
@@ -6861,14 +7885,20 @@ export interface NoDeprecatedMediaTypeOptions {
 export type NoDivRegexOptions = {};
 export type NoDuplicateArgumentNamesOptions = {};
 export type NoDuplicateAttributesOptions = {};
+export type NoDuplicateDefinedUrlsOptions = {};
+export type NoDuplicateDefinitionsOptions = {};
 export type NoDuplicateDependenciesOptions = {};
 export type NoDuplicateEnumValueNamesOptions = {};
 export type NoDuplicateEnumValuesOptions = {};
 export type NoDuplicateFieldDefinitionNamesOptions = {};
 export type NoDuplicateGraphqlOperationNameOptions = {};
+export type NoDuplicateHeadingsOptions = {};
+export type NoDuplicateHeadingsInSectionOptions = {};
 export type NoDuplicateInputFieldNamesOptions = {};
 export type NoDuplicateVariableNamesOptions = {};
 export type NoDuplicatedSpreadPropsOptions = {};
+export type NoEmphasisAsHeadingOptions = {};
+export type NoEmptyLinksOptions = {};
 export interface NoEmptySourceOptions {
 	/**
 	 * Whether comments are considered meaningful
@@ -6895,7 +7925,22 @@ export interface NoExcessiveLinesPerFileOptions {
 export type NoFloatingClassesOptions = {};
 export type NoFloatingPromisesOptions = {};
 export type NoForInOptions = {};
+export interface NoHardTabsOptions {
+	/**
+	 * Whether to allow hard tabs inside fenced code blocks (default: false).
+	 */
+	allowInCodeBlocks?: boolean;
+}
+export type NoHeadingContentIndentOptions = {};
+export type NoHeadingIndentOptions = {};
+export interface NoHeadingTrailingPunctuationOptions {
+	/**
+	 * Characters considered trailing punctuation (default: `".,;:!?"`).
+	 */
+	punctuation?: string;
+}
 export type NoHexColorsOptions = {};
+export type NoHiddenTableCellOptions = {};
 export interface NoImportCyclesOptions {
 	/**
 	* Ignores type-only imports when finding an import cycle. A type-only import (`import type`)
@@ -6911,6 +7956,13 @@ export interface NoIncrementDecrementOptions {
 	 */
 	allowForLoopAfterthoughts?: boolean;
 }
+export interface NoInlineHtmlOptions {
+	/**
+	 * List of HTML elements that are allowed in markdown (default: empty).
+	 */
+	allowedElements?: string[];
+}
+export type NoInvalidLinkFragmentsOptions = {};
 export interface NoJsxLiteralsOptions {
 	/**
 	 * An array of strings that won't trigger the rule. Whitespaces are taken into consideration
@@ -6927,15 +7979,47 @@ export interface NoJsxLiteralsOptions {
 }
 export type NoJsxPropsBindOptions = {};
 export type NoLeakedRenderOptions = {};
+export type NoListItemBulletIndentOptions = {};
+export interface NoLongHeadingsOptions {
+	/**
+	 * The maximum allowed length for headings (default: 60).
+	 */
+	maxLength?: number;
+}
+export interface NoLongLinesOptions {
+	/**
+	 * Whether to allow long lines inside fenced code blocks (default: true).
+	 */
+	allowInCodeBlocks?: boolean;
+	/**
+	 * Whether to allow long lines that contain URLs (default: true).
+	 */
+	allowUrls?: boolean;
+	/**
+	 * Maximum line length (default: 80).
+	 */
+	maxLength?: number;
+}
+export type NoMismatchedTableColumnCountOptions = {};
+export type NoMissingAltTextOptions = {};
+export type NoMissingLanguageOptions = {};
+export type NoMissingSpaceAtxHeadingOptions = {};
+export type NoMissingSpaceClosedAtxHeadingOptions = {};
 export type NoMisusedPromisesOptions = {};
 export type NoMultiAssignOptions = {};
 export type NoMultiStrOptions = {};
+export type NoMultipleSpaceAtxHeadingOptions = {};
+export type NoMultipleSpaceClosedAtxHeadingOptions = {};
+export type NoMultipleTopLevelHeadingsOptions = {};
 export type NoNextAsyncClientComponentOptions = {};
+export type NoParagraphContentIndentOptions = {};
 export type NoParametersOnlyUsedInRecursionOptions = {};
 export type NoProtoOptions = {};
 export type NoReactForwardRefOptions = {};
 export type NoRedundantDefaultExportOptions = {};
+export type NoReferenceLikeUrlOptions = {};
 export type NoReturnAssignOptions = {};
+export type NoReversedLinksOptions = {};
 export interface NoRootTypeOptions {
 	/**
 	* A list of disallowed root types (e.g. "mutation" and/or "subscription").
@@ -6945,8 +8029,16 @@ The values of the list are case-insensitive.
 }
 export type NoScriptUrlOptions = {};
 export type NoShadowOptions = {};
+export type NoShellDollarPromptOptions = {};
+export type NoShortcutReferenceImageOptions = {};
+export type NoShortcutReferenceLinkOptions = {};
+export type NoSpaceInCodeOptions = {};
+export type NoSpaceInEmphasisOptions = {};
+export type NoSpaceInLinksOptions = {};
 export type NoSyncScriptsOptions = {};
+export type NoTableIndentationOptions = {};
 export type NoTernaryOptions = {};
+export type NoTrailingHardBreakSpacesOptions = {};
 export interface NoUndeclaredEnvVarsOptions {
 	/**
 	* Environment variables that should always be allowed.
@@ -6956,11 +8048,15 @@ Supports regular expressions, e.g. `["MY_ENV_.*"]`.
 	 */
 	allowedEnvVars?: Regex[];
 }
+export type NoUndefinedReferencesOptions = {};
 export interface NoUnknownAttributeOptions {
 	ignore?: string[];
 }
 export type NoUnnecessaryConditionsOptions = {};
+export type NoUnneededFullReferenceImageOptions = {};
+export type NoUnneededFullReferenceLinkOptions = {};
 export type NoUnresolvedImportsOptions = {};
+export type NoUnusedDefinitionsOptions = {};
 export type NoUnusedExpressionsOptions = {};
 /**
 	* Options for the `noUselessCatchBinding` rule.
@@ -6978,6 +8074,11 @@ export type NoVueSetupPropsReactivityLossOptions = {};
 export type NoVueVIfWithVForOptions = {};
 export type UseArraySortCompareOptions = {};
 export type UseAwaitThenableOptions = {};
+export type UseBlanksAroundCodeFencesOptions = {};
+export type UseBlanksAroundHeadingsOptions = {};
+export type UseBlanksAroundListsOptions = {};
+export type UseBlanksAroundTablesOptions = {};
+export type UseBlanksBeforeBlockContentOptions = {};
 /**
  * Options for the `useConsistentArrowReturn` rule.
  */
@@ -6993,12 +8094,82 @@ This option is only applicable when used in conjunction with the `asNeeded` opti
 	 */
 	style?: UseConsistentArrowReturnStyle;
 }
+export type UseConsistentBlockquoteIndentOptions = {};
+export interface UseConsistentCodeBlockStyleOptions {
+	/**
+	 * The style to use for code blocks (default: "fenced"). Allowed values: "fenced" or "indented".
+	 */
+	style?: string;
+}
+export interface UseConsistentCodeFenceMarkerOptions {
+	/**
+	 * The marker to use for fenced code blocks (default: "backtick"). Allowed values: "backtick" or "tilde".
+	 */
+	marker?: string;
+}
+export interface UseConsistentEmphasisMarkerOptions {
+	/**
+	 * The marker to use for emphasis (default: "star"). Allowed values: "star", "underscore", or "consistent".
+	 */
+	marker?: string;
+}
 export type UseConsistentEnumValueTypeOptions = {};
 export interface UseConsistentGraphqlDescriptionsOptions {
 	/**
 	 * The description style to enforce. Defaults to "block"
 	 */
 	style?: UseConsistentGraphqlDescriptionsStyle;
+}
+export interface UseConsistentHeadingStyleOptions {
+	/**
+	 * The heading style to enforce (default: "consistent"). Allowed values: "atx", "setext", or "consistent".
+	 */
+	style?: string;
+}
+export interface UseConsistentHorizontalRuleStyleOptions {
+	/**
+	* The expected horizontal rule style (default: `"---"`).
+Common styles: `"---"`, `"***"`, `"___"`. 
+	 */
+	style?: string;
+}
+export interface UseConsistentLinebreakStyleOptions {
+	/**
+	 * The linebreak style to enforce (default: "lf"). Allowed values: "lf" or "crlf".
+	 */
+	style?: string;
+}
+export interface UseConsistentLinkStyleOptions {
+	/**
+	 * The style to use for links (default: "inline"). Allowed values: "inline", "reference", or "consistent".
+	 */
+	style?: string;
+}
+export interface UseConsistentLinkTitleStyleOptions {
+	/**
+	 * The style to use for link titles (default: "double-quote"). Allowed values: "double-quote", "single-quote", or "parentheses".
+	 */
+	style?: string;
+}
+export type UseConsistentListIndentOptions = {};
+export type UseConsistentListItemContentIndentOptions = {};
+export interface UseConsistentListItemIndentOptions {
+	/**
+	 * Which indent style to enforce: "one", "tab", or "space".
+	 */
+	style?: string;
+}
+export interface UseConsistentListItemSpacingOptions {
+	/**
+	 * The style to use for list item spacing (default: "consistent"). Allowed values: "compact", "loose", or "consistent".
+	 */
+	style?: string;
+}
+export interface UseConsistentMediaStyleOptions {
+	/**
+	 * The style to use for media (default: "inline"). Allowed values: "inline" or "reference".
+	 */
+	style?: string;
 }
 /**
  * Options type for `useConsistentMethodSignatures`.
@@ -7011,8 +8182,59 @@ Default: "property"
 	 */
 	style?: MethodSignatureStyle;
 }
+export interface UseConsistentOrderedListMarkerOptions {
+	/**
+	 * Which delimiter to enforce: ".", ")", or "consistent".
+	 */
+	delimiter?: string;
+}
+export interface UseConsistentOrderedListMarkerValueOptions {
+	/**
+	 * The style to use for ordered list marker values (default: "ordered"). Allowed values: "ordered" or "one".
+	 */
+	style?: string;
+}
+export interface UseConsistentStrikethroughMarkerOptions {
+	/**
+	 * The marker style to enforce (default: "consistent"). Allowed values: "tilde", "double-tilde", or "consistent".
+	 */
+	marker?: string;
+}
+export interface UseConsistentStrongMarkerOptions {
+	/**
+	 * The marker to use for strong emphasis (default: "star"). Allowed values: "star", "underscore", or "consistent".
+	 */
+	marker?: string;
+}
+export interface UseConsistentTableCellPaddingOptions {
+	/**
+	 * The style to use for table cell padding (default: "padded"). Allowed values: "padded", "compact", or "consistent".
+	 */
+	style?: string;
+}
+export type UseConsistentTablePipeAlignmentOptions = {};
+export interface UseConsistentTablePipeStyleOptions {
+	/**
+	 * The style to use for table pipes (default: "both"). Allowed values: "leading", "trailing", "both", or "consistent".
+	 */
+	style?: string;
+}
+export type UseConsistentUnorderedListIndentOptions = {};
+export interface UseConsistentUnorderedListMarkerOptions {
+	/**
+	 * Which marker to enforce: "-", "*", "+", or "consistent".
+	 */
+	marker?: string;
+}
+export type UseDefinitionsAtEndOptions = {};
 export interface UseDeprecatedDateOptions {
 	argumentName?: string;
+}
+export interface UseDescriptiveLinkTextOptions {
+	/**
+	 * The minimum length of descriptive link text (default: 1).
+	 */
+	minimumLength?: number;
 }
 export type UseDestructuringOptions = {};
 /**
@@ -7026,8 +8248,16 @@ export interface UseErrorCauseOptions {
 }
 export type UseExhaustiveSwitchCasesOptions = {};
 export type UseExplicitTypeOptions = {};
+export type UseFinalNewlineOptions = {};
 export type UseFindOptions = {};
+export interface UseFirstLineHeadingOptions {
+	/**
+	 * The required heading level for the first heading (default: 1).
+	 */
+	level?: number;
+}
 export type UseGlobalThisOptions = {};
+export type UseHeadingIncrementOptions = {};
 export type UseInlineScriptIdOptions = {};
 export interface UseInputNameOptions {
 	/**
@@ -7037,6 +8267,7 @@ export interface UseInputNameOptions {
 }
 export type UseLoneAnonymousOperationOptions = {};
 export type UseLoneExecutableDefinitionOptions = {};
+export type UseLowercaseDefinitionLabelsOptions = {};
 export interface UseMaxParamsOptions {
 	/**
 	 * Maximum number of parameters allowed (default: 4)
@@ -7062,6 +8293,7 @@ export interface UseSortedClassesOptions {
 	 */
 	functions?: string[];
 }
+export type UseSortedDefinitionsOptions = {};
 export type UseSpreadOptions = {};
 export interface UseVueConsistentDefinePropsDeclarationOptions {
 	style?: DeclarationStyle;
@@ -7837,55 +9069,101 @@ export type Category =
 	| "lint/correctness/useValidTypeof"
 	| "lint/correctness/useYield"
 	| "lint/nursery/noAmbiguousAnchorText"
+	| "lint/nursery/noBareUrls"
 	| "lint/nursery/noBeforeInteractiveScriptOutsideDocument"
+	| "lint/nursery/noBlockquoteBrokenContinuation"
+	| "lint/nursery/noCheckboxCharacterStyleMismatch"
+	| "lint/nursery/noCheckboxContentIndent"
 	| "lint/nursery/noColorInvalidHex"
+	| "lint/nursery/noConsecutiveBlankLines"
 	| "lint/nursery/noContinue"
+	| "lint/nursery/noDefinitionSpacingIssues"
 	| "lint/nursery/noDeprecatedImports"
 	| "lint/nursery/noDeprecatedMediaType"
 	| "lint/nursery/noDivRegex"
 	| "lint/nursery/noDuplicateArgumentNames"
 	| "lint/nursery/noDuplicateAttributes"
+	| "lint/nursery/noDuplicateDefinedUrls"
+	| "lint/nursery/noDuplicateDefinitions"
 	| "lint/nursery/noDuplicateDependencies"
 	| "lint/nursery/noDuplicateEnumValueNames"
 	| "lint/nursery/noDuplicateEnumValues"
 	| "lint/nursery/noDuplicateFieldDefinitionNames"
+	| "lint/nursery/noDuplicateHeadings"
+	| "lint/nursery/noDuplicateHeadingsInSection"
 	| "lint/nursery/noDuplicateGraphqlOperationName"
 	| "lint/nursery/noDuplicateInputFieldNames"
 	| "lint/nursery/noDuplicateVariableNames"
 	| "lint/nursery/noDuplicatedSpreadProps"
+	| "lint/nursery/noEmptyLinks"
 	| "lint/nursery/noEmptySource"
+	| "lint/nursery/noEmphasisAsHeading"
 	| "lint/nursery/noEqualsToNull"
 	| "lint/nursery/noExcessiveClassesPerFile"
 	| "lint/nursery/noExcessiveLinesPerFile"
 	| "lint/nursery/noFloatingClasses"
 	| "lint/nursery/noFloatingPromises"
 	| "lint/nursery/noForIn"
+	| "lint/nursery/noHardTabs"
+	| "lint/nursery/noHeadingContentIndent"
+	| "lint/nursery/noHeadingIndent"
+	| "lint/nursery/noHeadingTrailingPunctuation"
 	| "lint/nursery/noHexColors"
+	| "lint/nursery/noHiddenTableCell"
 	| "lint/nursery/noImplicitCoercion"
 	| "lint/nursery/noImportCycles"
 	| "lint/nursery/noIncrementDecrement"
+	| "lint/nursery/noInlineHtml"
+	| "lint/nursery/noInvalidLinkFragments"
+	| "lint/nursery/useHeadingIncrement"
 	| "lint/nursery/noJsxLiterals"
 	| "lint/nursery/noJsxPropsBind"
 	| "lint/nursery/noLeakedRender"
+	| "lint/nursery/noListItemBulletIndent"
+	| "lint/nursery/noLongHeadings"
+	| "lint/nursery/noLongLines"
+	| "lint/nursery/noMismatchedTableColumnCount"
+	| "lint/nursery/noMissingAltText"
 	| "lint/nursery/noMissingGenericFamilyKeyword"
+	| "lint/nursery/noMissingLanguage"
+	| "lint/nursery/noMissingSpaceAtxHeading"
+	| "lint/nursery/noMissingSpaceClosedAtxHeading"
 	| "lint/nursery/noMisusedPromises"
 	| "lint/nursery/noMultiAssign"
+	| "lint/nursery/noMultipleSpaceAtxHeading"
+	| "lint/nursery/noMultipleSpaceClosedAtxHeading"
+	| "lint/nursery/noMultipleTopLevelHeadings"
 	| "lint/nursery/noMultiStr"
 	| "lint/nursery/noNextAsyncClientComponent"
+	| "lint/nursery/noParagraphContentIndent"
 	| "lint/nursery/noParametersOnlyUsedInRecursion"
 	| "lint/nursery/noProto"
 	| "lint/nursery/noReactForwardRef"
 	| "lint/nursery/noRedundantDefaultExport"
+	| "lint/nursery/noReferenceLikeUrl"
+	| "lint/nursery/noReversedLinks"
 	| "lint/nursery/noReturnAssign"
 	| "lint/nursery/noRootType"
 	| "lint/nursery/noScriptUrl"
 	| "lint/nursery/noShadow"
+	| "lint/nursery/noShellDollarPrompt"
+	| "lint/nursery/noShortcutReferenceImage"
+	| "lint/nursery/noShortcutReferenceLink"
+	| "lint/nursery/noSpaceInCode"
+	| "lint/nursery/noSpaceInEmphasis"
+	| "lint/nursery/noSpaceInLinks"
 	| "lint/nursery/noSyncScripts"
+	| "lint/nursery/noTableIndentation"
 	| "lint/nursery/noTernary"
+	| "lint/nursery/noTrailingHardBreakSpaces"
 	| "lint/nursery/noUndeclaredEnvVars"
+	| "lint/nursery/noUndefinedReferences"
 	| "lint/nursery/noUnknownAttribute"
+	| "lint/nursery/noUnneededFullReferenceImage"
+	| "lint/nursery/noUnneededFullReferenceLink"
 	| "lint/nursery/noUnnecessaryConditions"
 	| "lint/nursery/noUnresolvedImports"
+	| "lint/nursery/noUnusedDefinitions"
 	| "lint/nursery/noUnusedExpressions"
 	| "lint/nursery/noUnwantedPolyfillio"
 	| "lint/nursery/noUselessBackrefInRegex"
@@ -7902,18 +9180,50 @@ export type Category =
 	| "lint/nursery/useArraySortCompare"
 	| "lint/nursery/useAwaitThenable"
 	| "lint/nursery/useBiomeSuppressionComment"
+	| "lint/nursery/useBlanksAroundCodeFences"
+	| "lint/nursery/useBlanksAroundHeadings"
+	| "lint/nursery/useBlanksAroundLists"
+	| "lint/nursery/useBlanksAroundTables"
+	| "lint/nursery/useBlanksBeforeBlockContent"
 	| "lint/nursery/useConsistentArrowReturn"
+	| "lint/nursery/useConsistentBlockquoteIndent"
+	| "lint/nursery/useConsistentCodeBlockStyle"
+	| "lint/nursery/useConsistentCodeFenceMarker"
+	| "lint/nursery/useConsistentEmphasisMarker"
+	| "lint/nursery/useConsistentHeadingStyle"
 	| "lint/nursery/useConsistentEnumValueType"
+	| "lint/nursery/useConsistentHorizontalRuleStyle"
 	| "lint/nursery/useConsistentGraphqlDescriptions"
+	| "lint/nursery/useConsistentLinebreakStyle"
+	| "lint/nursery/useConsistentLinkStyle"
+	| "lint/nursery/useConsistentLinkTitleStyle"
+	| "lint/nursery/useConsistentListIndent"
+	| "lint/nursery/useConsistentListItemContentIndent"
+	| "lint/nursery/useConsistentListItemIndent"
+	| "lint/nursery/useConsistentListItemSpacing"
+	| "lint/nursery/useConsistentMediaStyle"
 	| "lint/nursery/useConsistentMethodSignatures"
 	| "lint/nursery/useConsistentObjectDefinition"
+	| "lint/nursery/useConsistentOrderedListMarker"
+	| "lint/nursery/useConsistentOrderedListMarkerValue"
+	| "lint/nursery/useConsistentStrikethroughMarker"
+	| "lint/nursery/useConsistentStrongMarker"
+	| "lint/nursery/useConsistentTableCellPadding"
+	| "lint/nursery/useConsistentTablePipeAlignment"
+	| "lint/nursery/useConsistentTablePipeStyle"
+	| "lint/nursery/useConsistentUnorderedListIndent"
+	| "lint/nursery/useConsistentUnorderedListMarker"
+	| "lint/nursery/useDefinitionsAtEnd"
 	| "lint/nursery/useDeprecatedDate"
+	| "lint/nursery/useDescriptiveLinkText"
 	| "lint/nursery/useDestructuring"
 	| "lint/nursery/useErrorCause"
 	| "lint/nursery/useExhaustiveSwitchCases"
 	| "lint/nursery/useExplicitFunctionReturnType"
 	| "lint/nursery/useExplicitType"
+	| "lint/nursery/useFinalNewline"
 	| "lint/nursery/useFind"
+	| "lint/nursery/useFirstLineHeading"
 	| "lint/nursery/useGlobalThis"
 	| "lint/nursery/useImportRestrictions"
 	| "lint/nursery/useInlineScriptId"
@@ -7921,12 +9231,14 @@ export type Category =
 	| "lint/nursery/useJsxCurlyBraceConvention"
 	| "lint/nursery/useLoneAnonymousOperation"
 	| "lint/nursery/useLoneExecutableDefinition"
+	| "lint/nursery/useLowercaseDefinitionLabels"
 	| "lint/nursery/useMaxParams"
 	| "lint/nursery/useQwikMethodUsage"
 	| "lint/nursery/useQwikValidLexicalScope"
 	| "lint/nursery/useRegexpExec"
 	| "lint/nursery/useRequiredScripts"
 	| "lint/nursery/useSortedClasses"
+	| "lint/nursery/useSortedDefinitions"
 	| "lint/nursery/useSpread"
 	| "lint/nursery/useVueConsistentDefinePropsDeclaration"
 	| "lint/nursery/useVueConsistentVBindStyle"
@@ -8372,7 +9684,8 @@ export type DocumentFileSource =
 	| { Css: CssFileSource }
 	| { Graphql: GraphqlFileSource }
 	| { Html: HtmlFileSource }
-	| { Grit: GritFileSource };
+	| { Grit: GritFileSource }
+	| { Markdown: MarkdownFileSource };
 export interface JsFileSource {
 	/**
 	* Used to mark if the JavaScript is embedded inside some particular files. This affects the parsing.
@@ -8400,6 +9713,12 @@ export interface HtmlFileSource {
 }
 export interface GritFileSource {
 	variant: GritVariant;
+}
+/**
+ * Represents the type of a Markdown file.
+ */
+export interface MarkdownFileSource {
+	variant: MarkdownVariant;
 }
 export type EmbeddingKind =
 	| "Svelte"
@@ -8459,6 +9778,7 @@ export type HtmlVariant =
 	| "Vue"
 	| "Svelte";
 export type GritVariant = "Standard";
+export type MarkdownVariant = "Standard" | "Mdx";
 export type HtmlTextExpressions = "None" | "Single" | "Double";
 export interface OpenFileResult {
 	diagnostics: Diagnostic[];

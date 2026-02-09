@@ -1,0 +1,33 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Full Reference Links
+
+See [link][link] for details.
+
+[link]: https://example.com
+
+```
+
+# Diagnostics
+```
+invalid.md:3:5 lint/nursery/noUnneededFullReferenceLink ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Full reference link can be collapsed when text and label match.
+  
+    1 │ # Full Reference Links
+    2 │ 
+  > 3 │ See [link][link] for details.
+      │     ^^^^^^^^^^^^
+    4 │ 
+    5 │ [link]: https://example.com
+  
+  i Use [text][] instead of [text][text].
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

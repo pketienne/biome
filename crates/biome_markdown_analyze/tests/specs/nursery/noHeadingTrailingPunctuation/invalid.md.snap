@@ -1,0 +1,68 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Heading with period.
+
+## Heading with colon:
+
+### Heading with exclamation!
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/nursery/noHeadingTrailingPunctuation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Heading ends with trailing punctuation '.'.
+  
+  > 1 │ # Heading with period.
+      │ ^^^^^^^^^^^^^^^^^^^^^^
+    2 │ 
+    3 │ ## Heading with colon:
+  
+  i Remove trailing punctuation from headings.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:3:1 lint/nursery/noHeadingTrailingPunctuation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Heading ends with trailing punctuation ':'.
+  
+    1 │ # Heading with period.
+    2 │ 
+  > 3 │ ## Heading with colon:
+      │ ^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+    5 │ ### Heading with exclamation!
+  
+  i Remove trailing punctuation from headings.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:5:1 lint/nursery/noHeadingTrailingPunctuation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Heading ends with trailing punctuation '!'.
+  
+    3 │ ## Heading with colon:
+    4 │ 
+  > 5 │ ### Heading with exclamation!
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    6 │ 
+  
+  i Remove trailing punctuation from headings.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

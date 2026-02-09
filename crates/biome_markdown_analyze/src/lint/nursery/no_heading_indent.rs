@@ -1,0 +1,95 @@
+use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_console::markup;
+use biome_diagnostics::Severity;
+use biome_markdown_syntax::MdDocument;
+use biome_rowan::{AstNode, TextRange, TextSize};
+
+use crate::utils::line_utils::leading_indent;
+
+declare_lint_rule! {
+    /// Disallow indentation before headings.
+    ///
+    /// Headings should not be indented. Leading spaces before the `#` characters
+    /// can be confusing and may be interpreted differently by parsers.
+    ///
+    /// ## Examples
+    ///
+    /// ### Invalid
+    ///
+    /// ```md
+    ///   # Indented heading
+    /// ```
+    ///
+    /// ### Valid
+    ///
+    /// ```md
+    /// # Non-indented heading
+    /// ```
+    pub NoHeadingIndent {
+        version: "next",
+        name: "noHeadingIndent",
+        language: "md",
+        recommended: true,
+        severity: Severity::Warning,
+    }
+}
+
+pub struct IndentedHeading {
+    range: TextRange,
+}
+
+impl Rule for NoHeadingIndent {
+    type Query = Ast<MdDocument>;
+    type State = IndentedHeading;
+    type Signals = Vec<Self::State>;
+    type Options = ();
+
+    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+        let document = ctx.query();
+        let text = document.syntax().text_with_trivia().to_string();
+        let base = document.syntax().text_range_with_trivia().start();
+        let mut signals = Vec::new();
+        let mut offset = 0usize;
+
+        for line in text.lines() {
+            let indent = leading_indent(line);
+            if indent > 0 {
+                let trimmed = line.trim_start();
+                if trimmed.starts_with('#') {
+                    let hash_count = trimmed.chars().take_while(|&c| c == '#').count();
+                    if hash_count >= 1
+                        && hash_count <= 6
+                        && (trimmed.len() == hash_count
+                            || trimmed.as_bytes().get(hash_count) == Some(&b' '))
+                    {
+                        signals.push(IndentedHeading {
+                            range: TextRange::new(
+                                base + TextSize::from(offset as u32),
+                                base + TextSize::from((offset + indent) as u32),
+                            ),
+                        });
+                    }
+                }
+            }
+
+            offset += line.len() + 1;
+        }
+
+        signals
+    }
+
+    fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+        Some(
+            RuleDiagnostic::new(
+                rule_category!(),
+                state.range,
+                markup! {
+                    "Headings should not be indented."
+                },
+            )
+            .note(markup! {
+                "Remove the leading whitespace before the heading."
+            }),
+        )
+    }
+}

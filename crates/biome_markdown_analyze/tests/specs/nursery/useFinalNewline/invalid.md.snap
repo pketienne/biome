@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Hello
+
+This file does not end with a newline.
+```
+
+# Diagnostics
+```
+invalid.md:3:38 lint/nursery/useFinalNewline ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! File does not end with a newline.
+  
+    1 │ # Hello
+    2 │ 
+  > 3 │ This file does not end with a newline.
+      │                                      ^
+  
+  i Add a trailing newline at the end of the file.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

@@ -1,0 +1,13 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Unused Definitions
+
+Some text without any references.
+
+[unused]: https://example.com
+
+```

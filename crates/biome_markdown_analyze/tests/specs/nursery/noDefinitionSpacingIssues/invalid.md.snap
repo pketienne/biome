@@ -1,0 +1,49 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Definition Spacing Issues
+
+[foo]:   https://example.com
+[bar]:		https://other.com
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/nursery/noDefinitionSpacingIssues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Extra whitespace in link reference definition.
+  
+    1 │ # Definition Spacing Issues
+    2 │ 
+  > 3 │ [foo]:   https://example.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ [bar]:		https://other.com
+    5 │ 
+  
+  i Use a single space after the colon in definitions.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:4:1 lint/nursery/noDefinitionSpacingIssues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Extra whitespace in link reference definition.
+  
+    3 │ [foo]:   https://example.com
+  > 4 │ [bar]:		https://other.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ 
+  
+  i Use a single space after the colon in definitions.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

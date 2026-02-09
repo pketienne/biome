@@ -1,0 +1,14 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: valid.md
+---
+# Input
+```md
+# Shell commands
+
+```sh
+npm install
+npm run build
+```
+
+```

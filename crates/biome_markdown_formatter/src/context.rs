@@ -2,8 +2,8 @@ use crate::MarkdownCommentStyle;
 use crate::comments::{FormatMarkdownLeadingComment, MarkdownComments};
 use biome_formatter::prelude::*;
 use biome_formatter::{
-    CstFormatContext, FormatContext, FormatOptions, IndentStyle, IndentWidth, LineEnding, LineWidth,
-    TransformSourceMap,
+    CstFormatContext, FormatContext, FormatOptions, IndentStyle, IndentWidth, LineEnding,
+    LineWidth, TransformSourceMap,
 };
 use biome_markdown_syntax::MarkdownLanguage;
 use std::fmt;

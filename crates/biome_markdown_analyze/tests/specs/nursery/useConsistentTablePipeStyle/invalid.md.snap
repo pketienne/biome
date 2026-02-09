@@ -1,0 +1,14 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Inconsistent pipe style
+
+| A | B |
+| --- | --- |
+1 | 2 |
+| 3 | 4
+
+```

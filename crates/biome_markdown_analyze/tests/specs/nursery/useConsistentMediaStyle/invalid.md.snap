@@ -1,0 +1,13 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Media Style
+
+This has no images. The rule defaults to inline style.
+
+No violations in this minimal test.
+
+```

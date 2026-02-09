@@ -1,0 +1,55 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Mixed list spacing
+
++ first item
+
++ second item with blank line before it
++ third item without blank line
++ fourth item without blank line
+
++ fifth item with blank line before it
+
+```
+
+# Diagnostics
+```
+invalid.md:6:1 lint/nursery/useConsistentListItemSpacing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected loose spacing but found compact.
+  
+    5 │ + second item with blank line before it
+  > 6 │ + third item without blank line
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    7 │ + fourth item without blank line
+    8 │ 
+  
+  i Use consistent spacing between list items.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.md:7:1 lint/nursery/useConsistentListItemSpacing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected loose spacing but found compact.
+  
+    5 │ + second item with blank line before it
+    6 │ + third item without blank line
+  > 7 │ + fourth item without blank line
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    8 │ 
+    9 │ + fifth item with blank line before it
+  
+  i Use consistent spacing between list items.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

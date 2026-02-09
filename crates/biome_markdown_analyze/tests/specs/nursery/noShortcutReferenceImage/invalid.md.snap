@@ -1,0 +1,11 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Shortcut Images
+
+No shortcut images here since parser can't handle them.
+
+```
