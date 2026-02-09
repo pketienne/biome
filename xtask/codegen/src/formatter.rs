@@ -570,6 +570,7 @@ enum NodeDialect {
     Vue,
     Tailwind,
     Md,
+    Yaml,
 }
 
 impl NodeDialect {
@@ -584,6 +585,7 @@ impl NodeDialect {
             Self::Graphql,
             Self::Html,
             Self::Md,
+            Self::Yaml,
         ]
     }
 
@@ -606,6 +608,7 @@ impl NodeDialect {
             Self::Vue => "vue",
             Self::Tailwind => "tailwind",
             Self::Md => "md",
+            Self::Yaml => "yaml",
         }
     }
 
@@ -624,6 +627,7 @@ impl NodeDialect {
             "Vue" => Self::Vue,
             "Tw" => Self::Tailwind,
             "Md" => Self::Md,
+            "Yaml" => Self::Yaml,
             _ => {
                 eprintln!("missing prefix {name}");
                 Self::Js

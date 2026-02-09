@@ -7,7 +7,7 @@ use crate::{
 };
 use biome_formatter::{FormatOwnedWithRule, FormatRefWithRule, FormatResult, FormatRule};
 impl FormatRule<biome_yaml_syntax::YamlAliasNode>
-    for crate::js::auxiliary::alias_node::FormatYamlAliasNode
+    for crate::yaml::auxiliary::alias_node::FormatYamlAliasNode
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -23,29 +23,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlAliasNode {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlAliasNode,
-        crate::js::auxiliary::alias_node::FormatYamlAliasNode,
+        crate::yaml::auxiliary::alias_node::FormatYamlAliasNode,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::alias_node::FormatYamlAliasNode::default(),
+            crate::yaml::auxiliary::alias_node::FormatYamlAliasNode::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlAliasNode {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlAliasNode,
-        crate::js::auxiliary::alias_node::FormatYamlAliasNode,
+        crate::yaml::auxiliary::alias_node::FormatYamlAliasNode,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::alias_node::FormatYamlAliasNode::default(),
+            crate::yaml::auxiliary::alias_node::FormatYamlAliasNode::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlAnchorProperty>
-    for crate::js::auxiliary::anchor_property::FormatYamlAnchorProperty
+    for crate::yaml::auxiliary::anchor_property::FormatYamlAnchorProperty
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -61,29 +61,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlAnchorProperty {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlAnchorProperty,
-        crate::js::auxiliary::anchor_property::FormatYamlAnchorProperty,
+        crate::yaml::auxiliary::anchor_property::FormatYamlAnchorProperty,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::anchor_property::FormatYamlAnchorProperty::default(),
+            crate::yaml::auxiliary::anchor_property::FormatYamlAnchorProperty::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlAnchorProperty {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlAnchorProperty,
-        crate::js::auxiliary::anchor_property::FormatYamlAnchorProperty,
+        crate::yaml::auxiliary::anchor_property::FormatYamlAnchorProperty,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::anchor_property::FormatYamlAnchorProperty::default(),
+            crate::yaml::auxiliary::anchor_property::FormatYamlAnchorProperty::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBlockContent>
-    for crate::js::auxiliary::block_content::FormatYamlBlockContent
+    for crate::yaml::auxiliary::block_content::FormatYamlBlockContent
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -99,29 +99,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockContent {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockContent,
-        crate::js::auxiliary::block_content::FormatYamlBlockContent,
+        crate::yaml::auxiliary::block_content::FormatYamlBlockContent,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::block_content::FormatYamlBlockContent::default(),
+            crate::yaml::auxiliary::block_content::FormatYamlBlockContent::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockContent {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockContent,
-        crate::js::auxiliary::block_content::FormatYamlBlockContent,
+        crate::yaml::auxiliary::block_content::FormatYamlBlockContent,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::block_content::FormatYamlBlockContent::default(),
+            crate::yaml::auxiliary::block_content::FormatYamlBlockContent::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBlockKeepIndicator>
-    for crate::js::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator
+    for crate::yaml::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -137,29 +137,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockKeepIndicator {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockKeepIndicator,
-        crate::js::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator,
+        crate::yaml::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator::default(),
+            crate::yaml::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockKeepIndicator {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockKeepIndicator,
-        crate::js::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator,
+        crate::yaml::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator::default(),
+            crate::yaml::auxiliary::block_keep_indicator::FormatYamlBlockKeepIndicator::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBlockMapExplicitEntry>
-    for crate::js::auxiliary::block_map_explicit_entry::FormatYamlBlockMapExplicitEntry
+    for crate::yaml::auxiliary::block_map_explicit_entry::FormatYamlBlockMapExplicitEntry
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -175,23 +175,23 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockMapExplicitEntr
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockMapExplicitEntry,
-        crate::js::auxiliary::block_map_explicit_entry::FormatYamlBlockMapExplicitEntry,
+        crate::yaml::auxiliary::block_map_explicit_entry::FormatYamlBlockMapExplicitEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
-        FormatRefWithRule :: new (self , crate :: js :: auxiliary :: block_map_explicit_entry :: FormatYamlBlockMapExplicitEntry :: default ())
+        FormatRefWithRule :: new (self , crate :: yaml :: auxiliary :: block_map_explicit_entry :: FormatYamlBlockMapExplicitEntry :: default ())
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockMapExplicitEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockMapExplicitEntry,
-        crate::js::auxiliary::block_map_explicit_entry::FormatYamlBlockMapExplicitEntry,
+        crate::yaml::auxiliary::block_map_explicit_entry::FormatYamlBlockMapExplicitEntry,
     >;
     fn into_format(self) -> Self::Format {
-        FormatOwnedWithRule :: new (self , crate :: js :: auxiliary :: block_map_explicit_entry :: FormatYamlBlockMapExplicitEntry :: default ())
+        FormatOwnedWithRule :: new (self , crate :: yaml :: auxiliary :: block_map_explicit_entry :: FormatYamlBlockMapExplicitEntry :: default ())
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBlockMapImplicitEntry>
-    for crate::js::auxiliary::block_map_implicit_entry::FormatYamlBlockMapImplicitEntry
+    for crate::yaml::auxiliary::block_map_implicit_entry::FormatYamlBlockMapImplicitEntry
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -207,23 +207,23 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockMapImplicitEntr
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockMapImplicitEntry,
-        crate::js::auxiliary::block_map_implicit_entry::FormatYamlBlockMapImplicitEntry,
+        crate::yaml::auxiliary::block_map_implicit_entry::FormatYamlBlockMapImplicitEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
-        FormatRefWithRule :: new (self , crate :: js :: auxiliary :: block_map_implicit_entry :: FormatYamlBlockMapImplicitEntry :: default ())
+        FormatRefWithRule :: new (self , crate :: yaml :: auxiliary :: block_map_implicit_entry :: FormatYamlBlockMapImplicitEntry :: default ())
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockMapImplicitEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockMapImplicitEntry,
-        crate::js::auxiliary::block_map_implicit_entry::FormatYamlBlockMapImplicitEntry,
+        crate::yaml::auxiliary::block_map_implicit_entry::FormatYamlBlockMapImplicitEntry,
     >;
     fn into_format(self) -> Self::Format {
-        FormatOwnedWithRule :: new (self , crate :: js :: auxiliary :: block_map_implicit_entry :: FormatYamlBlockMapImplicitEntry :: default ())
+        FormatOwnedWithRule :: new (self , crate :: yaml :: auxiliary :: block_map_implicit_entry :: FormatYamlBlockMapImplicitEntry :: default ())
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBlockMapping>
-    for crate::js::auxiliary::block_mapping::FormatYamlBlockMapping
+    for crate::yaml::auxiliary::block_mapping::FormatYamlBlockMapping
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -239,29 +239,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockMapping {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockMapping,
-        crate::js::auxiliary::block_mapping::FormatYamlBlockMapping,
+        crate::yaml::auxiliary::block_mapping::FormatYamlBlockMapping,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::block_mapping::FormatYamlBlockMapping::default(),
+            crate::yaml::auxiliary::block_mapping::FormatYamlBlockMapping::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockMapping {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockMapping,
-        crate::js::auxiliary::block_mapping::FormatYamlBlockMapping,
+        crate::yaml::auxiliary::block_mapping::FormatYamlBlockMapping,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::block_mapping::FormatYamlBlockMapping::default(),
+            crate::yaml::auxiliary::block_mapping::FormatYamlBlockMapping::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBlockSequence>
-    for crate::js::auxiliary::block_sequence::FormatYamlBlockSequence
+    for crate::yaml::auxiliary::block_sequence::FormatYamlBlockSequence
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -277,29 +277,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockSequence {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockSequence,
-        crate::js::auxiliary::block_sequence::FormatYamlBlockSequence,
+        crate::yaml::auxiliary::block_sequence::FormatYamlBlockSequence,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::block_sequence::FormatYamlBlockSequence::default(),
+            crate::yaml::auxiliary::block_sequence::FormatYamlBlockSequence::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockSequence {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockSequence,
-        crate::js::auxiliary::block_sequence::FormatYamlBlockSequence,
+        crate::yaml::auxiliary::block_sequence::FormatYamlBlockSequence,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::block_sequence::FormatYamlBlockSequence::default(),
+            crate::yaml::auxiliary::block_sequence::FormatYamlBlockSequence::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBlockSequenceEntry>
-    for crate::js::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry
+    for crate::yaml::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -315,29 +315,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockSequenceEntry {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockSequenceEntry,
-        crate::js::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry,
+        crate::yaml::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry::default(),
+            crate::yaml::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockSequenceEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockSequenceEntry,
-        crate::js::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry,
+        crate::yaml::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry::default(),
+            crate::yaml::auxiliary::block_sequence_entry::FormatYamlBlockSequenceEntry::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBlockStripIndicator>
-    for crate::js::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator
+    for crate::yaml::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -353,29 +353,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockStripIndicator 
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockStripIndicator,
-        crate::js::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator,
+        crate::yaml::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator::default(),
+            crate::yaml::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockStripIndicator {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockStripIndicator,
-        crate::js::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator,
+        crate::yaml::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator::default(),
+            crate::yaml::auxiliary::block_strip_indicator::FormatYamlBlockStripIndicator::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlDirective>
-    for crate::js::auxiliary::directive::FormatYamlDirective
+    for crate::yaml::auxiliary::directive::FormatYamlDirective
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -391,29 +391,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlDirective {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlDirective,
-        crate::js::auxiliary::directive::FormatYamlDirective,
+        crate::yaml::auxiliary::directive::FormatYamlDirective,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::directive::FormatYamlDirective::default(),
+            crate::yaml::auxiliary::directive::FormatYamlDirective::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlDirective {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlDirective,
-        crate::js::auxiliary::directive::FormatYamlDirective,
+        crate::yaml::auxiliary::directive::FormatYamlDirective,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::directive::FormatYamlDirective::default(),
+            crate::yaml::auxiliary::directive::FormatYamlDirective::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlDocument>
-    for crate::js::auxiliary::document::FormatYamlDocument
+    for crate::yaml::auxiliary::document::FormatYamlDocument
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -429,29 +429,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlDocument {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlDocument,
-        crate::js::auxiliary::document::FormatYamlDocument,
+        crate::yaml::auxiliary::document::FormatYamlDocument,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::document::FormatYamlDocument::default(),
+            crate::yaml::auxiliary::document::FormatYamlDocument::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlDocument {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlDocument,
-        crate::js::auxiliary::document::FormatYamlDocument,
+        crate::yaml::auxiliary::document::FormatYamlDocument,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::document::FormatYamlDocument::default(),
+            crate::yaml::auxiliary::document::FormatYamlDocument::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlDoubleQuotedScalar>
-    for crate::js::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar
+    for crate::yaml::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -467,29 +467,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlDoubleQuotedScalar {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlDoubleQuotedScalar,
-        crate::js::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar,
+        crate::yaml::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar::default(),
+            crate::yaml::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlDoubleQuotedScalar {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlDoubleQuotedScalar,
-        crate::js::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar,
+        crate::yaml::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar::default(),
+            crate::yaml::auxiliary::double_quoted_scalar::FormatYamlDoubleQuotedScalar::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlFlowInBlockNode>
-    for crate::js::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode
+    for crate::yaml::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -505,29 +505,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowInBlockNode {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFlowInBlockNode,
-        crate::js::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode,
+        crate::yaml::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode::default(),
+            crate::yaml::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowInBlockNode {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFlowInBlockNode,
-        crate::js::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode,
+        crate::yaml::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode::default(),
+            crate::yaml::auxiliary::flow_in_block_node::FormatYamlFlowInBlockNode::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlFlowJsonNode>
-    for crate::js::auxiliary::flow_json_node::FormatYamlFlowJsonNode
+    for crate::yaml::auxiliary::flow_json_node::FormatYamlFlowJsonNode
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -543,29 +543,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowJsonNode {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFlowJsonNode,
-        crate::js::auxiliary::flow_json_node::FormatYamlFlowJsonNode,
+        crate::yaml::auxiliary::flow_json_node::FormatYamlFlowJsonNode,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::flow_json_node::FormatYamlFlowJsonNode::default(),
+            crate::yaml::auxiliary::flow_json_node::FormatYamlFlowJsonNode::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowJsonNode {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFlowJsonNode,
-        crate::js::auxiliary::flow_json_node::FormatYamlFlowJsonNode,
+        crate::yaml::auxiliary::flow_json_node::FormatYamlFlowJsonNode,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::flow_json_node::FormatYamlFlowJsonNode::default(),
+            crate::yaml::auxiliary::flow_json_node::FormatYamlFlowJsonNode::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlFlowMapExplicitEntry>
-    for crate::js::auxiliary::flow_map_explicit_entry::FormatYamlFlowMapExplicitEntry
+    for crate::yaml::auxiliary::flow_map_explicit_entry::FormatYamlFlowMapExplicitEntry
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -581,31 +581,23 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowMapExplicitEntry
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFlowMapExplicitEntry,
-        crate::js::auxiliary::flow_map_explicit_entry::FormatYamlFlowMapExplicitEntry,
+        crate::yaml::auxiliary::flow_map_explicit_entry::FormatYamlFlowMapExplicitEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
-        FormatRefWithRule::new(
-            self,
-            crate::js::auxiliary::flow_map_explicit_entry::FormatYamlFlowMapExplicitEntry::default(
-            ),
-        )
+        FormatRefWithRule :: new (self , crate :: yaml :: auxiliary :: flow_map_explicit_entry :: FormatYamlFlowMapExplicitEntry :: default ())
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowMapExplicitEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFlowMapExplicitEntry,
-        crate::js::auxiliary::flow_map_explicit_entry::FormatYamlFlowMapExplicitEntry,
+        crate::yaml::auxiliary::flow_map_explicit_entry::FormatYamlFlowMapExplicitEntry,
     >;
     fn into_format(self) -> Self::Format {
-        FormatOwnedWithRule::new(
-            self,
-            crate::js::auxiliary::flow_map_explicit_entry::FormatYamlFlowMapExplicitEntry::default(
-            ),
-        )
+        FormatOwnedWithRule :: new (self , crate :: yaml :: auxiliary :: flow_map_explicit_entry :: FormatYamlFlowMapExplicitEntry :: default ())
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlFlowMapImplicitEntry>
-    for crate::js::auxiliary::flow_map_implicit_entry::FormatYamlFlowMapImplicitEntry
+    for crate::yaml::auxiliary::flow_map_implicit_entry::FormatYamlFlowMapImplicitEntry
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -621,31 +613,23 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowMapImplicitEntry
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFlowMapImplicitEntry,
-        crate::js::auxiliary::flow_map_implicit_entry::FormatYamlFlowMapImplicitEntry,
+        crate::yaml::auxiliary::flow_map_implicit_entry::FormatYamlFlowMapImplicitEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
-        FormatRefWithRule::new(
-            self,
-            crate::js::auxiliary::flow_map_implicit_entry::FormatYamlFlowMapImplicitEntry::default(
-            ),
-        )
+        FormatRefWithRule :: new (self , crate :: yaml :: auxiliary :: flow_map_implicit_entry :: FormatYamlFlowMapImplicitEntry :: default ())
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowMapImplicitEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFlowMapImplicitEntry,
-        crate::js::auxiliary::flow_map_implicit_entry::FormatYamlFlowMapImplicitEntry,
+        crate::yaml::auxiliary::flow_map_implicit_entry::FormatYamlFlowMapImplicitEntry,
     >;
     fn into_format(self) -> Self::Format {
-        FormatOwnedWithRule::new(
-            self,
-            crate::js::auxiliary::flow_map_implicit_entry::FormatYamlFlowMapImplicitEntry::default(
-            ),
-        )
+        FormatOwnedWithRule :: new (self , crate :: yaml :: auxiliary :: flow_map_implicit_entry :: FormatYamlFlowMapImplicitEntry :: default ())
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlFlowMapping>
-    for crate::js::auxiliary::flow_mapping::FormatYamlFlowMapping
+    for crate::yaml::auxiliary::flow_mapping::FormatYamlFlowMapping
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -661,29 +645,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowMapping {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFlowMapping,
-        crate::js::auxiliary::flow_mapping::FormatYamlFlowMapping,
+        crate::yaml::auxiliary::flow_mapping::FormatYamlFlowMapping,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::flow_mapping::FormatYamlFlowMapping::default(),
+            crate::yaml::auxiliary::flow_mapping::FormatYamlFlowMapping::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowMapping {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFlowMapping,
-        crate::js::auxiliary::flow_mapping::FormatYamlFlowMapping,
+        crate::yaml::auxiliary::flow_mapping::FormatYamlFlowMapping,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::flow_mapping::FormatYamlFlowMapping::default(),
+            crate::yaml::auxiliary::flow_mapping::FormatYamlFlowMapping::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlFlowSequence>
-    for crate::js::auxiliary::flow_sequence::FormatYamlFlowSequence
+    for crate::yaml::auxiliary::flow_sequence::FormatYamlFlowSequence
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -699,29 +683,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowSequence {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFlowSequence,
-        crate::js::auxiliary::flow_sequence::FormatYamlFlowSequence,
+        crate::yaml::auxiliary::flow_sequence::FormatYamlFlowSequence,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::flow_sequence::FormatYamlFlowSequence::default(),
+            crate::yaml::auxiliary::flow_sequence::FormatYamlFlowSequence::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowSequence {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFlowSequence,
-        crate::js::auxiliary::flow_sequence::FormatYamlFlowSequence,
+        crate::yaml::auxiliary::flow_sequence::FormatYamlFlowSequence,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::flow_sequence::FormatYamlFlowSequence::default(),
+            crate::yaml::auxiliary::flow_sequence::FormatYamlFlowSequence::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlFlowYamlNode>
-    for crate::js::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode
+    for crate::yaml::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -737,29 +721,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowYamlNode {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFlowYamlNode,
-        crate::js::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode,
+        crate::yaml::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode::default(),
+            crate::yaml::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowYamlNode {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFlowYamlNode,
-        crate::js::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode,
+        crate::yaml::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode::default(),
+            crate::yaml::auxiliary::flow_yaml_node::FormatYamlFlowYamlNode::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlFoldedScalar>
-    for crate::js::auxiliary::folded_scalar::FormatYamlFoldedScalar
+    for crate::yaml::auxiliary::folded_scalar::FormatYamlFoldedScalar
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -775,29 +759,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFoldedScalar {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFoldedScalar,
-        crate::js::auxiliary::folded_scalar::FormatYamlFoldedScalar,
+        crate::yaml::auxiliary::folded_scalar::FormatYamlFoldedScalar,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::folded_scalar::FormatYamlFoldedScalar::default(),
+            crate::yaml::auxiliary::folded_scalar::FormatYamlFoldedScalar::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFoldedScalar {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFoldedScalar,
-        crate::js::auxiliary::folded_scalar::FormatYamlFoldedScalar,
+        crate::yaml::auxiliary::folded_scalar::FormatYamlFoldedScalar,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::folded_scalar::FormatYamlFoldedScalar::default(),
+            crate::yaml::auxiliary::folded_scalar::FormatYamlFoldedScalar::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlIndentationIndicator>
-    for crate::js::auxiliary::indentation_indicator::FormatYamlIndentationIndicator
+    for crate::yaml::auxiliary::indentation_indicator::FormatYamlIndentationIndicator
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -813,29 +797,31 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlIndentationIndicator
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlIndentationIndicator,
-        crate::js::auxiliary::indentation_indicator::FormatYamlIndentationIndicator,
+        crate::yaml::auxiliary::indentation_indicator::FormatYamlIndentationIndicator,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::indentation_indicator::FormatYamlIndentationIndicator::default(),
+            crate::yaml::auxiliary::indentation_indicator::FormatYamlIndentationIndicator::default(
+            ),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlIndentationIndicator {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlIndentationIndicator,
-        crate::js::auxiliary::indentation_indicator::FormatYamlIndentationIndicator,
+        crate::yaml::auxiliary::indentation_indicator::FormatYamlIndentationIndicator,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::indentation_indicator::FormatYamlIndentationIndicator::default(),
+            crate::yaml::auxiliary::indentation_indicator::FormatYamlIndentationIndicator::default(
+            ),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlLiteralScalar>
-    for crate::js::auxiliary::literal_scalar::FormatYamlLiteralScalar
+    for crate::yaml::auxiliary::literal_scalar::FormatYamlLiteralScalar
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -851,29 +837,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlLiteralScalar {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlLiteralScalar,
-        crate::js::auxiliary::literal_scalar::FormatYamlLiteralScalar,
+        crate::yaml::auxiliary::literal_scalar::FormatYamlLiteralScalar,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::literal_scalar::FormatYamlLiteralScalar::default(),
+            crate::yaml::auxiliary::literal_scalar::FormatYamlLiteralScalar::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlLiteralScalar {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlLiteralScalar,
-        crate::js::auxiliary::literal_scalar::FormatYamlLiteralScalar,
+        crate::yaml::auxiliary::literal_scalar::FormatYamlLiteralScalar,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::literal_scalar::FormatYamlLiteralScalar::default(),
+            crate::yaml::auxiliary::literal_scalar::FormatYamlLiteralScalar::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlPlainScalar>
-    for crate::js::auxiliary::plain_scalar::FormatYamlPlainScalar
+    for crate::yaml::auxiliary::plain_scalar::FormatYamlPlainScalar
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -889,29 +875,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlPlainScalar {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlPlainScalar,
-        crate::js::auxiliary::plain_scalar::FormatYamlPlainScalar,
+        crate::yaml::auxiliary::plain_scalar::FormatYamlPlainScalar,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::plain_scalar::FormatYamlPlainScalar::default(),
+            crate::yaml::auxiliary::plain_scalar::FormatYamlPlainScalar::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlPlainScalar {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlPlainScalar,
-        crate::js::auxiliary::plain_scalar::FormatYamlPlainScalar,
+        crate::yaml::auxiliary::plain_scalar::FormatYamlPlainScalar,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::plain_scalar::FormatYamlPlainScalar::default(),
+            crate::yaml::auxiliary::plain_scalar::FormatYamlPlainScalar::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlPropertiesAnchorFirst>
-    for crate::js::auxiliary::properties_anchor_first::FormatYamlPropertiesAnchorFirst
+    for crate::yaml::auxiliary::properties_anchor_first::FormatYamlPropertiesAnchorFirst
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -927,31 +913,23 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlPropertiesAnchorFirs
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlPropertiesAnchorFirst,
-        crate::js::auxiliary::properties_anchor_first::FormatYamlPropertiesAnchorFirst,
+        crate::yaml::auxiliary::properties_anchor_first::FormatYamlPropertiesAnchorFirst,
     >;
     fn format(&self) -> Self::Format<'_> {
-        FormatRefWithRule::new(
-            self,
-            crate::js::auxiliary::properties_anchor_first::FormatYamlPropertiesAnchorFirst::default(
-            ),
-        )
+        FormatRefWithRule :: new (self , crate :: yaml :: auxiliary :: properties_anchor_first :: FormatYamlPropertiesAnchorFirst :: default ())
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlPropertiesAnchorFirst {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlPropertiesAnchorFirst,
-        crate::js::auxiliary::properties_anchor_first::FormatYamlPropertiesAnchorFirst,
+        crate::yaml::auxiliary::properties_anchor_first::FormatYamlPropertiesAnchorFirst,
     >;
     fn into_format(self) -> Self::Format {
-        FormatOwnedWithRule::new(
-            self,
-            crate::js::auxiliary::properties_anchor_first::FormatYamlPropertiesAnchorFirst::default(
-            ),
-        )
+        FormatOwnedWithRule :: new (self , crate :: yaml :: auxiliary :: properties_anchor_first :: FormatYamlPropertiesAnchorFirst :: default ())
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlPropertiesTagFirst>
-    for crate::js::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst
+    for crate::yaml::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -967,28 +945,28 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlPropertiesTagFirst {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlPropertiesTagFirst,
-        crate::js::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst,
+        crate::yaml::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst::default(),
+            crate::yaml::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlPropertiesTagFirst {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlPropertiesTagFirst,
-        crate::js::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst,
+        crate::yaml::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst::default(),
+            crate::yaml::auxiliary::properties_tag_first::FormatYamlPropertiesTagFirst::default(),
         )
     }
 }
-impl FormatRule<biome_yaml_syntax::YamlRoot> for crate::js::auxiliary::root::FormatYamlRoot {
+impl FormatRule<biome_yaml_syntax::YamlRoot> for crate::yaml::auxiliary::root::FormatYamlRoot {
     type Context = YamlFormatContext;
     #[inline(always)]
     fn fmt(&self, node: &biome_yaml_syntax::YamlRoot, f: &mut YamlFormatter) -> FormatResult<()> {
@@ -999,23 +977,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlRoot {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlRoot,
-        crate::js::auxiliary::root::FormatYamlRoot,
+        crate::yaml::auxiliary::root::FormatYamlRoot,
     >;
     fn format(&self) -> Self::Format<'_> {
-        FormatRefWithRule::new(self, crate::js::auxiliary::root::FormatYamlRoot::default())
+        FormatRefWithRule::new(
+            self,
+            crate::yaml::auxiliary::root::FormatYamlRoot::default(),
+        )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlRoot {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlRoot,
-        crate::js::auxiliary::root::FormatYamlRoot,
+        crate::yaml::auxiliary::root::FormatYamlRoot,
     >;
     fn into_format(self) -> Self::Format {
-        FormatOwnedWithRule::new(self, crate::js::auxiliary::root::FormatYamlRoot::default())
+        FormatOwnedWithRule::new(
+            self,
+            crate::yaml::auxiliary::root::FormatYamlRoot::default(),
+        )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlSingleQuotedScalar>
-    for crate::js::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar
+    for crate::yaml::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -1031,29 +1015,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlSingleQuotedScalar {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlSingleQuotedScalar,
-        crate::js::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar,
+        crate::yaml::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar::default(),
+            crate::yaml::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlSingleQuotedScalar {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlSingleQuotedScalar,
-        crate::js::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar,
+        crate::yaml::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar::default(),
+            crate::yaml::auxiliary::single_quoted_scalar::FormatYamlSingleQuotedScalar::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlTagProperty>
-    for crate::js::auxiliary::tag_property::FormatYamlTagProperty
+    for crate::yaml::auxiliary::tag_property::FormatYamlTagProperty
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -1069,24 +1053,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlTagProperty {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlTagProperty,
-        crate::js::auxiliary::tag_property::FormatYamlTagProperty,
+        crate::yaml::auxiliary::tag_property::FormatYamlTagProperty,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::auxiliary::tag_property::FormatYamlTagProperty::default(),
+            crate::yaml::auxiliary::tag_property::FormatYamlTagProperty::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlTagProperty {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlTagProperty,
-        crate::js::auxiliary::tag_property::FormatYamlTagProperty,
+        crate::yaml::auxiliary::tag_property::FormatYamlTagProperty,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::auxiliary::tag_property::FormatYamlTagProperty::default(),
+            crate::yaml::auxiliary::tag_property::FormatYamlTagProperty::default(),
         )
     }
 }
@@ -1094,24 +1078,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockHeaderList {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockHeaderList,
-        crate::js::lists::block_header_list::FormatYamlBlockHeaderList,
+        crate::yaml::lists::block_header_list::FormatYamlBlockHeaderList,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::lists::block_header_list::FormatYamlBlockHeaderList::default(),
+            crate::yaml::lists::block_header_list::FormatYamlBlockHeaderList::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockHeaderList {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockHeaderList,
-        crate::js::lists::block_header_list::FormatYamlBlockHeaderList,
+        crate::yaml::lists::block_header_list::FormatYamlBlockHeaderList,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::lists::block_header_list::FormatYamlBlockHeaderList::default(),
+            crate::yaml::lists::block_header_list::FormatYamlBlockHeaderList::default(),
         )
     }
 }
@@ -1119,24 +1103,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockMapEntryList {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockMapEntryList,
-        crate::js::lists::block_map_entry_list::FormatYamlBlockMapEntryList,
+        crate::yaml::lists::block_map_entry_list::FormatYamlBlockMapEntryList,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::lists::block_map_entry_list::FormatYamlBlockMapEntryList::default(),
+            crate::yaml::lists::block_map_entry_list::FormatYamlBlockMapEntryList::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockMapEntryList {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockMapEntryList,
-        crate::js::lists::block_map_entry_list::FormatYamlBlockMapEntryList,
+        crate::yaml::lists::block_map_entry_list::FormatYamlBlockMapEntryList,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::lists::block_map_entry_list::FormatYamlBlockMapEntryList::default(),
+            crate::yaml::lists::block_map_entry_list::FormatYamlBlockMapEntryList::default(),
         )
     }
 }
@@ -1144,51 +1128,43 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockSequenceEntryLi
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBlockSequenceEntryList,
-        crate::js::lists::block_sequence_entry_list::FormatYamlBlockSequenceEntryList,
+        crate::yaml::lists::block_sequence_entry_list::FormatYamlBlockSequenceEntryList,
     >;
     fn format(&self) -> Self::Format<'_> {
-        FormatRefWithRule::new(
-            self,
-            crate::js::lists::block_sequence_entry_list::FormatYamlBlockSequenceEntryList::default(
-            ),
-        )
+        FormatRefWithRule :: new (self , crate :: yaml :: lists :: block_sequence_entry_list :: FormatYamlBlockSequenceEntryList :: default ())
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBlockSequenceEntryList {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBlockSequenceEntryList,
-        crate::js::lists::block_sequence_entry_list::FormatYamlBlockSequenceEntryList,
+        crate::yaml::lists::block_sequence_entry_list::FormatYamlBlockSequenceEntryList,
     >;
     fn into_format(self) -> Self::Format {
-        FormatOwnedWithRule::new(
-            self,
-            crate::js::lists::block_sequence_entry_list::FormatYamlBlockSequenceEntryList::default(
-            ),
-        )
+        FormatOwnedWithRule :: new (self , crate :: yaml :: lists :: block_sequence_entry_list :: FormatYamlBlockSequenceEntryList :: default ())
     }
 }
 impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlDirectiveList {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlDirectiveList,
-        crate::js::lists::directive_list::FormatYamlDirectiveList,
+        crate::yaml::lists::directive_list::FormatYamlDirectiveList,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::lists::directive_list::FormatYamlDirectiveList::default(),
+            crate::yaml::lists::directive_list::FormatYamlDirectiveList::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlDirectiveList {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlDirectiveList,
-        crate::js::lists::directive_list::FormatYamlDirectiveList,
+        crate::yaml::lists::directive_list::FormatYamlDirectiveList,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::lists::directive_list::FormatYamlDirectiveList::default(),
+            crate::yaml::lists::directive_list::FormatYamlDirectiveList::default(),
         )
     }
 }
@@ -1196,24 +1172,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlDocumentList {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlDocumentList,
-        crate::js::lists::document_list::FormatYamlDocumentList,
+        crate::yaml::lists::document_list::FormatYamlDocumentList,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::lists::document_list::FormatYamlDocumentList::default(),
+            crate::yaml::lists::document_list::FormatYamlDocumentList::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlDocumentList {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlDocumentList,
-        crate::js::lists::document_list::FormatYamlDocumentList,
+        crate::yaml::lists::document_list::FormatYamlDocumentList,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::lists::document_list::FormatYamlDocumentList::default(),
+            crate::yaml::lists::document_list::FormatYamlDocumentList::default(),
         )
     }
 }
@@ -1221,24 +1197,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowMapEntryList {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFlowMapEntryList,
-        crate::js::lists::flow_map_entry_list::FormatYamlFlowMapEntryList,
+        crate::yaml::lists::flow_map_entry_list::FormatYamlFlowMapEntryList,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::lists::flow_map_entry_list::FormatYamlFlowMapEntryList::default(),
+            crate::yaml::lists::flow_map_entry_list::FormatYamlFlowMapEntryList::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowMapEntryList {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFlowMapEntryList,
-        crate::js::lists::flow_map_entry_list::FormatYamlFlowMapEntryList,
+        crate::yaml::lists::flow_map_entry_list::FormatYamlFlowMapEntryList,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::lists::flow_map_entry_list::FormatYamlFlowMapEntryList::default(),
+            crate::yaml::lists::flow_map_entry_list::FormatYamlFlowMapEntryList::default(),
         )
     }
 }
@@ -1246,28 +1222,30 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowSequenceEntryLis
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlFlowSequenceEntryList,
-        crate::js::lists::flow_sequence_entry_list::FormatYamlFlowSequenceEntryList,
+        crate::yaml::lists::flow_sequence_entry_list::FormatYamlFlowSequenceEntryList,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::lists::flow_sequence_entry_list::FormatYamlFlowSequenceEntryList::default(),
+            crate::yaml::lists::flow_sequence_entry_list::FormatYamlFlowSequenceEntryList::default(
+            ),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlFlowSequenceEntryList {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlFlowSequenceEntryList,
-        crate::js::lists::flow_sequence_entry_list::FormatYamlFlowSequenceEntryList,
+        crate::yaml::lists::flow_sequence_entry_list::FormatYamlFlowSequenceEntryList,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::lists::flow_sequence_entry_list::FormatYamlFlowSequenceEntryList::default(),
+            crate::yaml::lists::flow_sequence_entry_list::FormatYamlFlowSequenceEntryList::default(
+            ),
         )
     }
 }
-impl FormatRule<biome_yaml_syntax::YamlBogus> for crate::js::bogus::bogus::FormatYamlBogus {
+impl FormatRule<biome_yaml_syntax::YamlBogus> for crate::yaml::bogus::bogus::FormatYamlBogus {
     type Context = YamlFormatContext;
     #[inline(always)]
     fn fmt(&self, node: &biome_yaml_syntax::YamlBogus, f: &mut YamlFormatter) -> FormatResult<()> {
@@ -1278,21 +1256,23 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogus {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBogus,
-        crate::js::bogus::bogus::FormatYamlBogus,
+        crate::yaml::bogus::bogus::FormatYamlBogus,
     >;
     fn format(&self) -> Self::Format<'_> {
-        FormatRefWithRule::new(self, crate::js::bogus::bogus::FormatYamlBogus::default())
+        FormatRefWithRule::new(self, crate::yaml::bogus::bogus::FormatYamlBogus::default())
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogus {
-    type Format =
-        FormatOwnedWithRule<biome_yaml_syntax::YamlBogus, crate::js::bogus::bogus::FormatYamlBogus>;
+    type Format = FormatOwnedWithRule<
+        biome_yaml_syntax::YamlBogus,
+        crate::yaml::bogus::bogus::FormatYamlBogus,
+    >;
     fn into_format(self) -> Self::Format {
-        FormatOwnedWithRule::new(self, crate::js::bogus::bogus::FormatYamlBogus::default())
+        FormatOwnedWithRule::new(self, crate::yaml::bogus::bogus::FormatYamlBogus::default())
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBogusBlockHeader>
-    for crate::js::bogus::bogus_block_header::FormatYamlBogusBlockHeader
+    for crate::yaml::bogus::bogus_block_header::FormatYamlBogusBlockHeader
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -1308,29 +1288,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogusBlockHeader {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBogusBlockHeader,
-        crate::js::bogus::bogus_block_header::FormatYamlBogusBlockHeader,
+        crate::yaml::bogus::bogus_block_header::FormatYamlBogusBlockHeader,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::bogus::bogus_block_header::FormatYamlBogusBlockHeader::default(),
+            crate::yaml::bogus::bogus_block_header::FormatYamlBogusBlockHeader::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogusBlockHeader {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBogusBlockHeader,
-        crate::js::bogus::bogus_block_header::FormatYamlBogusBlockHeader,
+        crate::yaml::bogus::bogus_block_header::FormatYamlBogusBlockHeader,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::bogus::bogus_block_header::FormatYamlBogusBlockHeader::default(),
+            crate::yaml::bogus::bogus_block_header::FormatYamlBogusBlockHeader::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBogusBlockMapEntry>
-    for crate::js::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry
+    for crate::yaml::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -1346,29 +1326,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogusBlockMapEntry {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBogusBlockMapEntry,
-        crate::js::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry,
+        crate::yaml::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry::default(),
+            crate::yaml::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogusBlockMapEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBogusBlockMapEntry,
-        crate::js::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry,
+        crate::yaml::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry::default(),
+            crate::yaml::bogus::bogus_block_map_entry::FormatYamlBogusBlockMapEntry::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBogusBlockNode>
-    for crate::js::bogus::bogus_block_node::FormatYamlBogusBlockNode
+    for crate::yaml::bogus::bogus_block_node::FormatYamlBogusBlockNode
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -1384,29 +1364,29 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogusBlockNode {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBogusBlockNode,
-        crate::js::bogus::bogus_block_node::FormatYamlBogusBlockNode,
+        crate::yaml::bogus::bogus_block_node::FormatYamlBogusBlockNode,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::bogus::bogus_block_node::FormatYamlBogusBlockNode::default(),
+            crate::yaml::bogus::bogus_block_node::FormatYamlBogusBlockNode::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogusBlockNode {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBogusBlockNode,
-        crate::js::bogus::bogus_block_node::FormatYamlBogusBlockNode,
+        crate::yaml::bogus::bogus_block_node::FormatYamlBogusBlockNode,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::bogus::bogus_block_node::FormatYamlBogusBlockNode::default(),
+            crate::yaml::bogus::bogus_block_node::FormatYamlBogusBlockNode::default(),
         )
     }
 }
 impl FormatRule<biome_yaml_syntax::YamlBogusFlowNode>
-    for crate::js::bogus::bogus_flow_node::FormatYamlBogusFlowNode
+    for crate::yaml::bogus::bogus_flow_node::FormatYamlBogusFlowNode
 {
     type Context = YamlFormatContext;
     #[inline(always)]
@@ -1422,24 +1402,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogusFlowNode {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::YamlBogusFlowNode,
-        crate::js::bogus::bogus_flow_node::FormatYamlBogusFlowNode,
+        crate::yaml::bogus::bogus_flow_node::FormatYamlBogusFlowNode,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::bogus::bogus_flow_node::FormatYamlBogusFlowNode::default(),
+            crate::yaml::bogus::bogus_flow_node::FormatYamlBogusFlowNode::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::YamlBogusFlowNode {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::YamlBogusFlowNode,
-        crate::js::bogus::bogus_flow_node::FormatYamlBogusFlowNode,
+        crate::yaml::bogus::bogus_flow_node::FormatYamlBogusFlowNode,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::bogus::bogus_flow_node::FormatYamlBogusFlowNode::default(),
+            crate::yaml::bogus::bogus_flow_node::FormatYamlBogusFlowNode::default(),
         )
     }
 }
@@ -1447,24 +1427,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockHeader {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlBlockHeader,
-        crate::js::any::block_header::FormatAnyYamlBlockHeader,
+        crate::yaml::any::block_header::FormatAnyYamlBlockHeader,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::block_header::FormatAnyYamlBlockHeader::default(),
+            crate::yaml::any::block_header::FormatAnyYamlBlockHeader::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockHeader {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlBlockHeader,
-        crate::js::any::block_header::FormatAnyYamlBlockHeader,
+        crate::yaml::any::block_header::FormatAnyYamlBlockHeader,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::block_header::FormatAnyYamlBlockHeader::default(),
+            crate::yaml::any::block_header::FormatAnyYamlBlockHeader::default(),
         )
     }
 }
@@ -1472,24 +1452,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockInBlockNode 
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlBlockInBlockNode,
-        crate::js::any::block_in_block_node::FormatAnyYamlBlockInBlockNode,
+        crate::yaml::any::block_in_block_node::FormatAnyYamlBlockInBlockNode,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::block_in_block_node::FormatAnyYamlBlockInBlockNode::default(),
+            crate::yaml::any::block_in_block_node::FormatAnyYamlBlockInBlockNode::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockInBlockNode {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlBlockInBlockNode,
-        crate::js::any::block_in_block_node::FormatAnyYamlBlockInBlockNode,
+        crate::yaml::any::block_in_block_node::FormatAnyYamlBlockInBlockNode,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::block_in_block_node::FormatAnyYamlBlockInBlockNode::default(),
+            crate::yaml::any::block_in_block_node::FormatAnyYamlBlockInBlockNode::default(),
         )
     }
 }
@@ -1497,24 +1477,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockMapEntry {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlBlockMapEntry,
-        crate::js::any::block_map_entry::FormatAnyYamlBlockMapEntry,
+        crate::yaml::any::block_map_entry::FormatAnyYamlBlockMapEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::block_map_entry::FormatAnyYamlBlockMapEntry::default(),
+            crate::yaml::any::block_map_entry::FormatAnyYamlBlockMapEntry::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockMapEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlBlockMapEntry,
-        crate::js::any::block_map_entry::FormatAnyYamlBlockMapEntry,
+        crate::yaml::any::block_map_entry::FormatAnyYamlBlockMapEntry,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::block_map_entry::FormatAnyYamlBlockMapEntry::default(),
+            crate::yaml::any::block_map_entry::FormatAnyYamlBlockMapEntry::default(),
         )
     }
 }
@@ -1522,24 +1502,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockNode {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlBlockNode,
-        crate::js::any::block_node::FormatAnyYamlBlockNode,
+        crate::yaml::any::block_node::FormatAnyYamlBlockNode,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::block_node::FormatAnyYamlBlockNode::default(),
+            crate::yaml::any::block_node::FormatAnyYamlBlockNode::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockNode {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlBlockNode,
-        crate::js::any::block_node::FormatAnyYamlBlockNode,
+        crate::yaml::any::block_node::FormatAnyYamlBlockNode,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::block_node::FormatAnyYamlBlockNode::default(),
+            crate::yaml::any::block_node::FormatAnyYamlBlockNode::default(),
         )
     }
 }
@@ -1547,24 +1527,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockSequenceEntr
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlBlockSequenceEntry,
-        crate::js::any::block_sequence_entry::FormatAnyYamlBlockSequenceEntry,
+        crate::yaml::any::block_sequence_entry::FormatAnyYamlBlockSequenceEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::block_sequence_entry::FormatAnyYamlBlockSequenceEntry::default(),
+            crate::yaml::any::block_sequence_entry::FormatAnyYamlBlockSequenceEntry::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlBlockSequenceEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlBlockSequenceEntry,
-        crate::js::any::block_sequence_entry::FormatAnyYamlBlockSequenceEntry,
+        crate::yaml::any::block_sequence_entry::FormatAnyYamlBlockSequenceEntry,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::block_sequence_entry::FormatAnyYamlBlockSequenceEntry::default(),
+            crate::yaml::any::block_sequence_entry::FormatAnyYamlBlockSequenceEntry::default(),
         )
     }
 }
@@ -1572,24 +1552,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlDocument {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlDocument,
-        crate::js::any::document::FormatAnyYamlDocument,
+        crate::yaml::any::document::FormatAnyYamlDocument,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::document::FormatAnyYamlDocument::default(),
+            crate::yaml::any::document::FormatAnyYamlDocument::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlDocument {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlDocument,
-        crate::js::any::document::FormatAnyYamlDocument,
+        crate::yaml::any::document::FormatAnyYamlDocument,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::document::FormatAnyYamlDocument::default(),
+            crate::yaml::any::document::FormatAnyYamlDocument::default(),
         )
     }
 }
@@ -1597,24 +1577,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlFlowMapEntry {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlFlowMapEntry,
-        crate::js::any::flow_map_entry::FormatAnyYamlFlowMapEntry,
+        crate::yaml::any::flow_map_entry::FormatAnyYamlFlowMapEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::flow_map_entry::FormatAnyYamlFlowMapEntry::default(),
+            crate::yaml::any::flow_map_entry::FormatAnyYamlFlowMapEntry::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlFlowMapEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlFlowMapEntry,
-        crate::js::any::flow_map_entry::FormatAnyYamlFlowMapEntry,
+        crate::yaml::any::flow_map_entry::FormatAnyYamlFlowMapEntry,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::flow_map_entry::FormatAnyYamlFlowMapEntry::default(),
+            crate::yaml::any::flow_map_entry::FormatAnyYamlFlowMapEntry::default(),
         )
     }
 }
@@ -1622,24 +1602,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlFlowNode {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlFlowNode,
-        crate::js::any::flow_node::FormatAnyYamlFlowNode,
+        crate::yaml::any::flow_node::FormatAnyYamlFlowNode,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::flow_node::FormatAnyYamlFlowNode::default(),
+            crate::yaml::any::flow_node::FormatAnyYamlFlowNode::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlFlowNode {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlFlowNode,
-        crate::js::any::flow_node::FormatAnyYamlFlowNode,
+        crate::yaml::any::flow_node::FormatAnyYamlFlowNode,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::flow_node::FormatAnyYamlFlowNode::default(),
+            crate::yaml::any::flow_node::FormatAnyYamlFlowNode::default(),
         )
     }
 }
@@ -1647,24 +1627,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlFlowSequenceEntry
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlFlowSequenceEntry,
-        crate::js::any::flow_sequence_entry::FormatAnyYamlFlowSequenceEntry,
+        crate::yaml::any::flow_sequence_entry::FormatAnyYamlFlowSequenceEntry,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::flow_sequence_entry::FormatAnyYamlFlowSequenceEntry::default(),
+            crate::yaml::any::flow_sequence_entry::FormatAnyYamlFlowSequenceEntry::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlFlowSequenceEntry {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlFlowSequenceEntry,
-        crate::js::any::flow_sequence_entry::FormatAnyYamlFlowSequenceEntry,
+        crate::yaml::any::flow_sequence_entry::FormatAnyYamlFlowSequenceEntry,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::flow_sequence_entry::FormatAnyYamlFlowSequenceEntry::default(),
+            crate::yaml::any::flow_sequence_entry::FormatAnyYamlFlowSequenceEntry::default(),
         )
     }
 }
@@ -1672,24 +1652,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlJsonContent {
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlJsonContent,
-        crate::js::any::json_content::FormatAnyYamlJsonContent,
+        crate::yaml::any::json_content::FormatAnyYamlJsonContent,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::json_content::FormatAnyYamlJsonContent::default(),
+            crate::yaml::any::json_content::FormatAnyYamlJsonContent::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlJsonContent {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlJsonContent,
-        crate::js::any::json_content::FormatAnyYamlJsonContent,
+        crate::yaml::any::json_content::FormatAnyYamlJsonContent,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::json_content::FormatAnyYamlJsonContent::default(),
+            crate::yaml::any::json_content::FormatAnyYamlJsonContent::default(),
         )
     }
 }
@@ -1697,24 +1677,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlMappingImplicitKe
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlMappingImplicitKey,
-        crate::js::any::mapping_implicit_key::FormatAnyYamlMappingImplicitKey,
+        crate::yaml::any::mapping_implicit_key::FormatAnyYamlMappingImplicitKey,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::mapping_implicit_key::FormatAnyYamlMappingImplicitKey::default(),
+            crate::yaml::any::mapping_implicit_key::FormatAnyYamlMappingImplicitKey::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlMappingImplicitKey {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlMappingImplicitKey,
-        crate::js::any::mapping_implicit_key::FormatAnyYamlMappingImplicitKey,
+        crate::yaml::any::mapping_implicit_key::FormatAnyYamlMappingImplicitKey,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::mapping_implicit_key::FormatAnyYamlMappingImplicitKey::default(),
+            crate::yaml::any::mapping_implicit_key::FormatAnyYamlMappingImplicitKey::default(),
         )
     }
 }
@@ -1722,24 +1702,24 @@ impl AsFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlPropertiesCombina
     type Format<'a> = FormatRefWithRule<
         'a,
         biome_yaml_syntax::AnyYamlPropertiesCombination,
-        crate::js::any::properties_combination::FormatAnyYamlPropertiesCombination,
+        crate::yaml::any::properties_combination::FormatAnyYamlPropertiesCombination,
     >;
     fn format(&self) -> Self::Format<'_> {
         FormatRefWithRule::new(
             self,
-            crate::js::any::properties_combination::FormatAnyYamlPropertiesCombination::default(),
+            crate::yaml::any::properties_combination::FormatAnyYamlPropertiesCombination::default(),
         )
     }
 }
 impl IntoFormat<YamlFormatContext> for biome_yaml_syntax::AnyYamlPropertiesCombination {
     type Format = FormatOwnedWithRule<
         biome_yaml_syntax::AnyYamlPropertiesCombination,
-        crate::js::any::properties_combination::FormatAnyYamlPropertiesCombination,
+        crate::yaml::any::properties_combination::FormatAnyYamlPropertiesCombination,
     >;
     fn into_format(self) -> Self::Format {
         FormatOwnedWithRule::new(
             self,
-            crate::js::any::properties_combination::FormatAnyYamlPropertiesCombination::default(),
+            crate::yaml::any::properties_combination::FormatAnyYamlPropertiesCombination::default(),
         )
     }
 }
