@@ -3,7 +3,7 @@ use crate::comments::{FormatYamlLeadingComment, YamlComments};
 use biome_formatter::prelude::*;
 use biome_formatter::{
     CstFormatContext, FormatContext, FormatOptions, IndentStyle, IndentWidth, LineEnding, LineWidth,
-    TransformSourceMap,
+    QuoteStyle, TransformSourceMap,
 };
 use biome_yaml_syntax::YamlLanguage;
 use std::fmt;
@@ -59,6 +59,7 @@ pub struct YamlFormatOptions {
     indent_width: IndentWidth,
     line_ending: LineEnding,
     line_width: LineWidth,
+    quote_style: QuoteStyle,
 }
 
 impl Default for YamlFormatOptions {
@@ -68,6 +69,7 @@ impl Default for YamlFormatOptions {
             indent_width: IndentWidth::default(),
             line_ending: LineEnding::default(),
             line_width: LineWidth::default(),
+            quote_style: QuoteStyle::default(),
         }
     }
 }
@@ -108,6 +110,19 @@ impl YamlFormatOptions {
     pub fn set_line_width(&mut self, line_width: LineWidth) {
         self.line_width = line_width;
     }
+
+    pub fn with_quote_style(mut self, quote_style: QuoteStyle) -> Self {
+        self.quote_style = quote_style;
+        self
+    }
+
+    pub fn set_quote_style(&mut self, quote_style: QuoteStyle) {
+        self.quote_style = quote_style;
+    }
+
+    pub fn quote_style(&self) -> QuoteStyle {
+        self.quote_style
+    }
 }
 
 impl FormatOptions for YamlFormatOptions {
@@ -138,6 +153,7 @@ impl fmt::Display for YamlFormatOptions {
         writeln!(f, "Indent width: {}", self.indent_width.value())?;
         writeln!(f, "Line ending: {}", self.line_ending)?;
         writeln!(f, "Line width: {}", self.line_width.value())?;
+        writeln!(f, "Quote style: {}", self.quote_style)?;
         Ok(())
     }
 }

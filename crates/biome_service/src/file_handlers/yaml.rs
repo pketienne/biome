@@ -17,7 +17,7 @@ use biome_configuration::yaml::{
     YamlAssistConfiguration, YamlAssistEnabled, YamlFormatterConfiguration,
     YamlFormatterEnabled, YamlLinterConfiguration, YamlLinterEnabled,
 };
-use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth, Printed};
+use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth, Printed, QuoteStyle};
 use biome_fs::BiomePath;
 use biome_yaml_analyze::analyze;
 use biome_yaml_formatter::format_node;
@@ -38,6 +38,7 @@ pub struct YamlFormatterSettings {
     pub indent_width: Option<IndentWidth>,
     pub line_ending: Option<LineEnding>,
     pub line_width: Option<LineWidth>,
+    pub quote_style: Option<QuoteStyle>,
 }
 
 impl From<YamlFormatterConfiguration> for YamlFormatterSettings {
@@ -48,6 +49,7 @@ impl From<YamlFormatterConfiguration> for YamlFormatterSettings {
             indent_width: config.indent_width,
             line_ending: config.line_ending,
             line_width: config.line_width,
+            quote_style: config.quote_style,
         }
     }
 }
@@ -120,12 +122,14 @@ impl ServiceLanguage for YamlLanguage {
             .line_ending
             .or(global.line_ending)
             .unwrap_or_default();
+        let quote_style = language.quote_style.unwrap_or_default();
 
         let mut options = YamlFormatOptions::default()
             .with_indent_style(indent_style)
             .with_indent_width(indent_width)
             .with_line_width(line_width)
-            .with_line_ending(line_ending);
+            .with_line_ending(line_ending)
+            .with_quote_style(quote_style);
 
         overrides.apply_override_yaml_format_options(path, &mut options);
 

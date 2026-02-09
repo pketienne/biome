@@ -44,13 +44,11 @@ impl<'a> Format<YamlFormatContext> for FormatRemoved<'a> {
     }
 }
 
-#[allow(dead_code)]
 pub(crate) struct FormatReplaced<'a> {
     token: &'a YamlSyntaxToken,
     content: Argument<'a, YamlFormatContext>,
 }
 
-#[allow(dead_code)]
 pub(crate) fn format_replaced<'a>(
     token: &'a YamlSyntaxToken,
     content: &'a impl Format<YamlFormatContext>,

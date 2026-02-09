@@ -386,4 +386,50 @@ mod tests {
         let result = formatted.print().unwrap();
         assert_eq!(result.as_code(), "key1: value1\nkey2: value2\n");
     }
+
+    #[test]
+    fn quote_style_double_to_single() {
+        use biome_formatter::QuoteStyle;
+        let src = "key: \"hello world\"\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default().with_quote_style(QuoteStyle::Single);
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "key: 'hello world'\n");
+    }
+
+    #[test]
+    fn quote_style_single_to_double() {
+        use biome_formatter::QuoteStyle;
+        let src = "key: 'hello world'\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default().with_quote_style(QuoteStyle::Double);
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "key: \"hello world\"\n");
+    }
+
+    #[test]
+    fn quote_style_preserves_when_unsafe() {
+        use biome_formatter::QuoteStyle;
+        // Double-quoted with escape sequence — can't convert to single
+        let src = "key: \"line1\\nline2\"\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default().with_quote_style(QuoteStyle::Single);
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "key: \"line1\\nline2\"\n");
+    }
+
+    #[test]
+    fn quote_style_preserves_when_target_quote_in_content() {
+        use biome_formatter::QuoteStyle;
+        // Double-quoted with single quote in content — can't convert to single
+        let src = "key: \"it's here\"\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default().with_quote_style(QuoteStyle::Single);
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "key: \"it's here\"\n");
+    }
 }

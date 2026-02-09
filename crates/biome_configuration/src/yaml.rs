@@ -1,6 +1,6 @@
 use crate::bool::Bool;
 use biome_deserialize_macros::{Deserializable, Merge};
-use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth};
+use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth, QuoteStyle};
 use bpaf::Bpaf;
 use serde::{Deserialize, Serialize};
 
@@ -62,6 +62,11 @@ pub struct YamlFormatterConfiguration {
     #[bpaf(long("yaml-formatter-line-width"), argument("NUMBER"), optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub line_width: Option<LineWidth>,
+
+    /// The type of quotes used in YAML strings. Defaults to double.
+    #[bpaf(long("yaml-formatter-quote-style"), argument("double|single"), optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quote_style: Option<QuoteStyle>,
 }
 
 /// Options that changes how the YAML linter behaves
