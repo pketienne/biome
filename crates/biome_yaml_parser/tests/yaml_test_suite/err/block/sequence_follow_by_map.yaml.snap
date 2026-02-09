@@ -38,6 +38,7 @@ YamlRoot {
                                 YamlBlockSequenceEntry {
                                     minus_token: DASH@4..6 "-" [] [Whitespace(" ")],
                                     value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
                                         flow_start_token: FLOW_START@6..6 "" [] [],
                                         flow: YamlFlowYamlNode {
                                             properties: missing (optional),
@@ -99,12 +100,13 @@ YamlRoot {
                 0: YAML_BLOCK_SEQUENCE_ENTRY@4..7
                   0: DASH@4..6 "-" [] [Whitespace(" ")]
                   1: YAML_FLOW_IN_BLOCK_NODE@6..7
-                    0: FLOW_START@6..6 "" [] []
-                    1: YAML_FLOW_YAML_NODE@6..7
+                    0: (empty)
+                    1: FLOW_START@6..6 "" [] []
+                    2: YAML_FLOW_YAML_NODE@6..7
                       0: (empty)
                       1: YAML_PLAIN_SCALAR@6..7
                         0: PLAIN_LITERAL@6..7 "a" [] []
-                    2: FLOW_END@7..7 "" [] []
+                    3: FLOW_END@7..7 "" [] []
               3: SEQUENCE_END@7..7 "" [] []
           1: YAML_BOGUS_BLOCK_MAP_ENTRY@7..13
             0: MAPPING_START@7..9 "" [Newline("\n"), Whitespace(" ")] []

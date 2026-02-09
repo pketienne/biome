@@ -26,8 +26,6 @@ Line width: 80
 -----
 
 ```yaml
-explicit_string:
-	!!str 123
-explicit_int:
-	!!int "456"
+explicit_string: !!str 123
+explicit_int: !!int "456"
 ```

@@ -23,6 +23,7 @@ YamlRoot {
             directives: YamlDirectiveList [],
             dashdashdash_token: missing (optional),
             node: YamlFlowInBlockNode {
+                properties: missing (optional),
                 flow_start_token: FLOW_START@0..0 "" [] [],
                 flow: YamlFlowJsonNode {
                     properties: missing (optional),
@@ -51,6 +52,7 @@ YamlRoot {
                         },
                         colon_token: COLON@13..15 ":" [] [Whitespace(" ")],
                         value: YamlFlowInBlockNode {
+                            properties: missing (optional),
                             flow_start_token: FLOW_START@15..15 "" [] [],
                             flow: YamlFlowYamlNode {
                                 properties: missing (optional),
@@ -78,6 +80,7 @@ YamlRoot {
             directives: YamlDirectiveList [],
             dashdashdash_token: missing (optional),
             node: YamlFlowInBlockNode {
+                properties: missing (optional),
                 flow_start_token: FLOW_START@35..36 "" [Newline("\n")] [],
                 flow: YamlFlowYamlNode {
                     properties: missing (optional),
@@ -104,12 +107,13 @@ YamlRoot {
       1: YAML_DIRECTIVE_LIST@0..0
       2: (empty)
       3: YAML_FLOW_IN_BLOCK_NODE@0..5
-        0: FLOW_START@0..0 "" [] []
-        1: YAML_FLOW_JSON_NODE@0..5
+        0: (empty)
+        1: FLOW_START@0..0 "" [] []
+        2: YAML_FLOW_JSON_NODE@0..5
           0: (empty)
           1: YAML_DOUBLE_QUOTED_SCALAR@0..5
             0: DOUBLE_QUOTED_LITERAL@0..5 "\"123\"" [] []
-        2: FLOW_END@5..5 "" [] []
+        3: FLOW_END@5..5 "" [] []
       4: DOC_END@5..9 "..." [Newline("\n")] []
     1: YAML_DOCUMENT@9..31
       0: (empty)
@@ -126,12 +130,13 @@ YamlRoot {
                 0: PLAIN_LITERAL@10..13 "xyz" [] []
             1: COLON@13..15 ":" [] [Whitespace(" ")]
             2: YAML_FLOW_IN_BLOCK_NODE@15..18
-              0: FLOW_START@15..15 "" [] []
-              1: YAML_FLOW_YAML_NODE@15..18
+              0: (empty)
+              1: FLOW_START@15..15 "" [] []
+              2: YAML_FLOW_YAML_NODE@15..18
                 0: (empty)
                 1: YAML_PLAIN_SCALAR@15..18
                   0: PLAIN_LITERAL@15..18 "123" [] []
-              2: FLOW_END@18..18 "" [] []
+              3: FLOW_END@18..18 "" [] []
         3: MAPPING_END@18..19 "" [Newline("\n")] []
       4: DOC_END@19..31 "..." [] [Whitespace(" "), Comments("# trivia")]
     2: YAML_DOCUMENT@31..35
@@ -145,12 +150,13 @@ YamlRoot {
       1: YAML_DIRECTIVE_LIST@35..35
       2: (empty)
       3: YAML_FLOW_IN_BLOCK_NODE@35..40
-        0: FLOW_START@35..36 "" [Newline("\n")] []
-        1: YAML_FLOW_YAML_NODE@36..40
+        0: (empty)
+        1: FLOW_START@35..36 "" [Newline("\n")] []
+        2: YAML_FLOW_YAML_NODE@36..40
           0: (empty)
           1: YAML_PLAIN_SCALAR@36..40
             0: PLAIN_LITERAL@36..40 "abc\n" [] []
-        2: FLOW_END@40..40 "" [] []
+        3: FLOW_END@40..40 "" [] []
       4: (empty)
   1: EOF@40..40 "" [] []
 

@@ -380,8 +380,15 @@ impl SyntaxFactory for YamlSyntaxFactory {
             }
             YAML_FLOW_IN_BLOCK_NODE => {
                 let mut elements = (&children).into_iter();
-                let mut slots: RawNodeSlots<3usize> = RawNodeSlots::default();
+                let mut slots: RawNodeSlots<4usize> = RawNodeSlots::default();
                 let mut current_element = elements.next();
+                if let Some(element) = &current_element
+                    && AnyYamlPropertiesCombination::can_cast(element.kind())
+                {
+                    slots.mark_present();
+                    current_element = elements.next();
+                }
+                slots.next_slot();
                 if let Some(element) = &current_element
                     && element.kind() == FLOW_START
                 {

@@ -25,6 +25,7 @@ YamlRoot {
                     YamlBlockMapExplicitEntry {
                         question_mark_token: QUESTION@0..2 "?" [] [Whitespace(" ")],
                         key: YamlFlowInBlockNode {
+                            properties: missing (optional),
                             flow_start_token: FLOW_START@2..2 "" [] [],
                             flow: YamlFlowYamlNode {
                                 properties: missing (optional),
@@ -40,6 +41,7 @@ YamlRoot {
                     YamlBlockMapExplicitEntry {
                         question_mark_token: QUESTION@3..6 "?" [Newline("\n")] [Whitespace(" ")],
                         key: YamlFlowInBlockNode {
+                            properties: missing (optional),
                             flow_start_token: FLOW_START@6..6 "" [] [],
                             flow: YamlFlowYamlNode {
                                 properties: missing (optional),
@@ -78,23 +80,25 @@ YamlRoot {
           0: YAML_BLOCK_MAP_EXPLICIT_ENTRY@0..3
             0: QUESTION@0..2 "?" [] [Whitespace(" ")]
             1: YAML_FLOW_IN_BLOCK_NODE@2..3
-              0: FLOW_START@2..2 "" [] []
-              1: YAML_FLOW_YAML_NODE@2..3
+              0: (empty)
+              1: FLOW_START@2..2 "" [] []
+              2: YAML_FLOW_YAML_NODE@2..3
                 0: (empty)
                 1: YAML_PLAIN_SCALAR@2..3
                   0: PLAIN_LITERAL@2..3 "a" [] []
-              2: FLOW_END@3..3 "" [] []
+              3: FLOW_END@3..3 "" [] []
             2: (empty)
             3: (empty)
           1: YAML_BLOCK_MAP_EXPLICIT_ENTRY@3..7
             0: QUESTION@3..6 "?" [Newline("\n")] [Whitespace(" ")]
             1: YAML_FLOW_IN_BLOCK_NODE@6..7
-              0: FLOW_START@6..6 "" [] []
-              1: YAML_FLOW_YAML_NODE@6..7
+              0: (empty)
+              1: FLOW_START@6..6 "" [] []
+              2: YAML_FLOW_YAML_NODE@6..7
                 0: (empty)
                 1: YAML_PLAIN_SCALAR@6..7
                   0: PLAIN_LITERAL@6..7 "b" [] []
-              2: FLOW_END@7..7 "" [] []
+              3: FLOW_END@7..7 "" [] []
             2: (empty)
             3: (empty)
         3: MAPPING_END@7..8 "" [Newline("\n")] []

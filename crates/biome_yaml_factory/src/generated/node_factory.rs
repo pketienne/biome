@@ -276,15 +276,37 @@ pub fn yaml_flow_in_block_node(
     flow_start_token: SyntaxToken,
     flow: AnyYamlFlowNode,
     flow_end_token: SyntaxToken,
-) -> YamlFlowInBlockNode {
-    YamlFlowInBlockNode::unwrap_cast(SyntaxNode::new_detached(
-        YamlSyntaxKind::YAML_FLOW_IN_BLOCK_NODE,
-        [
-            Some(SyntaxElement::Token(flow_start_token)),
-            Some(SyntaxElement::Node(flow.into_syntax())),
-            Some(SyntaxElement::Token(flow_end_token)),
-        ],
-    ))
+) -> YamlFlowInBlockNodeBuilder {
+    YamlFlowInBlockNodeBuilder {
+        flow_start_token,
+        flow,
+        flow_end_token,
+        properties: None,
+    }
+}
+pub struct YamlFlowInBlockNodeBuilder {
+    flow_start_token: SyntaxToken,
+    flow: AnyYamlFlowNode,
+    flow_end_token: SyntaxToken,
+    properties: Option<AnyYamlPropertiesCombination>,
+}
+impl YamlFlowInBlockNodeBuilder {
+    pub fn with_properties(mut self, properties: AnyYamlPropertiesCombination) -> Self {
+        self.properties = Some(properties);
+        self
+    }
+    pub fn build(self) -> YamlFlowInBlockNode {
+        YamlFlowInBlockNode::unwrap_cast(SyntaxNode::new_detached(
+            YamlSyntaxKind::YAML_FLOW_IN_BLOCK_NODE,
+            [
+                self.properties
+                    .map(|token| SyntaxElement::Node(token.into_syntax())),
+                Some(SyntaxElement::Token(self.flow_start_token)),
+                Some(SyntaxElement::Node(self.flow.into_syntax())),
+                Some(SyntaxElement::Token(self.flow_end_token)),
+            ],
+        ))
+    }
 }
 pub fn yaml_flow_json_node() -> YamlFlowJsonNodeBuilder {
     YamlFlowJsonNodeBuilder {

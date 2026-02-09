@@ -32,6 +32,7 @@ YamlRoot {
                         },
                         colon_token: COLON@1..3 ":" [] [Whitespace(" ")],
                         value: YamlFlowInBlockNode {
+                            properties: missing (optional),
                             flow_start_token: FLOW_START@3..3 "" [] [],
                             flow: YamlFlowYamlNode {
                                 properties: missing (optional),
@@ -51,6 +52,7 @@ YamlRoot {
                         },
                         colon_token: COLON@9..11 ":" [] [Whitespace(" ")],
                         value: YamlFlowInBlockNode {
+                            properties: missing (optional),
                             flow_start_token: FLOW_START@11..11 "" [] [],
                             flow: YamlFlowJsonNode {
                                 properties: missing (optional),
@@ -79,6 +81,7 @@ YamlRoot {
                         },
                         colon_token: COLON@19..21 ":" [] [Whitespace(" ")],
                         value: YamlFlowInBlockNode {
+                            properties: missing (optional),
                             flow_start_token: FLOW_START@21..21 "" [] [],
                             flow: YamlFlowJsonNode {
                                 properties: missing (optional),
@@ -132,12 +135,13 @@ YamlRoot {
                 0: PLAIN_LITERAL@0..1 "a" [] []
             1: COLON@1..3 ":" [] [Whitespace(" ")]
             2: YAML_FLOW_IN_BLOCK_NODE@3..5
-              0: FLOW_START@3..3 "" [] []
-              1: YAML_FLOW_YAML_NODE@3..5
+              0: (empty)
+              1: FLOW_START@3..3 "" [] []
+              2: YAML_FLOW_YAML_NODE@3..5
                 0: (empty)
                 1: YAML_PLAIN_SCALAR@3..5
                   0: PLAIN_LITERAL@3..5 "10" [] []
-              2: FLOW_END@5..5 "" [] []
+              3: FLOW_END@5..5 "" [] []
           1: YAML_BLOCK_MAP_IMPLICIT_ENTRY@5..15
             0: YAML_FLOW_JSON_NODE@5..9
               0: (empty)
@@ -145,8 +149,9 @@ YamlRoot {
                 0: SINGLE_QUOTED_LITERAL@5..9 "'b'" [Newline("\n")] []
             1: COLON@9..11 ":" [] [Whitespace(" ")]
             2: YAML_FLOW_IN_BLOCK_NODE@11..15
-              0: FLOW_START@11..11 "" [] []
-              1: YAML_FLOW_JSON_NODE@11..15
+              0: (empty)
+              1: FLOW_START@11..11 "" [] []
+              2: YAML_FLOW_JSON_NODE@11..15
                 0: (empty)
                 1: YAML_FLOW_SEQUENCE@11..15
                   0: L_BRACK@11..12 "[" [] []
@@ -156,7 +161,7 @@ YamlRoot {
                       1: YAML_PLAIN_SCALAR@12..14
                         0: PLAIN_LITERAL@12..14 "20" [] []
                   2: R_BRACK@14..15 "]" [] []
-              2: FLOW_END@15..15 "" [] []
+              3: FLOW_END@15..15 "" [] []
           2: YAML_BLOCK_MAP_IMPLICIT_ENTRY@15..25
             0: YAML_FLOW_JSON_NODE@15..19
               0: (empty)
@@ -164,8 +169,9 @@ YamlRoot {
                 0: DOUBLE_QUOTED_LITERAL@15..19 "\"c\"" [Newline("\n")] []
             1: COLON@19..21 ":" [] [Whitespace(" ")]
             2: YAML_FLOW_IN_BLOCK_NODE@21..25
-              0: FLOW_START@21..21 "" [] []
-              1: YAML_FLOW_JSON_NODE@21..25
+              0: (empty)
+              1: FLOW_START@21..21 "" [] []
+              2: YAML_FLOW_JSON_NODE@21..25
                 0: (empty)
                 1: YAML_FLOW_MAPPING@21..25
                   0: L_CURLY@21..22 "{" [] []
@@ -178,7 +184,7 @@ YamlRoot {
                       1: (empty)
                       2: (empty)
                   2: R_CURLY@24..25 "}" [] []
-              2: FLOW_END@25..25 "" [] []
+              3: FLOW_END@25..25 "" [] []
         3: MAPPING_END@25..26 "" [Newline("\n")] []
       4: (empty)
   1: EOF@26..26 "" [] []

@@ -11,6 +11,9 @@ impl FormatNodeRule<YamlFlowInBlockNode> for FormatYamlFlowInBlockNode {
         node: &YamlFlowInBlockNode,
         f: &mut YamlFormatter,
     ) -> FormatResult<()> {
+        if let Some(properties) = node.properties() {
+            write!(f, [properties.format(), space()])?;
+        }
         write!(
             f,
             [

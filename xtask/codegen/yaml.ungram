@@ -72,6 +72,7 @@ AnyYamlBlockNode =
 
 // https://yaml.org/spec/1.2.2/#rule-s-l+flow-in-block
 YamlFlowInBlockNode =
+	properties: AnyYamlPropertiesCombination?
 	'flow_start'
 	flow: AnyYamlFlowNode
 	'flow_end'

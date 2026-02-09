@@ -570,19 +570,23 @@ impl YamlFlowInBlockNode {
     }
     pub fn as_fields(&self) -> YamlFlowInBlockNodeFields {
         YamlFlowInBlockNodeFields {
+            properties: self.properties(),
             flow_start_token: self.flow_start_token(),
             flow: self.flow(),
             flow_end_token: self.flow_end_token(),
         }
     }
+    pub fn properties(&self) -> Option<AnyYamlPropertiesCombination> {
+        support::node(&self.syntax, 0usize)
+    }
     pub fn flow_start_token(&self) -> SyntaxResult<SyntaxToken> {
-        support::required_token(&self.syntax, 0usize)
+        support::required_token(&self.syntax, 1usize)
     }
     pub fn flow(&self) -> SyntaxResult<AnyYamlFlowNode> {
-        support::required_node(&self.syntax, 1usize)
+        support::required_node(&self.syntax, 2usize)
     }
     pub fn flow_end_token(&self) -> SyntaxResult<SyntaxToken> {
-        support::required_token(&self.syntax, 2usize)
+        support::required_token(&self.syntax, 3usize)
     }
 }
 impl Serialize for YamlFlowInBlockNode {
@@ -595,6 +599,7 @@ impl Serialize for YamlFlowInBlockNode {
 }
 #[derive(Serialize)]
 pub struct YamlFlowInBlockNodeFields {
+    pub properties: Option<AnyYamlPropertiesCombination>,
     pub flow_start_token: SyntaxResult<SyntaxToken>,
     pub flow: SyntaxResult<AnyYamlFlowNode>,
     pub flow_end_token: SyntaxResult<SyntaxToken>,
@@ -2234,6 +2239,10 @@ impl std::fmt::Debug for YamlFlowInBlockNode {
         let result = if current_depth < 16 {
             DEPTH.set(current_depth + 1);
             f.debug_struct("YamlFlowInBlockNode")
+                .field(
+                    "properties",
+                    &support::DebugOptionalElement(self.properties()),
+                )
                 .field(
                     "flow_start_token",
                     &support::DebugSyntaxResult(self.flow_start_token()),

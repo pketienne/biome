@@ -62,6 +62,7 @@ YamlRoot {
                                     },
                                     colon_token: COLON@17..19 ":" [] [Whitespace(" ")],
                                     value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
                                         flow_start_token: FLOW_START@19..19 "" [] [],
                                         flow: YamlFlowYamlNode {
                                             properties: missing (optional),
@@ -99,6 +100,7 @@ YamlRoot {
                                     },
                                     colon_token: COLON@30..32 ":" [] [Whitespace(" ")],
                                     value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
                                         flow_start_token: FLOW_START@32..32 "" [] [],
                                         flow: YamlFlowJsonNode {
                                             properties: missing (optional),
@@ -118,6 +120,7 @@ YamlRoot {
                                     },
                                     colon_token: COLON@42..44 ":" [] [Whitespace(" ")],
                                     value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
                                         flow_start_token: FLOW_START@44..44 "" [] [],
                                         flow: YamlFlowYamlNode {
                                             properties: missing (optional),
@@ -183,12 +186,13 @@ YamlRoot {
                       2: R_BRACK@16..17 "]" [] []
                   1: COLON@17..19 ":" [] [Whitespace(" ")]
                   2: YAML_FLOW_IN_BLOCK_NODE@19..21
-                    0: FLOW_START@19..19 "" [] []
-                    1: YAML_FLOW_YAML_NODE@19..21
+                    0: (empty)
+                    1: FLOW_START@19..19 "" [] []
+                    2: YAML_FLOW_YAML_NODE@19..21
                       0: (empty)
                       1: YAML_PLAIN_SCALAR@19..21
                         0: PLAIN_LITERAL@19..21 "20" [] []
-                    2: FLOW_END@21..21 "" [] []
+                    3: FLOW_END@21..21 "" [] []
                 1: YAML_BLOCK_MAP_IMPLICIT_ENTRY@21..36
                   0: YAML_FLOW_JSON_NODE@21..30
                     0: (empty)
@@ -208,12 +212,13 @@ YamlRoot {
                       2: R_CURLY@29..30 "}" [] []
                   1: COLON@30..32 ":" [] [Whitespace(" ")]
                   2: YAML_FLOW_IN_BLOCK_NODE@32..36
-                    0: FLOW_START@32..32 "" [] []
-                    1: YAML_FLOW_JSON_NODE@32..36
+                    0: (empty)
+                    1: FLOW_START@32..32 "" [] []
+                    2: YAML_FLOW_JSON_NODE@32..36
                       0: (empty)
                       1: YAML_DOUBLE_QUOTED_SCALAR@32..36
                         0: DOUBLE_QUOTED_LITERAL@32..36 "\"20\"" [] []
-                    2: FLOW_END@36..36 "" [] []
+                    3: FLOW_END@36..36 "" [] []
                 2: YAML_BLOCK_MAP_IMPLICIT_ENTRY@36..46
                   0: YAML_FLOW_YAML_NODE@36..42
                     0: (empty)
@@ -221,12 +226,13 @@ YamlRoot {
                       0: PLAIN_LITERAL@36..42 "c d" [Newline("\n"), Whitespace("  ")] []
                   1: COLON@42..44 ":" [] [Whitespace(" ")]
                   2: YAML_FLOW_IN_BLOCK_NODE@44..46
-                    0: FLOW_START@44..44 "" [] []
-                    1: YAML_FLOW_YAML_NODE@44..46
+                    0: (empty)
+                    1: FLOW_START@44..44 "" [] []
+                    2: YAML_FLOW_YAML_NODE@44..46
                       0: (empty)
                       1: YAML_PLAIN_SCALAR@44..46
                         0: PLAIN_LITERAL@44..46 "50" [] []
-                    2: FLOW_END@46..46 "" [] []
+                    3: FLOW_END@46..46 "" [] []
               3: MAPPING_END@46..46 "" [] []
         3: MAPPING_END@46..47 "" [Newline("\n")] []
       4: (empty)

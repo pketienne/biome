@@ -50,12 +50,10 @@ pub(crate) fn parse_any_block_node(p: &mut YamlParser) -> ParsedSyntax {
             parse_block_content(p);
             Present(m.complete(p, YAML_FOLDED_SCALAR))
         } else if p.at(FLOW_START) {
-            // Properties before a flow-in-block value — YamlFlowInBlockNode doesn't have
-            // a properties slot, so wrap as bogus for now
             p.bump(FLOW_START);
             parse_any_flow_node(p).ok();
             p.expect(FLOW_END);
-            Present(m.complete(p, YAML_BOGUS_BLOCK_NODE))
+            Present(m.complete(p, YAML_FLOW_IN_BLOCK_NODE))
         } else {
             // Properties without a recognizable block node following
             Present(m.complete(p, YAML_BOGUS_BLOCK_NODE))

@@ -18,6 +18,7 @@ YamlRoot {
             directives: YamlDirectiveList [],
             dashdashdash_token: missing (optional),
             node: YamlFlowInBlockNode {
+                properties: missing (optional),
                 flow_start_token: FLOW_START@0..0 "" [] [],
                 flow: YamlFlowJsonNode {
                     properties: missing (optional),
@@ -50,8 +51,9 @@ YamlRoot {
       1: YAML_DIRECTIVE_LIST@0..0
       2: (empty)
       3: YAML_FLOW_IN_BLOCK_NODE@0..5
-        0: FLOW_START@0..0 "" [] []
-        1: YAML_FLOW_JSON_NODE@0..5
+        0: (empty)
+        1: FLOW_START@0..0 "" [] []
+        2: YAML_FLOW_JSON_NODE@0..5
           0: (empty)
           1: YAML_FLOW_MAPPING@0..5
             0: L_CURLY@0..2 "{" [] [Whitespace(" ")]
@@ -60,7 +62,7 @@ YamlRoot {
               1: COMMA@2..4 "," [] [Whitespace(" ")]
               2: (empty)
             2: R_CURLY@4..5 "}" [] []
-        2: FLOW_END@5..5 "" [] []
+        3: FLOW_END@5..5 "" [] []
       4: (empty)
   1: EOF@5..6 "" [Newline("\n")] []
 
