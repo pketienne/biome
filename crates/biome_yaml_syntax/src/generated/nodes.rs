@@ -270,17 +270,17 @@ impl YamlBlockMapping {
     }
     pub fn as_fields(&self) -> YamlBlockMappingFields {
         YamlBlockMappingFields {
-            mapping_start_token: self.mapping_start_token(),
             properties: self.properties(),
+            mapping_start_token: self.mapping_start_token(),
             entries: self.entries(),
             mapping_end_token: self.mapping_end_token(),
         }
     }
-    pub fn mapping_start_token(&self) -> SyntaxResult<SyntaxToken> {
-        support::required_token(&self.syntax, 0usize)
-    }
     pub fn properties(&self) -> Option<AnyYamlPropertiesCombination> {
-        support::node(&self.syntax, 1usize)
+        support::node(&self.syntax, 0usize)
+    }
+    pub fn mapping_start_token(&self) -> SyntaxResult<SyntaxToken> {
+        support::required_token(&self.syntax, 1usize)
     }
     pub fn entries(&self) -> YamlBlockMapEntryList {
         support::list(&self.syntax, 2usize)
@@ -299,8 +299,8 @@ impl Serialize for YamlBlockMapping {
 }
 #[derive(Serialize)]
 pub struct YamlBlockMappingFields {
-    pub mapping_start_token: SyntaxResult<SyntaxToken>,
     pub properties: Option<AnyYamlPropertiesCombination>,
+    pub mapping_start_token: SyntaxResult<SyntaxToken>,
     pub entries: YamlBlockMapEntryList,
     pub mapping_end_token: SyntaxResult<SyntaxToken>,
 }
@@ -320,17 +320,17 @@ impl YamlBlockSequence {
     }
     pub fn as_fields(&self) -> YamlBlockSequenceFields {
         YamlBlockSequenceFields {
-            sequence_start_token: self.sequence_start_token(),
             properties: self.properties(),
+            sequence_start_token: self.sequence_start_token(),
             entries: self.entries(),
             sequence_end_token: self.sequence_end_token(),
         }
     }
-    pub fn sequence_start_token(&self) -> SyntaxResult<SyntaxToken> {
-        support::required_token(&self.syntax, 0usize)
-    }
     pub fn properties(&self) -> Option<AnyYamlPropertiesCombination> {
-        support::node(&self.syntax, 1usize)
+        support::node(&self.syntax, 0usize)
+    }
+    pub fn sequence_start_token(&self) -> SyntaxResult<SyntaxToken> {
+        support::required_token(&self.syntax, 1usize)
     }
     pub fn entries(&self) -> YamlBlockSequenceEntryList {
         support::list(&self.syntax, 2usize)
@@ -349,8 +349,8 @@ impl Serialize for YamlBlockSequence {
 }
 #[derive(Serialize)]
 pub struct YamlBlockSequenceFields {
-    pub sequence_start_token: SyntaxResult<SyntaxToken>,
     pub properties: Option<AnyYamlPropertiesCombination>,
+    pub sequence_start_token: SyntaxResult<SyntaxToken>,
     pub entries: YamlBlockSequenceEntryList,
     pub sequence_end_token: SyntaxResult<SyntaxToken>,
 }
@@ -1856,12 +1856,12 @@ impl std::fmt::Debug for YamlBlockMapping {
             DEPTH.set(current_depth + 1);
             f.debug_struct("YamlBlockMapping")
                 .field(
-                    "mapping_start_token",
-                    &support::DebugSyntaxResult(self.mapping_start_token()),
-                )
-                .field(
                     "properties",
                     &support::DebugOptionalElement(self.properties()),
+                )
+                .field(
+                    "mapping_start_token",
+                    &support::DebugSyntaxResult(self.mapping_start_token()),
                 )
                 .field("entries", &self.entries())
                 .field(
@@ -1915,12 +1915,12 @@ impl std::fmt::Debug for YamlBlockSequence {
             DEPTH.set(current_depth + 1);
             f.debug_struct("YamlBlockSequence")
                 .field(
-                    "sequence_start_token",
-                    &support::DebugSyntaxResult(self.sequence_start_token()),
-                )
-                .field(
                     "properties",
                     &support::DebugOptionalElement(self.properties()),
+                )
+                .field(
+                    "sequence_start_token",
+                    &support::DebugSyntaxResult(self.sequence_start_token()),
                 )
                 .field("entries", &self.entries())
                 .field(

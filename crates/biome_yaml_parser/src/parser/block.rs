@@ -23,7 +23,44 @@ use super::{
 };
 
 pub(crate) fn parse_any_block_node(p: &mut YamlParser) -> ParsedSyntax {
-    if p.at(MAPPING_START) {
+    if is_at_properties(p) {
+        // Properties precede the block node — start marker before properties,
+        // parse properties, then dispatch based on what follows
+        let m = p.start();
+        parse_properties(p);
+
+        if p.at(MAPPING_START) {
+            p.bump(MAPPING_START);
+            BlockMapEntryList.parse_list(p);
+            p.expect(MAPPING_END);
+            Present(m.complete(p, YAML_BLOCK_MAPPING))
+        } else if p.at(SEQUENCE_START) {
+            p.bump(SEQUENCE_START);
+            BlockSequenceEntryList.parse_list(p);
+            p.expect(SEQUENCE_END);
+            Present(m.complete(p, YAML_BLOCK_SEQUENCE))
+        } else if p.at(T![|]) {
+            p.bump(T![|]);
+            BlockHeaderList.parse_list(p);
+            parse_block_content(p);
+            Present(m.complete(p, YAML_LITERAL_SCALAR))
+        } else if p.at(T![>]) {
+            p.bump(T![>]);
+            BlockHeaderList.parse_list(p);
+            parse_block_content(p);
+            Present(m.complete(p, YAML_FOLDED_SCALAR))
+        } else if p.at(FLOW_START) {
+            // Properties before a flow-in-block value — YamlFlowInBlockNode doesn't have
+            // a properties slot, so wrap as bogus for now
+            p.bump(FLOW_START);
+            parse_any_flow_node(p).ok();
+            p.expect(FLOW_END);
+            Present(m.complete(p, YAML_BOGUS_BLOCK_NODE))
+        } else {
+            // Properties without a recognizable block node following
+            Present(m.complete(p, YAML_BOGUS_BLOCK_NODE))
+        }
+    } else if p.at(MAPPING_START) {
         Present(parse_block_mapping(p))
     } else if p.at(SEQUENCE_START) {
         Present(parse_block_sequence(p))
@@ -332,7 +369,42 @@ fn parse_block_content(p: &mut YamlParser) -> CompletedMarker {
 }
 
 pub(crate) fn is_at_any_block_node(p: &YamlParser) -> bool {
-    p.at(MAPPING_START) || p.at(SEQUENCE_START) || p.at(FLOW_START) || p.at(T![|]) || p.at(T![>])
+    p.at(MAPPING_START)
+        || p.at(SEQUENCE_START)
+        || p.at(FLOW_START)
+        || p.at(T![|])
+        || p.at(T![>])
+        || is_at_properties(p)
+}
+
+pub(crate) fn is_at_properties(p: &YamlParser) -> bool {
+    p.at(ANCHOR_PROPERTY_LITERAL) || p.at(TAG_PROPERTY_LITERAL)
+}
+
+pub(crate) fn parse_properties(p: &mut YamlParser) {
+    if p.at(ANCHOR_PROPERTY_LITERAL) {
+        let m = p.start();
+        let anchor_m = p.start();
+        p.bump(ANCHOR_PROPERTY_LITERAL);
+        anchor_m.complete(p, YAML_ANCHOR_PROPERTY);
+        if p.at(TAG_PROPERTY_LITERAL) {
+            let tag_m = p.start();
+            p.bump(TAG_PROPERTY_LITERAL);
+            tag_m.complete(p, YAML_TAG_PROPERTY);
+        }
+        m.complete(p, YAML_PROPERTIES_ANCHOR_FIRST);
+    } else if p.at(TAG_PROPERTY_LITERAL) {
+        let m = p.start();
+        let tag_m = p.start();
+        p.bump(TAG_PROPERTY_LITERAL);
+        tag_m.complete(p, YAML_TAG_PROPERTY);
+        if p.at(ANCHOR_PROPERTY_LITERAL) {
+            let anchor_m = p.start();
+            p.bump(ANCHOR_PROPERTY_LITERAL);
+            anchor_m.complete(p, YAML_ANCHOR_PROPERTY);
+        }
+        m.complete(p, YAML_PROPERTIES_TAG_FIRST);
+    }
 }
 
 fn is_at_explicit_mapping_key(p: &YamlParser) -> bool {

@@ -19,14 +19,14 @@ YamlRoot {
             directives: YamlDirectiveList [],
             dashdashdash_token: missing (optional),
             node: YamlBlockSequence {
-                sequence_start_token: SEQUENCE_START@0..0 "" [] [],
                 properties: missing (optional),
+                sequence_start_token: SEQUENCE_START@0..0 "" [] [],
                 entries: YamlBlockSequenceEntryList [
                     YamlBlockSequenceEntry {
                         minus_token: DASH@0..2 "-" [] [Whitespace(" ")],
                         value: YamlBlockMapping {
-                            mapping_start_token: MAPPING_START@2..2 "" [] [],
                             properties: missing (optional),
+                            mapping_start_token: MAPPING_START@2..2 "" [] [],
                             entries: YamlBlockMapEntryList [
                                 YamlBlockMapImplicitEntry {
                                     key: YamlFlowYamlNode {
@@ -90,14 +90,14 @@ YamlRoot {
       1: YAML_DIRECTIVE_LIST@0..0
       2: (empty)
       3: YAML_BLOCK_SEQUENCE@0..13
-        0: SEQUENCE_START@0..0 "" [] []
-        1: (empty)
+        0: (empty)
+        1: SEQUENCE_START@0..0 "" [] []
         2: YAML_BLOCK_SEQUENCE_ENTRY_LIST@0..13
           0: YAML_BLOCK_SEQUENCE_ENTRY@0..13
             0: DASH@0..2 "-" [] [Whitespace(" ")]
             1: YAML_BLOCK_MAPPING@2..13
-              0: MAPPING_START@2..2 "" [] []
-              1: (empty)
+              0: (empty)
+              1: MAPPING_START@2..2 "" [] []
               2: YAML_BLOCK_MAP_ENTRY_LIST@2..13
                 0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@2..6
                   0: YAML_FLOW_YAML_NODE@2..3

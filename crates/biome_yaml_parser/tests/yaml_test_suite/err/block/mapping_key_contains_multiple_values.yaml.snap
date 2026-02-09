@@ -19,8 +19,8 @@ YamlRoot {
             directives: YamlDirectiveList [],
             dashdashdash_token: missing (optional),
             node: YamlBlockMapping {
-                mapping_start_token: MAPPING_START@0..0 "" [] [],
                 properties: missing (optional),
+                mapping_start_token: MAPPING_START@0..0 "" [] [],
                 entries: YamlBlockMapEntryList [
                     YamlBlockMapImplicitEntry {
                         key: YamlFlowYamlNode {
@@ -79,8 +79,8 @@ YamlRoot {
       1: YAML_DIRECTIVE_LIST@0..0
       2: (empty)
       3: YAML_BLOCK_MAPPING@0..22
-        0: MAPPING_START@0..0 "" [] []
-        1: (empty)
+        0: (empty)
+        1: MAPPING_START@0..0 "" [] []
         2: YAML_BLOCK_MAP_ENTRY_LIST@0..22
           0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@0..11
             0: YAML_FLOW_YAML_NODE@0..1

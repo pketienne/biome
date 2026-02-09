@@ -24,14 +24,14 @@ YamlRoot {
             directives: YamlDirectiveList [],
             dashdashdash_token: missing (optional),
             node: YamlBlockMapping {
-                mapping_start_token: MAPPING_START@0..47 "" [Comments("# Equivalent to {{a:  ..."), Newline("\n")] [],
                 properties: missing (optional),
+                mapping_start_token: MAPPING_START@0..47 "" [Comments("# Equivalent to {{a:  ..."), Newline("\n")] [],
                 entries: YamlBlockMapEntryList [
                     YamlBlockMapExplicitEntry {
                         question_mark_token: QUESTION@47..49 "?" [] [Whitespace(" ")],
                         key: YamlBlockMapping {
-                            mapping_start_token: MAPPING_START@49..49 "" [] [],
                             properties: missing (optional),
+                            mapping_start_token: MAPPING_START@49..49 "" [] [],
                             entries: YamlBlockMapEntryList [
                                 YamlBlockMapImplicitEntry {
                                     key: YamlFlowYamlNode {
@@ -61,8 +61,8 @@ YamlRoot {
                     YamlBlockMapExplicitEntry {
                         question_mark_token: QUESTION@54..57 "?" [Newline("\n")] [Whitespace(" ")],
                         key: YamlBlockMapping {
-                            mapping_start_token: MAPPING_START@57..57 "" [] [],
                             properties: missing (optional),
+                            mapping_start_token: MAPPING_START@57..57 "" [] [],
                             entries: YamlBlockMapEntryList [
                                 YamlBlockMapImplicitEntry {
                                     key: YamlFlowYamlNode {
@@ -92,8 +92,8 @@ YamlRoot {
                     YamlBlockMapExplicitEntry {
                         question_mark_token: QUESTION@62..113 "?" [Newline("\n"), Newline("\n"), Comments("# Equivalent to {{c:  ..."), Newline("\n")] [Whitespace(" ")],
                         key: YamlBlockMapping {
-                            mapping_start_token: MAPPING_START@113..113 "" [] [],
                             properties: missing (optional),
+                            mapping_start_token: MAPPING_START@113..113 "" [] [],
                             entries: YamlBlockMapEntryList [
                                 YamlBlockMapImplicitEntry {
                                     key: YamlFlowYamlNode {
@@ -117,8 +117,8 @@ YamlRoot {
                                 YamlBlockMapExplicitEntry {
                                     question_mark_token: QUESTION@118..123 "?" [Newline("\n"), Whitespace("  ")] [Whitespace(" ")],
                                     key: YamlBlockMapping {
-                                        mapping_start_token: MAPPING_START@123..123 "" [] [],
                                         properties: missing (optional),
+                                        mapping_start_token: MAPPING_START@123..123 "" [] [],
                                         entries: YamlBlockMapEntryList [
                                             YamlBlockMapImplicitEntry {
                                                 key: YamlFlowYamlNode {
@@ -171,14 +171,14 @@ YamlRoot {
       1: YAML_DIRECTIVE_LIST@0..0
       2: (empty)
       3: YAML_BLOCK_MAPPING@0..129
-        0: MAPPING_START@0..47 "" [Comments("# Equivalent to {{a:  ..."), Newline("\n")] []
-        1: (empty)
+        0: (empty)
+        1: MAPPING_START@0..47 "" [Comments("# Equivalent to {{a:  ..."), Newline("\n")] []
         2: YAML_BLOCK_MAP_ENTRY_LIST@47..128
           0: YAML_BLOCK_MAP_EXPLICIT_ENTRY@47..54
             0: QUESTION@47..49 "?" [] [Whitespace(" ")]
             1: YAML_BLOCK_MAPPING@49..54
-              0: MAPPING_START@49..49 "" [] []
-              1: (empty)
+              0: (empty)
+              1: MAPPING_START@49..49 "" [] []
               2: YAML_BLOCK_MAP_ENTRY_LIST@49..54
                 0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@49..54
                   0: YAML_FLOW_YAML_NODE@49..50
@@ -199,8 +199,8 @@ YamlRoot {
           1: YAML_BLOCK_MAP_EXPLICIT_ENTRY@54..62
             0: QUESTION@54..57 "?" [Newline("\n")] [Whitespace(" ")]
             1: YAML_BLOCK_MAPPING@57..62
-              0: MAPPING_START@57..57 "" [] []
-              1: (empty)
+              0: (empty)
+              1: MAPPING_START@57..57 "" [] []
               2: YAML_BLOCK_MAP_ENTRY_LIST@57..62
                 0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@57..62
                   0: YAML_FLOW_YAML_NODE@57..58
@@ -221,8 +221,8 @@ YamlRoot {
           2: YAML_BLOCK_MAP_EXPLICIT_ENTRY@62..128
             0: QUESTION@62..113 "?" [Newline("\n"), Newline("\n"), Comments("# Equivalent to {{c:  ..."), Newline("\n")] [Whitespace(" ")]
             1: YAML_BLOCK_MAPPING@113..128
-              0: MAPPING_START@113..113 "" [] []
-              1: (empty)
+              0: (empty)
+              1: MAPPING_START@113..113 "" [] []
               2: YAML_BLOCK_MAP_ENTRY_LIST@113..128
                 0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@113..118
                   0: YAML_FLOW_YAML_NODE@113..114
@@ -240,8 +240,8 @@ YamlRoot {
                 1: YAML_BLOCK_MAP_EXPLICIT_ENTRY@118..128
                   0: QUESTION@118..123 "?" [Newline("\n"), Whitespace("  ")] [Whitespace(" ")]
                   1: YAML_BLOCK_MAPPING@123..128
-                    0: MAPPING_START@123..123 "" [] []
-                    1: (empty)
+                    0: (empty)
+                    1: MAPPING_START@123..123 "" [] []
                     2: YAML_BLOCK_MAP_ENTRY_LIST@123..128
                       0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@123..128
                         0: YAML_FLOW_YAML_NODE@123..124

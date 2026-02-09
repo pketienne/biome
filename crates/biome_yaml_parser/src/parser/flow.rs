@@ -9,6 +9,7 @@ use biome_yaml_syntax::{T, YamlSyntaxKind};
 
 use super::{
     YamlParser,
+    block::{is_at_properties, parse_properties},
     parse_error::{
         expected_flow_mapping_closing_quote, expected_flow_mapping_entry,
         expected_flow_sequence_closing_bracket, expected_flow_sequence_entry,
@@ -16,10 +17,27 @@ use super::{
 };
 
 pub(crate) fn parse_any_flow_node(p: &mut YamlParser) -> ParsedSyntax {
-    if is_at_flow_json_node(p) {
+    if p.at(ALIAS_LITERAL) {
+        let m = p.start();
+        p.bump(ALIAS_LITERAL);
+        Present(m.complete(p, YAML_ALIAS_NODE))
+    } else if is_at_flow_json_node(p) {
         Present(parse_flow_json_node(p))
     } else if is_at_flow_yaml_node(p) {
         Present(parse_flow_yaml_node(p))
+    } else if is_at_properties(p) {
+        // Properties followed by content — determine node type after parsing properties
+        let m = p.start();
+        parse_properties(p);
+        if is_at_flow_json_content(p) {
+            parse_flow_json_content(p);
+            Present(m.complete(p, YAML_FLOW_JSON_NODE))
+        } else {
+            if p.at(PLAIN_LITERAL) {
+                parse_plain_scalar(p);
+            }
+            Present(m.complete(p, YAML_FLOW_YAML_NODE))
+        }
     } else {
         Absent
     }
@@ -28,6 +46,15 @@ pub(crate) fn parse_any_flow_node(p: &mut YamlParser) -> ParsedSyntax {
 pub(crate) fn parse_flow_json_node(p: &mut YamlParser) -> CompletedMarker {
     let m = p.start();
 
+    if is_at_properties(p) {
+        parse_properties(p);
+    }
+    parse_flow_json_content(p);
+
+    m.complete(p, YAML_FLOW_JSON_NODE)
+}
+
+fn parse_flow_json_content(p: &mut YamlParser) {
     if is_at_flow_sequence(p) {
         parse_flow_sequence(p);
     } else if is_at_flow_mapping(p) {
@@ -37,13 +64,23 @@ pub(crate) fn parse_flow_json_node(p: &mut YamlParser) -> CompletedMarker {
     } else if is_at_single_quoted_scalar(p) {
         parse_single_quoted_scalar(p);
     }
+}
 
-    m.complete(p, YAML_FLOW_JSON_NODE)
+fn is_at_flow_json_content(p: &YamlParser) -> bool {
+    is_at_flow_sequence(p)
+        || is_at_flow_mapping(p)
+        || is_at_double_quoted_scalar(p)
+        || is_at_single_quoted_scalar(p)
 }
 
 pub(crate) fn parse_flow_yaml_node(p: &mut YamlParser) -> CompletedMarker {
     let m = p.start();
-    parse_plain_scalar(p);
+    if is_at_properties(p) {
+        parse_properties(p);
+    }
+    if p.at(PLAIN_LITERAL) {
+        parse_plain_scalar(p);
+    }
     m.complete(p, YAML_FLOW_YAML_NODE)
 }
 
@@ -97,7 +134,11 @@ impl ParseRecovery for FlowSequenceEntryRecovery {
     const RECOVERED_KIND: Self::Kind = YAML_BOGUS_FLOW_NODE;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
-        p.at(T![,]) || p.at(T![']']) || is_at_flow_yaml_node(p) || is_at_flow_json_node(p)
+        p.at(T![,])
+            || p.at(T![']'])
+            || p.at(ALIAS_LITERAL)
+            || is_at_flow_yaml_node(p)
+            || is_at_flow_json_node(p)
     }
 }
 
@@ -180,6 +221,7 @@ impl ParseRecovery for FlowMapEntryRecovery {
         p.at(T![,])
             || p.at(T!['}'])
             || p.at(T![:])
+            || p.at(ALIAS_LITERAL)
             || is_at_flow_yaml_node(p)
             || is_at_flow_json_node(p)
     }

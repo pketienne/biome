@@ -82,17 +82,17 @@ impl YamlBlockMapImplicitEntry {
     }
 }
 impl YamlBlockMapping {
+    pub fn with_properties(self, element: Option<AnyYamlPropertiesCombination>) -> Self {
+        Self::unwrap_cast(self.syntax.splice_slots(
+            0usize..=0usize,
+            once(element.map(|element| element.into_syntax().into())),
+        ))
+    }
     pub fn with_mapping_start_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
-                .splice_slots(0usize..=0usize, once(Some(element.into()))),
+                .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
-    }
-    pub fn with_properties(self, element: Option<AnyYamlPropertiesCombination>) -> Self {
-        Self::unwrap_cast(self.syntax.splice_slots(
-            1usize..=1usize,
-            once(element.map(|element| element.into_syntax().into())),
-        ))
     }
     pub fn with_entries(self, element: YamlBlockMapEntryList) -> Self {
         Self::unwrap_cast(
@@ -108,17 +108,17 @@ impl YamlBlockMapping {
     }
 }
 impl YamlBlockSequence {
+    pub fn with_properties(self, element: Option<AnyYamlPropertiesCombination>) -> Self {
+        Self::unwrap_cast(self.syntax.splice_slots(
+            0usize..=0usize,
+            once(element.map(|element| element.into_syntax().into())),
+        ))
+    }
     pub fn with_sequence_start_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
-                .splice_slots(0usize..=0usize, once(Some(element.into()))),
+                .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
-    }
-    pub fn with_properties(self, element: Option<AnyYamlPropertiesCombination>) -> Self {
-        Self::unwrap_cast(self.syntax.splice_slots(
-            1usize..=1usize,
-            once(element.map(|element| element.into_syntax().into())),
-        ))
     }
     pub fn with_entries(self, element: YamlBlockSequenceEntryList) -> Self {
         Self::unwrap_cast(

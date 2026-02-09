@@ -19,14 +19,14 @@ YamlRoot {
             directives: YamlDirectiveList [],
             dashdashdash_token: missing (optional),
             node: YamlBlockMapping {
-                mapping_start_token: MAPPING_START@0..0 "" [] [],
                 properties: missing (optional),
+                mapping_start_token: MAPPING_START@0..0 "" [] [],
                 entries: YamlBlockMapEntryList [
                     YamlBlockMapExplicitEntry {
                         question_mark_token: QUESTION@0..2 "?" [] [Whitespace(" ")],
                         key: YamlBlockMapping {
-                            mapping_start_token: MAPPING_START@2..2 "" [] [],
                             properties: missing (optional),
+                            mapping_start_token: MAPPING_START@2..2 "" [] [],
                             entries: YamlBlockMapEntryList [
                                 YamlBlockMapImplicitEntry {
                                     key: YamlFlowYamlNode {
@@ -52,8 +52,8 @@ YamlRoot {
                         },
                         colon_token: COLON@7..10 ":" [Newline("\n")] [Whitespace(" ")],
                         value: YamlBlockMapping {
-                            mapping_start_token: MAPPING_START@10..10 "" [] [],
                             properties: missing (optional),
+                            mapping_start_token: MAPPING_START@10..10 "" [] [],
                             entries: YamlBlockMapEntryList [
                                 YamlBlockMapImplicitEntry {
                                     key: YamlFlowYamlNode {
@@ -98,14 +98,14 @@ YamlRoot {
       1: YAML_DIRECTIVE_LIST@0..0
       2: (empty)
       3: YAML_BLOCK_MAPPING@0..16
-        0: MAPPING_START@0..0 "" [] []
-        1: (empty)
+        0: (empty)
+        1: MAPPING_START@0..0 "" [] []
         2: YAML_BLOCK_MAP_ENTRY_LIST@0..15
           0: YAML_BLOCK_MAP_EXPLICIT_ENTRY@0..15
             0: QUESTION@0..2 "?" [] [Whitespace(" ")]
             1: YAML_BLOCK_MAPPING@2..7
-              0: MAPPING_START@2..2 "" [] []
-              1: (empty)
+              0: (empty)
+              1: MAPPING_START@2..2 "" [] []
               2: YAML_BLOCK_MAP_ENTRY_LIST@2..7
                 0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@2..7
                   0: YAML_FLOW_YAML_NODE@2..3
@@ -123,8 +123,8 @@ YamlRoot {
               3: MAPPING_END@7..7 "" [] []
             2: COLON@7..10 ":" [Newline("\n")] [Whitespace(" ")]
             3: YAML_BLOCK_MAPPING@10..15
-              0: MAPPING_START@10..10 "" [] []
-              1: (empty)
+              0: (empty)
+              1: MAPPING_START@10..10 "" [] []
               2: YAML_BLOCK_MAP_ENTRY_LIST@10..15
                 0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@10..15
                   0: YAML_FLOW_YAML_NODE@10..11

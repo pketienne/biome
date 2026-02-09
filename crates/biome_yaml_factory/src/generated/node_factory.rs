@@ -134,9 +134,9 @@ impl YamlBlockMappingBuilder {
         YamlBlockMapping::unwrap_cast(SyntaxNode::new_detached(
             YamlSyntaxKind::YAML_BLOCK_MAPPING,
             [
-                Some(SyntaxElement::Token(self.mapping_start_token)),
                 self.properties
                     .map(|token| SyntaxElement::Node(token.into_syntax())),
+                Some(SyntaxElement::Token(self.mapping_start_token)),
                 Some(SyntaxElement::Node(self.entries.into_syntax())),
                 Some(SyntaxElement::Token(self.mapping_end_token)),
             ],
@@ -170,9 +170,9 @@ impl YamlBlockSequenceBuilder {
         YamlBlockSequence::unwrap_cast(SyntaxNode::new_detached(
             YamlSyntaxKind::YAML_BLOCK_SEQUENCE,
             [
-                Some(SyntaxElement::Token(self.sequence_start_token)),
                 self.properties
                     .map(|token| SyntaxElement::Node(token.into_syntax())),
+                Some(SyntaxElement::Token(self.sequence_start_token)),
                 Some(SyntaxElement::Node(self.entries.into_syntax())),
                 Some(SyntaxElement::Token(self.sequence_end_token)),
             ],

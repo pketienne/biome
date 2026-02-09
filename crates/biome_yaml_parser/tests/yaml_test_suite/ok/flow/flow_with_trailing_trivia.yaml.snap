@@ -21,8 +21,8 @@ YamlRoot {
             directives: YamlDirectiveList [],
             dashdashdash_token: missing (optional),
             node: YamlBlockSequence {
-                sequence_start_token: SEQUENCE_START@0..0 "" [] [],
                 properties: missing (optional),
+                sequence_start_token: SEQUENCE_START@0..0 "" [] [],
                 entries: YamlBlockSequenceEntryList [
                     YamlBlockSequenceEntry {
                         minus_token: DASH@0..2 "-" [] [Whitespace(" ")],
@@ -92,8 +92,8 @@ YamlRoot {
       1: YAML_DIRECTIVE_LIST@0..0
       2: (empty)
       3: YAML_BLOCK_SEQUENCE@0..33
-        0: SEQUENCE_START@0..0 "" [] []
-        1: (empty)
+        0: (empty)
+        1: SEQUENCE_START@0..0 "" [] []
         2: YAML_BLOCK_SEQUENCE_ENTRY_LIST@0..33
           0: YAML_BLOCK_SEQUENCE_ENTRY@0..7
             0: DASH@0..2 "-" [] [Whitespace(" ")]

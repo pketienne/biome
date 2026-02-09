@@ -173,14 +173,14 @@ impl SyntaxFactory for YamlSyntaxFactory {
                 let mut slots: RawNodeSlots<4usize> = RawNodeSlots::default();
                 let mut current_element = elements.next();
                 if let Some(element) = &current_element
-                    && element.kind() == MAPPING_START
+                    && AnyYamlPropertiesCombination::can_cast(element.kind())
                 {
                     slots.mark_present();
                     current_element = elements.next();
                 }
                 slots.next_slot();
                 if let Some(element) = &current_element
-                    && AnyYamlPropertiesCombination::can_cast(element.kind())
+                    && element.kind() == MAPPING_START
                 {
                     slots.mark_present();
                     current_element = elements.next();
@@ -213,14 +213,14 @@ impl SyntaxFactory for YamlSyntaxFactory {
                 let mut slots: RawNodeSlots<4usize> = RawNodeSlots::default();
                 let mut current_element = elements.next();
                 if let Some(element) = &current_element
-                    && element.kind() == SEQUENCE_START
+                    && AnyYamlPropertiesCombination::can_cast(element.kind())
                 {
                     slots.mark_present();
                     current_element = elements.next();
                 }
                 slots.next_slot();
                 if let Some(element) = &current_element
-                    && AnyYamlPropertiesCombination::can_cast(element.kind())
+                    && element.kind() == SEQUENCE_START
                 {
                     slots.mark_present();
                     current_element = elements.next();

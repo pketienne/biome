@@ -167,9 +167,9 @@ AnyYamlBlockInBlockNode =
 //  - d
 // https://yaml.org/spec/1.2.2/#rule-l+block-sequence
 YamlBlockSequence =
+	properties: AnyYamlPropertiesCombination?
 	// Indent block
 	'sequence_start'
-	properties: AnyYamlPropertiesCombination?
 	entries: YamlBlockSequenceEntryList
 	// Dedent block, that is, go back to parent block's scope
 	'sequence_end'
@@ -180,9 +180,9 @@ YamlBlockSequence =
 //  d: e
 // https://yaml.org/spec/1.2.2/#rule-l+block-mapping
 YamlBlockMapping =
+	properties: AnyYamlPropertiesCombination?
 	// Indent block
 	'mapping_start'
-	properties: AnyYamlPropertiesCombination?
 	entries: YamlBlockMapEntryList
 	// Dedent block, that is, go back to parent block's scope
 	'mapping_end'

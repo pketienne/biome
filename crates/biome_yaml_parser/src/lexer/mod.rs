@@ -71,6 +71,20 @@ impl<'src> YamlLexer<'src> {
             b'?' | b':' => self.consume_mapping_key(current),
             b'-' => self.consume_sequence_entry(),
             b'|' | b'>' => self.consume_block_scalar(current),
+            b'&' => self.consume_anchor_property().into(),
+            b'!' => self.consume_tag_property().into(),
+            b'*' => {
+                // Aliases are flow nodes — wrap in FLOW_START/FLOW_END for block context
+                let start = self.current_coordinate;
+                let alias = self.consume_alias();
+                let mut tokens = LinkedList::new();
+                tokens.push_back(LexToken::pseudo(FLOW_START, start));
+                tokens.push_back(alias);
+                let mut trivia = self.consume_trivia(true);
+                tokens.append(&mut trivia);
+                tokens.push_back(LexToken::pseudo(FLOW_END, self.current_coordinate));
+                tokens
+            }
             _ => self.consume_unexpected_token().into(),
         };
         self.tokens.append(&mut tokens);
@@ -174,6 +188,75 @@ impl<'src> YamlLexer<'src> {
         tokens.push_back(self.lex_block_content());
 
         tokens
+    }
+
+    /// Consume an anchor property: `&name` → `ANCHOR_PROPERTY_LITERAL`
+    fn consume_anchor_property(&mut self) -> LexToken {
+        self.assert_byte(b'&');
+        let start = self.current_coordinate;
+        self.advance(1); // skip '&'
+        // Consume anchor name: ns-anchor-char = ns-char - c-flow-indicator
+        while let Some(c) = self.current_byte() {
+            if is_blank(c) || is_flow_collection_indicator(c) {
+                break;
+            }
+            self.advance(1);
+        }
+        LexToken::new(ANCHOR_PROPERTY_LITERAL, start, self.current_coordinate)
+    }
+
+    /// Consume a tag property: `!tag`, `!!type`, `!<uri>` → `TAG_PROPERTY_LITERAL`
+    fn consume_tag_property(&mut self) -> LexToken {
+        self.assert_byte(b'!');
+        let start = self.current_coordinate;
+        self.advance(1); // skip '!'
+        match self.current_byte() {
+            Some(b'<') => {
+                // Verbatim tag: !<uri>
+                self.advance(1);
+                while let Some(c) = self.current_byte() {
+                    self.advance(1);
+                    if c == b'>' {
+                        break;
+                    }
+                }
+            }
+            Some(b'!') => {
+                // Secondary tag handle: !!type
+                self.advance(1);
+                while let Some(c) = self.current_byte() {
+                    if is_blank(c) || is_flow_collection_indicator(c) {
+                        break;
+                    }
+                    self.advance(1);
+                }
+            }
+            Some(c) if !is_blank(c) && !is_flow_collection_indicator(c) => {
+                // Primary tag or named handle: !suffix or !prefix!suffix
+                while let Some(c) = self.current_byte() {
+                    if is_blank(c) || is_flow_collection_indicator(c) {
+                        break;
+                    }
+                    self.advance(1);
+                }
+            }
+            _ => {} // Bare ! (non-specific tag)
+        }
+        LexToken::new(TAG_PROPERTY_LITERAL, start, self.current_coordinate)
+    }
+
+    /// Consume an alias: `*name` → `ALIAS_LITERAL`
+    fn consume_alias(&mut self) -> LexToken {
+        self.assert_byte(b'*');
+        let start = self.current_coordinate;
+        self.advance(1); // skip '*'
+        while let Some(c) = self.current_byte() {
+            if is_blank(c) || is_flow_collection_indicator(c) {
+                break;
+            }
+            self.advance(1);
+        }
+        LexToken::new(ALIAS_LITERAL, start, self.current_coordinate)
     }
 
     /// Lex block scalar header indicators, returning tokens and indent size
@@ -381,6 +464,9 @@ impl<'src> YamlLexer<'src> {
                 (b':', _) => self.consume_byte_as_token(T![:]),
                 (b'?', _) => self.consume_byte_as_token(T![?]),
                 (b'-', _) => self.consume_byte_as_token(T![-]),
+                (b'&', _) => self.consume_anchor_property(),
+                (b'!', _) => self.consume_tag_property(),
+                (b'*', _) => self.consume_alias(),
                 _ => self.consume_unexpected_token(),
             };
             collection_tokens.push_back(token);
