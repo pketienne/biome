@@ -1,0 +1,415 @@
+use super::{
+    AnalyzerCapabilities, AnalyzerVisitorBuilder, Capabilities, CodeActionsParams,
+    DebugCapabilities, DocumentFileSource, EnabledForPath, ExtensionHandler, FixAllParams,
+    FormatterCapabilities, LintParams, LintResults, ParseResult, ParserCapabilities, ProcessFixAll,
+    ProcessLint, SearchCapabilities,
+};
+use crate::configuration::to_analyzer_rules;
+use crate::settings::{OverrideSettings, check_feature_activity};
+use crate::workspace::{FixFileResult, PullActionsResult};
+use crate::{
+    WorkspaceError,
+    settings::{ServiceLanguage, Settings},
+    workspace::GetSyntaxTreeResult,
+};
+use biome_analyze::{AnalysisFilter, AnalyzerConfiguration, AnalyzerOptions, ControlFlow, Never};
+use biome_configuration::yaml::{
+    YamlAssistConfiguration, YamlAssistEnabled, YamlFormatterConfiguration,
+    YamlFormatterEnabled, YamlLinterConfiguration, YamlLinterEnabled,
+};
+use biome_formatter::Printed;
+use biome_fs::BiomePath;
+use biome_yaml_analyze::analyze;
+use biome_yaml_formatter::format_node;
+use biome_yaml_parser::parse_yaml_with_cache;
+use biome_yaml_syntax::{YamlLanguage, YamlSyntaxNode, YamlRoot};
+use biome_parser::AnyParse;
+use biome_rowan::{AstNode, NodeCache};
+use camino::Utf8Path;
+use either::Either;
+use std::borrow::Cow;
+use tracing::{debug_span, trace_span};
+
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub struct YamlFormatterSettings {
+    pub enabled: Option<YamlFormatterEnabled>,
+}
+
+impl From<YamlFormatterConfiguration> for YamlFormatterSettings {
+    fn from(config: YamlFormatterConfiguration) -> Self {
+        Self {
+            enabled: config.enabled,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub struct YamlLinterSettings {
+    pub enabled: Option<YamlLinterEnabled>,
+}
+
+impl From<YamlLinterConfiguration> for YamlLinterSettings {
+    fn from(configuration: YamlLinterConfiguration) -> Self {
+        Self {
+            enabled: configuration.enabled,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub struct YamlAssistSettings {
+    pub enabled: Option<YamlAssistEnabled>,
+}
+
+impl From<YamlAssistConfiguration> for YamlAssistSettings {
+    fn from(configuration: YamlAssistConfiguration) -> Self {
+        Self {
+            enabled: configuration.enabled,
+        }
+    }
+}
+
+pub use biome_yaml_formatter::context::YamlFormatOptions;
+
+impl ServiceLanguage for YamlLanguage {
+    type FormatterSettings = YamlFormatterSettings;
+    type LinterSettings = YamlLinterSettings;
+    type FormatOptions = YamlFormatOptions;
+    type ParserSettings = ();
+    type EnvironmentSettings = ();
+    type AssistSettings = YamlAssistSettings;
+    type ParserOptions = ();
+
+    fn lookup_settings(
+        languages: &crate::settings::LanguageListSettings,
+    ) -> &crate::settings::LanguageSettings<Self> {
+        &languages.yaml
+    }
+
+    fn resolve_format_options(
+        global: &crate::settings::FormatSettings,
+        _overrides: &OverrideSettings,
+        _language: &Self::FormatterSettings,
+        _path: &BiomePath,
+        _file_source: &DocumentFileSource,
+    ) -> Self::FormatOptions {
+        YamlFormatOptions::default()
+            .with_indent_style(global.indent_style.unwrap_or_default())
+            .with_indent_width(global.indent_width.unwrap_or_default())
+            .with_line_width(global.line_width.unwrap_or_default())
+            .with_line_ending(global.line_ending.unwrap_or_default())
+    }
+
+    fn resolve_analyzer_options(
+        global: &Settings,
+        _language: &Self::LinterSettings,
+        _environment: Option<&Self::EnvironmentSettings>,
+        path: &BiomePath,
+        _file_source: &DocumentFileSource,
+        suppression_reason: Option<&str>,
+    ) -> AnalyzerOptions {
+        let configuration =
+            AnalyzerConfiguration::default().with_rules(to_analyzer_rules(global, path.as_path()));
+
+        AnalyzerOptions::default()
+            .with_file_path(path.as_path())
+            .with_configuration(configuration)
+            .with_suppression_reason(suppression_reason)
+    }
+
+    fn formatter_enabled_for_file_path(settings: &Settings, _path: &Utf8Path) -> bool {
+        check_feature_activity(
+            settings.languages.yaml.formatter.enabled,
+            settings.formatter.enabled,
+        )
+        .unwrap_or_default()
+        .into()
+    }
+
+    fn assist_enabled_for_file_path(settings: &Settings, _path: &Utf8Path) -> bool {
+        check_feature_activity(
+            settings.languages.yaml.assist.enabled,
+            settings.assist.enabled,
+        )
+        .unwrap_or_default()
+        .into()
+    }
+
+    fn linter_enabled_for_file_path(settings: &Settings, _path: &Utf8Path) -> bool {
+        check_feature_activity(
+            settings.languages.yaml.linter.enabled,
+            settings.linter.enabled,
+        )
+        .unwrap_or_default()
+        .into()
+    }
+
+    fn resolve_environment(_settings: &Settings) -> Option<&Self::EnvironmentSettings> {
+        None
+    }
+
+    fn resolve_parse_options(
+        _overrides: &OverrideSettings,
+        _language: &Self::ParserSettings,
+        _path: &BiomePath,
+        _file_source: &DocumentFileSource,
+    ) -> Self::ParserOptions {
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Eq)]
+pub(crate) struct YamlFileHandler;
+
+impl ExtensionHandler for YamlFileHandler {
+    fn capabilities(&self) -> Capabilities {
+        Capabilities {
+            enabled_for_path: EnabledForPath {
+                formatter: Some(formatter_enabled),
+                linter: Some(linter_enabled),
+                assist: Some(assist_enabled),
+                search: Some(search_enabled),
+            },
+            parser: ParserCapabilities {
+                parse: Some(parse),
+                parse_embedded_nodes: None,
+            },
+            debug: DebugCapabilities {
+                debug_syntax_tree: Some(debug_syntax_tree),
+                debug_control_flow: None,
+                debug_formatter_ir: None,
+                debug_type_info: None,
+                debug_registered_types: None,
+                debug_semantic_model: None,
+            },
+            analyzer: AnalyzerCapabilities {
+                lint: Some(lint),
+                code_actions: Some(code_actions),
+                rename: None,
+                fix_all: Some(fix_all),
+                update_snippets: None,
+                pull_diagnostics_and_actions: None,
+            },
+            formatter: FormatterCapabilities {
+                format: Some(format),
+                format_range: None,
+                format_on_type: None,
+                format_embedded: None,
+            },
+            search: SearchCapabilities { search: None },
+        }
+    }
+}
+
+fn formatter_enabled(path: &Utf8Path, settings: &Settings) -> bool {
+    settings.formatter_enabled_for_file_path::<YamlLanguage>(path)
+}
+
+fn linter_enabled(path: &Utf8Path, settings: &Settings) -> bool {
+    settings.linter_enabled_for_file_path::<YamlLanguage>(path)
+}
+
+fn assist_enabled(path: &Utf8Path, settings: &Settings) -> bool {
+    settings.assist_enabled_for_file_path::<YamlLanguage>(path)
+}
+
+fn search_enabled(_path: &Utf8Path, _settings: &Settings) -> bool {
+    true
+}
+
+fn parse(
+    _biome_path: &BiomePath,
+    file_source: DocumentFileSource,
+    text: &str,
+    _settings: &Settings,
+    cache: &mut NodeCache,
+) -> ParseResult {
+    let parse = parse_yaml_with_cache(text, cache);
+
+    ParseResult {
+        any_parse: parse.into(),
+        language: Some(file_source),
+    }
+}
+
+fn debug_syntax_tree(_biome_path: &BiomePath, parse: AnyParse) -> GetSyntaxTreeResult {
+    let syntax: YamlSyntaxNode = parse.syntax();
+    let tree: YamlRoot = parse.tree();
+    GetSyntaxTreeResult {
+        cst: format!("{syntax:#?}"),
+        ast: format!("{tree:#?}"),
+    }
+}
+
+fn format(
+    path: &BiomePath,
+    document_file_source: &DocumentFileSource,
+    parse: AnyParse,
+    settings: &Settings,
+) -> Result<Printed, WorkspaceError> {
+    let options = settings.format_options::<YamlLanguage>(path, document_file_source);
+
+    let tree = parse.syntax();
+    let formatted = format_node(options, &tree)?;
+
+    match formatted.print() {
+        Ok(printed) => Ok(printed),
+        Err(error) => Err(WorkspaceError::FormatError(error.into())),
+    }
+}
+
+#[tracing::instrument(level = "debug", skip(params))]
+fn lint(params: LintParams) -> LintResults {
+    let workspace_settings = &params.settings;
+    let analyzer_options = workspace_settings.analyzer_options::<YamlLanguage>(
+        params.path,
+        &params.language,
+        params.suppression_reason.as_deref(),
+    );
+    let tree = params.parse.tree();
+
+    let (enabled_rules, disabled_rules, analyzer_options) =
+        AnalyzerVisitorBuilder::new(params.settings, analyzer_options)
+            .with_only(params.only)
+            .with_skip(params.skip)
+            .with_path(params.path.as_path())
+            .with_enabled_selectors(params.enabled_selectors)
+            .with_project_layout(params.project_layout.clone())
+            .finish();
+
+    let filter = AnalysisFilter {
+        categories: params.categories,
+        enabled_rules: Some(enabled_rules.as_slice()),
+        disabled_rules: &disabled_rules,
+        range: None,
+    };
+
+    let mut process_lint = ProcessLint::new(&params);
+
+    let (_, analyze_diagnostics) = analyze(&tree, filter, &analyzer_options, |signal| {
+        process_lint.process_signal(signal)
+    });
+
+    process_lint.into_result(
+        params
+            .parse
+            .into_serde_diagnostics(params.diagnostic_offset),
+        analyze_diagnostics,
+    )
+}
+
+pub(crate) fn code_actions(params: CodeActionsParams) -> PullActionsResult {
+    let CodeActionsParams {
+        parse,
+        range,
+        settings,
+        path,
+        module_graph: _,
+        project_layout,
+        language,
+        only,
+        skip,
+        suppression_reason,
+        enabled_rules: rules,
+        plugins: _,
+        categories,
+        action_offset,
+        document_services: _,
+    } = params;
+    let _ = debug_span!("Code actions YAML", range =? range, path =? path).entered();
+    let tree = parse.tree();
+    let _ = trace_span!("Parsed file", tree =? tree).entered();
+    let analyzer_options = settings.analyzer_options::<YamlLanguage>(
+        path,
+        &language,
+        suppression_reason.as_deref(),
+    );
+    let mut actions = Vec::new();
+    let (enabled_rules, disabled_rules, analyzer_options) =
+        AnalyzerVisitorBuilder::new(settings, analyzer_options)
+            .with_only(only)
+            .with_skip(skip)
+            .with_path(path.as_path())
+            .with_enabled_selectors(rules)
+            .with_project_layout(project_layout)
+            .finish();
+
+    let filter = AnalysisFilter {
+        categories,
+        enabled_rules: Some(enabled_rules.as_slice()),
+        disabled_rules: &disabled_rules,
+        range,
+    };
+
+    analyze(&tree, filter, &analyzer_options, |signal| {
+        actions.extend(signal.actions().into_code_action_iter().map(|item| {
+            crate::workspace::CodeAction {
+                category: item.category.clone(),
+                rule_name: item
+                    .rule_name
+                    .map(|(group, name)| (Cow::Borrowed(group), Cow::Borrowed(name))),
+                suggestion: item.suggestion,
+                offset: action_offset,
+            }
+        }));
+
+        ControlFlow::<Never>::Continue(())
+    });
+
+    PullActionsResult { actions }
+}
+
+#[tracing::instrument(level = "debug", skip(params))]
+pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceError> {
+    let mut tree: YamlRoot = params.parse.tree();
+
+    let rules = params.settings.as_linter_rules(params.biome_path.as_path());
+    let analyzer_options = params.settings.analyzer_options::<YamlLanguage>(
+        params.biome_path,
+        &params.document_file_source,
+        params.suppression_reason.as_deref(),
+    );
+    let (enabled_rules, disabled_rules, analyzer_options) =
+        AnalyzerVisitorBuilder::new(params.settings, analyzer_options)
+            .with_only(params.only)
+            .with_skip(params.skip)
+            .with_path(params.biome_path.as_path())
+            .with_enabled_selectors(params.enabled_rules)
+            .with_project_layout(params.project_layout.clone())
+            .finish();
+
+    let filter = AnalysisFilter {
+        categories: params.rule_categories,
+        enabled_rules: Some(enabled_rules.as_slice()),
+        disabled_rules: &disabled_rules,
+        range: None,
+    };
+
+    let mut process_fix_all = ProcessFixAll::new(
+        &params,
+        rules,
+        tree.syntax().text_range_with_trivia().len().into(),
+    );
+
+    loop {
+        let (action, _) = analyze(&tree, filter, &analyzer_options, |signal| {
+            process_fix_all.process_signal(signal)
+        });
+
+        let result = process_fix_all.process_action(action, |root| {
+            tree = match YamlRoot::cast(root) {
+                Some(tree) => tree,
+                None => return None,
+            };
+            Some(tree.syntax().text_range_with_trivia().len().into())
+        })?;
+
+        if result.is_none() {
+            return process_fix_all.finish(|| {
+                Ok(Either::<biome_formatter::FormatResult<biome_formatter::Formatted<biome_formatter::SimpleFormatContext>>, String>::Right(tree.syntax().to_string()))
+            });
+        }
+    }
+}

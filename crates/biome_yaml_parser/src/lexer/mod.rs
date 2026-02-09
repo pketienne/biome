@@ -62,6 +62,7 @@ impl<'src> YamlLexer<'src> {
             c if is_break(c) => self.evaluate_block_scope(),
             c if is_space(c) => self.consume_whitespace_token().into(),
             b'#' => self.consume_comment().into(),
+            b'-' if self.is_at_doc_start() => self.consume_doc_start(),
             b'.' if self.is_at_doc_end() => self.consume_doc_end(),
             current if maybe_at_mapping_start(current, self.peek_byte()) => {
                 self.consume_potential_mapping_start(current)
@@ -512,6 +513,32 @@ impl<'src> YamlLexer<'src> {
             }
         };
         LexToken::new(SINGLE_QUOTED_LITERAL, start, token_end)
+    }
+
+    fn is_at_doc_start(&self) -> bool {
+        let is_dash = |c: u8| c == b'-';
+        // A DIRECTIVE_END (---) token must be placed at the start of a line
+        // and followed by whitespace or EOF to distinguish from plain scalars
+        // https://yaml.org/spec/1.2.2/#rule-c-directives-end
+        self.current_coordinate.column == 0
+            && self.current_byte().is_some_and(is_dash)
+            && self.peek_byte().is_some_and(is_dash)
+            && self.byte_at(2).is_some_and(is_dash)
+            && self.byte_at(3).is_none_or(is_blank)
+    }
+
+    fn consume_doc_start(&mut self) -> LinkedList<LexToken> {
+        self.assert_byte(b'-');
+        debug_assert_eq!(self.byte_at(1), Some(b'-'));
+        debug_assert_eq!(self.byte_at(2), Some(b'-'));
+        let start = self.current_coordinate;
+        let mut tokens = self.close_all_scopes();
+        self.advance(3);
+        tokens.push_back(LexToken::new(DIRECTIVE_END, start, self.current_coordinate));
+        let mut trivia = self.consume_trailing_trivia();
+        tokens.append(&mut trivia);
+
+        tokens
     }
 
     fn is_at_doc_end(&self) -> bool {

@@ -1,0 +1,5 @@
+# should not generate diagnostics
+enabled: true
+disabled: false
+country: "NO"
+name: "yes we can"

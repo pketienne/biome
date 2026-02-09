@@ -1,0 +1,8 @@
+enabled: yes
+disabled: no
+flag: on
+other: off
+short_yes: y
+short_no: n
+upper_yes: YES
+upper_no: NO

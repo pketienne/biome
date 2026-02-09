@@ -2,7 +2,6 @@
 
 use crate::prelude::*;
 use biome_markdown_syntax::{AnyCodeBlock, AnyContainerBlock, AnyLeafBlock};
-
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatAnyCodeBlock;
 impl FormatRule<AnyCodeBlock> for FormatAnyCodeBlock {
@@ -14,7 +13,6 @@ impl FormatRule<AnyCodeBlock> for FormatAnyCodeBlock {
         }
     }
 }
-
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatAnyContainerBlock;
 impl FormatRule<AnyContainerBlock> for FormatAnyContainerBlock {
@@ -27,7 +25,6 @@ impl FormatRule<AnyContainerBlock> for FormatAnyContainerBlock {
         }
     }
 }
-
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatAnyLeafBlock;
 impl FormatRule<AnyLeafBlock> for FormatAnyLeafBlock {

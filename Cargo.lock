@@ -1652,6 +1652,10 @@ dependencies = [
  "biome_rowan",
  "biome_string_case",
  "biome_text_edit",
+ "biome_yaml_analyze",
+ "biome_yaml_formatter",
+ "biome_yaml_parser",
+ "biome_yaml_syntax",
  "boxcar",
  "camino",
  "crossbeam",
@@ -1825,11 +1829,52 @@ dependencies = [
 ]
 
 [[package]]
+name = "biome_yaml_analyze"
+version = "0.0.1"
+dependencies = [
+ "biome_analyze",
+ "biome_analyze_macros",
+ "biome_console",
+ "biome_deserialize",
+ "biome_deserialize_macros",
+ "biome_diagnostics",
+ "biome_rowan",
+ "biome_rule_options",
+ "biome_string_case",
+ "biome_suppression",
+ "biome_test_utils",
+ "biome_yaml_parser",
+ "biome_yaml_syntax",
+ "camino",
+ "insta",
+ "rustc-hash 2.1.1",
+ "schemars",
+ "serde",
+ "tests_macros",
+]
+
+[[package]]
 name = "biome_yaml_factory"
 version = "0.0.1"
 dependencies = [
  "biome_rowan",
  "biome_yaml_syntax",
+]
+
+[[package]]
+name = "biome_yaml_formatter"
+version = "0.0.1"
+dependencies = [
+ "biome_deserialize",
+ "biome_deserialize_macros",
+ "biome_diagnostics",
+ "biome_formatter",
+ "biome_parser",
+ "biome_rowan",
+ "biome_suppression",
+ "biome_yaml_parser",
+ "biome_yaml_syntax",
+ "camino",
 ]
 
 [[package]]

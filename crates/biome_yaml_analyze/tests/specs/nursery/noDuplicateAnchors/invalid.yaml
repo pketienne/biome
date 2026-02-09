@@ -1,0 +1,2 @@
+first: &anchor value1
+second: &anchor value2

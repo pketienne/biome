@@ -1,0 +1,165 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+enabled: yes
+disabled: no
+flag: on
+other: off
+short_yes: y
+short_no: n
+upper_yes: YES
+upper_no: NO
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:10 lint/nursery/noTruthyValues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The value yes is interpreted as a boolean in YAML 1.1.
+  
+  > 1 │ enabled: yes
+      │          ^^^
+    2 │ disabled: no
+    3 │ flag: on
+  
+  i Use true instead, or quote the value if it's meant as a string.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:2:11 lint/nursery/noTruthyValues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The value no is interpreted as a boolean in YAML 1.1.
+  
+    1 │ enabled: yes
+  > 2 │ disabled: no
+      │           ^^
+    3 │ flag: on
+    4 │ other: off
+  
+  i Use false instead, or quote the value if it's meant as a string.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:3:7 lint/nursery/noTruthyValues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The value on is interpreted as a boolean in YAML 1.1.
+  
+    1 │ enabled: yes
+    2 │ disabled: no
+  > 3 │ flag: on
+      │       ^^
+    4 │ other: off
+    5 │ short_yes: y
+  
+  i Use true instead, or quote the value if it's meant as a string.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:4:8 lint/nursery/noTruthyValues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The value off is interpreted as a boolean in YAML 1.1.
+  
+    2 │ disabled: no
+    3 │ flag: on
+  > 4 │ other: off
+      │        ^^^
+    5 │ short_yes: y
+    6 │ short_no: n
+  
+  i Use false instead, or quote the value if it's meant as a string.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:5:12 lint/nursery/noTruthyValues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The value y is interpreted as a boolean in YAML 1.1.
+  
+    3 │ flag: on
+    4 │ other: off
+  > 5 │ short_yes: y
+      │            ^
+    6 │ short_no: n
+    7 │ upper_yes: YES
+  
+  i Use true instead, or quote the value if it's meant as a string.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:6:11 lint/nursery/noTruthyValues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The value n is interpreted as a boolean in YAML 1.1.
+  
+    4 │ other: off
+    5 │ short_yes: y
+  > 6 │ short_no: n
+      │           ^
+    7 │ upper_yes: YES
+    8 │ upper_no: NO
+  
+  i Use false instead, or quote the value if it's meant as a string.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:7:12 lint/nursery/noTruthyValues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The value YES is interpreted as a boolean in YAML 1.1.
+  
+    5 │ short_yes: y
+    6 │ short_no: n
+  > 7 │ upper_yes: YES
+      │            ^^^
+    8 │ upper_no: NO
+    9 │ 
+  
+  i Use true instead, or quote the value if it's meant as a string.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:8:11 lint/nursery/noTruthyValues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The value NO is interpreted as a boolean in YAML 1.1.
+  
+    6 │ short_no: n
+    7 │ upper_yes: YES
+  > 8 │ upper_no: NO
+      │           ^^
+    9 │ 
+  
+  i Use false instead, or quote the value if it's meant as a string.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

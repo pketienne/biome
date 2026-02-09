@@ -44,6 +44,10 @@ biome_markdown_analyze    = { workspace = true }
 biome_markdown_formatter  = { workspace = true }
 biome_markdown_parser     = { workspace = true }
 biome_markdown_syntax     = { workspace = true }
+biome_yaml_analyze        = { workspace = true }
+biome_yaml_formatter      = { workspace = true }
+biome_yaml_parser         = { workspace = true }
+biome_yaml_syntax         = { workspace = true }
 biome_js_analyze        = { workspace = true }
 biome_js_factory        = { workspace = true, optional = true }
 biome_js_formatter      = { workspace = true, features = ["serde"] }
@@ -104,6 +108,7 @@ schema    = [
   "biome_js_syntax/schema",
   "biome_json_syntax/schema",
   "biome_markdown_syntax/schema",
+  "biome_yaml_syntax/schema",
   "biome_module_graph/schema",
   "biome_text_edit/schema",
   "dep:schemars",

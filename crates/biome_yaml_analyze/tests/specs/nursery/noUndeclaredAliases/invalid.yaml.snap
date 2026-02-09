@@ -1,0 +1,26 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+first: value1
+second: *missing
+
+```
+
+_Note: The parser emitted 1 diagnostics which are not shown here._
+
+# Diagnostics
+```
+invalid.yaml:2:9 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Unexpected character `*`
+  
+    1 │ first: value1
+  > 2 │ second: *missing
+      │         ^
+    3 │ 
+  
+
+```

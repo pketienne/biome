@@ -1,0 +1,4 @@
+# should not generate diagnostics
+myKey: value
+name: John
+age: 30

@@ -1,0 +1,4 @@
+# should not generate diagnostics
+name: null
+age: 30
+email: john@example.com

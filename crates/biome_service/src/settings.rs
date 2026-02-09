@@ -8,6 +8,7 @@ use biome_configuration::diagnostics::InvalidIgnorePattern;
 use biome_configuration::formatter::{FormatWithErrorsEnabled, FormatterEnabled};
 use biome_configuration::html::{ExperimentalFullSupportEnabled, HtmlConfiguration};
 use biome_configuration::markdown::MarkdownConfiguration;
+use biome_configuration::yaml::YamlConfiguration;
 use biome_configuration::javascript::JsxRuntime;
 use biome_configuration::max_size::MaxSize;
 use biome_configuration::vcs::{VcsClientKind, VcsConfiguration, VcsEnabled, VcsUseIgnoreFile};
@@ -36,6 +37,7 @@ use biome_html_formatter::HtmlFormatOptions;
 use biome_html_parser::HtmlParseOptions;
 use biome_html_syntax::HtmlLanguage;
 use biome_markdown_syntax::MarkdownLanguage;
+use biome_yaml_syntax::YamlLanguage;
 use biome_js_formatter::context::JsFormatOptions;
 use biome_js_parser::JsParserOptions;
 use biome_js_syntax::JsLanguage;
@@ -180,6 +182,10 @@ impl Settings {
         // markdown settings
         if let Some(markdown) = configuration.markdown {
             self.languages.markdown = markdown.into();
+        }
+        // yaml settings
+        if let Some(yaml) = configuration.yaml {
+            self.languages.yaml = yaml.into();
         }
 
         // plugin settings
@@ -509,6 +515,7 @@ pub struct LanguageListSettings {
     pub html: LanguageSettings<HtmlLanguage>,
     pub grit: LanguageSettings<GritLanguage>,
     pub markdown: LanguageSettings<MarkdownLanguage>,
+    pub yaml: LanguageSettings<YamlLanguage>,
 }
 
 impl From<JsConfiguration> for LanguageSettings<JsLanguage> {
@@ -662,6 +669,22 @@ impl From<MarkdownConfiguration> for LanguageSettings<MarkdownLanguage> {
             language_setting.linter = linter.into();
         }
         if let Some(assist) = markdown.assist {
+            language_setting.assist = assist.into();
+        }
+        language_setting
+    }
+}
+
+impl From<YamlConfiguration> for LanguageSettings<YamlLanguage> {
+    fn from(yaml: YamlConfiguration) -> Self {
+        let mut language_setting: Self = Self::default();
+        if let Some(formatter) = yaml.formatter {
+            language_setting.formatter = formatter.into();
+        }
+        if let Some(linter) = yaml.linter {
+            language_setting.linter = linter.into();
+        }
+        if let Some(assist) = yaml.assist {
             language_setting.assist = assist.into();
         }
         language_setting
