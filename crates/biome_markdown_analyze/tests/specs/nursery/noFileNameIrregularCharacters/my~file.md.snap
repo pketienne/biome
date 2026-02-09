@@ -1,0 +1,26 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: my~file.md
+---
+# Input
+```md
+# Heading
+
+```
+
+# Diagnostics
+```
+my~file.md:1:1 lint/nursery/noFileNameIrregularCharacters ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! File name contains an irregular character: '~'.
+  
+  > 1 │ # Heading
+      │ ^^^^^^^^^
+    2 │ 
+  
+  i Use only alphanumeric characters, dashes, dots, and underscores in file names.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

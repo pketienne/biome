@@ -8,7 +8,7 @@
 	a owl:Ontology ;
 	owl:imports <https://pke.dev/ontology/lint> ;
 	rdfs:label "Markdown Lint Rules for Biome"@en ;
-	rdfs:comment """Generic markdown lint rules ontology aligned with biome's rule metadata. Deduplicated from markdownlint and remark-lint into a single canonical rule set of 83 implemented rules."""@en ;
+	rdfs:comment """Generic markdown lint rules ontology aligned with biome's rule metadata. Deduplicated from markdownlint and remark-lint into a single canonical rule set of 100 implemented rules."""@en ;
 	owl:versionInfo "2.0.0" .
 
 :MarkdownRule
@@ -1012,7 +1012,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :noFileNameArticles
 	a :MarkdownRule ;
@@ -1023,7 +1023,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :noFileNameConsecutiveDashes
 	a :MarkdownRule ;
@@ -1034,7 +1034,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :noFileNameIrregularCharacters
 	a :MarkdownRule ;
@@ -1045,7 +1045,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :noFileNameMixedCase
 	a :MarkdownRule ;
@@ -1056,7 +1056,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :noFileNameOuterDashes
 	a :MarkdownRule ;
@@ -1067,7 +1067,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :useSortedDirectiveAttributes
 	a :MarkdownRule ;
@@ -1078,7 +1078,7 @@
 	:fixKind "unsafe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :useCollapsedDirectiveAttribute
 	a :MarkdownRule ;
@@ -1089,7 +1089,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :useConsistentDirectiveQuoteStyle
 	a :MarkdownRule ;
@@ -1100,7 +1100,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :useShortcutDirectiveAttribute
 	a :MarkdownRule ;
@@ -1111,7 +1111,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :noDuplicateDirectiveAttributeName
 	a :MarkdownRule ;
@@ -1122,7 +1122,7 @@
 	:fixKind "none" ;
 	:severity "error" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :useSortedMdxJsxAttributes
 	a :MarkdownRule ;
@@ -1133,7 +1133,7 @@
 	:fixKind "unsafe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :noMdxJsxVoidChildren
 	a :MarkdownRule ;
@@ -1144,7 +1144,7 @@
 	:fixKind "none" ;
 	:severity "error" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :useConsistentMdxJsxQuoteStyle
 	a :MarkdownRule ;
@@ -1155,7 +1155,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :useMdxJsxSelfClose
 	a :MarkdownRule ;
@@ -1166,7 +1166,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :useShorthandMdxJsxAttribute
 	a :MarkdownRule ;
@@ -1177,7 +1177,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :noDuplicateMdxJsxAttributeName
 	a :MarkdownRule ;
@@ -1188,4 +1188,4 @@
 	:fixKind "none" ;
 	:severity "error" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .

@@ -3089,6 +3089,16 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoDirectiveDuplicateAttributeConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoDirectiveDuplicateAttributeOptions" }
+			]
+		},
+		"NoDirectiveDuplicateAttributeOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoDistractingElementsConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -3704,6 +3714,56 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoFileNameArticlesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoFileNameArticlesOptions" }
+			]
+		},
+		"NoFileNameArticlesOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoFileNameConsecutiveDashesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoFileNameConsecutiveDashesOptions" }
+			]
+		},
+		"NoFileNameConsecutiveDashesOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoFileNameIrregularCharactersConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoFileNameIrregularCharactersOptions" }
+			]
+		},
+		"NoFileNameIrregularCharactersOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoFileNameMixedCaseConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoFileNameMixedCaseOptions" }
+			]
+		},
+		"NoFileNameMixedCaseOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoFileNameOuterDashesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoFileNameOuterDashesOptions" }
+			]
+		},
+		"NoFileNameOuterDashesOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoFlatMapIdentityConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -4300,6 +4360,26 @@
 			]
 		},
 		"NoMagicNumbersOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoMdxJsxDuplicateAttributeConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMdxJsxDuplicateAttributeOptions" }
+			]
+		},
+		"NoMdxJsxDuplicateAttributeOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"NoMdxJsxVoidChildrenConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoMdxJsxVoidChildrenOptions" }
+			]
+		},
+		"NoMdxJsxVoidChildrenOptions": {
 			"type": "object",
 			"additionalProperties": false
 		},
@@ -6089,6 +6169,13 @@
 						{ "type": "null" }
 					]
 				},
+				"noDirectiveDuplicateAttribute": {
+					"description": "Disallow duplicate attributes on markdown directives.\nSee https://biomejs.dev/linter/rules/no-directive-duplicate-attribute",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoDirectiveDuplicateAttributeConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noDivRegex": {
 					"description": "Disallow equal signs explicitly at the beginning of regular expressions.\nSee https://biomejs.dev/linter/rules/no-div-regex",
 					"anyOf": [
@@ -6236,6 +6323,41 @@
 						{ "type": "null" }
 					]
 				},
+				"noFileNameArticles": {
+					"description": "Disallow file names starting with an article.\nSee https://biomejs.dev/linter/rules/no-file-name-articles",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoFileNameArticlesConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noFileNameConsecutiveDashes": {
+					"description": "Disallow consecutive dashes in file names.\nSee https://biomejs.dev/linter/rules/no-file-name-consecutive-dashes",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoFileNameConsecutiveDashesConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noFileNameIrregularCharacters": {
+					"description": "Disallow irregular characters in file names.\nSee https://biomejs.dev/linter/rules/no-file-name-irregular-characters",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoFileNameIrregularCharactersConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noFileNameMixedCase": {
+					"description": "Disallow mixed case in file names.\nSee https://biomejs.dev/linter/rules/no-file-name-mixed-case",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoFileNameMixedCaseConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noFileNameOuterDashes": {
+					"description": "Disallow dashes at the start or end of file names.\nSee https://biomejs.dev/linter/rules/no-file-name-outer-dashes",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoFileNameOuterDashesConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noFloatingClasses": {
 					"description": "Disallow new operators outside of assignments or comparisons.\nSee https://biomejs.dev/linter/rules/no-floating-classes",
 					"anyOf": [
@@ -6373,6 +6495,20 @@
 					"description": "Enforce a maximum line length.\nSee https://biomejs.dev/linter/rules/no-long-lines",
 					"anyOf": [
 						{ "$ref": "#/$defs/NoLongLinesConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noMdxJsxDuplicateAttribute": {
+					"description": "Disallow duplicate attributes on MDX JSX elements.\nSee https://biomejs.dev/linter/rules/no-mdx-jsx-duplicate-attribute",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMdxJsxDuplicateAttributeConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noMdxJsxVoidChildren": {
+					"description": "Disallow children for void HTML elements in MDX.\nSee https://biomejs.dev/linter/rules/no-mdx-jsx-void-children",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoMdxJsxVoidChildrenConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -6821,6 +6957,13 @@
 						{ "type": "null" }
 					]
 				},
+				"useConsistentDirectiveQuoteStyle": {
+					"description": "Enforce a consistent quote style for directive attributes.\nSee https://biomejs.dev/linter/rules/use-consistent-directive-quote-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentDirectiveQuoteStyleConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useConsistentEmphasisMarker": {
 					"description": "Enforce consistent emphasis markers.\nSee https://biomejs.dev/linter/rules/use-consistent-emphasis-marker",
 					"anyOf": [
@@ -6904,6 +7047,13 @@
 					"description": "Enforce consistent spacing between list items.\nSee https://biomejs.dev/linter/rules/use-consistent-list-item-spacing",
 					"anyOf": [
 						{ "$ref": "#/$defs/UseConsistentListItemSpacingConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentMdxJsxQuoteStyle": {
+					"description": "Enforce a consistent quote style for MDX JSX attributes.\nSee https://biomejs.dev/linter/rules/use-consistent-mdx-jsx-quote-style",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseConsistentMdxJsxQuoteStyleConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -7014,6 +7164,20 @@
 						{ "type": "null" }
 					]
 				},
+				"useDirectiveCollapsedAttribute": {
+					"description": "Enforce collapsed class attributes in directives.\nSee https://biomejs.dev/linter/rules/use-directive-collapsed-attribute",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseDirectiveCollapsedAttributeConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useDirectiveShortcutAttribute": {
+					"description": "Enforce shortcut id attributes in directives.\nSee https://biomejs.dev/linter/rules/use-directive-shortcut-attribute",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseDirectiveShortcutAttributeConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useErrorCause": {
 					"description": "Enforce that new Error() is thrown with the original error as cause.\nSee https://biomejs.dev/linter/rules/use-error-cause",
 					"anyOf": [
@@ -7032,6 +7196,13 @@
 					"description": "Enforce types in functions, methods, variables, and parameters.\nSee https://biomejs.dev/linter/rules/use-explicit-type",
 					"anyOf": [
 						{ "$ref": "#/$defs/UseExplicitTypeConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useFileExtension": {
+					"description": "Enforce a specific file extension for markdown files.\nSee https://biomejs.dev/linter/rules/use-file-extension",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseFileExtensionConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -7112,6 +7283,20 @@
 						{ "type": "null" }
 					]
 				},
+				"useMdxJsxSelfClosing": {
+					"description": "Enforce self-closing tags for MDX JSX elements without children.\nSee https://biomejs.dev/linter/rules/use-mdx-jsx-self-closing",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseMdxJsxSelfClosingConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useMdxJsxShorthandAttribute": {
+					"description": "Enforce shorthand boolean attributes in MDX JSX elements.\nSee https://biomejs.dev/linter/rules/use-mdx-jsx-shorthand-attribute",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseMdxJsxShorthandAttributeConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useProperNames": {
 					"description": "Enforce correct capitalization of proper names.\nSee https://biomejs.dev/linter/rules/use-proper-names",
 					"anyOf": [
@@ -7165,6 +7350,20 @@
 					"description": "Enforce alphabetically sorted link reference definitions.\nSee https://biomejs.dev/linter/rules/use-sorted-definitions",
 					"anyOf": [
 						{ "$ref": "#/$defs/UseSortedDefinitionsConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useSortedDirectiveAttributes": {
+					"description": "Enforce sorted attributes on markdown directives.\nSee https://biomejs.dev/linter/rules/use-sorted-directive-attributes",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseSortedDirectiveAttributesConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useSortedMdxJsxAttributes": {
+					"description": "Enforce sorted attributes on MDX JSX elements.\nSee https://biomejs.dev/linter/rules/use-sorted-mdx-jsx-attributes",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseSortedMdxJsxAttributesConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -8316,6 +8515,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoDirectiveDuplicateAttributeOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoDirectiveDuplicateAttributeOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoDistractingElementsOptions": {
 			"type": "object",
 			"properties": {
@@ -8838,6 +9046,51 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithNoFileNameArticlesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoFileNameArticlesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoFileNameConsecutiveDashesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoFileNameConsecutiveDashesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoFileNameIrregularCharactersOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoFileNameIrregularCharactersOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoFileNameMixedCaseOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoFileNameMixedCaseOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoFileNameOuterDashesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoFileNameOuterDashesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithNoFlatMapIdentityOptions": {
 			"type": "object",
 			"properties": {
@@ -9328,6 +9581,24 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoMagicNumbersOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoMdxJsxDuplicateAttributeOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMdxJsxDuplicateAttributeOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoMdxJsxVoidChildrenOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoMdxJsxVoidChildrenOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -11167,6 +11438,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseConsistentDirectiveQuoteStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentDirectiveQuoteStyleOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseConsistentEmphasisMarkerOptions": {
 			"type": "object",
 			"properties": {
@@ -11273,6 +11553,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseConsistentListItemSpacingOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseConsistentMdxJsxQuoteStyleOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseConsistentMdxJsxQuoteStyleOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -11500,6 +11789,24 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseDirectiveCollapsedAttributeOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseDirectiveCollapsedAttributeOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseDirectiveShortcutAttributeOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseDirectiveShortcutAttributeOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseEnumInitializersOptions": {
 			"type": "object",
 			"properties": {
@@ -11592,6 +11899,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseExportsLastOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseFileExtensionOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseFileExtensionOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -11976,6 +12292,24 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseMdxJsxSelfClosingOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseMdxJsxSelfClosingOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseMdxJsxShorthandAttributeOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseMdxJsxShorthandAttributeOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseMediaCaptionOptions": {
 			"type": "object",
 			"properties": {
@@ -12290,6 +12624,24 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseSortedDefinitionsOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseSortedDirectiveAttributesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseSortedDirectiveAttributesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseSortedMdxJsxAttributesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseSortedMdxJsxAttributesOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -14496,6 +14848,22 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"UseConsistentDirectiveQuoteStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentDirectiveQuoteStyleOptions" }
+			]
+		},
+		"UseConsistentDirectiveQuoteStyleOptions": {
+			"type": "object",
+			"properties": {
+				"quote": {
+					"description": "Expected quote style: `\"double\"`, `\"single\"`, or `\"consistent\"` (default).",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
 		"UseConsistentEmphasisMarkerConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -14674,6 +15042,22 @@
 			"properties": {
 				"style": {
 					"description": "The style to use for list item spacing (default: \"consistent\"). Allowed values: \"compact\", \"loose\", or \"consistent\".",
+					"type": ["string", "null"]
+				}
+			},
+			"additionalProperties": false
+		},
+		"UseConsistentMdxJsxQuoteStyleConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseConsistentMdxJsxQuoteStyleOptions" }
+			]
+		},
+		"UseConsistentMdxJsxQuoteStyleOptions": {
+			"type": "object",
+			"properties": {
+				"quote": {
+					"description": "Expected quote style: `\"double\"`, `\"single\"`, or `\"consistent\"` (default).",
 					"type": ["string", "null"]
 				}
 			},
@@ -15003,6 +15387,26 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"UseDirectiveCollapsedAttributeConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseDirectiveCollapsedAttributeOptions" }
+			]
+		},
+		"UseDirectiveCollapsedAttributeOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseDirectiveShortcutAttributeConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseDirectiveShortcutAttributeOptions" }
+			]
+		},
+		"UseDirectiveShortcutAttributeOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"UseEnumInitializersConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -15121,6 +15525,22 @@
 		},
 		"UseExportsLastOptions": {
 			"type": "object",
+			"additionalProperties": false
+		},
+		"UseFileExtensionConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseFileExtensionOptions" }
+			]
+		},
+		"UseFileExtensionOptions": {
+			"type": "object",
+			"properties": {
+				"extension": {
+					"description": "Expected file extension (default: `\"md\"`).",
+					"type": ["string", "null"]
+				}
+			},
 			"additionalProperties": false
 		},
 		"UseFilenamingConventionConfiguration": {
@@ -15571,6 +15991,26 @@
 			},
 			"additionalProperties": false
 		},
+		"UseMdxJsxSelfClosingConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseMdxJsxSelfClosingOptions" }
+			]
+		},
+		"UseMdxJsxSelfClosingOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
+		"UseMdxJsxShorthandAttributeConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseMdxJsxShorthandAttributeOptions" }
+			]
+		},
+		"UseMdxJsxShorthandAttributeOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"UseMediaCaptionConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -15970,6 +16410,16 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"UseSortedDirectiveAttributesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseSortedDirectiveAttributesOptions" }
+			]
+		},
+		"UseSortedDirectiveAttributesOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"UseSortedKeysConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RuleAssistPlainConfiguration" },
@@ -15983,6 +16433,16 @@
 					"anyOf": [{ "$ref": "#/$defs/SortOrder" }, { "type": "null" }]
 				}
 			},
+			"additionalProperties": false
+		},
+		"UseSortedMdxJsxAttributesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseSortedMdxJsxAttributesOptions" }
+			]
+		},
+		"UseSortedMdxJsxAttributesOptions": {
+			"type": "object",
 			"additionalProperties": false
 		},
 		"UseSortedPropertiesConfiguration": {

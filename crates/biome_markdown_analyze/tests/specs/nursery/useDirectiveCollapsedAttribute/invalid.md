@@ -1,0 +1,3 @@
+:::note{class="warning"}
+Content
+:::

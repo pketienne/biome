@@ -1,0 +1,14 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: valid.md
+---
+# Input
+```md
+
+<hr />
+
+<br />
+
+<img src="photo.jpg" />
+
+```

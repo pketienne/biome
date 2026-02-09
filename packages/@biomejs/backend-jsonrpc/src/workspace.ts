@@ -1962,6 +1962,11 @@ See https://biomejs.dev/linter/rules/no-deprecated-media-type
 	 */
 	noDeprecatedMediaType?: NoDeprecatedMediaTypeConfiguration;
 	/**
+	* Disallow duplicate attributes on markdown directives.
+See https://biomejs.dev/linter/rules/no-directive-duplicate-attribute 
+	 */
+	noDirectiveDuplicateAttribute?: NoDirectiveDuplicateAttributeConfiguration;
+	/**
 	* Disallow equal signs explicitly at the beginning of regular expressions.
 See https://biomejs.dev/linter/rules/no-div-regex 
 	 */
@@ -2067,6 +2072,31 @@ See https://biomejs.dev/linter/rules/no-excessive-lines-per-file
 	 */
 	noExcessiveLinesPerFile?: NoExcessiveLinesPerFileConfiguration;
 	/**
+	* Disallow file names starting with an article.
+See https://biomejs.dev/linter/rules/no-file-name-articles 
+	 */
+	noFileNameArticles?: NoFileNameArticlesConfiguration;
+	/**
+	* Disallow consecutive dashes in file names.
+See https://biomejs.dev/linter/rules/no-file-name-consecutive-dashes 
+	 */
+	noFileNameConsecutiveDashes?: NoFileNameConsecutiveDashesConfiguration;
+	/**
+	* Disallow irregular characters in file names.
+See https://biomejs.dev/linter/rules/no-file-name-irregular-characters 
+	 */
+	noFileNameIrregularCharacters?: NoFileNameIrregularCharactersConfiguration;
+	/**
+	* Disallow mixed case in file names.
+See https://biomejs.dev/linter/rules/no-file-name-mixed-case 
+	 */
+	noFileNameMixedCase?: NoFileNameMixedCaseConfiguration;
+	/**
+	* Disallow dashes at the start or end of file names.
+See https://biomejs.dev/linter/rules/no-file-name-outer-dashes 
+	 */
+	noFileNameOuterDashes?: NoFileNameOuterDashesConfiguration;
+	/**
 	* Disallow new operators outside of assignments or comparisons.
 See https://biomejs.dev/linter/rules/no-floating-classes 
 	 */
@@ -2166,6 +2196,16 @@ See https://biomejs.dev/linter/rules/no-long-headings
 See https://biomejs.dev/linter/rules/no-long-lines 
 	 */
 	noLongLines?: NoLongLinesConfiguration;
+	/**
+	* Disallow duplicate attributes on MDX JSX elements.
+See https://biomejs.dev/linter/rules/no-mdx-jsx-duplicate-attribute 
+	 */
+	noMdxJsxDuplicateAttribute?: NoMdxJsxDuplicateAttributeConfiguration;
+	/**
+	* Disallow children for void HTML elements in MDX.
+See https://biomejs.dev/linter/rules/no-mdx-jsx-void-children 
+	 */
+	noMdxJsxVoidChildren?: NoMdxJsxVoidChildrenConfiguration;
 	/**
 	* Disallow table rows with mismatched column counts.
 See https://biomejs.dev/linter/rules/no-mismatched-table-column-count 
@@ -2486,6 +2526,11 @@ See https://biomejs.dev/linter/rules/use-consistent-code-fence-marker
 	 */
 	useConsistentCodeFenceMarker?: UseConsistentCodeFenceMarkerConfiguration;
 	/**
+	* Enforce a consistent quote style for directive attributes.
+See https://biomejs.dev/linter/rules/use-consistent-directive-quote-style 
+	 */
+	useConsistentDirectiveQuoteStyle?: UseConsistentDirectiveQuoteStyleConfiguration;
+	/**
 	* Enforce consistent emphasis markers.
 See https://biomejs.dev/linter/rules/use-consistent-emphasis-marker 
 	 */
@@ -2545,6 +2590,11 @@ See https://biomejs.dev/linter/rules/use-consistent-list-item-indent
 See https://biomejs.dev/linter/rules/use-consistent-list-item-spacing 
 	 */
 	useConsistentListItemSpacing?: UseConsistentListItemSpacingConfiguration;
+	/**
+	* Enforce a consistent quote style for MDX JSX attributes.
+See https://biomejs.dev/linter/rules/use-consistent-mdx-jsx-quote-style 
+	 */
+	useConsistentMdxJsxQuoteStyle?: UseConsistentMdxJsxQuoteStyleConfiguration;
 	/**
 	* Enforce consistent image/media style.
 See https://biomejs.dev/linter/rules/use-consistent-media-style 
@@ -2621,6 +2671,16 @@ See https://biomejs.dev/linter/rules/use-destructuring
 	 */
 	useDestructuring?: UseDestructuringConfiguration;
 	/**
+	* Enforce collapsed class attributes in directives.
+See https://biomejs.dev/linter/rules/use-directive-collapsed-attribute 
+	 */
+	useDirectiveCollapsedAttribute?: UseDirectiveCollapsedAttributeConfiguration;
+	/**
+	* Enforce shortcut id attributes in directives.
+See https://biomejs.dev/linter/rules/use-directive-shortcut-attribute 
+	 */
+	useDirectiveShortcutAttribute?: UseDirectiveShortcutAttributeConfiguration;
+	/**
 	* Enforce that new Error() is thrown with the original error as cause.
 See https://biomejs.dev/linter/rules/use-error-cause 
 	 */
@@ -2635,6 +2695,11 @@ See https://biomejs.dev/linter/rules/use-exhaustive-switch-cases
 See https://biomejs.dev/linter/rules/use-explicit-type 
 	 */
 	useExplicitType?: UseExplicitTypeConfiguration;
+	/**
+	* Enforce a specific file extension for markdown files.
+See https://biomejs.dev/linter/rules/use-file-extension 
+	 */
+	useFileExtension?: UseFileExtensionConfiguration;
 	/**
 	* Require files to end with a single newline character.
 See https://biomejs.dev/linter/rules/use-final-newline 
@@ -2691,6 +2756,16 @@ See https://biomejs.dev/linter/rules/use-max-params
 	 */
 	useMaxParams?: UseMaxParamsConfiguration;
 	/**
+	* Enforce self-closing tags for MDX JSX elements without children.
+See https://biomejs.dev/linter/rules/use-mdx-jsx-self-closing 
+	 */
+	useMdxJsxSelfClosing?: UseMdxJsxSelfClosingConfiguration;
+	/**
+	* Enforce shorthand boolean attributes in MDX JSX elements.
+See https://biomejs.dev/linter/rules/use-mdx-jsx-shorthand-attribute 
+	 */
+	useMdxJsxShorthandAttribute?: UseMdxJsxShorthandAttributeConfiguration;
+	/**
 	* Enforce correct capitalization of proper names.
 See https://biomejs.dev/linter/rules/use-proper-names 
 	 */
@@ -2730,6 +2805,16 @@ See https://biomejs.dev/linter/rules/use-sorted-classes
 See https://biomejs.dev/linter/rules/use-sorted-definitions 
 	 */
 	useSortedDefinitions?: UseSortedDefinitionsConfiguration;
+	/**
+	* Enforce sorted attributes on markdown directives.
+See https://biomejs.dev/linter/rules/use-sorted-directive-attributes 
+	 */
+	useSortedDirectiveAttributes?: UseSortedDirectiveAttributesConfiguration;
+	/**
+	* Enforce sorted attributes on MDX JSX elements.
+See https://biomejs.dev/linter/rules/use-sorted-mdx-jsx-attributes 
+	 */
+	useSortedMdxJsxAttributes?: UseSortedMdxJsxAttributesConfiguration;
 	/**
 	* Enforce the use of the spread operator over .apply().
 See https://biomejs.dev/linter/rules/use-spread 
@@ -4287,6 +4372,9 @@ export type NoDeprecatedImportsConfiguration =
 export type NoDeprecatedMediaTypeConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoDeprecatedMediaTypeOptions;
+export type NoDirectiveDuplicateAttributeConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoDirectiveDuplicateAttributeOptions;
 export type NoDivRegexConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoDivRegexOptions;
@@ -4350,6 +4438,21 @@ export type NoExcessiveClassesPerFileConfiguration =
 export type NoExcessiveLinesPerFileConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoExcessiveLinesPerFileOptions;
+export type NoFileNameArticlesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoFileNameArticlesOptions;
+export type NoFileNameConsecutiveDashesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoFileNameConsecutiveDashesOptions;
+export type NoFileNameIrregularCharactersConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoFileNameIrregularCharactersOptions;
+export type NoFileNameMixedCaseConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoFileNameMixedCaseOptions;
+export type NoFileNameOuterDashesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoFileNameOuterDashesOptions;
 export type NoFloatingClassesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoFloatingClassesOptions;
@@ -4410,6 +4513,12 @@ export type NoLongHeadingsConfiguration =
 export type NoLongLinesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoLongLinesOptions;
+export type NoMdxJsxDuplicateAttributeConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMdxJsxDuplicateAttributeOptions;
+export type NoMdxJsxVoidChildrenConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoMdxJsxVoidChildrenOptions;
 export type NoMismatchedTableColumnCountConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoMismatchedTableColumnCountOptions;
@@ -4599,6 +4708,9 @@ export type UseConsistentCodeBlockStyleConfiguration =
 export type UseConsistentCodeFenceMarkerConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseConsistentCodeFenceMarkerOptions;
+export type UseConsistentDirectiveQuoteStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentDirectiveQuoteStyleOptions;
 export type UseConsistentEmphasisMarkerConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseConsistentEmphasisMarkerOptions;
@@ -4635,6 +4747,9 @@ export type UseConsistentListItemIndentConfiguration =
 export type UseConsistentListItemSpacingConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseConsistentListItemSpacingOptions;
+export type UseConsistentMdxJsxQuoteStyleConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseConsistentMdxJsxQuoteStyleOptions;
 export type UseConsistentMediaStyleConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseConsistentMediaStyleOptions;
@@ -4680,6 +4795,12 @@ export type UseDescriptiveLinkTextConfiguration =
 export type UseDestructuringConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseDestructuringOptions;
+export type UseDirectiveCollapsedAttributeConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseDirectiveCollapsedAttributeOptions;
+export type UseDirectiveShortcutAttributeConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseDirectiveShortcutAttributeOptions;
 export type UseErrorCauseConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseErrorCauseOptions;
@@ -4689,6 +4810,9 @@ export type UseExhaustiveSwitchCasesConfiguration =
 export type UseExplicitTypeConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseExplicitTypeOptions;
+export type UseFileExtensionConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseFileExtensionOptions;
 export type UseFinalNewlineConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseFinalNewlineOptions;
@@ -4722,6 +4846,12 @@ export type UseLowercaseDefinitionLabelsConfiguration =
 export type UseMaxParamsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseMaxParamsOptions;
+export type UseMdxJsxSelfClosingConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseMdxJsxSelfClosingOptions;
+export type UseMdxJsxShorthandAttributeConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseMdxJsxShorthandAttributeOptions;
 export type UseProperNamesConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseProperNamesOptions;
@@ -4746,6 +4876,12 @@ export type UseSortedClassesConfiguration =
 export type UseSortedDefinitionsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseSortedDefinitionsOptions;
+export type UseSortedDirectiveAttributesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseSortedDirectiveAttributesOptions;
+export type UseSortedMdxJsxAttributesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseSortedMdxJsxAttributesOptions;
 export type UseSpreadConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseSpreadOptions;
@@ -6077,6 +6213,10 @@ export interface RuleWithNoDeprecatedMediaTypeOptions {
 	level: RulePlainConfiguration;
 	options?: NoDeprecatedMediaTypeOptions;
 }
+export interface RuleWithNoDirectiveDuplicateAttributeOptions {
+	level: RulePlainConfiguration;
+	options?: NoDirectiveDuplicateAttributeOptions;
+}
 export interface RuleWithNoDivRegexOptions {
 	fix?: FixKind;
 	level: RulePlainConfiguration;
@@ -6163,6 +6303,26 @@ export interface RuleWithNoExcessiveLinesPerFileOptions {
 	level: RulePlainConfiguration;
 	options?: NoExcessiveLinesPerFileOptions;
 }
+export interface RuleWithNoFileNameArticlesOptions {
+	level: RulePlainConfiguration;
+	options?: NoFileNameArticlesOptions;
+}
+export interface RuleWithNoFileNameConsecutiveDashesOptions {
+	level: RulePlainConfiguration;
+	options?: NoFileNameConsecutiveDashesOptions;
+}
+export interface RuleWithNoFileNameIrregularCharactersOptions {
+	level: RulePlainConfiguration;
+	options?: NoFileNameIrregularCharactersOptions;
+}
+export interface RuleWithNoFileNameMixedCaseOptions {
+	level: RulePlainConfiguration;
+	options?: NoFileNameMixedCaseOptions;
+}
+export interface RuleWithNoFileNameOuterDashesOptions {
+	level: RulePlainConfiguration;
+	options?: NoFileNameOuterDashesOptions;
+}
 export interface RuleWithNoFloatingClassesOptions {
 	level: RulePlainConfiguration;
 	options?: NoFloatingClassesOptions;
@@ -6243,6 +6403,14 @@ export interface RuleWithNoLongHeadingsOptions {
 export interface RuleWithNoLongLinesOptions {
 	level: RulePlainConfiguration;
 	options?: NoLongLinesOptions;
+}
+export interface RuleWithNoMdxJsxDuplicateAttributeOptions {
+	level: RulePlainConfiguration;
+	options?: NoMdxJsxDuplicateAttributeOptions;
+}
+export interface RuleWithNoMdxJsxVoidChildrenOptions {
+	level: RulePlainConfiguration;
+	options?: NoMdxJsxVoidChildrenOptions;
 }
 export interface RuleWithNoMismatchedTableColumnCountOptions {
 	level: RulePlainConfiguration;
@@ -6504,6 +6672,10 @@ export interface RuleWithUseConsistentCodeFenceMarkerOptions {
 	level: RulePlainConfiguration;
 	options?: UseConsistentCodeFenceMarkerOptions;
 }
+export interface RuleWithUseConsistentDirectiveQuoteStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentDirectiveQuoteStyleOptions;
+}
 export interface RuleWithUseConsistentEmphasisMarkerOptions {
 	level: RulePlainConfiguration;
 	options?: UseConsistentEmphasisMarkerOptions;
@@ -6551,6 +6723,10 @@ export interface RuleWithUseConsistentListItemIndentOptions {
 export interface RuleWithUseConsistentListItemSpacingOptions {
 	level: RulePlainConfiguration;
 	options?: UseConsistentListItemSpacingOptions;
+}
+export interface RuleWithUseConsistentMdxJsxQuoteStyleOptions {
+	level: RulePlainConfiguration;
+	options?: UseConsistentMdxJsxQuoteStyleOptions;
 }
 export interface RuleWithUseConsistentMediaStyleOptions {
 	level: RulePlainConfiguration;
@@ -6612,6 +6788,14 @@ export interface RuleWithUseDestructuringOptions {
 	level: RulePlainConfiguration;
 	options?: UseDestructuringOptions;
 }
+export interface RuleWithUseDirectiveCollapsedAttributeOptions {
+	level: RulePlainConfiguration;
+	options?: UseDirectiveCollapsedAttributeOptions;
+}
+export interface RuleWithUseDirectiveShortcutAttributeOptions {
+	level: RulePlainConfiguration;
+	options?: UseDirectiveShortcutAttributeOptions;
+}
 export interface RuleWithUseErrorCauseOptions {
 	level: RulePlainConfiguration;
 	options?: UseErrorCauseOptions;
@@ -6624,6 +6808,10 @@ export interface RuleWithUseExhaustiveSwitchCasesOptions {
 export interface RuleWithUseExplicitTypeOptions {
 	level: RulePlainConfiguration;
 	options?: UseExplicitTypeOptions;
+}
+export interface RuleWithUseFileExtensionOptions {
+	level: RulePlainConfiguration;
+	options?: UseFileExtensionOptions;
 }
 export interface RuleWithUseFinalNewlineOptions {
 	level: RulePlainConfiguration;
@@ -6669,6 +6857,14 @@ export interface RuleWithUseMaxParamsOptions {
 	level: RulePlainConfiguration;
 	options?: UseMaxParamsOptions;
 }
+export interface RuleWithUseMdxJsxSelfClosingOptions {
+	level: RulePlainConfiguration;
+	options?: UseMdxJsxSelfClosingOptions;
+}
+export interface RuleWithUseMdxJsxShorthandAttributeOptions {
+	level: RulePlainConfiguration;
+	options?: UseMdxJsxShorthandAttributeOptions;
+}
 export interface RuleWithUseProperNamesOptions {
 	level: RulePlainConfiguration;
 	options?: UseProperNamesOptions;
@@ -6701,6 +6897,14 @@ export interface RuleWithUseSortedClassesOptions {
 export interface RuleWithUseSortedDefinitionsOptions {
 	level: RulePlainConfiguration;
 	options?: UseSortedDefinitionsOptions;
+}
+export interface RuleWithUseSortedDirectiveAttributesOptions {
+	level: RulePlainConfiguration;
+	options?: UseSortedDirectiveAttributesOptions;
+}
+export interface RuleWithUseSortedMdxJsxAttributesOptions {
+	level: RulePlainConfiguration;
+	options?: UseSortedMdxJsxAttributesOptions;
 }
 export interface RuleWithUseSpreadOptions {
 	fix?: FixKind;
@@ -7918,6 +8122,7 @@ export interface NoDeprecatedMediaTypeOptions {
 	 */
 	allow?: string[];
 }
+export type NoDirectiveDuplicateAttributeOptions = {};
 export type NoDivRegexOptions = {};
 export type NoDuplicateArgumentNamesOptions = {};
 export type NoDuplicateAttributesOptions = {};
@@ -7958,6 +8163,11 @@ export interface NoExcessiveLinesPerFileOptions {
 	 */
 	skipBlankLines?: boolean;
 }
+export type NoFileNameArticlesOptions = {};
+export type NoFileNameConsecutiveDashesOptions = {};
+export type NoFileNameIrregularCharactersOptions = {};
+export type NoFileNameMixedCaseOptions = {};
+export type NoFileNameOuterDashesOptions = {};
 export type NoFloatingClassesOptions = {};
 export type NoFloatingPromisesOptions = {};
 export type NoForInOptions = {};
@@ -8037,6 +8247,8 @@ export interface NoLongLinesOptions {
 	 */
 	maxLength?: number;
 }
+export type NoMdxJsxDuplicateAttributeOptions = {};
+export type NoMdxJsxVoidChildrenOptions = {};
 export type NoMismatchedTableColumnCountOptions = {};
 export type NoMissingAltTextOptions = {};
 export type NoMissingLanguageOptions = {};
@@ -8144,6 +8356,12 @@ export interface UseConsistentCodeFenceMarkerOptions {
 	 */
 	marker?: string;
 }
+export interface UseConsistentDirectiveQuoteStyleOptions {
+	/**
+	 * Expected quote style: `"double"`, `"single"`, or `"consistent"` (default).
+	 */
+	quote?: string;
+}
 export interface UseConsistentEmphasisMarkerOptions {
 	/**
 	 * The marker to use for emphasis (default: "star"). Allowed values: "star", "underscore", or "consistent".
@@ -8201,6 +8419,12 @@ export interface UseConsistentListItemSpacingOptions {
 	 * The style to use for list item spacing (default: "consistent"). Allowed values: "compact", "loose", or "consistent".
 	 */
 	style?: string;
+}
+export interface UseConsistentMdxJsxQuoteStyleOptions {
+	/**
+	 * Expected quote style: `"double"`, `"single"`, or `"consistent"` (default).
+	 */
+	quote?: string;
 }
 export interface UseConsistentMediaStyleOptions {
 	/**
@@ -8274,6 +8498,8 @@ export interface UseDescriptiveLinkTextOptions {
 	minimumLength?: number;
 }
 export type UseDestructuringOptions = {};
+export type UseDirectiveCollapsedAttributeOptions = {};
+export type UseDirectiveShortcutAttributeOptions = {};
 /**
  * Options for the `useErrorCause` rule.
  */
@@ -8285,6 +8511,12 @@ export interface UseErrorCauseOptions {
 }
 export type UseExhaustiveSwitchCasesOptions = {};
 export type UseExplicitTypeOptions = {};
+export interface UseFileExtensionOptions {
+	/**
+	 * Expected file extension (default: `"md"`).
+	 */
+	extension?: string;
+}
 export type UseFinalNewlineOptions = {};
 export type UseFindOptions = {};
 export interface UseFirstLineHeadingOptions {
@@ -8311,6 +8543,8 @@ export interface UseMaxParamsOptions {
 	 */
 	max?: number;
 }
+export type UseMdxJsxSelfClosingOptions = {};
+export type UseMdxJsxShorthandAttributeOptions = {};
 export interface UseProperNamesOptions {
 	/**
 	* A list of proper names with their correct capitalization
@@ -8345,6 +8579,8 @@ export interface UseSortedClassesOptions {
 	functions?: string[];
 }
 export type UseSortedDefinitionsOptions = {};
+export type UseSortedDirectiveAttributesOptions = {};
+export type UseSortedMdxJsxAttributesOptions = {};
 export type UseSpreadOptions = {};
 export interface UseVueConsistentDefinePropsDeclarationOptions {
 	style?: DeclarationStyle;
@@ -9130,6 +9366,7 @@ export type Category =
 	| "lint/nursery/noContinue"
 	| "lint/nursery/noDefinitionSpacingIssues"
 	| "lint/nursery/noDeprecatedImports"
+	| "lint/nursery/noDirectiveDuplicateAttribute"
 	| "lint/nursery/noDeprecatedMediaType"
 	| "lint/nursery/noDivRegex"
 	| "lint/nursery/noDuplicateArgumentNames"
@@ -9152,6 +9389,11 @@ export type Category =
 	| "lint/nursery/noEqualsToNull"
 	| "lint/nursery/noExcessiveClassesPerFile"
 	| "lint/nursery/noExcessiveLinesPerFile"
+	| "lint/nursery/noFileNameArticles"
+	| "lint/nursery/noFileNameConsecutiveDashes"
+	| "lint/nursery/noFileNameIrregularCharacters"
+	| "lint/nursery/noFileNameMixedCase"
+	| "lint/nursery/noFileNameOuterDashes"
 	| "lint/nursery/noFloatingClasses"
 	| "lint/nursery/noFloatingPromises"
 	| "lint/nursery/noForIn"
@@ -9175,6 +9417,8 @@ export type Category =
 	| "lint/nursery/noLongHeadings"
 	| "lint/nursery/noLongLines"
 	| "lint/nursery/noMismatchedTableColumnCount"
+	| "lint/nursery/noMdxJsxDuplicateAttribute"
+	| "lint/nursery/noMdxJsxVoidChildren"
 	| "lint/nursery/noMissingAltText"
 	| "lint/nursery/noMissingGenericFamilyKeyword"
 	| "lint/nursery/noMissingLanguage"
@@ -9241,6 +9485,7 @@ export type Category =
 	| "lint/nursery/useConsistentBlockquoteIndent"
 	| "lint/nursery/useConsistentCodeBlockStyle"
 	| "lint/nursery/useConsistentCodeFenceMarker"
+	| "lint/nursery/useConsistentDirectiveQuoteStyle"
 	| "lint/nursery/useConsistentEmphasisMarker"
 	| "lint/nursery/useConsistentHeadingStyle"
 	| "lint/nursery/useConsistentEnumValueType"
@@ -9255,6 +9500,7 @@ export type Category =
 	| "lint/nursery/useConsistentListItemSpacing"
 	| "lint/nursery/useConsistentMediaStyle"
 	| "lint/nursery/useConsistentMethodSignatures"
+	| "lint/nursery/useConsistentMdxJsxQuoteStyle"
 	| "lint/nursery/useConsistentObjectDefinition"
 	| "lint/nursery/useConsistentOrderedListMarker"
 	| "lint/nursery/useConsistentOrderedListMarkerValue"
@@ -9268,11 +9514,14 @@ export type Category =
 	| "lint/nursery/useDefinitionsAtEnd"
 	| "lint/nursery/useDeprecatedDate"
 	| "lint/nursery/useDescriptiveLinkText"
+	| "lint/nursery/useDirectiveCollapsedAttribute"
+	| "lint/nursery/useDirectiveShortcutAttribute"
 	| "lint/nursery/useDestructuring"
 	| "lint/nursery/useErrorCause"
 	| "lint/nursery/useExhaustiveSwitchCases"
 	| "lint/nursery/useExplicitFunctionReturnType"
 	| "lint/nursery/useExplicitType"
+	| "lint/nursery/useFileExtension"
 	| "lint/nursery/useFinalNewline"
 	| "lint/nursery/useFind"
 	| "lint/nursery/useFirstLineHeading"
@@ -9285,6 +9534,8 @@ export type Category =
 	| "lint/nursery/useLoneExecutableDefinition"
 	| "lint/nursery/useLowercaseDefinitionLabels"
 	| "lint/nursery/useMaxParams"
+	| "lint/nursery/useMdxJsxSelfClosing"
+	| "lint/nursery/useMdxJsxShorthandAttribute"
 	| "lint/nursery/useQwikMethodUsage"
 	| "lint/nursery/useQwikValidLexicalScope"
 	| "lint/nursery/useProperNames"
@@ -9292,6 +9543,8 @@ export type Category =
 	| "lint/nursery/useRequiredHeadings"
 	| "lint/nursery/useRequiredScripts"
 	| "lint/nursery/useSortedClasses"
+	| "lint/nursery/useSortedDirectiveAttributes"
+	| "lint/nursery/useSortedMdxJsxAttributes"
 	| "lint/nursery/useSortedDefinitions"
 	| "lint/nursery/useSpread"
 	| "lint/nursery/useVueConsistentDefinePropsDeclaration"
