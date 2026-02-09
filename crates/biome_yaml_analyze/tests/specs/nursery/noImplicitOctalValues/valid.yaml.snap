@@ -1,0 +1,14 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: valid.yaml
+---
+# Input
+```yaml
+# should not generate diagnostics
+port: 777
+mode: 644
+hex: 0xFF
+zero: 0
+float: 0.5
+
+```

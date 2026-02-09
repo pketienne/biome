@@ -1,0 +1,4 @@
+# should not generate diagnostics
+apple: 1
+mango: 2
+zebra: 3
