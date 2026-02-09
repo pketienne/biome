@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useConsistentCodeBlockStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useConsistentCodeBlockStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Use fenced code blocks instead of indented code blocks.
   
@@ -23,6 +23,14 @@ invalid.md:3:1 lint/style/useConsistentCodeBlockStyle ━━━━━━━━�
     4 │ 
   
   i Fenced code blocks are more readable and support language specification.
+  
+  i Safe fix: Remove indentation from code block.
+  
+    1 1 │   # Code blocks
+    2 2 │   
+    3   │ - ····indented·code·block·here
+      3 │ + indented·code·block·here
+    4 4 │   
   
 
 ```

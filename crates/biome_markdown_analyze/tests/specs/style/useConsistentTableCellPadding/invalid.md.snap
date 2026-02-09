@@ -27,7 +27,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useConsistentTableCellPadding  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected padded cell padding in table row.
   
@@ -40,11 +40,20 @@ invalid.md:3:1 lint/style/useConsistentTableCellPadding ━━━━━━━━
   
   i Use consistent cell padding throughout tables.
   
+  i Safe fix: Normalize table cell padding.
+  
+     1  1 │   # Compact cells should be flagged (default style is "padded")
+     2  2 │   
+     3    │ - |A|B|C|
+        3 │ + |·A·|·B·|·C·|
+     4  4 │   |---|---|---|
+     5  5 │   |1|2|3|
+  
 
 ```
 
 ```
-invalid.md:5:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/style/useConsistentTableCellPadding  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected padded cell padding in table row.
   
@@ -57,11 +66,20 @@ invalid.md:5:1 lint/style/useConsistentTableCellPadding ━━━━━━━━
   
   i Use consistent cell padding throughout tables.
   
+  i Safe fix: Normalize table cell padding.
+  
+     3  3 │   |A|B|C|
+     4  4 │   |---|---|---|
+     5    │ - |1|2|3|
+        5 │ + |·1·|·2·|·3·|
+     6  6 │   
+     7  7 │   # Another compact table
+  
 
 ```
 
 ```
-invalid.md:9:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:9:1 lint/style/useConsistentTableCellPadding  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected padded cell padding in table row.
   
@@ -74,11 +92,20 @@ invalid.md:9:1 lint/style/useConsistentTableCellPadding ━━━━━━━━
   
   i Use consistent cell padding throughout tables.
   
+  i Safe fix: Normalize table cell padding.
+  
+     7  7 │   # Another compact table
+     8  8 │   
+     9    │ - |Name|Age|
+        9 │ + |·Name·|·Age·|
+    10 10 │   |---|---|
+    11 11 │   |Alice|30|
+  
 
 ```
 
 ```
-invalid.md:11:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:11:1 lint/style/useConsistentTableCellPadding  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected padded cell padding in table row.
   
@@ -91,11 +118,20 @@ invalid.md:11:1 lint/style/useConsistentTableCellPadding ━━━━━━━�
   
   i Use consistent cell padding throughout tables.
   
+  i Safe fix: Normalize table cell padding.
+  
+     9  9 │   |Name|Age|
+    10 10 │   |---|---|
+    11    │ - |Alice|30|
+       11 │ + |·Alice·|·30·|
+    12 12 │   |Bob|25|
+    13 13 │   
+  
 
 ```
 
 ```
-invalid.md:12:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:12:1 lint/style/useConsistentTableCellPadding  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected padded cell padding in table row.
   
@@ -108,11 +144,20 @@ invalid.md:12:1 lint/style/useConsistentTableCellPadding ━━━━━━━�
   
   i Use consistent cell padding throughout tables.
   
+  i Safe fix: Normalize table cell padding.
+  
+    10 10 │   |---|---|
+    11 11 │   |Alice|30|
+    12    │ - |Bob|25|
+       12 │ + |·Bob·|·25·|
+    13 13 │   
+    14 14 │   # Mixed: some rows padded, some compact
+  
 
 ```
 
 ```
-invalid.md:18:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:18:1 lint/style/useConsistentTableCellPadding  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected padded cell padding in table row.
   
@@ -123,6 +168,14 @@ invalid.md:18:1 lint/style/useConsistentTableCellPadding ━━━━━━━�
     19 │ 
   
   i Use consistent cell padding throughout tables.
+  
+  i Safe fix: Normalize table cell padding.
+  
+    16 16 │   | X | Y | Z |
+    17 17 │   | --- | --- | --- |
+    18    │ - |a|b|c|
+       18 │ + |·a·|·b·|·c·|
+    19 19 │   
   
 
 ```

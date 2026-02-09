@@ -10,15 +10,19 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:21 lint/correctness/noDirectiveDuplicateAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:20 lint/correctness/noDirectiveDuplicateAttribute  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Duplicate attribute "src" on directive.
   
   > 1 │ ::video{src="a.mp4" src="b.mp4"}
-      │                     ^^^^^^^^^^^
+      │                    ^^^^^^^^^^^^
     2 │ 
   
   i Remove the duplicate attribute.
   
+  i Unsafe fix: Remove the duplicate attribute.
+  
+    1 │ ::video{src="a.mp4"·src="b.mp4"}
+      │                    ------------ 
 
 ```

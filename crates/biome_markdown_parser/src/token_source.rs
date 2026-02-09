@@ -83,6 +83,19 @@ impl<'source> MarkdownTokenSource<'source> {
         })
     }
 
+    /// Returns true if there are 2+ newlines in the leading trivia of the current token,
+    /// indicating a blank line separates the current token from the previous one.
+    pub fn has_preceding_blank_line(&self) -> bool {
+        let newline_count = self
+            .trivia_list
+            .iter()
+            .rev()
+            .take_while(|item| !item.trailing())
+            .filter(|item| item.kind().is_newline())
+            .count();
+        newline_count >= 2
+    }
+
     #[expect(dead_code)]
     pub fn re_lex(&mut self, mode: MarkdownReLexContext) -> MarkdownSyntaxKind {
         self.lexer.re_lex(mode)

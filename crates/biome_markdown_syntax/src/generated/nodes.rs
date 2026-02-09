@@ -37,18 +37,14 @@ impl MdBullet {
     pub fn as_fields(&self) -> MdBulletFields {
         MdBulletFields {
             bullet: self.bullet(),
-            space_token: self.space_token(),
             content: self.content(),
         }
     }
     pub fn bullet(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
-    pub fn space_token(&self) -> SyntaxResult<SyntaxToken> {
-        support::required_token(&self.syntax, 1usize)
-    }
     pub fn content(&self) -> MdInlineItemList {
-        support::list(&self.syntax, 2usize)
+        support::list(&self.syntax, 1usize)
     }
 }
 impl Serialize for MdBullet {
@@ -62,7 +58,6 @@ impl Serialize for MdBullet {
 #[derive(Serialize)]
 pub struct MdBulletFields {
     pub bullet: SyntaxResult<SyntaxToken>,
-    pub space_token: SyntaxResult<SyntaxToken>,
     pub content: MdInlineItemList,
 }
 #[derive(Clone, PartialEq, Eq, Hash)]
@@ -561,31 +556,23 @@ impl MdInlineImage {
     }
     pub fn as_fields(&self) -> MdInlineImageFields {
         MdInlineImageFields {
-            l_brack_token: self.l_brack_token(),
             excl_token: self.excl_token(),
             alt: self.alt(),
             source: self.source(),
-            r_brack_token: self.r_brack_token(),
             link: self.link(),
         }
     }
-    pub fn l_brack_token(&self) -> SyntaxResult<SyntaxToken> {
+    pub fn excl_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
-    pub fn excl_token(&self) -> SyntaxResult<SyntaxToken> {
-        support::required_token(&self.syntax, 1usize)
-    }
     pub fn alt(&self) -> SyntaxResult<MdInlineImageAlt> {
-        support::required_node(&self.syntax, 2usize)
+        support::required_node(&self.syntax, 1usize)
     }
     pub fn source(&self) -> SyntaxResult<MdInlineImageSource> {
-        support::required_node(&self.syntax, 3usize)
-    }
-    pub fn r_brack_token(&self) -> SyntaxResult<SyntaxToken> {
-        support::required_token(&self.syntax, 4usize)
+        support::required_node(&self.syntax, 2usize)
     }
     pub fn link(&self) -> Option<MdInlineImageLink> {
-        support::node(&self.syntax, 5usize)
+        support::node(&self.syntax, 3usize)
     }
 }
 impl Serialize for MdInlineImage {
@@ -598,11 +585,9 @@ impl Serialize for MdInlineImage {
 }
 #[derive(Serialize)]
 pub struct MdInlineImageFields {
-    pub l_brack_token: SyntaxResult<SyntaxToken>,
     pub excl_token: SyntaxResult<SyntaxToken>,
     pub alt: SyntaxResult<MdInlineImageAlt>,
     pub source: SyntaxResult<MdInlineImageSource>,
-    pub r_brack_token: SyntaxResult<SyntaxToken>,
     pub link: Option<MdInlineImageLink>,
 }
 #[derive(Clone, PartialEq, Eq, Hash)]
@@ -891,6 +876,46 @@ pub struct MdLinkBlockFields {
     pub title: Option<MdTextual>,
 }
 #[derive(Clone, PartialEq, Eq, Hash)]
+pub struct MdOrderBullet {
+    pub(crate) syntax: SyntaxNode,
+}
+impl MdOrderBullet {
+    #[doc = r" Create an AstNode from a SyntaxNode without checking its kind"]
+    #[doc = r""]
+    #[doc = r" # Safety"]
+    #[doc = r" This function must be guarded with a call to [AstNode::can_cast]"]
+    #[doc = r" or a match on [SyntaxNode::kind]"]
+    #[inline]
+    pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
+        Self { syntax }
+    }
+    pub fn as_fields(&self) -> MdOrderBulletFields {
+        MdOrderBulletFields {
+            marker_token: self.marker_token(),
+            content: self.content(),
+        }
+    }
+    pub fn marker_token(&self) -> SyntaxResult<SyntaxToken> {
+        support::required_token(&self.syntax, 0usize)
+    }
+    pub fn content(&self) -> MdInlineItemList {
+        support::list(&self.syntax, 1usize)
+    }
+}
+impl Serialize for MdOrderBullet {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        self.as_fields().serialize(serializer)
+    }
+}
+#[derive(Serialize)]
+pub struct MdOrderBulletFields {
+    pub marker_token: SyntaxResult<SyntaxToken>,
+    pub content: MdInlineItemList,
+}
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub struct MdOrderListItem {
     pub(crate) syntax: SyntaxNode,
 }
@@ -906,10 +931,10 @@ impl MdOrderListItem {
     }
     pub fn as_fields(&self) -> MdOrderListItemFields {
         MdOrderListItemFields {
-            md_bullet_list: self.md_bullet_list(),
+            md_order_list: self.md_order_list(),
         }
     }
-    pub fn md_bullet_list(&self) -> MdBulletList {
+    pub fn md_order_list(&self) -> MdOrderList {
         support::list(&self.syntax, 0usize)
     }
 }
@@ -923,7 +948,7 @@ impl Serialize for MdOrderListItem {
 }
 #[derive(Serialize)]
 pub struct MdOrderListItemFields {
-    pub md_bullet_list: MdBulletList,
+    pub md_order_list: MdOrderList,
 }
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct MdParagraph {
@@ -1016,11 +1041,15 @@ impl MdSetextHeader {
     }
     pub fn as_fields(&self) -> MdSetextHeaderFields {
         MdSetextHeaderFields {
-            md_paragraph: self.md_paragraph(),
+            content: self.content(),
+            underline: self.underline(),
         }
     }
-    pub fn md_paragraph(&self) -> SyntaxResult<MdParagraph> {
+    pub fn content(&self) -> SyntaxResult<MdParagraph> {
         support::required_node(&self.syntax, 0usize)
+    }
+    pub fn underline(&self) -> SyntaxResult<MdTextual> {
+        support::required_node(&self.syntax, 1usize)
     }
 }
 impl Serialize for MdSetextHeader {
@@ -1033,7 +1062,8 @@ impl Serialize for MdSetextHeader {
 }
 #[derive(Serialize)]
 pub struct MdSetextHeaderFields {
-    pub md_paragraph: SyntaxResult<MdParagraph>,
+    pub content: SyntaxResult<MdParagraph>,
+    pub underline: SyntaxResult<MdTextual>,
 }
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct MdSoftBreak {
@@ -1355,10 +1385,6 @@ impl std::fmt::Debug for MdBullet {
             DEPTH.set(current_depth + 1);
             f.debug_struct("MdBullet")
                 .field("bullet", &support::DebugSyntaxResult(self.bullet()))
-                .field(
-                    "space_token",
-                    &support::DebugSyntaxResult(self.space_token()),
-                )
                 .field("content", &self.content())
                 .finish()
         } else {
@@ -2006,17 +2032,9 @@ impl std::fmt::Debug for MdInlineImage {
         let result = if current_depth < 16 {
             DEPTH.set(current_depth + 1);
             f.debug_struct("MdInlineImage")
-                .field(
-                    "l_brack_token",
-                    &support::DebugSyntaxResult(self.l_brack_token()),
-                )
                 .field("excl_token", &support::DebugSyntaxResult(self.excl_token()))
                 .field("alt", &support::DebugSyntaxResult(self.alt()))
                 .field("source", &support::DebugSyntaxResult(self.source()))
-                .field(
-                    "r_brack_token",
-                    &support::DebugSyntaxResult(self.r_brack_token()),
-                )
                 .field("link", &support::DebugOptionalElement(self.link()))
                 .finish()
         } else {
@@ -2363,6 +2381,57 @@ impl From<MdLinkBlock> for SyntaxElement {
         n.syntax.into()
     }
 }
+impl AstNode for MdOrderBullet {
+    type Language = Language;
+    const KIND_SET: SyntaxKindSet<Language> =
+        SyntaxKindSet::from_raw(RawSyntaxKind(MD_ORDER_BULLET as u16));
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == MD_ORDER_BULLET
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        if Self::can_cast(syntax.kind()) {
+            Some(Self { syntax })
+        } else {
+            None
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.syntax
+    }
+    fn into_syntax(self) -> SyntaxNode {
+        self.syntax
+    }
+}
+impl std::fmt::Debug for MdOrderBullet {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        thread_local! { static DEPTH : std :: cell :: Cell < u8 > = const { std :: cell :: Cell :: new (0) } };
+        let current_depth = DEPTH.get();
+        let result = if current_depth < 16 {
+            DEPTH.set(current_depth + 1);
+            f.debug_struct("MdOrderBullet")
+                .field(
+                    "marker_token",
+                    &support::DebugSyntaxResult(self.marker_token()),
+                )
+                .field("content", &self.content())
+                .finish()
+        } else {
+            f.debug_struct("MdOrderBullet").finish()
+        };
+        DEPTH.set(current_depth);
+        result
+    }
+}
+impl From<MdOrderBullet> for SyntaxNode {
+    fn from(n: MdOrderBullet) -> Self {
+        n.syntax
+    }
+}
+impl From<MdOrderBullet> for SyntaxElement {
+    fn from(n: MdOrderBullet) -> Self {
+        n.syntax.into()
+    }
+}
 impl AstNode for MdOrderListItem {
     type Language = Language;
     const KIND_SET: SyntaxKindSet<Language> =
@@ -2391,7 +2460,7 @@ impl std::fmt::Debug for MdOrderListItem {
         let result = if current_depth < 16 {
             DEPTH.set(current_depth + 1);
             f.debug_struct("MdOrderListItem")
-                .field("md_bullet_list", &self.md_bullet_list())
+                .field("md_order_list", &self.md_order_list())
                 .finish()
         } else {
             f.debug_struct("MdOrderListItem").finish()
@@ -2536,10 +2605,8 @@ impl std::fmt::Debug for MdSetextHeader {
         let result = if current_depth < 16 {
             DEPTH.set(current_depth + 1);
             f.debug_struct("MdSetextHeader")
-                .field(
-                    "md_paragraph",
-                    &support::DebugSyntaxResult(self.md_paragraph()),
-                )
+                .field("content", &support::DebugSyntaxResult(self.content()))
+                .field("underline", &support::DebugSyntaxResult(self.underline()))
                 .finish()
         } else {
             f.debug_struct("MdSetextHeader").finish()
@@ -3293,6 +3360,11 @@ impl std::fmt::Display for MdLinkBlock {
         std::fmt::Display::fmt(self.syntax(), f)
     }
 }
+impl std::fmt::Display for MdOrderBullet {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(self.syntax(), f)
+    }
+}
 impl std::fmt::Display for MdOrderListItem {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(self.syntax(), f)
@@ -3931,7 +4003,7 @@ impl Serialize for MdOrderList {
 }
 impl AstNodeList for MdOrderList {
     type Language = Language;
-    type Node = AnyCodeBlock;
+    type Node = MdOrderBullet;
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
@@ -3946,15 +4018,15 @@ impl Debug for MdOrderList {
     }
 }
 impl IntoIterator for &MdOrderList {
-    type Item = AnyCodeBlock;
-    type IntoIter = AstNodeListIterator<Language, AnyCodeBlock>;
+    type Item = MdOrderBullet;
+    type IntoIter = AstNodeListIterator<Language, MdOrderBullet>;
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for MdOrderList {
-    type Item = AnyCodeBlock;
-    type IntoIter = AstNodeListIterator<Language, AnyCodeBlock>;
+    type Item = MdOrderBullet;
+    type IntoIter = AstNodeListIterator<Language, MdOrderBullet>;
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }

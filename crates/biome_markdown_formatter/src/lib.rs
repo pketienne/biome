@@ -435,4 +435,153 @@ mod tests {
         let result = formatted.print().unwrap();
         assert_eq!(result.as_code(), "### Heading ###\n");
     }
+
+    #[test]
+    fn preserves_backtick_code_fence() {
+        let src = "```js\nconst x = 1;\n```\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), src);
+    }
+
+    #[test]
+    fn normalizes_tilde_to_backtick() {
+        let src = "~~~python\nprint(\"hello\")\n~~~\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "```python\nprint(\"hello\")\n```\n");
+    }
+
+    #[test]
+    fn normalizes_long_tilde_fence() {
+        let src = "~~~~\ncontent\n~~~~\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "````\ncontent\n````\n");
+    }
+
+    #[test]
+    fn preserves_code_fence_content() {
+        let src = "```\nline 1\nline 2\n  indented\n```\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), src);
+    }
+
+    #[test]
+    fn strips_trailing_whitespace_from_paragraph() {
+        let src = "Hello world   \n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "Hello world\n");
+    }
+
+    #[test]
+    fn strips_trailing_tab_from_paragraph() {
+        let src = "Hello world\t\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "Hello world\n");
+    }
+
+    #[test]
+    fn hard_break_trailing_spaces_stripped_by_parser() {
+        // The parser treats trailing spaces as trivia, so they are not
+        // present in text_trimmed(). Each line of a paragraph is parsed
+        // as a separate paragraph node. Hard break preservation would
+        // require parser-level changes.
+        let src = "First line  \nSecond line\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Currently trailing spaces are trivia and get stripped
+        assert_eq!(result.as_code(), "First line\nSecond line\n");
+    }
+
+    #[test]
+    fn many_trailing_spaces_stripped_by_parser() {
+        // More than 2 trailing spaces are also trivia in the parser
+        let src = "First line     \nSecond line\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "First line\nSecond line\n");
+    }
+
+    #[test]
+    fn strips_single_trailing_space() {
+        // One trailing space is NOT a hard break
+        let src = "Hello \n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "Hello\n");
+    }
+
+    #[test]
+    fn paragraph_no_trailing_whitespace_unchanged() {
+        let src = "Hello world\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), src);
+    }
+
+    #[test]
+    fn setext_h1_converts_to_atx() {
+        let src = "Heading\n===\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "# Heading\n");
+    }
+
+    #[test]
+    fn setext_h2_converts_to_atx() {
+        let src = "Heading\n---\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "## Heading\n");
+    }
+
+    #[test]
+    fn setext_long_underline_converts() {
+        let src = "My Heading\n==========\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "# My Heading\n");
+    }
+
+    #[test]
+    fn setext_not_detected_after_blank_line() {
+        // Blank line between paragraph and --- means it's NOT a setext header
+        let src = "Paragraph\n\n---\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Should remain paragraph + thematic break, not converted to heading
+        assert_eq!(result.as_code(), "Paragraph\n\n---\n");
+    }
 }

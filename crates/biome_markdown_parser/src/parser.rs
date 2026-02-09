@@ -31,6 +31,10 @@ impl<'source> MarkdownParser<'source> {
         self.source.before_whitespace_count()
     }
 
+    pub fn has_preceding_blank_line(&self) -> bool {
+        self.source.has_preceding_blank_line()
+    }
+
     pub fn rewind(&mut self, checkpoint: MarkdownParserCheckpoint) {
         let MarkdownParserCheckpoint { context, source } = checkpoint;
 

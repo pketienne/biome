@@ -20,6 +20,7 @@ pub(crate) mod inline_image_source;
 pub(crate) mod inline_italic;
 pub(crate) mod inline_link;
 pub(crate) mod link_block;
+pub(crate) mod order_bullet;
 pub(crate) mod order_list_item;
 pub(crate) mod paragraph;
 pub(crate) mod quote;

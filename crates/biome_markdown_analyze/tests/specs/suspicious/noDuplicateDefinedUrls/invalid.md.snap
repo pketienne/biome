@@ -13,7 +13,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/suspicious/noDuplicateDefinedUrls ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/suspicious/noDuplicateDefinedUrls  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Multiple definitions point to the same URL: "https://example.com".
   
@@ -24,5 +24,9 @@ invalid.md:4:1 lint/suspicious/noDuplicateDefinedUrls ━━━━━━━━�
   
   i Consider using a single definition to avoid duplication.
   
+  i Unsafe fix: Remove the duplicate URL definition.
+  
+    4 │ [bar]:·https://example.com
+      │ --------------------------
 
 ```

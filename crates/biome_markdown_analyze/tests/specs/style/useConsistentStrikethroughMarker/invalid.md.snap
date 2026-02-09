@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useConsistentStrikethroughMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useConsistentStrikethroughMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected double-tilde strikethrough marker but found tilde.
   
@@ -24,11 +24,15 @@ invalid.md:3:1 lint/style/useConsistentStrikethroughMarker ━━━━━━━
   
   i Use a consistent strikethrough marker style.
   
+  i Safe fix: Use the consistent strikethrough marker.
+  
+    3 │ ~~single·tilde~
+      │  +             
 
 ```
 
 ```
-invalid.md:3:14 lint/style/useConsistentStrikethroughMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:14 lint/style/useConsistentStrikethroughMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected double-tilde strikethrough marker but found tilde.
   
@@ -40,5 +44,9 @@ invalid.md:3:14 lint/style/useConsistentStrikethroughMarker ━━━━━━�
   
   i Use a consistent strikethrough marker style.
   
+  i Safe fix: Use the consistent strikethrough marker.
+  
+    3 │ ~single·tilde~~
+      │               +
 
 ```

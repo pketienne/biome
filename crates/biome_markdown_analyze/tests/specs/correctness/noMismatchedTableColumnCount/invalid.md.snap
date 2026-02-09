@@ -1,6 +1,5 @@
 ---
 source: crates/biome_markdown_analyze/tests/spec_tests.rs
-assertion_line: 70
 expression: invalid.md
 ---
 # Input
@@ -16,7 +15,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:5:1 lint/correctness/noMismatchedTableColumnCount ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/correctness/noMismatchedTableColumnCount  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × Expected 3 columns but found 2.
   
@@ -29,11 +28,20 @@ invalid.md:5:1 lint/correctness/noMismatchedTableColumnCount ━━━━━━�
   
   i All rows in a table should have the same number of cells.
   
+  i Safe fix: Adjust the number of table cells.
+  
+    3 3 │   | A | B | C |
+    4 4 │   | --- | --- | --- |
+    5   │ - |·1·|·2·|
+      5 │ + |·1·|·2·|··|
+    6 6 │   | 4 | 5 | 6 | 7 |
+    7 7 │   
+  
 
 ```
 
 ```
-invalid.md:6:1 lint/correctness/noMismatchedTableColumnCount ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:6:1 lint/correctness/noMismatchedTableColumnCount  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × Expected 3 columns but found 4.
   
@@ -44,6 +52,14 @@ invalid.md:6:1 lint/correctness/noMismatchedTableColumnCount ━━━━━━�
     7 │ 
   
   i All rows in a table should have the same number of cells.
+  
+  i Safe fix: Adjust the number of table cells.
+  
+    4 4 │   | --- | --- | --- |
+    5 5 │   | 1 | 2 |
+    6   │ - |·4·|·5·|·6·|·7·|
+      6 │ + |·4·|·5·|·6·|
+    7 7 │   
   
 
 ```

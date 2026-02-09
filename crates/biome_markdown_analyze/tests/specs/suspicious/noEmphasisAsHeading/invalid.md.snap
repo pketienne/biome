@@ -18,7 +18,7 @@ More text here.
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/suspicious/noEmphasisAsHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/suspicious/noEmphasisAsHeading  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Emphasis used as a heading substitute.
   
@@ -31,11 +31,20 @@ invalid.md:3:1 lint/suspicious/noEmphasisAsHeading ━━━━━━━━━�
   
   i Use a proper heading (e.g. ## Heading) instead of bold/italic text.
   
+  i Safe fix: Convert to ATX heading.
+  
+     1  1 │   # Emphasis as heading
+     2  2 │   
+     3    │ - **This·looks·like·a·heading**
+        3 │ + ##·This·looks·like·a·heading
+     4  4 │   
+     5  5 │   Some paragraph text.
+  
 
 ```
 
 ```
-invalid.md:7:1 lint/suspicious/noEmphasisAsHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:7:1 lint/suspicious/noEmphasisAsHeading  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Emphasis used as a heading substitute.
   
@@ -47,6 +56,15 @@ invalid.md:7:1 lint/suspicious/noEmphasisAsHeading ━━━━━━━━━�
     9 │ More text here.
   
   i Use a proper heading (e.g. ## Heading) instead of bold/italic text.
+  
+  i Safe fix: Convert to ATX heading.
+  
+     5  5 │   Some paragraph text.
+     6  6 │   
+     7    │ - __Another·emphasis·heading__
+        7 │ + ##·Another·emphasis·heading
+     8  8 │   
+     9  9 │   More text here.
   
 
 ```

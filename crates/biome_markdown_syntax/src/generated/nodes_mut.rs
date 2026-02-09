@@ -10,16 +10,10 @@ impl MdBullet {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
-    pub fn with_space_token(self, element: SyntaxToken) -> Self {
-        Self::unwrap_cast(
-            self.syntax
-                .splice_slots(1usize..=1usize, once(Some(element.into()))),
-        )
-    }
     pub fn with_content(self, element: MdInlineItemList) -> Self {
         Self::unwrap_cast(
             self.syntax
-                .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
+                .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
 }
@@ -192,39 +186,27 @@ impl MdInlineEmphasis {
     }
 }
 impl MdInlineImage {
-    pub fn with_l_brack_token(self, element: SyntaxToken) -> Self {
+    pub fn with_excl_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
-    pub fn with_excl_token(self, element: SyntaxToken) -> Self {
-        Self::unwrap_cast(
-            self.syntax
-                .splice_slots(1usize..=1usize, once(Some(element.into()))),
-        )
-    }
     pub fn with_alt(self, element: MdInlineImageAlt) -> Self {
         Self::unwrap_cast(
             self.syntax
-                .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
+                .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
     pub fn with_source(self, element: MdInlineImageSource) -> Self {
         Self::unwrap_cast(
             self.syntax
-                .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
-        )
-    }
-    pub fn with_r_brack_token(self, element: SyntaxToken) -> Self {
-        Self::unwrap_cast(
-            self.syntax
-                .splice_slots(4usize..=4usize, once(Some(element.into()))),
+                .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
     pub fn with_link(self, element: Option<MdInlineImageLink>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
-            5usize..=5usize,
+            3usize..=3usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
@@ -367,8 +349,22 @@ impl MdLinkBlock {
         ))
     }
 }
+impl MdOrderBullet {
+    pub fn with_marker_token(self, element: SyntaxToken) -> Self {
+        Self::unwrap_cast(
+            self.syntax
+                .splice_slots(0usize..=0usize, once(Some(element.into()))),
+        )
+    }
+    pub fn with_content(self, element: MdInlineItemList) -> Self {
+        Self::unwrap_cast(
+            self.syntax
+                .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
+        )
+    }
+}
 impl MdOrderListItem {
-    pub fn with_md_bullet_list(self, element: MdBulletList) -> Self {
+    pub fn with_md_order_list(self, element: MdOrderList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
@@ -398,10 +394,16 @@ impl MdQuote {
     }
 }
 impl MdSetextHeader {
-    pub fn with_md_paragraph(self, element: MdParagraph) -> Self {
+    pub fn with_content(self, element: MdParagraph) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
+        )
+    }
+    pub fn with_underline(self, element: MdTextual) -> Self {
+        Self::unwrap_cast(
+            self.syntax
+                .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
 }

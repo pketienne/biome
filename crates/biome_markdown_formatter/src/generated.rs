@@ -753,6 +753,44 @@ impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdLinkBlock {
         )
     }
 }
+impl FormatRule<biome_markdown_syntax::MdOrderBullet>
+    for crate::md::auxiliary::order_bullet::FormatMdOrderBullet
+{
+    type Context = MarkdownFormatContext;
+    #[inline(always)]
+    fn fmt(
+        &self,
+        node: &biome_markdown_syntax::MdOrderBullet,
+        f: &mut MarkdownFormatter,
+    ) -> FormatResult<()> {
+        FormatNodeRule::<biome_markdown_syntax::MdOrderBullet>::fmt(self, node, f)
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdOrderBullet {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdOrderBullet,
+        crate::md::auxiliary::order_bullet::FormatMdOrderBullet,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::auxiliary::order_bullet::FormatMdOrderBullet::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdOrderBullet {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdOrderBullet,
+        crate::md::auxiliary::order_bullet::FormatMdOrderBullet,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::auxiliary::order_bullet::FormatMdOrderBullet::default(),
+        )
+    }
+}
 impl FormatRule<biome_markdown_syntax::MdOrderListItem>
     for crate::md::auxiliary::order_list_item::FormatMdOrderListItem
 {

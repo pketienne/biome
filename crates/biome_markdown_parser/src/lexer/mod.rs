@@ -183,6 +183,7 @@ impl<'src> MarkdownLexer<'src> {
             MUL | MIN | IDT => self.consume_thematic_break_literal(),
             _ => match current {
                 b'`' | b'~' => self.consume_fence_or_textual(),
+                b'=' => self.consume_equals_or_textual(),
                 _ => self.consume_textual(),
             },
         }
@@ -272,17 +273,25 @@ impl<'src> MarkdownLexer<'src> {
         TAB
     }
 
-    /// Combine 3+ consecutive backticks or tildes into a single token.
-    /// If fewer than 3, revert and consume a single character.
+    /// Combine consecutive backticks or tildes into a single token.
+    /// This handles both fenced code block delimiters (3+) and inline code delimiters (1-2).
     fn consume_fence_or_textual(&mut self) -> MarkdownSyntaxKind {
         let fence_char = self.current_byte().unwrap();
+        while matches!(self.current_byte(), Some(ch) if ch == fence_char) {
+            self.advance(1);
+        }
+        MD_TEXTUAL_LITERAL
+    }
+
+    /// Combine consecutive `=` characters into a single token for setext header underlines.
+    fn consume_equals_or_textual(&mut self) -> MarkdownSyntaxKind {
         let saved_position = self.position;
         let mut count = 0;
-        while matches!(self.current_byte(), Some(ch) if ch == fence_char) {
+        while matches!(self.current_byte(), Some(b'=')) {
             self.advance(1);
             count += 1;
         }
-        if count >= 3 {
+        if count >= 1 {
             MD_TEXTUAL_LITERAL
         } else {
             self.position = saved_position;
@@ -317,8 +326,20 @@ impl<'src> MarkdownLexer<'src> {
         if matches!(self.current_byte(), Some(b'\n' | b'\r') | None) && count >= 3 {
             return MD_THEMATIC_BREAK_LITERAL;
         }
-        // Not a thematic break: revert and consume as a single textual character
+        // Not a thematic break: revert
         self.position = saved_position;
+
+        // For * and _: combine up to 2 consecutive same characters into a single token.
+        // This allows the parser to detect ** and __ for bold emphasis.
+        if start_char == b'*' || start_char == b'_' {
+            self.advance(1);
+            if matches!(self.current_byte(), Some(ch) if ch == start_char) {
+                self.advance(1);
+            }
+            return MD_TEXTUAL_LITERAL;
+        }
+
+        // For -: consume as a single textual character
         self.consume_textual()
     }
 

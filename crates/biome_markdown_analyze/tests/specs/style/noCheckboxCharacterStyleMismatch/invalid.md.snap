@@ -14,7 +14,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/noCheckboxCharacterStyleMismatch ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/noCheckboxCharacterStyleMismatch  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected checkbox character "x" but found "X".
   
@@ -26,6 +26,15 @@ invalid.md:3:1 lint/style/noCheckboxCharacterStyleMismatch ━━━━━━━
     5 │ + [ ] not done
   
   i Use a consistent checkbox character style.
+  
+  i Safe fix: Normalize the checkbox character.
+  
+    1 1 │   # Mismatched checkbox characters
+    2 2 │   
+    3   │ - +·[X]·done·with·uppercase
+      3 │ + +·[x]·done·with·uppercase
+    4 4 │   + [x] done with lowercase
+    5 5 │   + [ ] not done
   
 
 ```

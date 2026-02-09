@@ -14,7 +14,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:5:1 lint/suspicious/noMultipleTopLevelHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/suspicious/noMultipleTopLevelHeadings  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Multiple top-level headings found.
   
@@ -25,6 +25,14 @@ invalid.md:5:1 lint/suspicious/noMultipleTopLevelHeadings ━━━━━━━�
     6 │ 
   
   i A document should contain only one top-level heading.
+  
+  i Unsafe fix: Demote to h2 heading.
+  
+    3 3 │   ## Section
+    4 4 │   
+    5   │ - #·Second·Title
+      5 │ + ##·Second·Title
+    6 6 │   
   
 
 ```

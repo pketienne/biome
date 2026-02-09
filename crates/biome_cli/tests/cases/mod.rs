@@ -13,6 +13,7 @@ mod format_with_errors;
 mod graphql;
 mod handle_astro_files;
 mod handle_css_files;
+mod handle_markdown_files;
 mod handle_svelte_files;
 mod handle_vue_files;
 mod html;

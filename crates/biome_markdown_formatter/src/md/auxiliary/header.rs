@@ -1,7 +1,6 @@
 use crate::prelude::*;
 use biome_formatter::write;
 use biome_markdown_syntax::MdHeader;
-use biome_rowan::AstNode;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatMdHeader;
 impl FormatNodeRule<MdHeader> for FormatMdHeader {
@@ -12,9 +11,9 @@ impl FormatNodeRule<MdHeader> for FormatMdHeader {
         if node.content().is_some() {
             write!(f, [space()])?;
         }
-        // Format content verbatim if present
+        // Format content using the paragraph formatter (handles trailing whitespace, newline normalization)
         if let Some(content) = node.content() {
-            write!(f, [format_verbatim_node(content.syntax())])?;
+            write!(f, [content.format()])?;
         }
         // Skip trailing hashes (node.after()) — remove them
         Ok(())

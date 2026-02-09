@@ -35,11 +35,3 @@ Line width: 80
 
 ### Already correct
 ```
-
-
-
-## Unimplemented nodes/tokens
-
-" Hell" => 1..6
-" Titl" => 11..16
-" Already correc" => 22..37

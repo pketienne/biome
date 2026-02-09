@@ -18,11 +18,14 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:6:1 lint/style/useConsistentListItemSpacing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:40 lint/style/useConsistentListItemSpacing  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected loose spacing but found compact.
   
-    5 │ + second item with blank line before it
+    3 │ + first item
+    4 │ 
+  > 5 │ + second item with blank line before it
+      │                                        
   > 6 │ + third item without blank line
       │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     7 │ + fourth item without blank line
@@ -30,22 +33,43 @@ invalid.md:6:1 lint/style/useConsistentListItemSpacing ━━━━━━━━�
   
   i Use consistent spacing between list items.
   
+  i Safe fix: Normalize list item spacing.
+  
+     4  4 │   
+     5  5 │   + second item with blank line before it
+     6    │ - +·third·item·without·blank·line
+        6 │ + 
+        7 │ + +·third·item·without·blank·line
+     7  8 │   + fourth item without blank line
+     8  9 │   
+  
 
 ```
 
 ```
-invalid.md:7:1 lint/style/useConsistentListItemSpacing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:6:32 lint/style/useConsistentListItemSpacing  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected loose spacing but found compact.
   
     5 │ + second item with blank line before it
-    6 │ + third item without blank line
+  > 6 │ + third item without blank line
+      │                                
   > 7 │ + fourth item without blank line
       │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     8 │ 
     9 │ + fifth item with blank line before it
   
   i Use consistent spacing between list items.
+  
+  i Safe fix: Normalize list item spacing.
+  
+     5  5 │   + second item with blank line before it
+     6  6 │   + third item without blank line
+     7    │ - +·fourth·item·without·blank·line
+        7 │ + 
+        8 │ + +·fourth·item·without·blank·line
+     8  9 │   
+     9 10 │   + fifth item with blank line before it
   
 
 ```

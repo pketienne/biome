@@ -17,17 +17,10 @@ impl SyntaxFactory for MarkdownSyntaxFactory {
             MD_BOGUS => RawSyntaxNode::new(kind, children.into_iter().map(Some)),
             MD_BULLET => {
                 let mut elements = (&children).into_iter();
-                let mut slots: RawNodeSlots<3usize> = RawNodeSlots::default();
+                let mut slots: RawNodeSlots<2usize> = RawNodeSlots::default();
                 let mut current_element = elements.next();
                 if let Some(element) = &current_element
-                    && matches!(element.kind(), T ! [-] | T ! [*])
-                {
-                    slots.mark_present();
-                    current_element = elements.next();
-                }
-                slots.next_slot();
-                if let Some(element) = &current_element
-                    && element.kind() == MD_TEXTUAL_LITERAL
+                    && matches!(element.kind(), T ! [-] | T ! [*] | T ! [+])
                 {
                     slots.mark_present();
                     current_element = elements.next();
@@ -359,15 +352,8 @@ impl SyntaxFactory for MarkdownSyntaxFactory {
             }
             MD_INLINE_IMAGE => {
                 let mut elements = (&children).into_iter();
-                let mut slots: RawNodeSlots<6usize> = RawNodeSlots::default();
+                let mut slots: RawNodeSlots<4usize> = RawNodeSlots::default();
                 let mut current_element = elements.next();
-                if let Some(element) = &current_element
-                    && element.kind() == T!['[']
-                {
-                    slots.mark_present();
-                    current_element = elements.next();
-                }
-                slots.next_slot();
                 if let Some(element) = &current_element
                     && element.kind() == T![!]
                 {
@@ -384,13 +370,6 @@ impl SyntaxFactory for MarkdownSyntaxFactory {
                 slots.next_slot();
                 if let Some(element) = &current_element
                     && MdInlineImageSource::can_cast(element.kind())
-                {
-                    slots.mark_present();
-                    current_element = elements.next();
-                }
-                slots.next_slot();
-                if let Some(element) = &current_element
-                    && element.kind() == T![']']
                 {
                     slots.mark_present();
                     current_element = elements.next();
@@ -630,12 +609,38 @@ impl SyntaxFactory for MarkdownSyntaxFactory {
                 }
                 slots.into_node(MD_LINK_BLOCK, children)
             }
+            MD_ORDER_BULLET => {
+                let mut elements = (&children).into_iter();
+                let mut slots: RawNodeSlots<2usize> = RawNodeSlots::default();
+                let mut current_element = elements.next();
+                if let Some(element) = &current_element
+                    && element.kind() == MD_TEXTUAL_LITERAL
+                {
+                    slots.mark_present();
+                    current_element = elements.next();
+                }
+                slots.next_slot();
+                if let Some(element) = &current_element
+                    && MdInlineItemList::can_cast(element.kind())
+                {
+                    slots.mark_present();
+                    current_element = elements.next();
+                }
+                slots.next_slot();
+                if current_element.is_some() {
+                    return RawSyntaxNode::new(
+                        MD_ORDER_BULLET.to_bogus(),
+                        children.into_iter().map(Some),
+                    );
+                }
+                slots.into_node(MD_ORDER_BULLET, children)
+            }
             MD_ORDER_LIST_ITEM => {
                 let mut elements = (&children).into_iter();
                 let mut slots: RawNodeSlots<1usize> = RawNodeSlots::default();
                 let mut current_element = elements.next();
                 if let Some(element) = &current_element
-                    && MdBulletList::can_cast(element.kind())
+                    && MdOrderList::can_cast(element.kind())
                 {
                     slots.mark_present();
                     current_element = elements.next();
@@ -693,10 +698,17 @@ impl SyntaxFactory for MarkdownSyntaxFactory {
             }
             MD_SETEXT_HEADER => {
                 let mut elements = (&children).into_iter();
-                let mut slots: RawNodeSlots<1usize> = RawNodeSlots::default();
+                let mut slots: RawNodeSlots<2usize> = RawNodeSlots::default();
                 let mut current_element = elements.next();
                 if let Some(element) = &current_element
                     && MdParagraph::can_cast(element.kind())
+                {
+                    slots.mark_present();
+                    current_element = elements.next();
+                }
+                slots.next_slot();
+                if let Some(element) = &current_element
+                    && MdTextual::can_cast(element.kind())
                 {
                     slots.mark_present();
                     current_element = elements.next();
@@ -777,7 +789,7 @@ impl SyntaxFactory for MarkdownSyntaxFactory {
             MD_INLINE_ITEM_LIST => {
                 Self::make_node_list_syntax(kind, children, AnyMdInline::can_cast)
             }
-            MD_ORDER_LIST => Self::make_node_list_syntax(kind, children, AnyCodeBlock::can_cast),
+            MD_ORDER_LIST => Self::make_node_list_syntax(kind, children, MdOrderBullet::can_cast),
             _ => unreachable!("Is {:?} a token?", kind),
         }
     }

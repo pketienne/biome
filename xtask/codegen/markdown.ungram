@@ -84,7 +84,9 @@ MdHash = '#'
 // ===
 // bar
 // ---
-MdSetextHeader  = MdParagraph
+MdSetextHeader =
+	content: MdParagraph
+	underline: MdTextual
 
 // indented code blocks & fenced code blocks
 AnyCodeBlock =
@@ -125,18 +127,23 @@ MdLinkBlock = label: MdTextual
 MdQuote = AnyMdBlock
 
 MdBulletListItem = MdBulletList
-MdOrderListItem = MdBulletList
+MdOrderListItem = MdOrderList
 
 
 MdBulletList = MdBullet*
 // - Hey!
 // ^^^^^^
 MdBullet =
-	bullet: ('-' | '*')
-	space: 'md_textual_literal'
+	bullet: ('-' | '*' | '+')
 	content: MdInlineItemList
 
-MdOrderList = AnyCodeBlock*
+MdOrderList = MdOrderBullet*
+
+// 1. Hey!
+// ^^^^^^^
+MdOrderBullet =
+	marker: 'md_textual_literal'
+	content: MdInlineItemList
 
 // Any block paragraph
 //
@@ -192,15 +199,13 @@ MdInlineLink =
 	source: MdInlineItemList
 	')'
 
-// [![alt](image)](link)
-// ^^^^^^^^^^^^^^^^^^^^^
+// ![alt](image)
+// ^^^^^^^^^^^^^
 MdInlineImage =
-	'['
 	'!'
 	alt: MdInlineImageAlt
 	source: MdInlineImageSource
-	']'
-  link: MdInlineImageLink?
+	link: MdInlineImageLink?
 
 // [![alt](image)](link)
 //   ^^^^^

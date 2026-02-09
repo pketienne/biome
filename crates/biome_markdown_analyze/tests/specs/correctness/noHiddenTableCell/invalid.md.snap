@@ -1,6 +1,5 @@
 ---
 source: crates/biome_markdown_analyze/tests/spec_tests.rs
-assertion_line: 70
 expression: invalid.md
 ---
 # Input
@@ -16,7 +15,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:5:1 lint/correctness/noHiddenTableCell ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/correctness/noHiddenTableCell  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × Row has 1 hidden cell(s) that won't be rendered.
   
@@ -29,11 +28,20 @@ invalid.md:5:1 lint/correctness/noHiddenTableCell ━━━━━━━━━━
   
   i Remove extra cells or add columns to the table header and separator.
   
+  i Safe fix: Remove the extra table cells.
+  
+    3 3 │   | A | B |
+    4 4 │   | --- | --- |
+    5   │ - |·1·|·2·|·3·|
+      5 │ + |·1·|·2·|
+    6 6 │   | 4 | 5 | 6 | 7 |
+    7 7 │   
+  
 
 ```
 
 ```
-invalid.md:6:1 lint/correctness/noHiddenTableCell ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:6:1 lint/correctness/noHiddenTableCell  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × Row has 2 hidden cell(s) that won't be rendered.
   
@@ -44,6 +52,14 @@ invalid.md:6:1 lint/correctness/noHiddenTableCell ━━━━━━━━━━
     7 │ 
   
   i Remove extra cells or add columns to the table header and separator.
+  
+  i Safe fix: Remove the extra table cells.
+  
+    4 4 │   | --- | --- |
+    5 5 │   | 1 | 2 | 3 |
+    6   │ - |·4·|·5·|·6·|·7·|
+      6 │ + |·4·|·5·|
+    7 7 │   
   
 
 ```

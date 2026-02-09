@@ -16,7 +16,7 @@ A <br> break too.
 
 # Diagnostics
 ```
-invalid.md:3:10 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:10 lint/style/noInlineHtml  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Inline HTML element "em" is not allowed.
   
@@ -29,11 +29,15 @@ invalid.md:3:10 lint/style/noInlineHtml ━━━━━━━━━━━━━�
   
   i Use markdown syntax instead of inline HTML.
   
+  i Unsafe fix: Remove the HTML tag.
+  
+    3 │ This·has·<em>inline·emphasis</em>·tags.
+      │          ----                          
 
 ```
 
 ```
-invalid.md:3:29 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:29 lint/style/noInlineHtml  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Inline HTML element "em" is not allowed.
   
@@ -46,11 +50,20 @@ invalid.md:3:29 lint/style/noInlineHtml ━━━━━━━━━━━━━�
   
   i Use markdown syntax instead of inline HTML.
   
+  i Unsafe fix: Remove the HTML tag.
+  
+    1 1 │   # Inline HTML
+    2 2 │   
+    3   │ - This·has·<em>inline·emphasis</em>·tags.
+      3 │ + This·has·<em>inline·emphasis·tags.
+    4 4 │   
+    5 5 │   And a <strong>bold</strong> tag.
+  
 
 ```
 
 ```
-invalid.md:5:7 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:7 lint/style/noInlineHtml  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Inline HTML element "strong" is not allowed.
   
@@ -63,11 +76,15 @@ invalid.md:5:7 lint/style/noInlineHtml ━━━━━━━━━━━━━�
   
   i Use markdown syntax instead of inline HTML.
   
+  i Unsafe fix: Remove the HTML tag.
+  
+    5 │ And·a·<strong>bold</strong>·tag.
+      │       --------                  
 
 ```
 
 ```
-invalid.md:5:19 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:19 lint/style/noInlineHtml  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Inline HTML element "strong" is not allowed.
   
@@ -80,11 +97,20 @@ invalid.md:5:19 lint/style/noInlineHtml ━━━━━━━━━━━━━�
   
   i Use markdown syntax instead of inline HTML.
   
+  i Unsafe fix: Remove the HTML tag.
+  
+    3 3 │   This has <em>inline emphasis</em> tags.
+    4 4 │   
+    5   │ - And·a·<strong>bold</strong>·tag.
+      5 │ + And·a·<strong>bold·tag.
+    6 6 │   
+    7 7 │   A <br> break too.
+  
 
 ```
 
 ```
-invalid.md:7:3 lint/style/noInlineHtml ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:7:3 lint/style/noInlineHtml  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Inline HTML element "br" is not allowed.
   
@@ -95,6 +121,14 @@ invalid.md:7:3 lint/style/noInlineHtml ━━━━━━━━━━━━━�
     8 │ 
   
   i Use markdown syntax instead of inline HTML.
+  
+  i Unsafe fix: Remove the HTML tag.
+  
+    5 5 │   And a <strong>bold</strong> tag.
+    6 6 │   
+    7   │ - A·<br>·break·too.
+      7 │ + A··break·too.
+    8 8 │   
   
 
 ```

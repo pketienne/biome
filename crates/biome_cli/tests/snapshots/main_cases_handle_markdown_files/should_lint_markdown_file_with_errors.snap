@@ -1,0 +1,83 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: redactor(content)
+---
+## `test.md`
+
+```md
+# Title
+Some text
+#### Skipped heading level
+
+```
+
+# Emitted Messages
+
+```block
+test.md:1:1 lint/style/useBlanksAroundHeadings  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line after heading.
+  
+  > 1 │ # Title
+      │ ^^^^^^^
+    2 │ Some text
+    3 │ #### Skipped heading level
+  
+  i Add a blank line around headings for readability.
+  
+  i Safe fix: Insert blank line after heading.
+  
+    1   │ - #·Title
+      1 │ + #·Title
+      2 │ + 
+    2 3 │   Some text
+    3 4 │   #### Skipped heading level
+  
+
+```
+
+```block
+test.md:3:1 lint/correctness/useHeadingIncrement ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Heading level jumped from h1 to h4.
+  
+    1 │ # Title
+    2 │ Some text
+  > 3 │ #### Skipped heading level
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Headings should increment by one level at a time.
+  
+
+```
+
+```block
+test.md:3:1 lint/style/useBlanksAroundHeadings  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line before heading.
+  
+    1 │ # Title
+    2 │ Some text
+  > 3 │ #### Skipped heading level
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Add a blank line around headings for readability.
+  
+  i Safe fix: Insert blank line before heading.
+  
+    1 1 │   # Title
+    2 2 │   Some text
+    3   │ - ####·Skipped·heading·level
+      3 │ + 
+      4 │ + ####·Skipped·heading·level
+    4 5 │   
+  
+
+```
+
+```block
+Checked 1 file in <TIME>. No fixes applied.
+Found 3 warnings.
+```

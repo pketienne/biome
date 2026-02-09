@@ -13,7 +13,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/correctness/noDuplicateDefinitions ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/correctness/noDuplicateDefinitions  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × Duplicate definition for label "foo".
   
@@ -24,5 +24,9 @@ invalid.md:4:1 lint/correctness/noDuplicateDefinitions ━━━━━━━━�
   
   i Remove the duplicate definition. Only the first definition is used.
   
+  i Unsafe fix: Remove the duplicate definition.
+  
+    4 │ [foo]:·https://other.com
+      │ ------------------------
 
 ```

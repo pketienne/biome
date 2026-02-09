@@ -10,15 +10,19 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:21 lint/correctness/noMdxJsxDuplicateAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:20 lint/correctness/noMdxJsxDuplicateAttribute  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Duplicate attribute "name" on JSX element.
   
   > 1 │ <Component name="a" name="b" />
-      │                     ^^^^^^^^
+      │                    ^^^^^^^^^
     2 │ 
   
   i Remove the duplicate attribute.
   
+  i Unsafe fix: Remove the duplicate attribute.
+  
+    1 │ <Component·name="a"·name="b"·/>
+      │                     ---------  
 
 ```

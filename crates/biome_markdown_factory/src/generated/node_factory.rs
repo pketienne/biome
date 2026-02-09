@@ -6,16 +6,11 @@ use biome_markdown_syntax::{
     MarkdownSyntaxToken as SyntaxToken, *,
 };
 use biome_rowan::AstNode;
-pub fn md_bullet(
-    bullet_token: SyntaxToken,
-    space_token: SyntaxToken,
-    content: MdInlineItemList,
-) -> MdBullet {
+pub fn md_bullet(bullet_token: SyntaxToken, content: MdInlineItemList) -> MdBullet {
     MdBullet::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_BULLET,
         [
             Some(SyntaxElement::Token(bullet_token)),
-            Some(SyntaxElement::Token(space_token)),
             Some(SyntaxElement::Node(content.into_syntax())),
         ],
     ))
@@ -167,27 +162,21 @@ pub fn md_inline_emphasis(
     ))
 }
 pub fn md_inline_image(
-    l_brack_token: SyntaxToken,
     excl_token: SyntaxToken,
     alt: MdInlineImageAlt,
     source: MdInlineImageSource,
-    r_brack_token: SyntaxToken,
 ) -> MdInlineImageBuilder {
     MdInlineImageBuilder {
-        l_brack_token,
         excl_token,
         alt,
         source,
-        r_brack_token,
         link: None,
     }
 }
 pub struct MdInlineImageBuilder {
-    l_brack_token: SyntaxToken,
     excl_token: SyntaxToken,
     alt: MdInlineImageAlt,
     source: MdInlineImageSource,
-    r_brack_token: SyntaxToken,
     link: Option<MdInlineImageLink>,
 }
 impl MdInlineImageBuilder {
@@ -199,11 +188,9 @@ impl MdInlineImageBuilder {
         MdInlineImage::unwrap_cast(SyntaxNode::new_detached(
             MarkdownSyntaxKind::MD_INLINE_IMAGE,
             [
-                Some(SyntaxElement::Token(self.l_brack_token)),
                 Some(SyntaxElement::Token(self.excl_token)),
                 Some(SyntaxElement::Node(self.alt.into_syntax())),
                 Some(SyntaxElement::Node(self.source.into_syntax())),
-                Some(SyntaxElement::Token(self.r_brack_token)),
                 self.link
                     .map(|token| SyntaxElement::Node(token.into_syntax())),
             ],
@@ -315,10 +302,19 @@ impl MdLinkBlockBuilder {
         ))
     }
 }
-pub fn md_order_list_item(md_bullet_list: MdBulletList) -> MdOrderListItem {
+pub fn md_order_bullet(marker_token: SyntaxToken, content: MdInlineItemList) -> MdOrderBullet {
+    MdOrderBullet::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_ORDER_BULLET,
+        [
+            Some(SyntaxElement::Token(marker_token)),
+            Some(SyntaxElement::Node(content.into_syntax())),
+        ],
+    ))
+}
+pub fn md_order_list_item(md_order_list: MdOrderList) -> MdOrderListItem {
     MdOrderListItem::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_ORDER_LIST_ITEM,
-        [Some(SyntaxElement::Node(md_bullet_list.into_syntax()))],
+        [Some(SyntaxElement::Node(md_order_list.into_syntax()))],
     ))
 }
 pub fn md_paragraph(list: MdInlineItemList, hard_line: MdHardLine) -> MdParagraph {
@@ -336,10 +332,13 @@ pub fn md_quote(any_md_block: AnyMdBlock) -> MdQuote {
         [Some(SyntaxElement::Node(any_md_block.into_syntax()))],
     ))
 }
-pub fn md_setext_header(md_paragraph: MdParagraph) -> MdSetextHeader {
+pub fn md_setext_header(content: MdParagraph, underline: MdTextual) -> MdSetextHeader {
     MdSetextHeader::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_SETEXT_HEADER,
-        [Some(SyntaxElement::Node(md_paragraph.into_syntax()))],
+        [
+            Some(SyntaxElement::Node(content.into_syntax())),
+            Some(SyntaxElement::Node(underline.into_syntax())),
+        ],
     ))
 }
 pub fn md_soft_break(value_token: SyntaxToken) -> MdSoftBreak {
@@ -434,7 +433,7 @@ where
 }
 pub fn md_order_list<I>(items: I) -> MdOrderList
 where
-    I: IntoIterator<Item = AnyCodeBlock>,
+    I: IntoIterator<Item = MdOrderBullet>,
     I::IntoIter: ExactSizeIterator,
 {
     MdOrderList::unwrap_cast(SyntaxNode::new_detached(

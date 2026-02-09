@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:1 lint/correctness/noEmptyLinks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:1 lint/correctness/noEmptyLinks  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Link has an empty URL.
   
@@ -23,11 +23,18 @@ invalid.md:1:1 lint/correctness/noEmptyLinks ━━━━━━━━━━━�
   
   i Provide a valid URL for the link or remove it.
   
+  i Unsafe fix: Remove the empty link.
+  
+    1   │ - [click·here]()
+      1 │ + click·here
+    2 2 │   
+    3 3 │   [another empty link](   )
+  
 
 ```
 
 ```
-invalid.md:3:1 lint/correctness/noEmptyLinks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/correctness/noEmptyLinks  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Link has an empty URL.
   
@@ -38,6 +45,14 @@ invalid.md:3:1 lint/correctness/noEmptyLinks ━━━━━━━━━━━�
     4 │ 
   
   i Provide a valid URL for the link or remove it.
+  
+  i Unsafe fix: Remove the empty link.
+  
+    1 1 │   [click here]()
+    2 2 │   
+    3   │ - [another·empty·link](···)
+      3 │ + another·empty·link
+    4 4 │   
   
 
 ```

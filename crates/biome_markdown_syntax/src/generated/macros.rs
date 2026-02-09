@@ -96,6 +96,10 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::MdLinkBlock::new_unchecked(node) };
                     $body
                 }
+                $crate::MarkdownSyntaxKind::MD_ORDER_BULLET => {
+                    let $pattern = unsafe { $crate::MdOrderBullet::new_unchecked(node) };
+                    $body
+                }
                 $crate::MarkdownSyntaxKind::MD_ORDER_LIST_ITEM => {
                     let $pattern = unsafe { $crate::MdOrderListItem::new_unchecked(node) };
                     $body

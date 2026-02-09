@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/suspicious/noReferenceLikeUrl ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/suspicious/noReferenceLikeUrl  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! URL "label" looks like a reference label, not a URL.
   
@@ -23,6 +23,14 @@ invalid.md:3:1 lint/suspicious/noReferenceLikeUrl ━━━━━━━━━━
     4 │ 
   
   i Use a proper URL or switch to reference link syntax [text][label].
+  
+  i Unsafe fix: Convert to reference link syntax.
+  
+    1 1 │   # Hello
+    2 2 │   
+    3   │ - [text](label)
+      3 │ + [text][label]
+    4 4 │   
   
 
 ```

@@ -1,11 +1,14 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, TextRange, TextSize};
+use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
 
 use biome_rule_options::use_consistent_table_cell_padding::UseConsistentTableCellPaddingOptions;
 
+use crate::MarkdownRuleAction;
 use crate::utils::table_utils::collect_tables;
 
 declare_lint_rule! {
@@ -46,12 +49,14 @@ declare_lint_rule! {
         language: "md",
         recommended: false,
         severity: Severity::Warning,
+        fix_kind: FixKind::Safe,
     }
 }
 
 pub struct InconsistentCellPadding {
     range: TextRange,
     expected: &'static str,
+    corrected: String,
 }
 
 impl Rule for UseConsistentTableCellPadding {
@@ -102,23 +107,27 @@ impl Rule for UseConsistentTableCellPadding {
                 match effective_style {
                     "padded" => {
                         if !is_padded {
+                            let corrected = add_cell_padding(trimmed);
                             signals.push(InconsistentCellPadding {
                                 range: TextRange::new(
                                     base + TextSize::from(offsets[line_idx] as u32),
                                     base + TextSize::from((offsets[line_idx] + line.len()) as u32),
                                 ),
                                 expected: "padded",
+                                corrected,
                             });
                         }
                     }
                     "compact" => {
                         if is_padded {
+                            let corrected = remove_cell_padding(trimmed);
                             signals.push(InconsistentCellPadding {
                                 range: TextRange::new(
                                     base + TextSize::from(offsets[line_idx] as u32),
                                     base + TextSize::from((offsets[line_idx] + line.len()) as u32),
                                 ),
                                 expected: "compact",
+                                corrected,
                             });
                         }
                     }
@@ -128,6 +137,45 @@ impl Rule for UseConsistentTableCellPadding {
         }
 
         signals
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
+        let root = ctx.root();
+        let mut token = root
+            .syntax()
+            .token_at_offset(state.range.start())
+            .right_biased()?;
+        let mut tokens = vec![token.clone()];
+        while token.text_range().end() < state.range.end() {
+            token = token.next_token()?;
+            tokens.push(token.clone());
+        }
+        let first = &tokens[0];
+        let last = tokens.last()?;
+        let prefix_len = u32::from(state.range.start() - first.text_range().start()) as usize;
+        let suffix_start = u32::from(state.range.end() - last.text_range().start()) as usize;
+        let prefix = &first.text()[..prefix_len];
+        let suffix = &last.text()[suffix_start..];
+        let new_text = format!("{}{}{}", prefix, state.corrected, suffix);
+        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
+            first.kind(),
+            &new_text,
+            [],
+            [],
+        );
+        let mut mutation = ctx.root().begin();
+        mutation.replace_element_discard_trivia(first.clone().into(), new_token.into());
+        for t in &tokens[1..] {
+            let empty =
+                biome_markdown_syntax::MarkdownSyntaxToken::new_detached(t.kind(), "", [], []);
+            mutation.replace_element_discard_trivia(t.clone().into(), empty.into());
+        }
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Normalize table cell padding." }.to_owned(),
+            mutation,
+        ))
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
@@ -159,4 +207,58 @@ fn has_cell_padding(row: &str) -> bool {
         }
     }
     false
+}
+
+/// Add padding spaces around each cell in a table row.
+fn add_cell_padding(row: &str) -> String {
+    let has_leading = row.starts_with('|');
+    let has_trailing = row.ends_with('|');
+    let inner = row
+        .strip_prefix('|')
+        .unwrap_or(row)
+        .strip_suffix('|')
+        .unwrap_or(row.strip_prefix('|').unwrap_or(row));
+    let cells: Vec<&str> = inner.split('|').collect();
+    let padded: Vec<String> = cells
+        .iter()
+        .map(|c| {
+            let trimmed = c.trim();
+            if trimmed.is_empty() {
+                " ".to_string()
+            } else {
+                format!(" {} ", trimmed)
+            }
+        })
+        .collect();
+    let mut result = String::new();
+    if has_leading {
+        result.push('|');
+    }
+    result.push_str(&padded.join("|"));
+    if has_trailing {
+        result.push('|');
+    }
+    result
+}
+
+/// Remove padding spaces from each cell in a table row.
+fn remove_cell_padding(row: &str) -> String {
+    let has_leading = row.starts_with('|');
+    let has_trailing = row.ends_with('|');
+    let inner = row
+        .strip_prefix('|')
+        .unwrap_or(row)
+        .strip_suffix('|')
+        .unwrap_or(row.strip_prefix('|').unwrap_or(row));
+    let cells: Vec<&str> = inner.split('|').collect();
+    let compact: Vec<String> = cells.iter().map(|c| c.trim().to_string()).collect();
+    let mut result = String::new();
+    if has_leading {
+        result.push('|');
+    }
+    result.push_str(&compact.join("|"));
+    if has_trailing {
+        result.push('|');
+    }
+    result
 }

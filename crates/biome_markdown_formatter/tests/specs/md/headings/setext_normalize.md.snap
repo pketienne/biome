@@ -1,0 +1,50 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: md/headings/setext_normalize.md
+---
+
+# Input
+
+```md
+Heading Level 1
+===============
+
+Heading Level 2
+---------------
+
+Short H1
+===
+
+Short H2
+---
+
+Multi word heading
+==================
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```md
+# Heading Level 1
+
+## Heading Level 2
+
+# Short H1
+
+## Short H2
+
+# Multi word heading
+```

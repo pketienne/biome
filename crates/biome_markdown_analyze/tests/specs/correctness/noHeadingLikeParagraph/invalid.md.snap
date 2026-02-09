@@ -14,7 +14,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:1 lint/correctness/noHeadingLikeParagraph ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:1 lint/correctness/noHeadingLikeParagraph  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Line starts with 7 '#' characters, but headings only support levels 1-6.
   
@@ -25,11 +25,18 @@ invalid.md:1:1 lint/correctness/noHeadingLikeParagraph ━━━━━━━━�
   
   i Use a heading level between 1 and 6, or remove the leading '#' characters.
   
+  i Safe fix: Convert to a valid heading level.
+  
+    1   │ - #######·This·is·not·a·valid·heading
+      1 │ + ######·This·is·not·a·valid·heading
+    2 2 │   
+    3 3 │   ######## Neither is this
+  
 
 ```
 
 ```
-invalid.md:3:1 lint/correctness/noHeadingLikeParagraph ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/correctness/noHeadingLikeParagraph  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Line starts with 8 '#' characters, but headings only support levels 1-6.
   
@@ -42,11 +49,20 @@ invalid.md:3:1 lint/correctness/noHeadingLikeParagraph ━━━━━━━━�
   
   i Use a heading level between 1 and 6, or remove the leading '#' characters.
   
+  i Safe fix: Convert to a valid heading level.
+  
+    1 1 │   ####### This is not a valid heading
+    2 2 │   
+    3   │ - ########·Neither·is·this
+      3 │ + ######·Neither·is·this
+    4 4 │   
+    5 5 │   ######### Or this one
+  
 
 ```
 
 ```
-invalid.md:5:1 lint/correctness/noHeadingLikeParagraph ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/correctness/noHeadingLikeParagraph  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Line starts with 9 '#' characters, but headings only support levels 1-6.
   
@@ -57,6 +73,14 @@ invalid.md:5:1 lint/correctness/noHeadingLikeParagraph ━━━━━━━━�
     6 │ 
   
   i Use a heading level between 1 and 6, or remove the leading '#' characters.
+  
+  i Safe fix: Convert to a valid heading level.
+  
+    3 3 │   ######## Neither is this
+    4 4 │   
+    5   │ - #########·Or·this·one
+      5 │ + ######·Or·this·one
+    6 6 │   
   
 
 ```

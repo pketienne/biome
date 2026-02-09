@@ -14,7 +14,7 @@ code without language
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/noMissingLanguage ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/noMissingLanguage  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Fenced code blocks should have a language tag.
   
@@ -27,5 +27,9 @@ invalid.md:3:1 lint/style/noMissingLanguage ━━━━━━━━━━━━
   
   i Add a language identifier after the opening fence to enable syntax highlighting.
   
+  i Unsafe fix: Add "text" as the language tag.
+  
+    3 │ ```text
+      │    ++++
 
 ```
