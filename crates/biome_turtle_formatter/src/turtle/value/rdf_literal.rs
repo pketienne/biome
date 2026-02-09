@@ -67,6 +67,7 @@ impl FormatNodeRule<TurtleRdfLiteral> for FormatTurtleRdfLiteral {
 /// - `"false"^^xsd:boolean` → `false`
 /// - `"42"^^xsd:integer` → `42`
 /// - `"3.14"^^xsd:decimal` → `3.14`
+/// - `"4.2E9"^^xsd:double` → `4.2E9`
 fn try_short_notation(node: &TurtleRdfLiteral) -> Option<String> {
     let datatype_annotation = node.datatype()?;
     let datatype_iri = datatype_annotation.datatype().ok()?;
@@ -121,6 +122,51 @@ fn try_short_notation(node: &TurtleRdfLiteral) -> Option<String> {
                 None
             }
         }
+        "xsd:double" | "<http://www.w3.org/2001/XMLSchema#double>" => {
+            // Must match [+-]? ([0-9]+ '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT)
+            // where EXPONENT ::= [eE] [+-]? [0-9]+
+            is_valid_double(content).then(|| content.to_string())
+        }
         _ => None,
+    }
+}
+
+/// Validate that a string matches the Turtle DOUBLE production:
+/// `[+-]? ([0-9]+ '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT)`
+/// where `EXPONENT ::= [eE] [+-]? [0-9]+`
+fn is_valid_double(s: &str) -> bool {
+    let s = s.strip_prefix(['+', '-']).unwrap_or(s);
+    if s.is_empty() {
+        return false;
+    }
+
+    // Split on exponent marker (required for double)
+    let (mantissa, exponent) = if let Some(pos) = s.find(['e', 'E']) {
+        (&s[..pos], &s[pos + 1..])
+    } else {
+        return false; // doubles must have an exponent
+    };
+
+    // Validate exponent: [+-]? [0-9]+
+    let exp = exponent.strip_prefix(['+', '-']).unwrap_or(exponent);
+    if exp.is_empty() || !exp.chars().all(|c| c.is_ascii_digit()) {
+        return false;
+    }
+
+    // Validate mantissa: one of three forms
+    if let Some(dot_pos) = mantissa.find('.') {
+        let before = &mantissa[..dot_pos];
+        let after = &mantissa[dot_pos + 1..];
+        if before.is_empty() {
+            // Form: '.' [0-9]+ EXPONENT
+            !after.is_empty() && after.chars().all(|c| c.is_ascii_digit())
+        } else {
+            // Form: [0-9]+ '.' [0-9]* EXPONENT
+            before.chars().all(|c| c.is_ascii_digit())
+                && after.chars().all(|c| c.is_ascii_digit())
+        }
+    } else {
+        // Form: [0-9]+ EXPONENT
+        !mantissa.is_empty() && mantissa.chars().all(|c| c.is_ascii_digit())
     }
 }

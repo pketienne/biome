@@ -21,9 +21,16 @@ ex:d ex:count "-7"^^xsd:integer .
 ex:e ex:height "1.65"^^xsd:decimal .
 ex:f ex:score "3.14"^^xsd:decimal .
 
+# Double short notation
+ex:k ex:value "4.2E9"^^xsd:double .
+ex:l ex:value "-1.5e3"^^xsd:double .
+ex:m ex:value ".5E2"^^xsd:double .
+ex:n ex:value "7E4"^^xsd:double .
+
 # Should NOT be shortened (invalid values for type)
 ex:g ex:count "abc"^^xsd:integer .
 ex:h ex:active "yes"^^xsd:boolean .
+ex:o ex:value "not_a_double"^^xsd:double .
 
 # Regular literals without datatype stay unchanged
 ex:i ex:name "Alice" .
@@ -70,11 +77,23 @@ ex:e
 ex:f
 	ex:score 3.14 .
 
+# Double short notation
+ex:k
+	ex:value 4.2E9 .
+ex:l
+	ex:value -1.5e3 .
+ex:m
+	ex:value .5E2 .
+ex:n
+	ex:value 7E4 .
+
 # Should NOT be shortened (invalid values for type)
 ex:g
 	ex:count "abc"^^xsd:integer .
 ex:h
 	ex:active "yes"^^xsd:boolean .
+ex:o
+	ex:value "not_a_double"^^xsd:double .
 
 # Regular literals without datatype stay unchanged
 ex:i
