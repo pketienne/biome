@@ -515,8 +515,8 @@ mod tests {
         let options = YamlFormatOptions::default().with_expand(Expand::Always);
         let formatted = format_node(options, &parse.syntax()).unwrap();
         let result = formatted.print().unwrap();
-        // Expand::Always forces flow collections to multiline
-        assert_eq!(result.as_code(), "key: {\n  a: 1,\n  b: 2\n}\n");
+        // Expand::Always converts flow mappings to block style
+        assert_eq!(result.as_code(), "key:\n  a: 1\n  b: 2\n");
     }
 
     #[test]
@@ -527,7 +527,8 @@ mod tests {
         let options = YamlFormatOptions::default().with_expand(Expand::Always);
         let formatted = format_node(options, &parse.syntax()).unwrap();
         let result = formatted.print().unwrap();
-        assert_eq!(result.as_code(), "key: [\n  1,\n  2,\n  3\n]\n");
+        // Expand::Always converts flow sequences to block style
+        assert_eq!(result.as_code(), "key:\n  - 1\n  - 2\n  - 3\n");
     }
 
     #[test]

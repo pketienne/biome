@@ -1,0 +1,14 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: valid.yaml
+---
+# Input
+```yaml
+# should not generate diagnostics
+defaults: &defaults
+  timeout: 30
+server:
+  <<: *defaults
+  port: 8080
+
+```

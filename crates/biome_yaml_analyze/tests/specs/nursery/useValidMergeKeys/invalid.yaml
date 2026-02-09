@@ -1,0 +1,5 @@
+defaults:
+  timeout: 30
+server:
+  <<: not_an_alias
+  port: 8080

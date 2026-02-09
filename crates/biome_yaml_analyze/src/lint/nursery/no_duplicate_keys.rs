@@ -41,10 +41,28 @@ declare_lint_rule! {
 pub(crate) fn get_key_text(key: &AnyYamlMappingImplicitKey) -> Option<String> {
     match key {
         AnyYamlMappingImplicitKey::YamlFlowJsonNode(node) => {
-            node.content().map(|content| content.to_string().trim().to_string())
+            node.content().map(|content| {
+                let s = content.to_string();
+                if s.as_bytes().first().is_some_and(|c| c.is_ascii_whitespace())
+                    || s.as_bytes().last().is_some_and(|c| c.is_ascii_whitespace())
+                {
+                    s.trim().to_string()
+                } else {
+                    s
+                }
+            })
         }
         AnyYamlMappingImplicitKey::YamlFlowYamlNode(node) => {
-            node.content().map(|scalar| scalar.to_string().trim().to_string())
+            node.content().map(|scalar| {
+                let s = scalar.to_string();
+                if s.as_bytes().first().is_some_and(|c| c.is_ascii_whitespace())
+                    || s.as_bytes().last().is_some_and(|c| c.is_ascii_whitespace())
+                {
+                    s.trim().to_string()
+                } else {
+                    s
+                }
+            })
         }
     }
 }
@@ -88,6 +106,11 @@ impl Rule for NoDuplicateKeys {
                 }
                 AnyYamlBlockMapEntry::YamlBogusBlockMapEntry(_) => continue,
             };
+
+            // Merge keys (<<) can appear multiple times
+            if key_text == "<<" {
+                continue;
+            }
 
             if let Some((_, duplicates)) = keys_seen.get_mut(&key_text) {
                 duplicates.push(key_range);

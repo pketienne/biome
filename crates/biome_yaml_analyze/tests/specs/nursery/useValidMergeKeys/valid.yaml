@@ -1,0 +1,6 @@
+# should not generate diagnostics
+defaults: &defaults
+  timeout: 30
+server:
+  <<: *defaults
+  port: 8080

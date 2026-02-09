@@ -77,6 +77,11 @@ impl Rule for NoDuplicateFlowKeys {
                 }
             };
 
+            // Merge keys (<<) can appear multiple times
+            if key_text == "<<" {
+                continue;
+            }
+
             if let Some((_, duplicates)) = keys_seen.get_mut(&key_text) {
                 duplicates.push(key_range);
             } else {
