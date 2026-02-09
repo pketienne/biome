@@ -487,6 +487,9 @@ define_categories! {
     "assist/source/useSortedAttributes": "https://biomejs.dev/assist/actions/use-sorted-attributes",
     "assist/source/organizeImports": "https://biomejs.dev/assist/actions/organize-imports",
     "assist/source/sortPrefixDeclarations": "https://biomejs.dev/assist/actions/sort-prefix-declarations",
+    "assist/source/removeUnusedPrefixes": "https://biomejs.dev/assist/actions/remove-unused-prefixes",
+    "assist/source/convertIriToPrefixedName": "https://biomejs.dev/assist/actions/convert-iri-to-prefixed-name",
+    "assist/source/convertRdfTypeToShorthand": "https://biomejs.dev/assist/actions/convert-rdf-type-to-shorthand",
     // end assist actions
     ; // start syntax rules
     "syntax/correctness/noTypeOnlyImportAttributes",

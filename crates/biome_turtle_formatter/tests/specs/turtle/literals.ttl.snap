@@ -45,7 +45,7 @@ ex:alice
 ex:alice
 	ex:name "Alice"@fr .
 ex:alice
-	ex:age "30"^^xsd:integer .
+	ex:age 30 .
 ex:alice
-	ex:height "1.65"^^xsd:decimal .
+	ex:height 1.65 .
 ```

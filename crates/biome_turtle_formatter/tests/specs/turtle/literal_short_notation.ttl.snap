@@ -1,0 +1,84 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: turtle/literal_short_notation.ttl
+---
+
+# Input
+
+```ttl
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+# Boolean short notation
+ex:a ex:active "true"^^xsd:boolean .
+ex:b ex:active "false"^^xsd:boolean .
+
+# Integer short notation
+ex:c ex:count "42"^^xsd:integer .
+ex:d ex:count "-7"^^xsd:integer .
+
+# Decimal short notation
+ex:e ex:height "1.65"^^xsd:decimal .
+ex:f ex:score "3.14"^^xsd:decimal .
+
+# Should NOT be shortened (invalid values for type)
+ex:g ex:count "abc"^^xsd:integer .
+ex:h ex:active "yes"^^xsd:boolean .
+
+# Regular literals without datatype stay unchanged
+ex:i ex:name "Alice" .
+ex:j ex:name "Alice"@en .
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+Quote style: Double Quotes
+First predicate in new line: true
+Directive style: Turtle (@prefix/@base)
+-----
+
+```ttl
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+# Boolean short notation
+ex:a
+	ex:active true .
+ex:b
+	ex:active false .
+
+# Integer short notation
+ex:c
+	ex:count 42 .
+ex:d
+	ex:count -7 .
+
+# Decimal short notation
+ex:e
+	ex:height 1.65 .
+ex:f
+	ex:score 3.14 .
+
+# Should NOT be shortened (invalid values for type)
+ex:g
+	ex:count "abc"^^xsd:integer .
+ex:h
+	ex:active "yes"^^xsd:boolean .
+
+# Regular literals without datatype stay unchanged
+ex:i
+	ex:name "Alice" .
+ex:j
+	ex:name "Alice"@en .
+```

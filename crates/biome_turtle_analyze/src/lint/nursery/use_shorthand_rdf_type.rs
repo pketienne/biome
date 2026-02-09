@@ -23,6 +23,13 @@ declare_lint_rule! {
     /// <http://example.org/alice> rdf:type foaf:Person .
     /// ```
     ///
+    /// The full IRI form is also detected:
+    ///
+    /// ```turtle,expect_diagnostic
+    /// @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    /// <http://example.org/alice> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> foaf:Person .
+    /// ```
+    ///
     /// ### Valid
     ///
     /// ```turtle

@@ -1,0 +1,39 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<http://example.org/alice> foaf:name "Alice" .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:2:1 assist/source/removeUnusedPrefixes  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i 2 unused prefix declaration(s) found.
+  
+    1 │ @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+  > 2 │ @prefix dc: <http://purl.org/dc/elements/1.1/> .
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 3 │ @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ <http://example.org/alice> foaf:name "Alice" .
+    5 │ 
+  
+  i Remove all unused prefix declarations.
+  
+  i Safe fix: Remove all unused prefix declarations.
+  
+    1 1 │   @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    2   │ - @prefix·dc:·<http://purl.org/dc/elements/1.1/>·.
+    3   │ - @prefix·xsd:·<http://www.w3.org/2001/XMLSchema#>·.
+    4 2 │   <http://example.org/alice> foaf:name "Alice" .
+    5 3 │   
+  
+
+```

@@ -62,7 +62,7 @@ Directive style: Turtle (@prefix/@base)
 ex:alice
 	a foaf:Person ;
 	foaf:name "Alice"@en ;
-	foaf:age "30"^^xsd:integer ;
+	foaf:age 30 ;
 	foaf:knows ex:bob,
 		ex:carol ;
 	foaf:interest <http://example.org/coding> .

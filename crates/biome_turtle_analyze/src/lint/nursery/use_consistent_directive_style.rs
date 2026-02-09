@@ -31,9 +31,19 @@ declare_lint_rule! {
     ///
     /// ### Valid
     ///
+    /// Using Turtle-style directives consistently:
+    ///
     /// ```turtle
     /// @prefix foaf: <http://xmlns.com/foaf/0.1/> .
     /// @prefix dc: <http://purl.org/dc/elements/1.1/> .
+    /// <http://example.org/alice> foaf:name "Alice" .
+    /// ```
+    ///
+    /// Or using SPARQL-style directives consistently:
+    ///
+    /// ```turtle
+    /// PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    /// PREFIX dc: <http://purl.org/dc/elements/1.1/>
     /// <http://example.org/alice> foaf:name "Alice" .
     /// ```
     ///

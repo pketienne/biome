@@ -1,0 +1,38 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+<http://example.org/alice> <http://xmlns.com/foaf/0.1/name> "Alice" .
+<http://example.org/bob> <http://xmlns.com/foaf/0.1/knows> <http://example.org/alice> .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:2:28 assist/source/convertIriToPrefixedName  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i 2 IRI(s) can be converted to prefixed names.
+  
+    1 │ @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+  > 2 │ <http://example.org/alice> <http://xmlns.com/foaf/0.1/name> "Alice" .
+      │                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 3 │ <http://example.org/bob> <http://xmlns.com/foaf/0.1/knows> <http://example.org/alice> .
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Use prefixed names for more concise and readable Turtle.
+  
+  i Safe fix: Convert IRIs to prefixed names.
+  
+    1 1 │   @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    2   │ - <http://example.org/alice>·<http://xmlns.com/foaf/0.1/name>·"Alice"·.
+    3   │ - <http://example.org/bob>·<http://xmlns.com/foaf/0.1/knows>·<http://example.org/alice>·.
+      2 │ + <http://example.org/alice>·foaf:name·"Alice"·.
+      3 │ + <http://example.org/bob>·foaf:knows·<http://example.org/alice>·.
+    4 4 │   
+  
+
+```

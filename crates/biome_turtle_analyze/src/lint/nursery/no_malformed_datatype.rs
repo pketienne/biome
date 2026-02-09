@@ -21,12 +21,19 @@ declare_lint_rule! {
     /// ex:s ex:count "abc"^^xsd:integer .
     /// ```
     ///
+    /// ```turtle,expect_diagnostic
+    /// @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    /// @prefix ex: <http://example.org/> .
+    /// ex:s ex:active "yes"^^xsd:boolean .
+    /// ```
+    ///
     /// ### Valid
     ///
     /// ```turtle
     /// @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
     /// @prefix ex: <http://example.org/> .
     /// ex:s ex:count "42"^^xsd:integer .
+    /// ex:s ex:active "true"^^xsd:boolean .
     /// ```
     ///
     pub NoMalformedDatatype {
