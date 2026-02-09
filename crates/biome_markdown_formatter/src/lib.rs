@@ -330,7 +330,57 @@ mod tests {
         let options = MarkdownFormatOptions::default();
         let formatted = format_node(options, &parse.syntax()).unwrap();
         let result = formatted.print().unwrap();
-        // Verbatim formatting should preserve the input
+        assert_eq!(result.as_code(), src);
+    }
+
+    #[test]
+    fn ensures_final_newline() {
+        let src = "# Hello\n\nWorld";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "# Hello\n\nWorld\n");
+    }
+
+    #[test]
+    fn preserves_blank_lines() {
+        let src = "# Title\n\nParagraph one.\n\nParagraph two.\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), src);
+    }
+
+    #[test]
+    fn handles_empty_document() {
+        let src = "";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Empty documents stay empty
+        assert_eq!(result.as_code(), "");
+    }
+
+    #[test]
+    fn handles_heading_only() {
+        let src = "# Hello\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), src);
+    }
+
+    #[test]
+    fn preserves_thematic_break() {
+        let src = "# Title\n\n---\n\nContent\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
         assert_eq!(result.as_code(), src);
     }
 }
