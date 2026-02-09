@@ -1,0 +1,30 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+<http://example.org/alice> a foaf:Person ;
+    dc:title "Ms." .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:4:5 lint/nursery/noUndefinedPrefix ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Prefix 'dc:' is used but not declared.
+  
+    3 │ <http://example.org/alice> a foaf:Person ;
+  > 4 │     dc:title "Ms." .
+      │     ^^^^^^^^
+    5 │ 
+  
+  i Add a prefix declaration, e.g. @prefix dc: <...> .
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

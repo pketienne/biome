@@ -1,0 +1,3 @@
+@prefix ex: <http://example.org/> .
+
+<http://example.org/hello world> ex:name "Hello" .

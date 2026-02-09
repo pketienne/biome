@@ -1,0 +1,46 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: turtle/numeric_literal.ttl
+---
+
+# Input
+
+```ttl
+@prefix ex: <http://example.org/> .
+
+ex:alice ex:age 30 .
+ex:alice ex:height 1.65 .
+ex:alice ex:score 9.5e1 .
+ex:bob ex:balance -42 .
+ex:bob ex:ratio -0.5 .
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```ttl
+@prefix ex: <http://example.org/> .
+
+ex:alice
+	ex:age 30 .
+ex:alice
+	ex:height 1.65 .
+ex:alice
+	ex:score 9.5e1 .
+ex:bob
+	ex:balance -42 .
+ex:bob
+	ex:ratio -0.5 .
+```

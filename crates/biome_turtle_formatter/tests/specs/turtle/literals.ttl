@@ -1,0 +1,8 @@
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:alice ex:name "Alice" .
+ex:alice ex:name "Alice"@en .
+ex:alice ex:name "Alice"@fr .
+ex:alice ex:age "30"^^xsd:integer .
+ex:alice ex:height "1.65"^^xsd:decimal .

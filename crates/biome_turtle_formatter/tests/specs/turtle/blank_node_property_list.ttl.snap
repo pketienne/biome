@@ -1,0 +1,53 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: turtle/blank_node_property_list.ttl
+---
+
+# Input
+
+```ttl
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.org/> .
+
+ex:alice foaf:knows [
+    a foaf:Person ;
+    foaf:name "Bob"
+] .
+
+[
+    a foaf:Person ;
+    foaf:name "Carol"
+] foaf:knows ex:alice .
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```ttl
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.org/> .
+
+ex:alice
+	foaf:knows [
+		a foaf:Person ;
+		foaf:name "Bob"
+	] .
+
+[
+	a foaf:Person ;
+	foaf:name "Carol"
+]
+	foaf:knows ex:alice .
+```

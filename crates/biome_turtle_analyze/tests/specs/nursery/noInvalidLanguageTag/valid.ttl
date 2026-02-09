@@ -1,0 +1,6 @@
+@prefix ex: <http://example.org/> .
+
+ex:alice ex:name "Alice"@en .
+ex:alice ex:name "Alice"@fr .
+ex:alice ex:name "Alice"@de-DE .
+ex:alice ex:name "Alice"@zh-Hans .

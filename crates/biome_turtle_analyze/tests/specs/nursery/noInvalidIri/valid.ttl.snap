@@ -1,0 +1,12 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: valid.ttl
+---
+# Input
+```turtle
+@prefix ex: <http://example.org/> .
+
+<http://example.org/alice> a ex:Person .
+<http://example.org/hello%20world> ex:name "Hello" .
+
+```

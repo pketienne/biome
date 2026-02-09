@@ -1,0 +1,4 @@
+@prefix ex: <http://example.org/> .
+
+ex:alice ex:active true .
+ex:bob ex:active false .

@@ -1,0 +1,49 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix ex: <http://example.org/> .
+
+ex:alice ex:name " Alice " .
+ex:bob ex:name " Bob" .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:3:18 lint/nursery/noLiteralTrimIssues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! String literal has leading and trailing whitespace.
+  
+    1 │ @prefix ex: <http://example.org/> .
+    2 │ 
+  > 3 │ ex:alice ex:name " Alice " .
+      │                  ^^^^^^^^^
+    4 │ ex:bob ex:name " Bob" .
+    5 │ 
+  
+  i This whitespace is part of the literal value and may be unintentional.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.ttl:4:16 lint/nursery/noLiteralTrimIssues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! String literal has leading whitespace.
+  
+    3 │ ex:alice ex:name " Alice " .
+  > 4 │ ex:bob ex:name " Bob" .
+      │                ^^^^^^
+    5 │ 
+  
+  i This whitespace is part of the literal value and may be unintentional.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

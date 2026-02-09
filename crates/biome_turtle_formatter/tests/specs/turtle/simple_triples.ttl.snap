@@ -1,0 +1,42 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: turtle/simple_triples.ttl
+---
+
+# Input
+
+```ttl
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.org/> .
+
+ex:alice foaf:name "Alice" .
+ex:bob foaf:name "Bob" .
+ex:alice foaf:knows ex:bob .
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```ttl
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.org/> .
+
+ex:alice
+	foaf:name "Alice" .
+ex:bob
+	foaf:name "Bob" .
+ex:alice
+	foaf:knows ex:bob .
+```

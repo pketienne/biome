@@ -1,0 +1,37 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: turtle/collection.ttl
+---
+
+# Input
+
+```ttl
+@prefix ex: <http://example.org/> .
+
+ex:alice ex:favoriteNumbers ( 1 2 3 ) .
+ex:bob ex:friends ( ex:alice ex:carol ex:dave ) .
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```ttl
+@prefix ex: <http://example.org/> .
+
+ex:alice
+	ex:favoriteNumbers (1 2 3) .
+ex:bob
+	ex:friends (ex:alice ex:carol ex:dave) .
+```

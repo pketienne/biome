@@ -24,7 +24,11 @@ biome_turtle_syntax  = { workspace = true }
 filetime = { workspace = true }
 
 [dev-dependencies]
+biome_test_utils    = { path = "../biome_test_utils" }
 biome_turtle_parser = { path = "../biome_turtle_parser" }
+camino              = { workspace = true }
+insta               = { workspace = true, features = ["glob"] }
+tests_macros        = { path = "../tests_macros" }
 
 [lints]
 workspace = true

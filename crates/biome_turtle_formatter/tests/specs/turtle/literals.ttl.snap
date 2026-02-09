@@ -1,0 +1,48 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: turtle/literals.ttl
+---
+
+# Input
+
+```ttl
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:alice ex:name "Alice" .
+ex:alice ex:name "Alice"@en .
+ex:alice ex:name "Alice"@fr .
+ex:alice ex:age "30"^^xsd:integer .
+ex:alice ex:height "1.65"^^xsd:decimal .
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```ttl
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:alice
+	ex:name "Alice" .
+ex:alice
+	ex:name "Alice"@en .
+ex:alice
+	ex:name "Alice"@fr .
+ex:alice
+	ex:age "30"^^xsd:integer .
+ex:alice
+	ex:height "1.65"^^xsd:decimal .
+```

@@ -1,0 +1,4 @@
+@prefix ex: <http://example.org/> .
+
+ex:alice ex:favoriteNumbers ( 1 2 3 ) .
+ex:bob ex:friends ( ex:alice ex:carol ex:dave ) .
