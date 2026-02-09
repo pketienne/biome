@@ -1,0 +1,13 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# javascript Guide
+
+Use javascript for web development.
+
+typescript adds static types to javascript.
+
+```

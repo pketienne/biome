@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../../../../packages/@biomejs/biome/configuration_schema.json",
+  "linter": {
+    "rules": {
+      "nursery": {
+        "useProperNames": {
+          "level": "on",
+          "options": {
+            "names": ["JavaScript", "TypeScript"]
+          }
+        }
+      }
+    }
+  }
+}

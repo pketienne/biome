@@ -8,7 +8,7 @@
 	a owl:Ontology ;
 	owl:imports <https://pke.dev/ontology/lint> ;
 	rdfs:label "Markdown Lint Rules for Biome"@en ;
-	rdfs:comment """Generic markdown lint rules ontology aligned with biome's rule metadata. Deduplicated from markdownlint and remark-lint into a single canonical rule set of 100 rules."""@en ;
+	rdfs:comment """Generic markdown lint rules ontology aligned with biome's rule metadata. Deduplicated from markdownlint and remark-lint into a single canonical rule set of 83 implemented rules."""@en ;
 	owl:versionInfo "2.0.0" .
 
 :MarkdownRule
@@ -584,6 +584,17 @@
 	:recommended true ;
 	:implementationStatus "implemented" .
 
+:noHeadingLikeParagraph
+	a :MarkdownRule ;
+	rdfs:label "No Heading Like Paragraph"@en ;
+	rdfs:comment "Disallow heading-like lines that exceed the valid h1-h6 range."@en ;
+	:biomeName "noHeadingLikeParagraph" ;
+	:belongsToGroup :Correctness ;
+	:fixKind "none" ;
+	:severity "warning" ;
+	:recommended false ;
+	:implementationStatus "implemented" .
+
 :useRequiredHeadings
 	a :MarkdownRule ;
 	rdfs:label "Use Required Headings"@en ;
@@ -593,7 +604,7 @@
 	:fixKind "none" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :useProperNames
 	a :MarkdownRule ;
@@ -604,7 +615,7 @@
 	:fixKind "safe" ;
 	:severity "warning" ;
 	:recommended false ;
-	:implementationStatus "deferred" .
+	:implementationStatus "implemented" .
 
 :noMissingAltText
 	a :MarkdownRule ;

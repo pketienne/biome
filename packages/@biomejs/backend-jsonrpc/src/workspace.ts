@@ -2097,6 +2097,11 @@ See https://biomejs.dev/linter/rules/no-heading-indent
 	 */
 	noHeadingIndent?: NoHeadingIndentConfiguration;
 	/**
+	* Disallow heading-like lines that exceed the valid h1-h6 range.
+See https://biomejs.dev/linter/rules/no-heading-like-paragraph 
+	 */
+	noHeadingLikeParagraph?: NoHeadingLikeParagraphConfiguration;
+	/**
 	* Disallow trailing punctuation in headings.
 See https://biomejs.dev/linter/rules/no-heading-trailing-punctuation 
 	 */
@@ -2686,6 +2691,11 @@ See https://biomejs.dev/linter/rules/use-max-params
 	 */
 	useMaxParams?: UseMaxParamsConfiguration;
 	/**
+	* Enforce correct capitalization of proper names.
+See https://biomejs.dev/linter/rules/use-proper-names 
+	 */
+	useProperNames?: UseProperNamesConfiguration;
+	/**
 	* Disallow use* hooks outside of component$ or other use* hooks in Qwik applications.
 See https://biomejs.dev/linter/rules/use-qwik-method-usage 
 	 */
@@ -2700,6 +2710,11 @@ See https://biomejs.dev/linter/rules/use-qwik-valid-lexical-scope
 See https://biomejs.dev/linter/rules/use-regexp-exec 
 	 */
 	useRegexpExec?: UseRegexpExecConfiguration;
+	/**
+	* Enforce a required heading structure in the document.
+See https://biomejs.dev/linter/rules/use-required-headings 
+	 */
+	useRequiredHeadings?: UseRequiredHeadingsConfiguration;
 	/**
 	* Enforce the presence of required scripts in package.json.
 See https://biomejs.dev/linter/rules/use-required-scripts 
@@ -4353,6 +4368,9 @@ export type NoHeadingContentIndentConfiguration =
 export type NoHeadingIndentConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoHeadingIndentOptions;
+export type NoHeadingLikeParagraphConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoHeadingLikeParagraphOptions;
 export type NoHeadingTrailingPunctuationConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoHeadingTrailingPunctuationOptions;
@@ -4704,6 +4722,9 @@ export type UseLowercaseDefinitionLabelsConfiguration =
 export type UseMaxParamsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseMaxParamsOptions;
+export type UseProperNamesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseProperNamesOptions;
 export type UseQwikMethodUsageConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseQwikMethodUsageOptions;
@@ -4713,6 +4734,9 @@ export type UseQwikValidLexicalScopeConfiguration =
 export type UseRegexpExecConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseRegexpExecOptions;
+export type UseRequiredHeadingsConfiguration =
+	| RulePlainConfiguration
+	| RuleWithUseRequiredHeadingsOptions;
 export type UseRequiredScriptsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithUseRequiredScriptsOptions;
@@ -6164,6 +6188,10 @@ export interface RuleWithNoHeadingIndentOptions {
 	level: RulePlainConfiguration;
 	options?: NoHeadingIndentOptions;
 }
+export interface RuleWithNoHeadingLikeParagraphOptions {
+	level: RulePlainConfiguration;
+	options?: NoHeadingLikeParagraphOptions;
+}
 export interface RuleWithNoHeadingTrailingPunctuationOptions {
 	level: RulePlainConfiguration;
 	options?: NoHeadingTrailingPunctuationOptions;
@@ -6641,6 +6669,10 @@ export interface RuleWithUseMaxParamsOptions {
 	level: RulePlainConfiguration;
 	options?: UseMaxParamsOptions;
 }
+export interface RuleWithUseProperNamesOptions {
+	level: RulePlainConfiguration;
+	options?: UseProperNamesOptions;
+}
 export interface RuleWithUseQwikMethodUsageOptions {
 	level: RulePlainConfiguration;
 	options?: UseQwikMethodUsageOptions;
@@ -6652,6 +6684,10 @@ export interface RuleWithUseQwikValidLexicalScopeOptions {
 export interface RuleWithUseRegexpExecOptions {
 	level: RulePlainConfiguration;
 	options?: UseRegexpExecOptions;
+}
+export interface RuleWithUseRequiredHeadingsOptions {
+	level: RulePlainConfiguration;
+	options?: UseRequiredHeadingsOptions;
 }
 export interface RuleWithUseRequiredScriptsOptions {
 	level: RulePlainConfiguration;
@@ -7933,6 +7969,7 @@ export interface NoHardTabsOptions {
 }
 export type NoHeadingContentIndentOptions = {};
 export type NoHeadingIndentOptions = {};
+export type NoHeadingLikeParagraphOptions = {};
 export interface NoHeadingTrailingPunctuationOptions {
 	/**
 	 * Characters considered trailing punctuation (default: `".,;:!?"`).
@@ -8274,9 +8311,23 @@ export interface UseMaxParamsOptions {
 	 */
 	max?: number;
 }
+export interface UseProperNamesOptions {
+	/**
+	* A list of proper names with their correct capitalization
+(e.g. `["JavaScript", "TypeScript", "GitHub"]`). 
+	 */
+	names?: string[];
+}
 export type UseQwikMethodUsageOptions = {};
 export type UseQwikValidLexicalScopeOptions = {};
 export type UseRegexpExecOptions = {};
+export interface UseRequiredHeadingsOptions {
+	/**
+	* A list of required heading strings (e.g. `["# Title", "## Introduction"]`).
+Use `*` as a wildcard to match any heading. 
+	 */
+	headings?: string[];
+}
 export interface UseRequiredScriptsOptions {
 	/**
 	 * List of script names that must be present in package.json
@@ -9107,6 +9158,7 @@ export type Category =
 	| "lint/nursery/noHardTabs"
 	| "lint/nursery/noHeadingContentIndent"
 	| "lint/nursery/noHeadingIndent"
+	| "lint/nursery/noHeadingLikeParagraph"
 	| "lint/nursery/noHeadingTrailingPunctuation"
 	| "lint/nursery/noHexColors"
 	| "lint/nursery/noHiddenTableCell"
@@ -9235,7 +9287,9 @@ export type Category =
 	| "lint/nursery/useMaxParams"
 	| "lint/nursery/useQwikMethodUsage"
 	| "lint/nursery/useQwikValidLexicalScope"
+	| "lint/nursery/useProperNames"
 	| "lint/nursery/useRegexpExec"
+	| "lint/nursery/useRequiredHeadings"
 	| "lint/nursery/useRequiredScripts"
 	| "lint/nursery/useSortedClasses"
 	| "lint/nursery/useSortedDefinitions"

@@ -3892,6 +3892,16 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"NoHeadingLikeParagraphConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithNoHeadingLikeParagraphOptions" }
+			]
+		},
+		"NoHeadingLikeParagraphOptions": {
+			"type": "object",
+			"additionalProperties": false
+		},
 		"NoHeadingTrailingPunctuationConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -6268,6 +6278,13 @@
 						{ "type": "null" }
 					]
 				},
+				"noHeadingLikeParagraph": {
+					"description": "Disallow heading-like lines that exceed the valid h1-h6 range.\nSee https://biomejs.dev/linter/rules/no-heading-like-paragraph",
+					"anyOf": [
+						{ "$ref": "#/$defs/NoHeadingLikeParagraphConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noHeadingTrailingPunctuation": {
 					"description": "Disallow trailing punctuation in headings.\nSee https://biomejs.dev/linter/rules/no-heading-trailing-punctuation",
 					"anyOf": [
@@ -7095,6 +7112,13 @@
 						{ "type": "null" }
 					]
 				},
+				"useProperNames": {
+					"description": "Enforce correct capitalization of proper names.\nSee https://biomejs.dev/linter/rules/use-proper-names",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseProperNamesConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useQwikMethodUsage": {
 					"description": "Disallow use* hooks outside of component$ or other use* hooks in Qwik applications.\nSee https://biomejs.dev/linter/rules/use-qwik-method-usage",
 					"anyOf": [
@@ -7113,6 +7137,13 @@
 					"description": "Enforce RegExp#exec over String#match if no global flag is provided.\nSee https://biomejs.dev/linter/rules/use-regexp-exec",
 					"anyOf": [
 						{ "$ref": "#/$defs/UseRegexpExecConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useRequiredHeadings": {
+					"description": "Enforce a required heading structure in the document.\nSee https://biomejs.dev/linter/rules/use-required-headings",
+					"anyOf": [
+						{ "$ref": "#/$defs/UseRequiredHeadingsConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -8981,6 +9012,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/NoHeadingIndentOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithNoHeadingLikeParagraphOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/NoHeadingLikeParagraphOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -12055,6 +12095,15 @@
 			"additionalProperties": false,
 			"required": ["level"]
 		},
+		"RuleWithUseProperNamesOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseProperNamesOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
 		"RuleWithUseQwikClasslistOptions": {
 			"type": "object",
 			"properties": {
@@ -12116,6 +12165,15 @@
 			"properties": {
 				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
 				"options": { "$ref": "#/$defs/UseRegexpExecOptions" }
+			},
+			"additionalProperties": false,
+			"required": ["level"]
+		},
+		"RuleWithUseRequiredHeadingsOptions": {
+			"type": "object",
+			"properties": {
+				"level": { "$ref": "#/$defs/RulePlainConfiguration" },
+				"options": { "$ref": "#/$defs/UseRequiredHeadingsOptions" }
 			},
 			"additionalProperties": false,
 			"required": ["level"]
@@ -15649,6 +15707,23 @@
 			"type": "object",
 			"additionalProperties": false
 		},
+		"UseProperNamesConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseProperNamesOptions" }
+			]
+		},
+		"UseProperNamesOptions": {
+			"type": "object",
+			"properties": {
+				"names": {
+					"description": "A list of proper names with their correct capitalization\n(e.g. `[\"JavaScript\", \"TypeScript\", \"GitHub\"]`).",
+					"type": ["array", "null"],
+					"items": { "type": "string" }
+				}
+			},
+			"additionalProperties": false
+		},
 		"UseQwikClasslistConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
@@ -15722,6 +15797,23 @@
 			]
 		},
 		"UseRegexpExecOptions": { "type": "object", "additionalProperties": false },
+		"UseRequiredHeadingsConfiguration": {
+			"oneOf": [
+				{ "$ref": "#/$defs/RulePlainConfiguration" },
+				{ "$ref": "#/$defs/RuleWithUseRequiredHeadingsOptions" }
+			]
+		},
+		"UseRequiredHeadingsOptions": {
+			"type": "object",
+			"properties": {
+				"headings": {
+					"description": "A list of required heading strings (e.g. `[\"# Title\", \"## Introduction\"]`).\nUse `*` as a wildcard to match any heading.",
+					"type": ["array", "null"],
+					"items": { "type": "string" }
+				}
+			},
+			"additionalProperties": false
+		},
 		"UseRequiredScriptsConfiguration": {
 			"oneOf": [
 				{ "$ref": "#/$defs/RulePlainConfiguration" },
