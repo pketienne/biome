@@ -1,0 +1,265 @@
+---
+source: crates/biome_yaml_parser/tests/spec_test.rs
+expression: snapshot
+---
+## Input
+```yaml
+description: This is a long
+  description that spans
+  multiple lines
+nested:
+  key: value one
+    continues here
+  other: simple
+list:
+  - item with long
+    text on next line
+  - short
+
+```
+
+## AST
+
+```
+YamlRoot {
+    documents: YamlDocumentList [
+        YamlDocument {
+            bom_token: missing (optional),
+            directives: YamlDirectiveList [],
+            dashdashdash_token: missing (optional),
+            node: YamlBlockMapping {
+                properties: missing (optional),
+                mapping_start_token: MAPPING_START@0..0 "" [] [],
+                entries: YamlBlockMapEntryList [
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@0..11 "description" [] [],
+                            },
+                        },
+                        colon_token: COLON@11..13 ":" [] [Whitespace(" ")],
+                        value: YamlFlowInBlockNode {
+                            properties: missing (optional),
+                            flow_start_token: FLOW_START@13..13 "" [] [],
+                            flow: YamlFlowYamlNode {
+                                properties: missing (optional),
+                                content: YamlPlainScalar {
+                                    value_token: PLAIN_LITERAL@13..69 "This is a long\n  description that spans\n  multiple lines" [] [],
+                                },
+                            },
+                            flow_end_token: FLOW_END@69..69 "" [] [],
+                        },
+                    },
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@69..76 "nested" [Newline("\n")] [],
+                            },
+                        },
+                        colon_token: COLON@76..77 ":" [] [],
+                        value: YamlBlockMapping {
+                            properties: missing (optional),
+                            mapping_start_token: MAPPING_START@77..80 "" [Newline("\n"), Whitespace("  ")] [],
+                            entries: YamlBlockMapEntryList [
+                                YamlBlockMapImplicitEntry {
+                                    key: YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@80..83 "key" [] [],
+                                        },
+                                    },
+                                    colon_token: COLON@83..85 ":" [] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@85..85 "" [] [],
+                                        flow: YamlFlowYamlNode {
+                                            properties: missing (optional),
+                                            content: YamlPlainScalar {
+                                                value_token: PLAIN_LITERAL@85..113 "value one\n    continues here" [] [],
+                                            },
+                                        },
+                                        flow_end_token: FLOW_END@113..113 "" [] [],
+                                    },
+                                },
+                                YamlBlockMapImplicitEntry {
+                                    key: YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@113..121 "other" [Newline("\n"), Whitespace("  ")] [],
+                                        },
+                                    },
+                                    colon_token: COLON@121..123 ":" [] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@123..123 "" [] [],
+                                        flow: YamlFlowYamlNode {
+                                            properties: missing (optional),
+                                            content: YamlPlainScalar {
+                                                value_token: PLAIN_LITERAL@123..129 "simple" [] [],
+                                            },
+                                        },
+                                        flow_end_token: FLOW_END@129..129 "" [] [],
+                                    },
+                                },
+                            ],
+                            mapping_end_token: MAPPING_END@129..129 "" [] [],
+                        },
+                    },
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@129..134 "list" [Newline("\n")] [],
+                            },
+                        },
+                        colon_token: COLON@134..135 ":" [] [],
+                        value: YamlBlockSequence {
+                            properties: missing (optional),
+                            sequence_start_token: SEQUENCE_START@135..138 "" [Newline("\n"), Whitespace("  ")] [],
+                            entries: YamlBlockSequenceEntryList [
+                                YamlBlockSequenceEntry {
+                                    minus_token: DASH@138..140 "-" [] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@140..140 "" [] [],
+                                        flow: YamlFlowYamlNode {
+                                            properties: missing (optional),
+                                            content: YamlPlainScalar {
+                                                value_token: PLAIN_LITERAL@140..176 "item with long\n    text on next line" [] [],
+                                            },
+                                        },
+                                        flow_end_token: FLOW_END@176..176 "" [] [],
+                                    },
+                                },
+                                YamlBlockSequenceEntry {
+                                    minus_token: DASH@176..181 "-" [Newline("\n"), Whitespace("  ")] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@181..181 "" [] [],
+                                        flow: YamlFlowYamlNode {
+                                            properties: missing (optional),
+                                            content: YamlPlainScalar {
+                                                value_token: PLAIN_LITERAL@181..186 "short" [] [],
+                                            },
+                                        },
+                                        flow_end_token: FLOW_END@186..186 "" [] [],
+                                    },
+                                },
+                            ],
+                            sequence_end_token: SEQUENCE_END@186..186 "" [] [],
+                        },
+                    },
+                ],
+                mapping_end_token: MAPPING_END@186..187 "" [Newline("\n")] [],
+            },
+            dotdotdot_token: missing (optional),
+        },
+    ],
+    eof_token: EOF@187..187 "" [] [],
+}
+```
+
+## CST
+
+```
+0: YAML_ROOT@0..187
+  0: YAML_DOCUMENT_LIST@0..187
+    0: YAML_DOCUMENT@0..187
+      0: (empty)
+      1: YAML_DIRECTIVE_LIST@0..0
+      2: (empty)
+      3: YAML_BLOCK_MAPPING@0..187
+        0: (empty)
+        1: MAPPING_START@0..0 "" [] []
+        2: YAML_BLOCK_MAP_ENTRY_LIST@0..186
+          0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@0..69
+            0: YAML_FLOW_YAML_NODE@0..11
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@0..11
+                0: PLAIN_LITERAL@0..11 "description" [] []
+            1: COLON@11..13 ":" [] [Whitespace(" ")]
+            2: YAML_FLOW_IN_BLOCK_NODE@13..69
+              0: (empty)
+              1: FLOW_START@13..13 "" [] []
+              2: YAML_FLOW_YAML_NODE@13..69
+                0: (empty)
+                1: YAML_PLAIN_SCALAR@13..69
+                  0: PLAIN_LITERAL@13..69 "This is a long\n  description that spans\n  multiple lines" [] []
+              3: FLOW_END@69..69 "" [] []
+          1: YAML_BLOCK_MAP_IMPLICIT_ENTRY@69..129
+            0: YAML_FLOW_YAML_NODE@69..76
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@69..76
+                0: PLAIN_LITERAL@69..76 "nested" [Newline("\n")] []
+            1: COLON@76..77 ":" [] []
+            2: YAML_BLOCK_MAPPING@77..129
+              0: (empty)
+              1: MAPPING_START@77..80 "" [Newline("\n"), Whitespace("  ")] []
+              2: YAML_BLOCK_MAP_ENTRY_LIST@80..129
+                0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@80..113
+                  0: YAML_FLOW_YAML_NODE@80..83
+                    0: (empty)
+                    1: YAML_PLAIN_SCALAR@80..83
+                      0: PLAIN_LITERAL@80..83 "key" [] []
+                  1: COLON@83..85 ":" [] [Whitespace(" ")]
+                  2: YAML_FLOW_IN_BLOCK_NODE@85..113
+                    0: (empty)
+                    1: FLOW_START@85..85 "" [] []
+                    2: YAML_FLOW_YAML_NODE@85..113
+                      0: (empty)
+                      1: YAML_PLAIN_SCALAR@85..113
+                        0: PLAIN_LITERAL@85..113 "value one\n    continues here" [] []
+                    3: FLOW_END@113..113 "" [] []
+                1: YAML_BLOCK_MAP_IMPLICIT_ENTRY@113..129
+                  0: YAML_FLOW_YAML_NODE@113..121
+                    0: (empty)
+                    1: YAML_PLAIN_SCALAR@113..121
+                      0: PLAIN_LITERAL@113..121 "other" [Newline("\n"), Whitespace("  ")] []
+                  1: COLON@121..123 ":" [] [Whitespace(" ")]
+                  2: YAML_FLOW_IN_BLOCK_NODE@123..129
+                    0: (empty)
+                    1: FLOW_START@123..123 "" [] []
+                    2: YAML_FLOW_YAML_NODE@123..129
+                      0: (empty)
+                      1: YAML_PLAIN_SCALAR@123..129
+                        0: PLAIN_LITERAL@123..129 "simple" [] []
+                    3: FLOW_END@129..129 "" [] []
+              3: MAPPING_END@129..129 "" [] []
+          2: YAML_BLOCK_MAP_IMPLICIT_ENTRY@129..186
+            0: YAML_FLOW_YAML_NODE@129..134
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@129..134
+                0: PLAIN_LITERAL@129..134 "list" [Newline("\n")] []
+            1: COLON@134..135 ":" [] []
+            2: YAML_BLOCK_SEQUENCE@135..186
+              0: (empty)
+              1: SEQUENCE_START@135..138 "" [Newline("\n"), Whitespace("  ")] []
+              2: YAML_BLOCK_SEQUENCE_ENTRY_LIST@138..186
+                0: YAML_BLOCK_SEQUENCE_ENTRY@138..176
+                  0: DASH@138..140 "-" [] [Whitespace(" ")]
+                  1: YAML_FLOW_IN_BLOCK_NODE@140..176
+                    0: (empty)
+                    1: FLOW_START@140..140 "" [] []
+                    2: YAML_FLOW_YAML_NODE@140..176
+                      0: (empty)
+                      1: YAML_PLAIN_SCALAR@140..176
+                        0: PLAIN_LITERAL@140..176 "item with long\n    text on next line" [] []
+                    3: FLOW_END@176..176 "" [] []
+                1: YAML_BLOCK_SEQUENCE_ENTRY@176..186
+                  0: DASH@176..181 "-" [Newline("\n"), Whitespace("  ")] [Whitespace(" ")]
+                  1: YAML_FLOW_IN_BLOCK_NODE@181..186
+                    0: (empty)
+                    1: FLOW_START@181..181 "" [] []
+                    2: YAML_FLOW_YAML_NODE@181..186
+                      0: (empty)
+                      1: YAML_PLAIN_SCALAR@181..186
+                        0: PLAIN_LITERAL@181..186 "short" [] []
+                    3: FLOW_END@186..186 "" [] []
+              3: SEQUENCE_END@186..186 "" [] []
+        3: MAPPING_END@186..187 "" [Newline("\n")] []
+      4: (empty)
+  1: EOF@187..187 "" [] []
+
+```

@@ -340,8 +340,10 @@ All 22 unique lint rules (23 including `noDuplicateFlowKeys`) from the gap analy
 
 1. **Linting is complete.** With 23 rules implemented, Biome covers 100% of core bug-prevention rules and 100% of style rules identified in the gap analysis. No lint rule gaps remain.
 
-2. **The formatter is the critical gap.** Zero formatting actually happens — all nodes output verbatim. The codegen blocker has been resolved (`Yaml` added to `NodeDialect`), and 55 per-node stub files are generated. The next step is implementing actual formatting logic in each stub.
+2. **Formatter is complete.** 58 per-node formatters implemented with 21 snapshot tests. Handles indentation, whitespace, colon/comma spacing, flow collections, block scalars, anchors/tags/aliases, comments, and document markers.
 
-3. **Parser `---` fix landed.** The lexer now correctly produces `DIRECTIVE_END` tokens for `---` (document start markers), fixing trivia attachment for comments after `---`.
+3. **Parser is complete.** Full YAML 1.2.2 support including multiline plain scalars, anchors (`&name`), tags (`!type`), aliases (`*name`), block scalars (literal `|` and folded `>`), flow collections, and document markers (`---`/`...`).
 
-4. **Anchor/alias rules have parser limitations.** The YAML parser doesn't yet support `&anchor`/`*alias` syntax at the AST level, so the anchor/alias rules (`noDuplicateAnchors`, `noUnusedAnchors`, `noUndeclaredAliases`) use text-based scanning as a workaround. These rules work but would benefit from proper parser support.
+4. **Anchor/alias rules use AST nodes.** The parser produces proper `YAML_ANCHOR_PROPERTY`, `YAML_TAG_PROPERTY`, and `YAML_ALIAS_NODE` AST nodes. Lint rules have been refactored to use AST-based analysis.
+
+5. **CLI fully integrated.** YAML lint rules are registered in the configuration system. Per-language config options (`indent_style`, `indent_width`, `line_ending`, `line_width`) and per-path override settings work correctly.

@@ -21,7 +21,7 @@ impl FormatNodeRule<YamlBlockSequenceEntry> for FormatYamlBlockSequenceEntry {
                     | AnyYamlBlockInBlockNode::YamlFoldedScalar(_) => {
                         write!(f, [space(), inner.format()])?;
                     }
-                    // Block mapping: properties on same line as dash, entries indented below
+                    // Block mapping: entries indented below dash
                     AnyYamlBlockInBlockNode::YamlBlockMapping(mapping) => {
                         f.comments().mark_suppression_checked(mapping.syntax());
                         if let Some(properties) = mapping.properties() {

@@ -1,0 +1,11 @@
+description: This is a long
+  description that spans
+  multiple lines
+nested:
+  key: value one
+    continues here
+  other: simple
+list:
+  - item with long
+    text on next line
+  - short

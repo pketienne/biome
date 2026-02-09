@@ -481,7 +481,6 @@ impl<'src> YamlLexer<'src> {
     }
 
     // https://yaml.org/spec/1.2.2/#rule-ns-plain
-    // TODO: parse multiline plain scalar at current indentation level
     fn consume_plain_literal(&mut self, current: u8, in_flow_collection: bool) -> LexToken {
         debug_assert!(is_start_of_plain(
             current,

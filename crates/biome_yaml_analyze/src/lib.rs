@@ -9,7 +9,7 @@ pub use crate::registry::visit_registry;
 use crate::suppression_action::YamlSuppressionAction;
 use biome_analyze::{
     AnalysisFilter, AnalyzerOptions, AnalyzerSignal, AnalyzerSuppression, ControlFlow,
-    LanguageRoot, MatchQueryParams, MetadataRegistry, RuleAction, RuleRegistry,
+    LanguageRoot, MatchQueryParams, MetadataRegistry, RuleRegistry,
     to_analyzer_suppressions,
 };
 use biome_deserialize::TextRange;
@@ -18,8 +18,6 @@ use biome_suppression::{SuppressionDiagnostic, parse_suppression_comment};
 use biome_yaml_syntax::YamlLanguage;
 use std::ops::Deref;
 use std::sync::LazyLock;
-
-pub(crate) type YamlRuleAction = RuleAction<YamlLanguage>;
 
 pub static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
     let mut metadata = MetadataRegistry::default();

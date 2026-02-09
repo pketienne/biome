@@ -2,7 +2,7 @@ use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lin
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_rowan::AstNode;
-use biome_yaml_syntax::{AnyYamlMappingImplicitKey, YamlBlockMapImplicitEntry};
+use biome_yaml_syntax::YamlBlockMapImplicitEntry;
 
 use crate::lint::nursery::no_duplicate_keys::get_key_text;
 
