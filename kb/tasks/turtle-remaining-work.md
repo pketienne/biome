@@ -1,100 +1,100 @@
 # Turtle Remaining Work
 
-## Date: 2026-02-09
+## Date: 2026-02-09 (updated)
 
 ## Current State
 
 - **Parser**: Complete W3C Turtle syntax parsing with error recovery
 - **Formatter**: All 23 node formatters implemented with real formatting logic
-- **Linter**: 10 nursery rules implemented (P0-P2 from gap analysis)
-- **Snapshot Tests**: 13 formatter + 20 analyzer snapshot tests
+- **Linter**: 14 nursery rules implemented (10 original P0-P2 + 4 new P3 rules)
+- **Auto-Fixes**: 5 rules have working auto-fixes
+- **Suppression Tests**: 3 suppression comment tests
+- **Snapshot Tests**: 13 formatter + 31 analyzer snapshot tests (specs + suppression)
+- **Configuration**: `quoteStyle` and `firstPredicateInNewLine` formatter options wired through config/settings/options
 - **Service Integration**: File handler, settings resolution, LSP capabilities wired up
+
+---
+
+## Completed Work
+
+### 1. Auto-Fixes for Existing Lint Rules -- DONE (5 of 6)
+
+| Rule | Fix | Status |
+|------|-----|--------|
+| `useShorthandRdfType` | Replace `rdf:type` with `a` | Done (Safe) |
+| `useConsistentQuotes` | Replace `'string'` with `"string"` | Done (Safe) |
+| `noLiteralTrimIssues` | Trim whitespace from literal value | Done (Unsafe) |
+| `noDuplicatePrefixDeclaration` | Remove duplicate declaration | Done (Safe) |
+| `noUnusedPrefix` | Remove unused `@prefix` declaration | Done (Safe) |
+| `useConsistentDirectiveStyle` | Convert `PREFIX`/`BASE` to `@prefix`/`@base` | **Deferred** (complex node reconstruction) |
+
+### 2. Turtle-Specific Formatter Configuration Options -- DONE
+
+| Option | Type | Default | Status |
+|--------|------|---------|--------|
+| `quoteStyle` | `"double"` \| `"single"` | `"double"` | Done (config + settings + options) |
+| `firstPredicateInNewLine` | `bool` | `true` | Done (config + settings + options + formatting logic) |
+
+### 3. Suppression Comment Tests -- DONE
+
+- `run_suppression_test()` wired up in `spec_tests.rs`
+- 3 test fixtures: `noUnusedPrefix`, `useShorthandRdfType`, `noDuplicatePrefixDeclaration`
+- All snapshots accepted and passing
+
+### 4. Additional P3 Lint Rules -- DONE (4 of 5)
+
+| Rule | Category | Status |
+|------|----------|--------|
+| `useSortedPrefixes` | style | Done |
+| `useGroupedSubjects` | style | Done |
+| `usePrefixedNames` | style | Done |
+| `noMalformedDatatype` | correctness | Done |
+| `noUndefinedSubjectReference` | correctness | **Skipped** (high false-positive risk) |
+
+### 5. Advanced Formatter Options -- PARTIAL
+
+| Option | Status |
+|--------|--------|
+| `firstPredicateInNewLine` | Done (implemented in triples.rs) |
+| `directiveStyle` | **Deferred** |
+| `alignPredicates` | **Deferred** |
+| `prefixOrder` / `predicateOrder` | **Deferred** |
 
 ---
 
 ## Remaining Work
 
-### 1. Auto-Fixes for Existing Lint Rules
+### 1. `useConsistentDirectiveStyle` Auto-Fix
 
-**Priority: High** -- Enables `biome check --fix` for Turtle files.
-
-Several rules emit diagnostics but lack `BatchMutation`-based code actions:
-
-| Rule | Fix Description |
-|------|-----------------|
-| `useShorthandRdfType` | Replace `rdf:type` with `a` |
-| `useConsistentQuotes` | Replace `'string'` with `"string"` |
-| `useConsistentDirectiveStyle` | Convert `PREFIX`/`BASE` to `@prefix`/`@base` (or vice versa) |
-| `noUnusedPrefix` | Remove the unused `@prefix` declaration |
-| `noDuplicatePrefixDeclaration` | Remove the duplicate declaration |
-| `noLiteralTrimIssues` | Trim leading/trailing whitespace from literal value |
-
-**Acceptance criteria:**
-- Each auto-fix produces valid Turtle when applied
-- `check_code_action` in analyzer snapshot tests validates fix correctness
-- Snapshot tests capture the fix output in `.snap` files
+**Priority: Medium** -- Requires complex node reconstruction (replacing SPARQL-style `PREFIX`/`BASE` with Turtle-style `@prefix`/`@base` involves multi-token replacement and adding trailing `.`).
 
 ---
 
-### 2. Turtle-Specific Formatter Configuration Options
+### 2. `directiveStyle` Formatter Option
 
-**Priority: High** -- Makes the formatter configurable beyond generic indent/width settings.
+**Priority: Medium** -- Enum `DirectiveStyle { Turtle, Sparql }`, default `Turtle`. Would auto-convert directive syntax during formatting. Blocked on same complexity as the lint rule auto-fix.
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `quoteStyle` | `"double"` \| `"single"` | `"double"` | Preferred quote style for string literals |
-| `useAForRdfType` | `bool` | `true` | Automatically write `a` instead of `rdf:type` |
-
-**Tasks:**
-- Add fields to `TurtleFormatterConfiguration` in `crates/biome_configuration/src/turtle.rs`
-- Wire through `TurtleFormatterSettings` in `crates/biome_service/src/file_handlers/turtle.rs`
-- Add fields to `TurtleFormatOptions` in `crates/biome_turtle_formatter/src/context.rs`
-- Implement the logic in the relevant formatter nodes
-- Add snapshot tests with `.options.json` overrides
+**Files to modify:**
+- `crates/biome_configuration/src/turtle.rs` -- add field
+- `crates/biome_turtle_formatter/src/context.rs` -- add to `TurtleFormatOptions`
+- `crates/biome_service/src/file_handlers/turtle.rs` -- wire through
+- Formatter node for directives -- apply style conversion
 
 ---
 
-### 3. Suppression Comment Tests
+### 3. `alignPredicates` Formatter Option
 
-**Priority: Medium** -- Verifies `# biome-ignore` works correctly for Turtle rules.
-
-**Tasks:**
-- Create `crates/biome_turtle_analyze/tests/suppression/` directory
-- Add test cases for suppressing each rule with `# biome-ignore lint/nursery/ruleName`
-- Wire up `run_suppression_test` in `spec_tests.rs` (following CSS pattern)
-- Verify suppressed diagnostics don't appear in output
+**Priority: Low** -- Vertically align predicates within a subject block. Complex in Biome's IR-based formatter (requires computing max predicate width across siblings).
 
 ---
 
-### 4. Additional Lint Rules (P3)
+### 4. `prefixOrder` / `predicateOrder` Formatter Options
 
-**Priority: Medium-Low** -- Advanced rules from the gap analysis.
-
-| Rule | Category | Complexity | Description |
-|------|----------|------------|-------------|
-| `useSortedPrefixes` | style | Medium | Enforce alphabetical or conventional ordering of `@prefix` declarations |
-| `useGroupedSubjects` | style | High | Detect triples with same subject in separate blocks; suggest merging with `;` |
-| `usePrefixedNames` | style | High | Suggest prefixed names over full IRIs when a matching prefix is declared |
-| `noMalformedDatatype` | correctness | High | Validate literal values conform to declared XSD datatypes |
-| `noUndefinedSubjectReference` | correctness | High | Flag subjects referenced as objects but never defined as subjects |
+**Priority: Low** -- Custom ordering arrays for prefix declarations and predicates. Requires string array serialization in configuration.
 
 ---
 
-### 5. Advanced Formatter Options (P3)
-
-**Priority: Low** -- Competitive feature parity with turtle-formatter and Jena RIOT.
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `alignPredicates` | `bool` | `false` | Vertically align predicates within a subject block |
-| `firstPredicateInNewLine` | `bool` | `true` | Place first predicate on new line after subject |
-| `directiveStyle` | `"turtle"` \| `"sparql"` | `"turtle"` | Prefer `@prefix`/`@base` vs `PREFIX`/`BASE` |
-| `prefixOrder` | `string[]` | `[]` | Custom ordering for prefix declarations |
-| `predicateOrder` | `string[]` | `["rdf:type"]` | Custom ordering for predicates within a subject |
-
----
-
-### 6. Escape and Literal Normalization
+### 5. Escape and Literal Normalization
 
 **Priority: Low** -- Polish features found in turtlefmt and prttl.
 
@@ -106,7 +106,7 @@ Several rules emit diagnostics but lack `BatchMutation`-based code actions:
 
 ---
 
-### 7. Assists
+### 6. Assists
 
 **Priority: Low** -- Code actions that aren't tied to diagnostics.
 
@@ -119,7 +119,7 @@ Several rules emit diagnostics but lack `BatchMutation`-based code actions:
 
 ---
 
-### 8. Documentation
+### 7. Documentation
 
 **Priority: Medium** -- Required for website generation.
 
@@ -129,14 +129,25 @@ Several rules emit diagnostics but lack `BatchMutation`-based code actions:
 
 ---
 
+### 8. `quoteStyle` Formatter Logic
+
+**Priority: Medium** -- The `quoteStyle` option is wired through config/settings/options but the actual string literal rewriting logic in the formatter node is not yet implemented. The formatter needs to check `f.options().quote_style()` and rewrite quotes on `TurtleString` nodes accordingly.
+
+---
+
+### 9. Additional Suppression Tests
+
+**Priority: Low** -- Currently 3 suppression tests cover representative rules. Could add coverage for remaining rules.
+
+---
+
 ## Suggested Order of Implementation
 
-1. Auto-fixes for existing rules (highest user impact)
-2. `quoteStyle` + `useAForRdfType` config options
-3. Suppression comment tests
-4. Rule documentation polish
-5. `useSortedPrefixes` rule
-6. Advanced formatter options (`alignPredicates`, `firstPredicateInNewLine`)
-7. Remaining P3 lint rules
-8. Escape/literal normalization
-9. Assists
+1. `quoteStyle` formatter logic (option is wired, just needs the node-level implementation)
+2. `useConsistentDirectiveStyle` auto-fix + `directiveStyle` formatter option (related complexity)
+3. Documentation polish for all 14 rules
+4. `alignPredicates` formatter option
+5. Escape/literal normalization
+6. Assists
+7. `prefixOrder` / `predicateOrder`
+8. Additional suppression tests
