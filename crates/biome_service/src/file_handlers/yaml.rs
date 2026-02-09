@@ -107,7 +107,7 @@ impl ServiceLanguage for YamlLanguage {
         let indent_style = language
             .indent_style
             .or(global.indent_style)
-            .unwrap_or_default();
+            .unwrap_or(IndentStyle::Space);
         let indent_width = language
             .indent_width
             .or(global.indent_width)

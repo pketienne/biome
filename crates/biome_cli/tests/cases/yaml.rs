@@ -7,7 +7,7 @@ use camino::Utf8Path;
 
 const UNFORMATTED: &str = "key1:   value1\nkey2:  value2\nnested:\n  child:   deep\n";
 
-const FORMATTED: &str = "key1: value1\nkey2: value2\nnested:\n\tchild: deep\n";
+const FORMATTED: &str = "key1: value1\nkey2: value2\nnested:\n  child: deep\n";
 
 const LINT_INVALID: &str = "first: &anchor value1\nsecond: &anchor value2\n";
 

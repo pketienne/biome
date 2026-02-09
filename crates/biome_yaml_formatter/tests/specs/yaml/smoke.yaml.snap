@@ -30,7 +30,7 @@ scripts:
 ## Output 1
 
 -----
-Indent style: Tab
+Indent style: Space
 Indent width: 2
 Line ending: LF
 Line width: 80
@@ -41,13 +41,13 @@ name: my-project
 version: 1.0.0
 description: A sample project
 keywords:
-	- yaml
-	- formatter
-	- biome
+  - yaml
+  - formatter
+  - biome
 dependencies:
-	lodash: 4.17.21
-	express: 4.18.2
+  lodash: 4.17.21
+  express: 4.18.2
 scripts:
-	build: tsc
-	test: jest
+  build: tsc
+  test: jest
 ```

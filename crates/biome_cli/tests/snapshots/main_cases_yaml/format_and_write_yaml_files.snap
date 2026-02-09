@@ -8,7 +8,7 @@ expression: redactor(content)
 key1: value1
 key2: value2
 nested:
-	child: deep
+  child: deep
 
 ```
 

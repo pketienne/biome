@@ -22,7 +22,7 @@ list: # comment after key
 ## Output 1
 
 -----
-Indent style: Tab
+Indent style: Space
 Indent width: 2
 Line ending: LF
 Line width: 80
@@ -32,6 +32,6 @@ Line width: 80
 key: value # inline comment
 name: test # another comment
 list: # comment after key
-	- item1
-	- item2 # item comment
+  - item1
+  - item2 # item comment
 ```

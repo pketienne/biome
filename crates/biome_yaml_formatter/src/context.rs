@@ -53,12 +53,23 @@ impl CstFormatContext for YamlFormatContext {
     }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct YamlFormatOptions {
     indent_style: IndentStyle,
     indent_width: IndentWidth,
     line_ending: LineEnding,
     line_width: LineWidth,
+}
+
+impl Default for YamlFormatOptions {
+    fn default() -> Self {
+        Self {
+            indent_style: IndentStyle::Space,
+            indent_width: IndentWidth::default(),
+            line_ending: LineEnding::default(),
+            line_width: LineWidth::default(),
+        }
+    }
 }
 
 impl YamlFormatOptions {

@@ -20,7 +20,7 @@ key: value
 ## Output 1
 
 -----
-Indent style: Tab
+Indent style: Space
 Indent width: 2
 Line ending: LF
 Line width: 80

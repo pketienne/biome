@@ -21,20 +21,20 @@ impl FormatNodeRule<YamlBlockSequenceEntry> for FormatYamlBlockSequenceEntry {
                     | AnyYamlBlockInBlockNode::YamlFoldedScalar(_) => {
                         write!(f, [space(), inner.format()])?;
                     }
-                    // Block mapping: entries indented below dash
+                    // Block mapping: compact form (- key: value)
                     AnyYamlBlockInBlockNode::YamlBlockMapping(mapping) => {
                         f.comments().mark_suppression_checked(mapping.syntax());
+                        write!(
+                            f,
+                            [format_synthetic_token(&mapping.mapping_start_token()?)]
+                        )?;
                         if let Some(properties) = mapping.properties() {
                             write!(f, [space(), properties.format()])?;
                         }
                         write!(
                             f,
-                            [hard_line_break(), block_indent(&format_with(|f| {
-                                write!(
-                                    f,
-                                    [format_synthetic_token(&mapping.mapping_start_token()?)]
-                                )?;
-                                write!(f, [mapping.entries().format()])?;
+                            [align(2, &format_with(|f| {
+                                write!(f, [space(), mapping.entries().format()])?;
                                 write!(
                                     f,
                                     [format_synthetic_token(&mapping.mapping_end_token()?)]

@@ -1,0 +1,19 @@
+steps:
+  - uses: actions/checkout@v4
+  - uses: actions/setup-node@v4
+    with:
+      node-version: 18
+  - run: npm ci
+  - run: npm test
+list_of_maps:
+  - name: first
+    value: 1
+  - name: second
+    value: 2
+    details:
+      type: important
+      priority: high
+simple_list:
+  - alpha
+  - beta
+  - gamma

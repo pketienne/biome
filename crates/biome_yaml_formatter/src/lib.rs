@@ -364,7 +364,7 @@ mod tests {
         let options = YamlFormatOptions::default();
         let formatted = format_node(options, &parse.syntax()).unwrap();
         let result = formatted.print().unwrap();
-        assert_eq!(result.as_code(), "parent:\n\tchild: value\n");
+        assert_eq!(result.as_code(), "parent:\n  child: value\n");
     }
 
     #[test]

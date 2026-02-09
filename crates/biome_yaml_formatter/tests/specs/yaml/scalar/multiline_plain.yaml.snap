@@ -28,7 +28,7 @@ list:
 ## Output 1
 
 -----
-Indent style: Tab
+Indent style: Space
 Indent width: 2
 Line ending: LF
 Line width: 80
@@ -39,11 +39,11 @@ description: This is a long
   description that spans
   multiple lines
 nested:
-	key: value one
+  key: value one
     continues here
-	other: simple
+  other: simple
 list:
-	- item with long
+  - item with long
     text on next line
-	- short
+  - short
 ```
