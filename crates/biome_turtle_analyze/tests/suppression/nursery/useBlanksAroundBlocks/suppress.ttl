@@ -1,0 +1,4 @@
+@prefix ex: <http://example.org/> .
+ex:alice ex:name "Alice" .
+# biome-ignore lint/nursery/useBlanksAroundBlocks: testing suppression
+ex:bob ex:name "Bob" .

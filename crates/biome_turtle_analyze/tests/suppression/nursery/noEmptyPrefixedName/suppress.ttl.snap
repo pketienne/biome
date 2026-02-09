@@ -1,0 +1,11 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: suppress.ttl
+---
+# Input
+```turtle
+@prefix ex: <http://example.org/> .
+# biome-ignore lint/nursery/noEmptyPrefixedName: testing suppression
+ex:alice ex:knows ex: .
+
+```

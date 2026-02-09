@@ -37,6 +37,10 @@ declare_lint_rule! {
     /// Use the `ignoredPrefixes` option to whitelist prefix namespaces that
     /// should not trigger this rule even when unused.
     ///
+    /// Use the `keepUnusedPrefixes` option to disable this rule entirely
+    /// while keeping it registered (e.g., for template files that declare
+    /// prefixes for documentation purposes).
+    ///
     /// ```json
     /// {
     ///     "linter": {
@@ -45,7 +49,8 @@ declare_lint_rule! {
     ///                 "noUnusedPrefix": {
     ///                     "level": "warn",
     ///                     "options": {
-    ///                         "ignoredPrefixes": ["owl:", "skos:"]
+    ///                         "ignoredPrefixes": ["owl:", "skos:"],
+    ///                         "keepUnusedPrefixes": false
     ///                     }
     ///                 }
     ///             }
@@ -80,6 +85,11 @@ impl Rule for NoUnusedPrefix {
         let root = ctx.query();
         let model = ctx.model();
         let options = ctx.options();
+
+        if options.keep_unused_prefixes.unwrap_or(false) {
+            return Vec::new();
+        }
+
         let ignored: HashSet<&str> = options
             .ignored_prefixes
             .as_ref()

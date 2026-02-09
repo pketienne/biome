@@ -1,0 +1,4 @@
+@prefix ex: <http://example.org/> .
+ex:alice ex:name "Alice" .
+# biome-ignore lint/nursery/noMissingSemicolonBeforeDot: testing suppression
+ex:alice ex:age "30" .

@@ -1,0 +1,3 @@
+@prefix ex: <http://example.org/> .
+# biome-ignore lint/nursery/noEmptyPrefixedName: testing suppression
+ex:alice ex:knows ex: .

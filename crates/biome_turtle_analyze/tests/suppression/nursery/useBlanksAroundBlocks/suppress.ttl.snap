@@ -1,0 +1,28 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: suppress.ttl
+---
+# Input
+```turtle
+@prefix ex: <http://example.org/> .
+ex:alice ex:name "Alice" .
+# biome-ignore lint/nursery/useBlanksAroundBlocks: testing suppression
+ex:bob ex:name "Bob" .
+
+```
+
+# Diagnostics
+```
+suppress.ttl:3:1 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+  
+    1 │ @prefix ex: <http://example.org/> .
+    2 │ ex:alice ex:name "Alice" .
+  > 3 │ # biome-ignore lint/nursery/useBlanksAroundBlocks: testing suppression
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ ex:bob ex:name "Bob" .
+    5 │ 
+  
+
+```
