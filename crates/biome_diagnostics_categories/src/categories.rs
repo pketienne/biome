@@ -490,6 +490,10 @@ define_categories! {
     "assist/source/removeUnusedPrefixes": "https://biomejs.dev/assist/actions/remove-unused-prefixes",
     "assist/source/convertIriToPrefixedName": "https://biomejs.dev/assist/actions/convert-iri-to-prefixed-name",
     "assist/source/convertRdfTypeToShorthand": "https://biomejs.dev/assist/actions/convert-rdf-type-to-shorthand",
+    "assist/source/sortPredicates": "https://biomejs.dev/assist/actions/sort-predicates",
+    "assist/source/sortTriples": "https://biomejs.dev/assist/actions/sort-triples",
+    "assist/source/expandTriples": "https://biomejs.dev/assist/actions/expand-triples",
+    "assist/source/mergeTriples": "https://biomejs.dev/assist/actions/merge-triples",
     // end assist actions
     ; // start syntax rules
     "syntax/correctness/noTypeOnlyImportAttributes",

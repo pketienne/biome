@@ -2,6 +2,7 @@ use biome_analyze::{Ast, FixKind, Rule, RuleDiagnostic, context::RuleContext, de
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_rowan::{AstNode, BatchMutationExt, TextRange};
+use biome_rule_options::no_unused_prefix::NoUnusedPrefixOptions;
 use biome_turtle_syntax::{AnyTurtleDirective, AnyTurtleStatement, TurtlePrefixedName, TurtleRoot};
 use std::collections::{HashMap, HashSet};
 
@@ -30,6 +31,28 @@ declare_lint_rule! {
     /// <http://example.org/alice> foaf:name "Alice" .
     /// ```
     ///
+    /// ## Options
+    ///
+    /// Use the `ignoredPrefixes` option to whitelist prefix namespaces that
+    /// should not trigger this rule even when unused.
+    ///
+    /// ```json
+    /// {
+    ///     "linter": {
+    ///         "rules": {
+    ///             "nursery": {
+    ///                 "noUnusedPrefix": {
+    ///                     "level": "warn",
+    ///                     "options": {
+    ///                         "ignoredPrefixes": ["owl:", "skos:"]
+    ///                     }
+    ///                 }
+    ///             }
+    ///         }
+    ///     }
+    /// }
+    /// ```
+    ///
     pub NoUnusedPrefix {
         version: "next",
         name: "noUnusedPrefix",
@@ -50,10 +73,16 @@ impl Rule for NoUnusedPrefix {
     type Query = Ast<TurtleRoot>;
     type State = UnusedPrefix;
     type Signals = Vec<Self::State>;
-    type Options = ();
+    type Options = NoUnusedPrefixOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let root = ctx.query();
+        let options = ctx.options();
+        let ignored: HashSet<&str> = options
+            .ignored_prefixes
+            .as_ref()
+            .map(|arr| arr.iter().map(|s| s.as_ref()).collect())
+            .unwrap_or_default();
         let mut declared: HashMap<String, (TextRange, AnyTurtleDirective)> = HashMap::new();
         let mut used: HashSet<String> = HashSet::new();
 
@@ -92,10 +121,10 @@ impl Rule for NoUnusedPrefix {
             }
         }
 
-        // Report unused
+        // Report unused (skip ignored prefixes)
         declared
             .into_iter()
-            .filter(|(ns, _)| !used.contains(ns.as_str()))
+            .filter(|(ns, _)| !used.contains(ns.as_str()) && !ignored.contains(ns.as_str()))
             .map(|(namespace, (range, directive))| UnusedPrefix { namespace, range, directive })
             .collect()
     }

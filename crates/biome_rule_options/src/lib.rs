@@ -247,6 +247,7 @@ pub mod no_unused_expressions;
 pub mod no_unused_function_parameters;
 pub mod no_unused_imports;
 pub mod no_unused_labels;
+pub mod no_unused_prefix;
 pub mod no_unused_private_class_members;
 pub mod no_unused_template_literal;
 pub mod no_unused_variables;

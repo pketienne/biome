@@ -1,0 +1,44 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+<http://example.org/alice>
+    foaf:knows <http://example.org/bob> ;
+    foaf:age 30 ;
+    foaf:name "Alice" .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:2:1 assist/source/sortPredicates  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i Predicates are not sorted alphabetically within subject blocks.
+  
+    1 │ @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+  > 2 │ <http://example.org/alice>
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 3 │     foaf:knows <http://example.org/bob> ;
+  > 4 │     foaf:age 30 ;
+  > 5 │     foaf:name "Alice" .
+      │     ^^^^^^^^^^^^^^^^^^^
+    6 │ 
+  
+  i Sort predicates for consistency and readability.
+  
+  i Safe fix: Sort predicates alphabetically.
+  
+    1 1 │   @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    2 2 │   <http://example.org/alice>
+    3   │ - ····foaf:knows·<http://example.org/bob>·;
+    4   │ - ····foaf:age·30·;
+      3 │ + ····foaf:age·30·;
+      4 │ + ····foaf:knows·<http://example.org/bob>·;
+    5 5 │       foaf:name "Alice" .
+    6 6 │   
+  
+
+```

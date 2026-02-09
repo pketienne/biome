@@ -1,0 +1,5 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+<http://example.org/alice>
+    foaf:knows <http://example.org/bob> ;
+    foaf:age 30 ;
+    foaf:name "Alice" .

@@ -1,0 +1,42 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+<http://example.org/alice> foaf:name "Alice" .
+<http://example.org/alice> foaf:knows <http://example.org/bob> .
+<http://example.org/alice> foaf:knows <http://example.org/carol> .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:2:1 assist/source/mergeTriples  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i 3 triple(s) can be merged.
+  
+    1 │ @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+  > 2 │ <http://example.org/alice> foaf:name "Alice" .
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 3 │ <http://example.org/alice> foaf:knows <http://example.org/bob> .
+  > 4 │ <http://example.org/alice> foaf:knows <http://example.org/carol> .
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ 
+  
+  i Merge triples with the same subject for conciseness.
+  
+  i Safe fix: Merge triples with the same subject.
+  
+    1 1 │   @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    2   │ - <http://example.org/alice>·foaf:name·"Alice"·.
+    3   │ - <http://example.org/alice>·foaf:knows·<http://example.org/bob>·.
+    4   │ - <http://example.org/alice>·foaf:knows·<http://example.org/carol>·.
+      2 │ + <http://example.org/alice>
+      3 │ + ····foaf:name·"Alice"·;
+      4 │ + ····foaf:knows·<http://example.org/bob>,·<http://example.org/carol>·.
+    5 5 │   
+  
+
+```

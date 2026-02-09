@@ -1807,6 +1807,7 @@ dependencies = [
  "biome_console",
  "biome_diagnostics",
  "biome_rowan",
+ "biome_rule_options",
  "biome_suppression",
  "biome_test_utils",
  "biome_turtle_parser",

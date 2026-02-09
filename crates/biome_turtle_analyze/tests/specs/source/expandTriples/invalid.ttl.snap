@@ -1,0 +1,41 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+<http://example.org/alice>
+    foaf:name "Alice" ;
+    foaf:knows <http://example.org/bob> .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:2:1 assist/source/expandTriples  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i 1 compound triple(s) can be expanded.
+  
+    1 │ @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+  > 2 │ <http://example.org/alice>
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 3 │     foaf:name "Alice" ;
+  > 4 │     foaf:knows <http://example.org/bob> .
+      │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ 
+  
+  i Expand to one triple per line for cleaner diffs.
+  
+  i Safe fix: Expand compound triples to one per line.
+  
+    1 1 │   @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    2   │ - <http://example.org/alice>
+    3   │ - ····foaf:name·"Alice"·;
+    4   │ - ····foaf:knows·<http://example.org/bob>·.
+      2 │ + <http://example.org/alice>·foaf:name·"Alice"·.
+      3 │ + <http://example.org/alice>·foaf:knows·<http://example.org/bob>·.
+    5 4 │   
+  
+
+```
