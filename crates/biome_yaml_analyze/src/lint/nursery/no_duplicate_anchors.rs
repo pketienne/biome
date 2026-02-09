@@ -1,8 +1,8 @@
 use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, Direction, TextRange, WalkEvent};
-use biome_yaml_syntax::{YamlRoot, YamlSyntaxKind};
+use biome_rowan::{AstNode, TextRange};
+use biome_yaml_syntax::{YamlAnchorProperty, YamlRoot};
 use rustc_hash::FxHashMap;
 
 declare_lint_rule! {
@@ -52,20 +52,17 @@ impl Rule for NoDuplicateAnchors {
         let root = ctx.query();
         let mut anchors = FxHashMap::<String, (TextRange, Vec<TextRange>)>::default();
 
-        for event in root.syntax().preorder_with_tokens(Direction::Next) {
-            if let WalkEvent::Enter(element) = event {
-                if let Some(token) = element.as_token() {
-                    if token.kind() == YamlSyntaxKind::ANCHOR_PROPERTY_LITERAL {
-                        let text = token.text_trimmed();
-                        let name = text.strip_prefix('&').unwrap_or(text).to_string();
+        for anchor in root.syntax().descendants().filter_map(YamlAnchorProperty::cast) {
+            let Ok(token) = anchor.value_token() else {
+                continue;
+            };
+            let text = token.text_trimmed();
+            let name = text.strip_prefix('&').unwrap_or(text).to_string();
 
-                        if let Some((_, duplicates)) = anchors.get_mut(&name) {
-                            duplicates.push(token.text_trimmed_range());
-                        } else {
-                            anchors.insert(name, (token.text_trimmed_range(), Vec::new()));
-                        }
-                    }
-                }
+            if let Some((_, duplicates)) = anchors.get_mut(&name) {
+                duplicates.push(token.text_trimmed_range());
+            } else {
+                anchors.insert(name, (token.text_trimmed_range(), Vec::new()));
             }
         }
 

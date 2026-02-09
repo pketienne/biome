@@ -1,0 +1,53 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/mapping/complex.yaml
+---
+
+# Input
+
+```yaml
+simple: value
+nested:
+  level2:
+    level3: deep
+  sibling: here
+mixed_flow: {a: 1, b: [2, 3]}
+empty_value:
+list_of_maps:
+  - name: first
+    value: 1
+  - name: second
+    value: 2
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```yaml
+simple: value
+nested:
+	level2:
+		level3: deep
+	sibling: here
+mixed_flow: {a: 1, b: [2, 3]}
+empty_value:
+list_of_maps:
+	-
+		name: first
+		value: 1
+	-
+		name: second
+		value: 2
+```

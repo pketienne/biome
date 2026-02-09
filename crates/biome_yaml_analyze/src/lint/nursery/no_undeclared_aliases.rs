@@ -1,8 +1,8 @@
 use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, Direction, TextRange, WalkEvent};
-use biome_yaml_syntax::{YamlRoot, YamlSyntaxKind};
+use biome_rowan::{AstNode, TextRange};
+use biome_yaml_syntax::{YamlAliasNode, YamlAnchorProperty, YamlRoot};
 use rustc_hash::FxHashSet;
 
 declare_lint_rule! {
@@ -49,33 +49,35 @@ impl Rule for NoUndeclaredAliases {
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let root = ctx.query();
-        let mut anchors = FxHashSet::<String>::default();
-        let mut undeclared_aliases = Vec::new();
 
-        for event in root.syntax().preorder_with_tokens(Direction::Next) {
-            if let WalkEvent::Enter(element) = event {
-                if let Some(token) = element.as_token() {
-                    match token.kind() {
-                        YamlSyntaxKind::ANCHOR_PROPERTY_LITERAL => {
-                            let text = token.text_trimmed();
-                            let name = text.strip_prefix('&').unwrap_or(text).to_string();
-                            anchors.insert(name);
-                        }
-                        YamlSyntaxKind::ALIAS_LITERAL => {
-                            let text = token.text_trimmed();
-                            let name = text.strip_prefix('*').unwrap_or(text).to_string();
-                            if !anchors.contains(&name) {
-                                undeclared_aliases.push(UndeclaredAliasState {
-                                    alias_name: name,
-                                    range: token.text_trimmed_range(),
-                                });
-                            }
-                        }
-                        _ => {}
-                    }
+        let anchors: FxHashSet<String> = root
+            .syntax()
+            .descendants()
+            .filter_map(YamlAnchorProperty::cast)
+            .filter_map(|anchor| {
+                let text = anchor.value_token().ok()?.text_trimmed().to_string();
+                Some(text.strip_prefix('&').unwrap_or(&text).to_string())
+            })
+            .collect();
+
+        let undeclared_aliases: Vec<_> = root
+            .syntax()
+            .descendants()
+            .filter_map(YamlAliasNode::cast)
+            .filter_map(|alias| {
+                let token = alias.value_token().ok()?;
+                let text = token.text_trimmed();
+                let name = text.strip_prefix('*').unwrap_or(text).to_string();
+                if !anchors.contains(&name) {
+                    Some(UndeclaredAliasState {
+                        alias_name: name,
+                        range: token.text_trimmed_range(),
+                    })
+                } else {
+                    None
                 }
-            }
-        }
+            })
+            .collect();
 
         undeclared_aliases.into_boxed_slice()
     }

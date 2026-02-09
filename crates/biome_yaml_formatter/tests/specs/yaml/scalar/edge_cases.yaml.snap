@@ -1,0 +1,48 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/scalar/edge_cases.yaml
+---
+
+# Input
+
+```yaml
+empty_double: ""
+empty_single: ''
+special_chars: "hello\nworld"
+unicode: "caf\u00e9"
+long_plain: this is a somewhat long plain scalar value that tests basic formatting
+number_like: "123"
+bool_like: "true"
+null_like: "null"
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```yaml
+empty_double: ""
+empty_single: ''
+special_chars: "hello\nworld"
+unicode: "caf\u00e9"
+long_plain: this is a somewhat long plain scalar value that tests basic formatting
+number_like: "123"
+bool_like: "true"
+null_like: "null"
+```
+
+# Lines exceeding max width of 80 characters
+```
+    5: long_plain: this is a somewhat long plain scalar value that tests basic formatting
+```

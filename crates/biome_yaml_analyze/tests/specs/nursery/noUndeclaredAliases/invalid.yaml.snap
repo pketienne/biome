@@ -9,18 +9,20 @@ second: *missing
 
 ```
 
-_Note: The parser emitted 1 diagnostics which are not shown here._
-
 # Diagnostics
 ```
-invalid.yaml:2:9 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:2:9 lint/nursery/noUndeclaredAliases ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  × Unexpected character `*`
+  × The alias references an undeclared anchor missing.
   
     1 │ first: value1
   > 2 │ second: *missing
-      │         ^
+      │         ^^^^^^^^
     3 │ 
+  
+  i Declare the anchor before referencing it with an alias.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
 
 ```
