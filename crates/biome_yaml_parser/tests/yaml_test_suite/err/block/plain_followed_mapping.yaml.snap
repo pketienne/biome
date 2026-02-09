@@ -107,13 +107,11 @@ YamlRoot {
 ```
 plain_followed_mapping.yaml:3:1 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  × expected `:` but instead found ``
+  × Expected `:` after mapping key
   
     1 │ aa: bb
     2 │ abc
   > 3 │ 
       │ 
-  
-  i Remove 
   
 ```

@@ -35,6 +35,10 @@ pub(crate) fn expected_flow_sequence_closing_bracket(range: TextRange) -> ParseD
     ParseDiagnostic::new("Expected `]`", range)
 }
 
+pub(crate) fn expected_mapping_colon(range: TextRange) -> ParseDiagnostic {
+    ParseDiagnostic::new("Expected `:` after mapping key", range)
+}
+
 pub(crate) fn expected_header(p: &YamlParser, range: TextRange) -> ParseDiagnostic {
     expected_node("block header", range, p)
 }

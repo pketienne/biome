@@ -139,13 +139,11 @@ YamlRoot {
 ```
 mapping_missing_colon.yaml:2:6 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  × expected `:` but instead found ``
+  × Expected `:` after mapping key
   
     1 │ aa: bb
   > 2 │ "ab" [10]
       │      
     3 │ 
-  
-  i Remove 
   
 ```

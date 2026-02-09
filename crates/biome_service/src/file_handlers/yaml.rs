@@ -17,7 +17,7 @@ use biome_configuration::yaml::{
     YamlAssistConfiguration, YamlAssistEnabled, YamlFormatterConfiguration,
     YamlFormatterEnabled, YamlLinterConfiguration, YamlLinterEnabled,
 };
-use biome_formatter::Printed;
+use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth, Printed};
 use biome_fs::BiomePath;
 use biome_yaml_analyze::analyze;
 use biome_yaml_formatter::format_node;
@@ -34,12 +34,20 @@ use tracing::{debug_span, trace_span};
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct YamlFormatterSettings {
     pub enabled: Option<YamlFormatterEnabled>,
+    pub indent_style: Option<IndentStyle>,
+    pub indent_width: Option<IndentWidth>,
+    pub line_ending: Option<LineEnding>,
+    pub line_width: Option<LineWidth>,
 }
 
 impl From<YamlFormatterConfiguration> for YamlFormatterSettings {
     fn from(config: YamlFormatterConfiguration) -> Self {
         Self {
             enabled: config.enabled,
+            indent_style: config.indent_style,
+            indent_width: config.indent_width,
+            line_ending: config.line_ending,
+            line_width: config.line_width,
         }
     }
 }
@@ -91,16 +99,37 @@ impl ServiceLanguage for YamlLanguage {
 
     fn resolve_format_options(
         global: &crate::settings::FormatSettings,
-        _overrides: &OverrideSettings,
-        _language: &Self::FormatterSettings,
-        _path: &BiomePath,
+        overrides: &OverrideSettings,
+        language: &Self::FormatterSettings,
+        path: &BiomePath,
         _file_source: &DocumentFileSource,
     ) -> Self::FormatOptions {
-        YamlFormatOptions::default()
-            .with_indent_style(global.indent_style.unwrap_or_default())
-            .with_indent_width(global.indent_width.unwrap_or_default())
-            .with_line_width(global.line_width.unwrap_or_default())
-            .with_line_ending(global.line_ending.unwrap_or_default())
+        let indent_style = language
+            .indent_style
+            .or(global.indent_style)
+            .unwrap_or_default();
+        let indent_width = language
+            .indent_width
+            .or(global.indent_width)
+            .unwrap_or_default();
+        let line_width = language
+            .line_width
+            .or(global.line_width)
+            .unwrap_or_default();
+        let line_ending = language
+            .line_ending
+            .or(global.line_ending)
+            .unwrap_or_default();
+
+        let mut options = YamlFormatOptions::default()
+            .with_indent_style(indent_style)
+            .with_indent_width(indent_width)
+            .with_line_width(line_width)
+            .with_line_ending(line_ending);
+
+        overrides.apply_override_yaml_format_options(path, &mut options);
+
+        options
     }
 
     fn resolve_analyzer_options(

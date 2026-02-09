@@ -34,6 +34,7 @@ use biome_graphql_syntax::GraphqlLanguage;
 use biome_grit_formatter::context::GritFormatOptions;
 use biome_grit_syntax::GritLanguage;
 use biome_html_formatter::HtmlFormatOptions;
+use biome_yaml_formatter::context::YamlFormatOptions;
 use biome_html_parser::HtmlParseOptions;
 use biome_html_syntax::HtmlLanguage;
 use biome_markdown_syntax::MarkdownLanguage;
@@ -1347,6 +1348,18 @@ impl OverrideSettings {
         }
     }
 
+    pub fn apply_override_yaml_format_options(
+        &self,
+        path: &Utf8Path,
+        options: &mut YamlFormatOptions,
+    ) {
+        for pattern in self.patterns.iter() {
+            if pattern.is_file_included(path) {
+                pattern.apply_overrides_to_yaml_format_options(options);
+            }
+        }
+    }
+
     pub fn apply_override_js_parser_options(&self, path: &Utf8Path, options: &mut JsParserOptions) {
         for pattern in self.patterns.iter() {
             if pattern.is_file_included(path) {
@@ -1737,6 +1750,24 @@ impl OverrideSettingPattern {
         // #endregion
     }
 
+    fn apply_overrides_to_yaml_format_options(&self, options: &mut YamlFormatOptions) {
+        let yaml_formatter = &self.languages.yaml.formatter;
+        let formatter = &self.formatter;
+
+        if let Some(indent_style) = yaml_formatter.indent_style.or(formatter.indent_style) {
+            options.set_indent_style(indent_style);
+        }
+        if let Some(indent_width) = yaml_formatter.indent_width.or(formatter.indent_width) {
+            options.set_indent_width(indent_width);
+        }
+        if let Some(line_ending) = yaml_formatter.line_ending.or(formatter.line_ending) {
+            options.set_line_ending(line_ending);
+        }
+        if let Some(line_width) = yaml_formatter.line_width.or(formatter.line_width) {
+            options.set_line_width(line_width);
+        }
+    }
+
     fn apply_overrides_to_js_parser_options(&self, options: &mut JsParserOptions) {
         let js_parser = &self.languages.javascript.parser;
 
@@ -1841,6 +1872,7 @@ pub fn to_override_settings(
         let graphql = pattern.graphql.take().unwrap_or_default();
         let grit = pattern.grit.take().unwrap_or_default();
         let html = pattern.html.take().unwrap_or_default();
+        let yaml = pattern.yaml.take().unwrap_or_default();
 
         languages.javascript =
             to_javascript_language_settings(javascript, &current_settings.languages.javascript);
@@ -1851,6 +1883,7 @@ pub fn to_override_settings(
             to_graphql_language_settings(graphql, &current_settings.languages.graphql);
         languages.grit = to_grit_language_settings(grit, &current_settings.languages.grit);
         languages.html = to_html_language_settings(html, &current_settings.languages.html);
+        languages.yaml = to_yaml_language_settings(yaml, &current_settings.languages.yaml);
 
         let pattern_setting = OverrideSettingPattern {
             includes: OverrideIncludes::new(working_directory.clone(), pattern.includes),
@@ -1991,6 +2024,23 @@ fn to_html_language_settings(
     let formatter = conf.formatter.take().unwrap_or_default();
 
     language_setting.formatter = formatter.into();
+
+    language_setting
+}
+
+fn to_yaml_language_settings(
+    mut conf: YamlConfiguration,
+    _parent_settings: &LanguageSettings<YamlLanguage>,
+) -> LanguageSettings<YamlLanguage> {
+    let mut language_setting: LanguageSettings<YamlLanguage> = LanguageSettings::default();
+    let formatter = conf.formatter.take().unwrap_or_default();
+    language_setting.formatter = formatter.into();
+
+    let linter = conf.linter.take().unwrap_or_default();
+    language_setting.linter.enabled = linter.enabled;
+
+    let assist = conf.assist.take().unwrap_or_default();
+    language_setting.assist.enabled = assist.enabled;
 
     language_setting
 }

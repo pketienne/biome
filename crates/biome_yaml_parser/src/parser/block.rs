@@ -12,7 +12,7 @@ use biome_yaml_syntax::{
     YamlSyntaxKind::{self, *},
 };
 
-use crate::parser::{flow::parse_any_flow_node, parse_error::expected_header};
+use crate::parser::{flow::parse_any_flow_node, parse_error::{expected_header, expected_mapping_colon}};
 
 use super::{
     YamlParser,
@@ -177,8 +177,10 @@ fn parse_block_map_implicit_entry(p: &mut YamlParser) -> ParsedSyntax {
         let m = p.start();
         parse_flow_yaml_node(p);
 
-        // TODO: improve error handling message here
-        p.expect(T![:]);
+        if !p.eat(T![:]) {
+            let range = p.cur_range();
+            p.error(expected_mapping_colon(range));
+        }
         // Value can be completely empty according to the spec
         parse_any_block_node(p).ok();
         Present(m.complete(p, YAML_BLOCK_MAP_IMPLICIT_ENTRY))
@@ -186,7 +188,10 @@ fn parse_block_map_implicit_entry(p: &mut YamlParser) -> ParsedSyntax {
         let m = p.start();
         parse_flow_json_node(p);
 
-        p.expect(T![:]);
+        if !p.eat(T![:]) {
+            let range = p.cur_range();
+            p.error(expected_mapping_colon(range));
+        }
         // Value can be completely empty according to the spec
         parse_any_block_node(p).ok();
         Present(m.complete(p, YAML_BLOCK_MAP_IMPLICIT_ENTRY))

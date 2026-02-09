@@ -231,7 +231,16 @@ impl FormatLanguage for YamlFormatLanguage {
     type FormatRule = FormatYamlSyntaxNode;
 
     fn is_range_formatting_node(&self, node: &SyntaxNode<Self::SyntaxLanguage>) -> bool {
+        use biome_yaml_syntax::YamlSyntaxKind::*;
         AnyYamlDocument::can_cast(node.kind())
+            || matches!(
+                node.kind(),
+                YAML_BLOCK_MAPPING
+                    | YAML_BLOCK_SEQUENCE
+                    | YAML_BLOCK_MAP_EXPLICIT_ENTRY
+                    | YAML_BLOCK_MAP_IMPLICIT_ENTRY
+                    | YAML_BLOCK_SEQUENCE_ENTRY
+            )
     }
 
     fn options(&self) -> &<Self::Context as FormatContext>::Options {

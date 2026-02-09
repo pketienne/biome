@@ -1,5 +1,6 @@
 use crate::bool::Bool;
 use biome_deserialize_macros::{Deserializable, Merge};
+use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth};
 use bpaf::Bpaf;
 use serde::{Deserialize, Serialize};
 
@@ -41,6 +42,26 @@ pub struct YamlFormatterConfiguration {
     #[bpaf(long("yaml-formatter-enabled"), argument("true|false"), optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enabled: Option<YamlFormatterEnabled>,
+
+    /// The indent style applied to YAML files.
+    #[bpaf(long("yaml-formatter-indent-style"), argument("tab|space"), optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub indent_style: Option<IndentStyle>,
+
+    /// The size of the indentation applied to YAML files. Default to 2.
+    #[bpaf(long("yaml-formatter-indent-width"), argument("NUMBER"), optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub indent_width: Option<IndentWidth>,
+
+    /// The type of line ending applied to YAML files.
+    #[bpaf(long("yaml-formatter-line-ending"), argument("lf|crlf|cr|auto"), optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub line_ending: Option<LineEnding>,
+
+    /// What's the max width of a line applied to YAML files. Defaults to 80.
+    #[bpaf(long("yaml-formatter-line-width"), argument("NUMBER"), optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub line_width: Option<LineWidth>,
 }
 
 /// Options that changes how the YAML linter behaves

@@ -3,6 +3,7 @@ use crate::analyzer::{LinterEnabled, RuleDomains};
 use crate::formatter::{FormatWithErrorsEnabled, FormatterEnabled};
 use crate::html::HtmlConfiguration;
 use crate::max_size::MaxSize;
+use crate::yaml::YamlConfiguration;
 use crate::{
     CssConfiguration, GraphqlConfiguration, GritConfiguration, JsConfiguration, JsonConfiguration,
     Rules,
@@ -50,9 +51,13 @@ pub struct OverridePattern {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub grit: Option<GritConfiguration>,
 
-    /// Specific configuration for the GritQL language
+    /// Specific configuration for the HTML language
     #[serde(skip_serializing_if = "Option::is_none")]
     pub html: Option<HtmlConfiguration>,
+
+    /// Specific configuration for the YAML language
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub yaml: Option<YamlConfiguration>,
 
     /// Specific configuration for the Json language
     #[serde(skip_serializing_if = "Option::is_none")]
