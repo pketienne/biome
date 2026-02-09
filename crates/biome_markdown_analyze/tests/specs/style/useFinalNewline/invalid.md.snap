@@ -1,0 +1,26 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Hello
+
+This file does not end with a newline.
+```
+
+# Diagnostics
+```
+invalid.md:3:38 lint/style/useFinalNewline ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! File does not end with a newline.
+  
+    1 │ # Hello
+    2 │ 
+  > 3 │ This file does not end with a newline.
+      │                                      ^
+  
+  i Add a trailing newline at the end of the file.
+  
+
+```

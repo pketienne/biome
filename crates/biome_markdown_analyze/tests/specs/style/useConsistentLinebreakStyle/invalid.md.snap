@@ -1,0 +1,63 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Linebreaks
+
+This file has CRLF line endings.
+
+```
+
+# Diagnostics
+```
+invalid.md:1:13 lint/style/useConsistentLinebreakStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected LF (\n) line endings.
+  
+  > 1 │ # Linebreaks
+      │             
+  > 2 │ 
+      │ 
+    3 │ This file has CRLF line endings.
+    4 │ 
+  
+  i Use consistent line endings throughout the document.
+  
+
+```
+
+```
+invalid.md:2:1 lint/style/useConsistentLinebreakStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected LF (\n) line endings.
+  
+    1 │ # Linebreaks
+  > 2 │ 
+      │ 
+  > 3 │ This file has CRLF line endings.
+      │ 
+    4 │ 
+  
+  i Use consistent line endings throughout the document.
+  
+
+```
+
+```
+invalid.md:3:33 lint/style/useConsistentLinebreakStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected LF (\n) line endings.
+  
+    1 │ # Linebreaks
+    2 │ 
+  > 3 │ This file has CRLF line endings.
+      │                                 
+  > 4 │ 
+      │ 
+  
+  i Use consistent line endings throughout the document.
+  
+
+```

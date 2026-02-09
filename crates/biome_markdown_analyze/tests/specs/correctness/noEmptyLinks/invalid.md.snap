@@ -1,0 +1,43 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+[click here]()
+
+[another empty link](   )
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/correctness/noEmptyLinks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Link has an empty URL.
+  
+  > 1 │ [click here]()
+      │ ^^^^^^^^^^^^^^
+    2 │ 
+    3 │ [another empty link](   )
+  
+  i Provide a valid URL for the link or remove it.
+  
+
+```
+
+```
+invalid.md:3:1 lint/correctness/noEmptyLinks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Link has an empty URL.
+  
+    1 │ [click here]()
+    2 │ 
+  > 3 │ [another empty link](   )
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Provide a valid URL for the link or remove it.
+  
+
+```

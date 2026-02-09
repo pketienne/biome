@@ -1,0 +1,45 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+  # Indented heading
+
+Some text.
+
+   ## Also indented
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/style/noHeadingIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Headings should not be indented.
+  
+  > 1 │   # Indented heading
+      │ ^^
+    2 │ 
+    3 │ Some text.
+  
+  i Remove the leading whitespace before the heading.
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/noHeadingIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Headings should not be indented.
+  
+    3 │ Some text.
+    4 │ 
+  > 5 │    ## Also indented
+      │ ^^^
+    6 │ 
+  
+  i Remove the leading whitespace before the heading.
+  
+
+```

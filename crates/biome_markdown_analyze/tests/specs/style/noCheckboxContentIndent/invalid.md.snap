@@ -1,0 +1,47 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Extra space after checkbox
+
++ [x]  done item with extra space
++ [ ]   not done with extra spaces
++ [x] normal item
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/noCheckboxContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Checkbox has 2 space(s) after brackets instead of 1.
+  
+    1 │ # Extra space after checkbox
+    2 │ 
+  > 3 │ + [x]  done item with extra space
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ + [ ]   not done with extra spaces
+    5 │ + [x] normal item
+  
+  i Use exactly one space between the checkbox brackets and content.
+  
+
+```
+
+```
+invalid.md:4:1 lint/style/noCheckboxContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Checkbox has 3 space(s) after brackets instead of 1.
+  
+    3 │ + [x]  done item with extra space
+  > 4 │ + [ ]   not done with extra spaces
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ + [x] normal item
+    6 │ 
+  
+  i Use exactly one space between the checkbox brackets and content.
+  
+
+```

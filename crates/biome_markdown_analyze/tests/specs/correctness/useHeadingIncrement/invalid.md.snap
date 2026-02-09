@@ -1,0 +1,44 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Heading 1
+### Heading 3
+###### Heading 6
+
+```
+
+# Diagnostics
+```
+invalid.md:2:1 lint/correctness/useHeadingIncrement ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Heading level jumped from h1 to h3.
+  
+    1 │ # Heading 1
+  > 2 │ ### Heading 3
+      │ ^^^^^^^^^^^^^
+    3 │ ###### Heading 6
+    4 │ 
+  
+  i Headings should increment by one level at a time.
+  
+
+```
+
+```
+invalid.md:3:1 lint/correctness/useHeadingIncrement ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Heading level jumped from h3 to h6.
+  
+    1 │ # Heading 1
+    2 │ ### Heading 3
+  > 3 │ ###### Heading 6
+      │ ^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Headings should increment by one level at a time.
+  
+
+```

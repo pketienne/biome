@@ -1,0 +1,48 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Shell commands
+
+```sh
+$ npm install
+$ npm run build
+```
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/style/noShellDollarPrompt ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Don't use dollar sign prompts in shell code blocks.
+  
+    3 │ ```sh
+  > 4 │ $ npm install
+      │ ^^
+    5 │ $ npm run build
+    6 │ ```
+  
+  i Remove the dollar sign prefix to make the code easier to copy.
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/noShellDollarPrompt ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Don't use dollar sign prompts in shell code blocks.
+  
+    3 │ ```sh
+    4 │ $ npm install
+  > 5 │ $ npm run build
+      │ ^^
+    6 │ ```
+    7 │ 
+  
+  i Remove the dollar sign prefix to make the code easier to copy.
+  
+
+```

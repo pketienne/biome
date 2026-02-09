@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Code spans
+
+Use ` code ` in your text.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:5 lint/style/noSpaceInCode ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space at the edge of inline code span.
+  
+    1 │ # Code spans
+    2 │ 
+  > 3 │ Use ` code ` in your text.
+      │     ^^^^^^^^
+    4 │ 
+  
+  i Remove leading or trailing spaces from the code span content.
+  
+
+```

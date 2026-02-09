@@ -1,0 +1,24 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+<Component name="a" name="b" />
+
+```
+
+# Diagnostics
+```
+invalid.md:1:21 lint/correctness/noMdxJsxDuplicateAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Duplicate attribute "name" on JSX element.
+  
+  > 1 │ <Component name="a" name="b" />
+      │                     ^^^^^^^^
+    2 │ 
+  
+  i Remove the duplicate attribute.
+  
+
+```

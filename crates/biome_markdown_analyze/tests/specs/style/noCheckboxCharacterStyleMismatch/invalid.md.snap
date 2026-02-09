@@ -1,0 +1,31 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Mismatched checkbox characters
+
++ [X] done with uppercase
++ [x] done with lowercase
++ [ ] not done
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/noCheckboxCharacterStyleMismatch ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected checkbox character "x" but found "X".
+  
+    1 │ # Mismatched checkbox characters
+    2 │ 
+  > 3 │ + [X] done with uppercase
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ + [x] done with lowercase
+    5 │ + [ ] not done
+  
+  i Use a consistent checkbox character style.
+  
+
+```

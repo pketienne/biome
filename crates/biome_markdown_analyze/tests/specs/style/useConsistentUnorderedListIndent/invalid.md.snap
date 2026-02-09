@@ -1,0 +1,48 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Odd indentation
+
++ first item
+   + nested with 3 spaces
+      + deeply nested with 6 spaces
++ another item
+     + nested with 5 spaces
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/style/useConsistentUnorderedListIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unordered list item has odd indentation of 3 spaces.
+  
+    3 │ + first item
+  > 4 │    + nested with 3 spaces
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │       + deeply nested with 6 spaces
+    6 │ + another item
+  
+  i Use a consistent multiple of 2 spaces for nested list indentation.
+  
+
+```
+
+```
+invalid.md:7:1 lint/style/useConsistentUnorderedListIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unordered list item has odd indentation of 5 spaces.
+  
+    5 │       + deeply nested with 6 spaces
+    6 │ + another item
+  > 7 │      + nested with 5 spaces
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    8 │ 
+  
+  i Use a consistent multiple of 2 spaces for nested list indentation.
+  
+
+```

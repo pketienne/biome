@@ -1,0 +1,24 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+<Component name="hello" title='world' />
+
+```
+
+# Diagnostics
+```
+invalid.md:1:25 lint/style/useConsistentMdxJsxQuoteStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Attribute uses single quotes but double quotes are expected.
+  
+  > 1 │ <Component name="hello" title='world' />
+      │                         ^^^^^^^^^^^^^
+    2 │ 
+  
+  i Use a consistent quote style for JSX attributes.
+  
+
+```

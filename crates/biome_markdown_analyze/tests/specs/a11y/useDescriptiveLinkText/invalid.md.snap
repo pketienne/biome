@@ -1,0 +1,47 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Hello
+
+[click here](https://example.com)
+
+[here](https://example.com)
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/a11y/useDescriptiveLinkText ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Link text "click here" is not descriptive.
+  
+    1 │ # Hello
+    2 │ 
+  > 3 │ [click here](https://example.com)
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+    5 │ [here](https://example.com)
+  
+  i Use descriptive link text that explains the destination.
+  
+
+```
+
+```
+invalid.md:5:1 lint/a11y/useDescriptiveLinkText ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Link text "here" is not descriptive.
+  
+    3 │ [click here](https://example.com)
+    4 │ 
+  > 5 │ [here](https://example.com)
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    6 │ 
+  
+  i Use descriptive link text that explains the destination.
+  
+
+```

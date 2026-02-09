@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Undefined References
+
+See [missing][undefined] for details.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:5 lint/correctness/noUndefinedReferences ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Reference label "undefined" is not defined.
+  
+    1 │ # Undefined References
+    2 │ 
+  > 3 │ See [missing][undefined] for details.
+      │     ^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Add a definition like [undefined]: url to resolve this reference.
+  
+
+```

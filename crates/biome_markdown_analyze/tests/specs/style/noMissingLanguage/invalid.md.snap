@@ -1,0 +1,31 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+Some text.
+
+```
+code without language
+```
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/noMissingLanguage ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Fenced code blocks should have a language tag.
+  
+    1 │ Some text.
+    2 │ 
+  > 3 │ ```
+      │ ^^^
+    4 │ code without language
+    5 │ ```
+  
+  i Add a language identifier after the opening fence to enable syntax highlighting.
+  
+
+```

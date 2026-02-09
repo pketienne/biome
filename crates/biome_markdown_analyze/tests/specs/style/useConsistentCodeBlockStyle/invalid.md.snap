@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Code blocks
+
+    indented code block here
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/useConsistentCodeBlockStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Use fenced code blocks instead of indented code blocks.
+  
+    1 │ # Code blocks
+    2 │ 
+  > 3 │     indented code block here
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Fenced code blocks are more readable and support language specification.
+  
+
+```

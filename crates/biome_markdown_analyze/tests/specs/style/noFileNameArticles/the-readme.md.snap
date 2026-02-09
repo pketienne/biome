@@ -1,0 +1,24 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: the-readme.md
+---
+# Input
+```md
+# Heading
+
+```
+
+# Diagnostics
+```
+the-readme.md:1:1 lint/style/noFileNameArticles ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! File name starts with the article "the".
+  
+  > 1 │ # Heading
+      │ ^^^^^^^^^
+    2 │ 
+  
+  i Remove the leading article from the file name.
+  
+
+```

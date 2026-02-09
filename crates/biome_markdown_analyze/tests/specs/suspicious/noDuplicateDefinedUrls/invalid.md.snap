@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Duplicate URLs
+
+[foo]: https://example.com
+[bar]: https://example.com
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/suspicious/noDuplicateDefinedUrls ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Multiple definitions point to the same URL: "https://example.com".
+  
+    3 │ [foo]: https://example.com
+  > 4 │ [bar]: https://example.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ 
+  
+  i Consider using a single definition to avoid duplication.
+  
+
+```

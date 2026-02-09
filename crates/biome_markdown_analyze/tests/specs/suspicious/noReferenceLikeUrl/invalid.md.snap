@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Hello
+
+[text](label)
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/suspicious/noReferenceLikeUrl ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! URL "label" looks like a reference label, not a URL.
+  
+    1 │ # Hello
+    2 │ 
+  > 3 │ [text](label)
+      │ ^^^^^^^^^^^^^
+    4 │ 
+  
+  i Use a proper URL or switch to reference link syntax [text][label].
+  
+
+```

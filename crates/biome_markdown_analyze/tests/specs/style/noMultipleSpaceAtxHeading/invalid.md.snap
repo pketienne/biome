@@ -1,0 +1,43 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+#  Double space heading
+
+##  Another double space heading
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/style/noMultipleSpaceAtxHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Multiple spaces after hash characters in atx heading.
+  
+  > 1 │ #  Double space heading
+      │ ^^^^^^^^^^^^^^^^^^^^^^^
+    2 │ 
+    3 │ ##  Another double space heading
+  
+  i Use a single space between the hash characters and the heading text.
+  
+
+```
+
+```
+invalid.md:3:1 lint/style/noMultipleSpaceAtxHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Multiple spaces after hash characters in atx heading.
+  
+    1 │ #  Double space heading
+    2 │ 
+  > 3 │ ##  Another double space heading
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Use a single space between the hash characters and the heading text.
+  
+
+```

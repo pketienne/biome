@@ -1,0 +1,43 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+## Heading##
+
+### Another heading###
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/correctness/noMissingSpaceClosedAtxHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing space before closing hashes in ATX heading.
+  
+  > 1 │ ## Heading##
+      │ ^^^^^^^^^^^^
+    2 │ 
+    3 │ ### Another heading###
+  
+  i Add a space before the closing hash characters.
+  
+
+```
+
+```
+invalid.md:3:1 lint/correctness/noMissingSpaceClosedAtxHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing space before closing hashes in ATX heading.
+  
+    1 │ ## Heading##
+    2 │ 
+  > 3 │ ### Another heading###
+      │ ^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Add a space before the closing hash characters.
+  
+
+```

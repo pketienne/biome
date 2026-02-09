@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Links
+
+Visit [ example ](https://example.com) for more.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:7 lint/style/noSpaceInLinks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected space inside link text brackets.
+  
+    1 │ # Links
+    2 │ 
+  > 3 │ Visit [ example ](https://example.com) for more.
+      │       ^^^^^^^^^^^
+    4 │ 
+  
+  i Remove leading or trailing spaces from the link text.
+  
+
+```

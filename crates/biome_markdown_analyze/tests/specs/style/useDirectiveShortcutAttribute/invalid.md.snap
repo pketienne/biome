@@ -1,0 +1,27 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+:::note{id="main"}
+Content
+:::
+
+```
+
+# Diagnostics
+```
+invalid.md:1:9 lint/style/useDirectiveShortcutAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Use shortcut id instead of id="main".
+  
+  > 1 │ :::note{id="main"}
+      │         ^^^^^^^^^
+    2 │ Content
+    3 │ :::
+  
+  i Use the shorthand form: #main instead.
+  
+
+```

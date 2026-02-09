@@ -1,0 +1,62 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Heading
+Some text without blank line.
+## Another heading
+More text.
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/style/useBlanksAroundHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line after heading.
+  
+  > 1 │ # Heading
+      │ ^^^^^^^^^
+    2 │ Some text without blank line.
+    3 │ ## Another heading
+  
+  i Add a blank line around headings for readability.
+  
+
+```
+
+```
+invalid.md:3:1 lint/style/useBlanksAroundHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line before heading.
+  
+    1 │ # Heading
+    2 │ Some text without blank line.
+  > 3 │ ## Another heading
+      │ ^^^^^^^^^^^^^^^^^^
+    4 │ More text.
+    5 │ 
+  
+  i Add a blank line around headings for readability.
+  
+
+```
+
+```
+invalid.md:3:1 lint/style/useBlanksAroundHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line after heading.
+  
+    1 │ # Heading
+    2 │ Some text without blank line.
+  > 3 │ ## Another heading
+      │ ^^^^^^^^^^^^^^^^^^
+    4 │ More text.
+    5 │ 
+  
+  i Add a blank line around headings for readability.
+  
+
+```

@@ -1,0 +1,24 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+::video{src="video.mp4" title='My Video'}
+
+```
+
+# Diagnostics
+```
+invalid.md:1:25 lint/style/useConsistentDirectiveQuoteStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Attribute uses single quotes but double quotes are expected.
+  
+  > 1 │ ::video{src="video.mp4" title='My Video'}
+      │                         ^^^^^^^^^^^^^^^^
+    2 │ 
+  
+  i Use a consistent quote style for directive attributes.
+  
+
+```

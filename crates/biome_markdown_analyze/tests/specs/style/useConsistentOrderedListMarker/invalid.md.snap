@@ -1,0 +1,47 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Mixed ordered list markers
+
+1. first item
+2) second item
+3. third item
+4) fourth item
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/style/useConsistentOrderedListMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "." but found ")" as ordered list delimiter.
+  
+    3 │ 1. first item
+  > 4 │ 2) second item
+      │ ^^^^^^^^^^^^^^
+    5 │ 3. third item
+    6 │ 4) fourth item
+  
+  i Use a consistent ordered list delimiter.
+  
+
+```
+
+```
+invalid.md:6:1 lint/style/useConsistentOrderedListMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "." but found ")" as ordered list delimiter.
+  
+    4 │ 2) second item
+    5 │ 3. third item
+  > 6 │ 4) fourth item
+      │ ^^^^^^^^^^^^^^
+    7 │ 
+  
+  i Use a consistent ordered list delimiter.
+  
+
+```

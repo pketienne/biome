@@ -1,0 +1,31 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Code fences
+
+~~~js
+const x = 1;
+~~~
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/useConsistentCodeFenceMarker ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected backticks but found tildes for code fence marker.
+  
+    1 │ # Code fences
+    2 │ 
+  > 3 │ ~~~js
+      │ ^^^
+    4 │ const x = 1;
+    5 │ ~~~
+  
+  i Use consistent code fence markers throughout the document.
+  
+
+```

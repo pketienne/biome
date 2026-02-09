@@ -1,0 +1,45 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Uppercase Labels
+
+[FOO]: https://example.com
+[Bar]: https://other.com
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/useLowercaseDefinitionLabels ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Definition label "FOO" should be lowercase.
+  
+    1 │ # Uppercase Labels
+    2 │ 
+  > 3 │ [FOO]: https://example.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ [Bar]: https://other.com
+    5 │ 
+  
+  i Use lowercase labels for consistency.
+  
+
+```
+
+```
+invalid.md:4:1 lint/style/useLowercaseDefinitionLabels ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Definition label "Bar" should be lowercase.
+  
+    3 │ [FOO]: https://example.com
+  > 4 │ [Bar]: https://other.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ 
+  
+  i Use lowercase labels for consistency.
+  
+
+```

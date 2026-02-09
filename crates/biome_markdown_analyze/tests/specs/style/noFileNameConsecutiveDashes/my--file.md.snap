@@ -1,0 +1,24 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: my--file.md
+---
+# Input
+```md
+# Heading
+
+```
+
+# Diagnostics
+```
+my--file.md:1:1 lint/style/noFileNameConsecutiveDashes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! File name contains consecutive dashes.
+  
+  > 1 │ # Heading
+      │ ^^^^^^^^^
+    2 │ 
+  
+  i Replace consecutive dashes with a single dash.
+  
+
+```

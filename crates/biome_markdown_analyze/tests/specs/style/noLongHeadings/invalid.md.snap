@@ -1,0 +1,24 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+## This is a very long heading that exceeds the default sixty character maximum length limit
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/style/noLongHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Heading is 89 characters long, exceeding the maximum of 60.
+  
+  > 1 │ ## This is a very long heading that exceeds the default sixty character maximum length limit
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    2 │ 
+  
+  i Shorten the heading or move content to the paragraph body.
+  
+
+```

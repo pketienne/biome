@@ -1,0 +1,47 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Inconsistent list item indent
+
++  first item with two spaces
++ second item with one space
++   third item with three spaces
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/useConsistentListItemIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! List item has 2 space(s) between marker and content.
+  
+    1 │ # Inconsistent list item indent
+    2 │ 
+  > 3 │ +  first item with two spaces
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ + second item with one space
+    5 │ +   third item with three spaces
+  
+  i Use consistent spacing between list marker and content.
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/useConsistentListItemIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! List item has 3 space(s) between marker and content.
+  
+    3 │ +  first item with two spaces
+    4 │ + second item with one space
+  > 5 │ +   third item with three spaces
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    6 │ 
+  
+  i Use consistent spacing between list marker and content.
+  
+
+```

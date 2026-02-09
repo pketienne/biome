@@ -1,0 +1,27 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+:::note{class="warning"}
+Content
+:::
+
+```
+
+# Diagnostics
+```
+invalid.md:1:9 lint/style/useDirectiveCollapsedAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Use collapsed class shorthand instead of class="warning".
+  
+  > 1 │ :::note{class="warning"}
+      │         ^^^^^^^^^^^^^^^
+    2 │ Content
+    3 │ :::
+  
+  i Use the shorthand form: .warning instead.
+  
+
+```

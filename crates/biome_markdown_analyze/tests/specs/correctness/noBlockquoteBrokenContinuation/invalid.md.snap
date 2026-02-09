@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Hello
+
+> first line
+second line without marker
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/correctness/noBlockquoteBrokenContinuation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Blockquote continuation line is missing the > marker.
+  
+    3 │ > first line
+  > 4 │ second line without marker
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ 
+  
+  i Add > at the beginning of continuation lines in blockquotes.
+  
+
+```

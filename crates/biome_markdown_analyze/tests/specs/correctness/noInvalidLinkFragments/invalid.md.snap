@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Hello
+
+See [details](#nonexistent) here.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:5 lint/correctness/noInvalidLinkFragments ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Link fragment "#nonexistent" does not match any heading in the document.
+  
+    1 │ # Hello
+    2 │ 
+  > 3 │ See [details](#nonexistent) here.
+      │     ^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Check that the fragment matches a heading slug in this document.
+  
+
+```

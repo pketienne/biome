@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Duplicate Definitions
+
+[foo]: https://example.com
+[foo]: https://other.com
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/correctness/noDuplicateDefinitions ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Duplicate definition for label "foo".
+  
+    3 │ [foo]: https://example.com
+  > 4 │ [foo]: https://other.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ 
+  
+  i Remove the duplicate definition. Only the first definition is used.
+  
+
+```

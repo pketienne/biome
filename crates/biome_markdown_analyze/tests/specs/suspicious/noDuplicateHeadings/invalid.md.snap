@@ -1,0 +1,30 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Title
+
+## Section
+
+## Section
+
+```
+
+# Diagnostics
+```
+invalid.md:5:1 lint/suspicious/noDuplicateHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Duplicate heading text "## Section".
+  
+    3 │ ## Section
+    4 │ 
+  > 5 │ ## Section
+      │ ^^^^^^^^^^
+    6 │ 
+  
+  i Each heading in a document should have unique text.
+  
+
+```

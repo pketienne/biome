@@ -1,0 +1,47 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Mixed Links
+
+See [ref][label] for details.
+
+[label]: https://example.com
+
+```
+
+# Diagnostics
+```
+invalid.md:3:5 lint/style/useConsistentLinkStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected inline link style but found reference.
+  
+    1 │ # Mixed Links
+    2 │ 
+  > 3 │ See [ref][label] for details.
+      │     ^^^^^^^^^^^^
+    4 │ 
+    5 │ [label]: https://example.com
+  
+  i Use a consistent link style throughout the document.
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/useConsistentLinkStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected inline link style but found reference.
+  
+    3 │ See [ref][label] for details.
+    4 │ 
+  > 5 │ [label]: https://example.com
+      │ ^^^^^^^
+    6 │ 
+  
+  i Use a consistent link style throughout the document.
+  
+
+```

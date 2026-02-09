@@ -1,0 +1,30 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# First Title
+
+## Section
+
+# Second Title
+
+```
+
+# Diagnostics
+```
+invalid.md:5:1 lint/suspicious/noMultipleTopLevelHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Multiple top-level headings found.
+  
+    3 │ ## Section
+    4 │ 
+  > 5 │ # Second Title
+      │ ^^^^^^^^^^^^^^
+    6 │ 
+  
+  i A document should contain only one top-level heading.
+  
+
+```

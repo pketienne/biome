@@ -1,0 +1,26 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+> first line
+>  second line with extra space
+
+```
+
+# Diagnostics
+```
+invalid.md:2:1 lint/style/useConsistentBlockquoteIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected 1 space(s) after > but found 2.
+  
+    1 │ > first line
+  > 2 │ >  second line with extra space
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    3 │ 
+  
+  i Use consistent spacing after the blockquote marker.
+  
+
+```

@@ -1,0 +1,47 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Hello
+
+![](image.png)
+
+![](other.png)
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/a11y/noMissingAltText ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Image is missing alt text.
+  
+    1 │ # Hello
+    2 │ 
+  > 3 │ ![](image.png)
+      │ ^^^^^^^^^^^^^^
+    4 │ 
+    5 │ ![](other.png)
+  
+  i Add descriptive alt text to images for accessibility.
+  
+
+```
+
+```
+invalid.md:5:1 lint/a11y/noMissingAltText ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Image is missing alt text.
+  
+    3 │ ![](image.png)
+    4 │ 
+  > 5 │ ![](other.png)
+      │ ^^^^^^^^^^^^^^
+    6 │ 
+  
+  i Add descriptive alt text to images for accessibility.
+  
+
+```

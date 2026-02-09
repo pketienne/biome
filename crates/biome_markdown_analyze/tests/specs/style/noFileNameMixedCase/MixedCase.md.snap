@@ -1,0 +1,24 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: MixedCase.md
+---
+# Input
+```md
+# Heading
+
+```
+
+# Diagnostics
+```
+MixedCase.md:1:1 lint/style/noFileNameMixedCase ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! File name uses mixed case.
+  
+  > 1 │ # Heading
+      │ ^^^^^^^^^
+    2 │ 
+  
+  i Use a consistent case for the file name (all lowercase or all uppercase).
+  
+
+```

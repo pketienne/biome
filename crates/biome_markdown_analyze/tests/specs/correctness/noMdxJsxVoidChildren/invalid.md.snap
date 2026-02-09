@@ -1,0 +1,43 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+<hr>content</hr>
+
+<br>text</br>
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/correctness/noMdxJsxVoidChildren ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Void element "hr" cannot have children.
+  
+  > 1 │ <hr>content</hr>
+      │ ^^^^
+    2 │ 
+    3 │ <br>text</br>
+  
+  i Use a self-closing tag instead.
+  
+
+```
+
+```
+invalid.md:3:1 lint/correctness/noMdxJsxVoidChildren ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Void element "br" cannot have children.
+  
+    1 │ <hr>content</hr>
+    2 │ 
+  > 3 │ <br>text</br>
+      │ ^^^^
+    4 │ 
+  
+  i Use a self-closing tag instead.
+  
+
+```

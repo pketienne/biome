@@ -1,0 +1,43 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+<Component disabled={true} />
+
+<Button active={true} name="test" />
+
+```
+
+# Diagnostics
+```
+invalid.md:1:12 lint/style/useMdxJsxShorthandAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Attribute "disabled" uses longhand "{true}" instead of shorthand.
+  
+  > 1 │ <Component disabled={true} />
+      │            ^^^^^^^^^^^^^^^
+    2 │ 
+    3 │ <Button active={true} name="test" />
+  
+  i Use the shorthand form: just "disabled" without a value.
+  
+
+```
+
+```
+invalid.md:3:9 lint/style/useMdxJsxShorthandAttribute ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Attribute "active" uses longhand "{true}" instead of shorthand.
+  
+    1 │ <Component disabled={true} />
+    2 │ 
+  > 3 │ <Button active={true} name="test" />
+      │         ^^^^^^^^^^^^^
+    4 │ 
+  
+  i Use the shorthand form: just "active" without a value.
+  
+
+```

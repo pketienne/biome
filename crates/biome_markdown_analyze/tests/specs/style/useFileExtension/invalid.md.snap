@@ -1,0 +1,24 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Heading
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/style/useFileExtension ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! File has extension ".md" but ".mdx" is expected.
+  
+  > 1 │ # Heading
+      │ ^^^^^^^^^
+    2 │ 
+  
+  i Rename the file to use the ".mdx" extension.
+  
+
+```

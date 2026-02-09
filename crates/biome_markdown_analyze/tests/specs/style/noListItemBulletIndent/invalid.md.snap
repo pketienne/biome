@@ -1,0 +1,63 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Indented bullets
+
+ + first item with 1 space indent
+  + second item with 2 spaces indent
+   + third item with 3 spaces indent
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/noListItemBulletIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! List item bullet should not be indented.
+  
+    1 │ # Indented bullets
+    2 │ 
+  > 3 │  + first item with 1 space indent
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │   + second item with 2 spaces indent
+    5 │    + third item with 3 spaces indent
+  
+  i Remove indentation from the list item bullet.
+  
+
+```
+
+```
+invalid.md:4:1 lint/style/noListItemBulletIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! List item bullet should not be indented.
+  
+    3 │  + first item with 1 space indent
+  > 4 │   + second item with 2 spaces indent
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │    + third item with 3 spaces indent
+    6 │ 
+  
+  i Remove indentation from the list item bullet.
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/noListItemBulletIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! List item bullet should not be indented.
+  
+    3 │  + first item with 1 space indent
+    4 │   + second item with 2 spaces indent
+  > 5 │    + third item with 3 spaces indent
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    6 │ 
+  
+  i Remove indentation from the list item bullet.
+  
+
+```

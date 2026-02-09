@@ -1,0 +1,26 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+Some text.
+# Heading without blank line
+
+```
+
+# Diagnostics
+```
+invalid.md:2:1 lint/style/useBlanksBeforeBlockContent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line before heading.
+  
+    1 │ Some text.
+  > 2 │ # Heading without blank line
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    3 │ 
+  
+  i Add a blank line before block-level content.
+  
+
+```

@@ -1,0 +1,45 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+#  Too many spaces
+
+Some text.
+
+##  Also too many
+
+```
+
+# Diagnostics
+```
+invalid.md:1:3 lint/style/noHeadingContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Extra spaces between heading marker and content.
+  
+  > 1 │ #  Too many spaces
+      │   ^
+    2 │ 
+    3 │ Some text.
+  
+  i Use exactly one space between the heading marker and content.
+  
+
+```
+
+```
+invalid.md:5:4 lint/style/noHeadingContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Extra spaces between heading marker and content.
+  
+    3 │ Some text.
+    4 │ 
+  > 5 │ ##  Also too many
+      │    ^
+    6 │ 
+  
+  i Use exactly one space between the heading marker and content.
+  
+
+```

@@ -1,0 +1,33 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Title
+
+## Summary
+
+Some content here.
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/style/useRequiredHeadings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Required heading at position 2 is missing: "## Introduction".
+  
+  > 1 │ # Title
+      │ ^^^^^^^
+  > 2 │ 
+  > 3 │ ## Summary
+  > 4 │ 
+  > 5 │ Some content here.
+      │ ^^^^^^^^^^^^^^^^^^
+    6 │ 
+  
+  i Add the required heading to match the expected document structure.
+  
+
+```

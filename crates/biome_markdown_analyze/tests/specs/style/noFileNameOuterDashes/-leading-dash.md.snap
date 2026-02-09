@@ -1,0 +1,24 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: "-leading-dash.md"
+---
+# Input
+```md
+# Heading
+
+```
+
+# Diagnostics
+```
+-leading-dash.md:1:1 lint/style/noFileNameOuterDashes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! File name starts or ends with a dash.
+  
+  > 1 │ # Heading
+      │ ^^^^^^^^^
+    2 │ 
+  
+  i Remove the leading or trailing dash from the file name.
+  
+
+```

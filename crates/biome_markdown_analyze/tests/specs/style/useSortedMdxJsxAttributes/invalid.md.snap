@@ -1,0 +1,43 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+<Component zebra="1" alpha="2" />
+
+<Button label="Click" disabled />
+
+```
+
+# Diagnostics
+```
+invalid.md:1:22 lint/style/useSortedMdxJsxAttributes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Attribute "alpha" should come before "zebra".
+  
+  > 1 │ <Component zebra="1" alpha="2" />
+      │                      ^^^^^^^^^
+    2 │ 
+    3 │ <Button label="Click" disabled />
+  
+  i Sort JSX attributes alphabetically.
+  
+
+```
+
+```
+invalid.md:3:23 lint/style/useSortedMdxJsxAttributes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Attribute "disabled" should come before "label".
+  
+    1 │ <Component zebra="1" alpha="2" />
+    2 │ 
+  > 3 │ <Button label="Click" disabled />
+      │                       ^^^^^^^^
+    4 │ 
+  
+  i Sort JSX attributes alphabetically.
+  
+
+```

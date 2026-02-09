@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Unsorted Definitions
+
+[beta]: https://beta.com
+[alpha]: https://alpha.com
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/style/useSortedDefinitions ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Definition "alpha" should come before "beta".
+  
+    3 │ [beta]: https://beta.com
+  > 4 │ [alpha]: https://alpha.com
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ 
+  
+  i Sort definitions alphabetically by their label.
+  
+
+```

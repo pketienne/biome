@@ -1,0 +1,43 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+<Component></Component>
+
+<Button label="Click"></Button>
+
+```
+
+# Diagnostics
+```
+invalid.md:1:1 lint/style/useMdxJsxSelfClosing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Element "Component" has no children and should be self-closing.
+  
+  > 1 │ <Component></Component>
+      │ ^^^^^^^^^^^^^^^^^^^^^^^
+    2 │ 
+    3 │ <Button label="Click"></Button>
+  
+  i Use a self-closing tag: <Component />.
+  
+
+```
+
+```
+invalid.md:3:1 lint/style/useMdxJsxSelfClosing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Element "Button" has no children and should be self-closing.
+  
+    1 │ <Component></Component>
+    2 │ 
+  > 3 │ <Button label="Click"></Button>
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i Use a self-closing tag: <Button />.
+  
+
+```

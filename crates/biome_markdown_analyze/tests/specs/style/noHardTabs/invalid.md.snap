@@ -1,0 +1,28 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Heading
+
+Some text	with a tab in the middle.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:10 lint/style/noHardTabs ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Hard tabs are not allowed.
+  
+    1 │ # Heading
+    2 │ 
+  > 3 │ Some text	with a tab in the middle.
+      │          ^^
+    4 │ 
+  
+  i Use spaces instead of tabs for indentation.
+  
+
+```

@@ -1,0 +1,30 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Heading
+
+This line has two trailing spaces  
+This line has three trailing spaces   
+
+```
+
+# Diagnostics
+```
+invalid.md:3:34 lint/style/noTrailingHardBreakSpaces ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Trailing spaces used for hard line breaks.
+  
+    1 │ # Heading
+    2 │ 
+  > 3 │ This line has two trailing spaces··
+      │                                  ^^
+    4 │ This line has three trailing spaces···
+    5 │ 
+  
+  i Use a trailing backslash instead of spaces for hard breaks.
+  
+
+```

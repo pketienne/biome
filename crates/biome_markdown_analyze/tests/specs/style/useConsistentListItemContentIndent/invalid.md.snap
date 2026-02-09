@@ -1,0 +1,47 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# Bad continuation indent
+
++ first item
+continuation not indented
++ second item
+ continuation with wrong indent
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/style/useConsistentListItemContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected content indentation of 2 but found 0.
+  
+    3 │ + first item
+  > 4 │ continuation not indented
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ + second item
+    6 │  continuation with wrong indent
+  
+  i Align continuation content with the first line of the list item.
+  
+
+```
+
+```
+invalid.md:6:1 lint/style/useConsistentListItemContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected content indentation of 2 but found 1.
+  
+    4 │ continuation not indented
+    5 │ + second item
+  > 6 │  continuation with wrong indent
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    7 │ 
+  
+  i Align continuation content with the first line of the list item.
+  
+
+```

@@ -1,0 +1,30 @@
+---
+source: crates/biome_markdown_analyze/tests/spec_tests.rs
+expression: invalid.md
+---
+# Input
+```md
+# First heading
+
+Second heading
+==============
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/useConsistentHeadingStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected atx heading style but found setext.
+  
+    1 │ # First heading
+    2 │ 
+  > 3 │ Second heading
+      │ ^^^^^^^^^^^^^^
+    4 │ ==============
+    5 │ 
+  
+  i Use a consistent heading style throughout the document.
+  
+
+```
