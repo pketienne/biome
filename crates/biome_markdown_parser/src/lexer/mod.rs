@@ -181,7 +181,10 @@ impl<'src> MarkdownLexer<'src> {
         match dispatched {
             WHS => self.consume_newline_or_whitespace(),
             MUL | MIN | IDT => self.consume_thematic_break_literal(),
-            _ => self.consume_textual(),
+            _ => match current {
+                b'`' | b'~' => self.consume_fence_or_textual(),
+                _ => self.consume_textual(),
+            },
         }
     }
 
@@ -267,6 +270,24 @@ impl<'src> MarkdownLexer<'src> {
             self.advance(1)
         }
         TAB
+    }
+
+    /// Combine 3+ consecutive backticks or tildes into a single token.
+    /// If fewer than 3, revert and consume a single character.
+    fn consume_fence_or_textual(&mut self) -> MarkdownSyntaxKind {
+        let fence_char = self.current_byte().unwrap();
+        let saved_position = self.position;
+        let mut count = 0;
+        while matches!(self.current_byte(), Some(ch) if ch == fence_char) {
+            self.advance(1);
+            count += 1;
+        }
+        if count >= 3 {
+            MD_TEXTUAL_LITERAL
+        } else {
+            self.position = saved_position;
+            self.consume_textual()
+        }
     }
 
     fn consume_thematic_break_literal(&mut self) -> MarkdownSyntaxKind {

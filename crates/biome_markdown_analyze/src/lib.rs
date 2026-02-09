@@ -139,17 +139,12 @@ mod tests {
             String::from_utf8(buffer).unwrap()
         }
 
-        const SOURCE: &str = r#"# Hello
-
-```
-code without language
-```
-"#;
+        const SOURCE: &str = "some_source";
 
         let parsed = parse_markdown(SOURCE);
 
         let mut error_ranges: Vec<TextRange> = Vec::new();
-        let rule_filter = RuleFilter::Rule("nursery", "noMissingLanguage");
+        let rule_filter = RuleFilter::Rule("group", "ruleName");
         let options = AnalyzerOptions::default();
         analyze(
             &parsed.tree(),
@@ -175,6 +170,6 @@ code without language
             },
         );
 
-        assert!(!error_ranges.is_empty());
+        assert!(!error_ranges.is_empty(), "Expected at least one diagnostic");
     }
 }

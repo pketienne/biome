@@ -57,9 +57,7 @@ impl MdDocumentBuilder {
 pub fn md_fenced_code_block(
     l_fence_token: SyntaxToken,
     code_list: MdCodeNameList,
-    l_hard_line: MdHardLine,
-    content: MdTextual,
-    r_hard_line: MdHardLine,
+    content: MdInlineItemList,
     r_fence_token: SyntaxToken,
 ) -> MdFencedCodeBlock {
     MdFencedCodeBlock::unwrap_cast(SyntaxNode::new_detached(
@@ -67,9 +65,7 @@ pub fn md_fenced_code_block(
         [
             Some(SyntaxElement::Token(l_fence_token)),
             Some(SyntaxElement::Node(code_list.into_syntax())),
-            Some(SyntaxElement::Node(l_hard_line.into_syntax())),
             Some(SyntaxElement::Node(content.into_syntax())),
-            Some(SyntaxElement::Node(r_hard_line.into_syntax())),
             Some(SyntaxElement::Token(r_fence_token)),
         ],
     ))
@@ -388,25 +384,16 @@ where
             .map(|item| Some(item.into_syntax().into())),
     ))
 }
-pub fn md_code_name_list<I, S>(items: I, separators: S) -> MdCodeNameList
+pub fn md_code_name_list<I>(items: I) -> MdCodeNameList
 where
     I: IntoIterator<Item = MdTextual>,
     I::IntoIter: ExactSizeIterator,
-    S: IntoIterator<Item = MarkdownSyntaxToken>,
-    S::IntoIter: ExactSizeIterator,
 {
-    let mut items = items.into_iter();
-    let mut separators = separators.into_iter();
-    let length = items.len() + separators.len();
     MdCodeNameList::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_CODE_NAME_LIST,
-        (0..length).map(|index| {
-            if index % 2 == 0 {
-                Some(items.next()?.into_syntax().into())
-            } else {
-                Some(separators.next()?.into())
-            }
-        }),
+        items
+            .into_iter()
+            .map(|item| Some(item.into_syntax().into())),
     ))
 }
 pub fn md_hash_list<I>(items: I) -> MdHashList

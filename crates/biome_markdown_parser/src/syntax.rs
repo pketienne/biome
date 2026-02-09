@@ -101,70 +101,69 @@ fn parse_header_content(p: &mut MarkdownParser) {
 
 // === Fenced Code Blocks ===
 
-/// Check if the current position starts a fenced code block (``` or ~~~)
+/// Check if the current position starts a fenced code block (3+ backticks or tildes).
 pub(crate) fn at_fenced_code_block(p: &mut MarkdownParser) -> bool {
     if p.cur() != MD_TEXTUAL_LITERAL {
         return false;
     }
     let text = p.cur_text();
-    text == "`" || text == "~"
+    text.len() >= 3 && (text.chars().all(|c| c == '`') || text.chars().all(|c| c == '~'))
 }
 
-/// Parse a fenced code block by consuming it as paragraphs.
-/// The proper MdFencedCodeBlock factory requires specific token types the lexer
-/// doesn't produce, so we consume the entire block as paragraphs instead.
-/// Lint rules use text-based detection to analyze code blocks.
+/// Parse a fenced code block into an MdFencedCodeBlock node.
 pub(crate) fn parse_fenced_code_block(p: &mut MarkdownParser) {
-    // Count fence chars via checkpoint to decide if this is truly a fence
-    let fence_char = p.cur_text().to_string();
-    let checkpoint = p.checkpoint();
-    let mut fence_count = 0;
-    while p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == fence_char {
-        // After the first backtick, stop if we hit a line break
-        if fence_count > 0 && p.has_preceding_line_break() {
+    let fence_text = p.cur_text().to_string();
+    let fence_char = fence_text.chars().next().unwrap();
+    let fence_count = fence_text.len();
+
+    let m = p.start();
+
+    // Slot 0: l_fence — remap to TRIPLE_BACKTICK
+    p.bump_remap(TRIPLE_BACKTICK);
+
+    // Slot 1: code_list — language identifier tokens on same line
+    let code_list = p.start();
+    while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+        let textual = p.start();
+        p.bump_any();
+        textual.complete(p, MD_TEXTUAL);
+    }
+    code_list.complete(p, MD_CODE_NAME_LIST);
+
+    // Slot 2: content — all tokens until closing fence
+    let content = p.start();
+    while !p.at(T![EOF]) {
+        if is_closing_fence(p, fence_char, fence_count) {
             break;
         }
+        let textual = p.start();
         p.bump_any();
-        fence_count += 1;
+        textual.complete(p, MD_TEXTUAL);
     }
-    p.rewind(checkpoint);
+    content.complete(p, MD_INLINE_ITEM_LIST);
 
-    if fence_count < 3 {
-        // Not a valid fence — parse as regular paragraph
-        parse_paragraph(p);
-        return;
-    }
-
-    // Consume opening fence line as a paragraph
-    parse_paragraph(p);
-
-    // Consume content lines until closing fence or EOF
-    while !p.at(T![EOF]) {
-        // Check if current line is a closing fence
-        if is_closing_fence(p, &fence_char, fence_count) {
-            // Consume the closing fence line as a paragraph
-            parse_paragraph(p);
-            return;
+    // Slot 3: r_fence — closing fence (if present)
+    if !p.at(T![EOF]) {
+        p.bump_remap(TRIPLE_BACKTICK);
+        // Consume trailing tokens on closing fence line
+        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+            p.bump_any();
         }
-        // Consume content line as a paragraph
-        parse_paragraph(p);
     }
+
+    m.complete(p, MD_FENCED_CODE_BLOCK);
 }
 
-fn is_closing_fence(p: &mut MarkdownParser, fence_char: &str, min_count: usize) -> bool {
-    let checkpoint = p.checkpoint();
-    let mut count = 0;
-    while p.cur() == MD_TEXTUAL_LITERAL
-        && p.cur_text() == fence_char
-        && (count == 0 || !p.has_preceding_line_break())
-    {
-        p.bump_any();
-        count += 1;
+/// Check if the current token is a closing fence matching the opening fence.
+fn is_closing_fence(p: &mut MarkdownParser, fence_char: char, min_count: usize) -> bool {
+    if !p.has_preceding_line_break() {
+        return false;
     }
-    // After fence chars, line should end (next token on new line or EOF)
-    let is_fence = count >= min_count && (p.at(T![EOF]) || p.has_preceding_line_break());
-    p.rewind(checkpoint);
-    is_fence
+    if p.cur() != MD_TEXTUAL_LITERAL {
+        return false;
+    }
+    let text = p.cur_text();
+    text.len() >= min_count && text.chars().all(|c| c == fence_char)
 }
 
 pub(crate) fn at_indent_code_block(p: &mut MarkdownParser) -> bool {
