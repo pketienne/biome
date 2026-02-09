@@ -7,6 +7,7 @@ use biome_html_syntax::HtmlLanguage;
 use biome_js_syntax::JsLanguage;
 use biome_json_syntax::JsonLanguage;
 use biome_markdown_syntax::MarkdownLanguage;
+use biome_yaml_syntax::YamlLanguage;
 use biome_string_case::Case;
 use proc_macro2::{Ident, Literal, Span};
 use quote::{format_ident, quote};
@@ -145,6 +146,25 @@ impl RegistryVisitor<MarkdownLanguage> for LintRulesVisitor {
     }
 }
 
+impl RegistryVisitor<YamlLanguage> for LintRulesVisitor {
+    fn record_category<C: GroupCategory<Language = YamlLanguage>>(&mut self) {
+        if matches!(C::CATEGORY, RuleCategory::Lint) {
+            C::record_groups(self);
+        }
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = YamlLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.groups
+            .entry(<R::Group as RuleGroup>::NAME)
+            .or_default()
+            .insert(R::METADATA.name, R::METADATA);
+    }
+}
+
 // ======= ASSIST ======
 #[derive(Default)]
 struct AssistActionsVisitor {
@@ -264,6 +284,25 @@ impl RegistryVisitor<MarkdownLanguage> for AssistActionsVisitor {
     }
 }
 
+impl RegistryVisitor<YamlLanguage> for AssistActionsVisitor {
+    fn record_category<C: GroupCategory<Language = YamlLanguage>>(&mut self) {
+        if matches!(C::CATEGORY, RuleCategory::Action) {
+            C::record_groups(self);
+        }
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = YamlLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.groups
+            .entry(<R::Group as RuleGroup>::NAME)
+            .or_default()
+            .insert(R::METADATA.name, R::METADATA);
+    }
+}
+
 pub(crate) fn generate_rule_options(mode: Mode) -> Result<()> {
     let rule_options_root = get_analyzer_rule_options_path();
     let lib_root = rule_options_root.join("lib.rs");
@@ -281,6 +320,8 @@ pub(crate) fn generate_rule_options(mode: Mode) -> Result<()> {
     biome_html_analyze::visit_registry(&mut assist_visitor);
     biome_markdown_analyze::visit_registry(&mut lint_visitor);
     biome_markdown_analyze::visit_registry(&mut assist_visitor);
+    biome_yaml_analyze::visit_registry(&mut lint_visitor);
+    biome_yaml_analyze::visit_registry(&mut assist_visitor);
 
     let mut rule_names = BTreeSet::default();
     let mut lib_exports = vec![quote! {
@@ -342,6 +383,8 @@ pub(crate) fn generate_rules_configuration(mode: Mode) -> Result<()> {
     biome_html_analyze::visit_registry(&mut assist_visitor);
     biome_markdown_analyze::visit_registry(&mut lint_visitor);
     biome_markdown_analyze::visit_registry(&mut assist_visitor);
+    biome_yaml_analyze::visit_registry(&mut lint_visitor);
+    biome_yaml_analyze::visit_registry(&mut assist_visitor);
 
     // let LintRulesVisitor { groups } = lint_visitor;
 

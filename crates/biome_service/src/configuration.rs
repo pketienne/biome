@@ -24,6 +24,7 @@ use biome_graphql_analyze::METADATA as graphql_lint_metadata;
 use biome_graphql_syntax::GraphqlLanguage;
 use biome_html_analyze::METADATA as html_lint_metadata;
 use biome_js_analyze::METADATA as js_lint_metadata;
+use biome_yaml_analyze::METADATA as yaml_lint_metadata;
 use biome_js_syntax::JsLanguage;
 use biome_json_analyze::METADATA as json_lint_metadata;
 use biome_json_formatter::context::JsonFormatOptions;
@@ -462,6 +463,7 @@ pub fn to_analyzer_rules(settings: &Settings, path: &Utf8Path) -> AnalyzerRules 
         push_to_analyzer_rules(rules, json_lint_metadata.deref(), &mut analyzer_rules);
         push_to_analyzer_rules(rules, graphql_lint_metadata.deref(), &mut analyzer_rules);
         push_to_analyzer_rules(rules, html_lint_metadata.deref(), &mut analyzer_rules);
+        push_to_analyzer_rules(rules, yaml_lint_metadata.deref(), &mut analyzer_rules);
     }
     if let Some(rules) = settings.assist.actions.as_ref() {
         push_to_analyzer_assist(rules, js_lint_metadata.deref(), &mut analyzer_rules);

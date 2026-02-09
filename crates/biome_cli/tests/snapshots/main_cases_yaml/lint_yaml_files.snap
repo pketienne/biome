@@ -1,0 +1,53 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: redactor(content)
+---
+## `file.yaml`
+
+```yaml
+first: &anchor value1
+second: &anchor value2
+
+```
+
+# Termination Message
+
+```block
+lint ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
+
+```
+
+# Emitted Messages
+
+```block
+file.yaml:1:8 lint/nursery/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The anchor anchor is defined multiple times.
+  
+  > 1 │ first: &anchor value1
+      │        ^^^^^^^
+    2 │ second: &anchor value2
+    3 │ 
+  
+  i This is where a duplicated anchor was declared again.
+  
+    1 │ first: &anchor value1
+  > 2 │ second: &anchor value2
+      │         ^^^^^^^
+    3 │ 
+  
+  i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```block
+Checked 1 file in <TIME>. No fixes applied.
+Found 1 error.
+```

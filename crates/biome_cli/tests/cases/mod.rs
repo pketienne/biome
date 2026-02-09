@@ -40,3 +40,4 @@ mod suppressions;
 mod tailwind_directives;
 mod unknown_files;
 mod vcs_ignored_files;
+mod yaml;

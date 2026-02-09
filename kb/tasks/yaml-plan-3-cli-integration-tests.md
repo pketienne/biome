@@ -1,6 +1,6 @@
 # Plan 3: CLI Integration Tests
 
-## Status: PENDING
+## Status: COMPLETE
 
 ## Context
 

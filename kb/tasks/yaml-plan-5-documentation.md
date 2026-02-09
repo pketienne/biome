@@ -1,6 +1,6 @@
 # Plan 5: Documentation
 
-## Status: PENDING
+## Status: COMPLETE (inline docs)
 
 ## Context
 

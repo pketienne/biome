@@ -27,6 +27,9 @@ rustc-hash           = { workspace = true }
 schemars             = { workspace = true, optional = true }
 serde                = { workspace = true, features = ["derive"] }
 
+[build-dependencies]
+filetime = { workspace = true }
+
 [dev-dependencies]
 biome_yaml_parser    = { workspace = true }
 biome_test_utils     = { workspace = true }

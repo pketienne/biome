@@ -1,6 +1,6 @@
 # Plan 4: YAML-Specific Formatter Config Options
 
-## Status: PENDING
+## Status: DEFERRED (lower priority, only enable/disable toggles needed for now)
 
 ## Context
 
