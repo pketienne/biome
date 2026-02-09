@@ -1,0 +1,83 @@
+server:
+  host: localhost
+  port: 8080
+  ssl:
+    enabled: true
+    cert: /path/to/cert.pem
+    key: /path/to/key.pem
+    protocols:
+      - TLSv1.2
+      - TLSv1.3
+  logging:
+    level: info
+    format: json
+    outputs:
+      - type: file
+        path: /var/log/app.log
+        rotation:
+          max_size: 10MB
+          max_files: 5
+          compress: true
+      - type: stdout
+        colorize: true
+        timestamp: true
+  cors:
+    allowed_origins:
+      - https://example.com
+      - https://app.example.com
+    allowed_methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+    max_age: 3600
+
+database:
+  primary:
+    host: db.example.com
+    port: 5432
+    name: mydb
+    username: admin
+    pool:
+      min: 5
+      max: 20
+      timeout: 30
+      idle_timeout: 600
+    ssl:
+      mode: verify-full
+      ca: /path/to/ca.pem
+  replicas:
+    - host: replica1.example.com
+      port: 5432
+      weight: 3
+      read_only: true
+    - host: replica2.example.com
+      port: 5432
+      weight: 1
+      read_only: true
+  redis:
+    host: cache.example.com
+    port: 6379
+    db: 0
+    ttl: 300
+
+monitoring:
+  metrics:
+    enabled: true
+    port: 9090
+    path: /metrics
+  health:
+    enabled: true
+    path: /health
+    checks:
+      - name: database
+        timeout: 5
+      - name: redis
+        timeout: 3
+      - name: disk
+        threshold: 90
+  tracing:
+    enabled: true
+    sampler: 0.1
+    exporter: jaeger
+    endpoint: http://jaeger:14268/api/traces

@@ -1,0 +1,35 @@
+colors: [red, green, blue, yellow, cyan, magenta, white, black]
+config: {debug: true, verbose: false, timeout: 30, retries: 3}
+
+matrix:
+  - [1, 0, 0, 0]
+  - [0, 1, 0, 0]
+  - [0, 0, 1, 0]
+  - [0, 0, 0, 1]
+
+nested_flow: {a: [1, 2, 3], b: [4, 5, 6], c: {x: 1, y: 2, z: 3}}
+
+endpoints:
+  - {path: /api/users, method: GET, auth: true}
+  - {path: /api/users, method: POST, auth: true}
+  - {path: /api/health, method: GET, auth: false}
+  - {path: /api/login, method: POST, auth: false}
+  - {path: /api/logout, method: POST, auth: true}
+
+tags: [production, stable, v2, backend, microservice]
+
+coordinates:
+  - [40.7128, -74.0060]
+  - [51.5074, -0.1278]
+  - [48.8566, 2.3522]
+  - [35.6762, 139.6503]
+  - [-33.8688, 151.2093]
+
+settings: {theme: dark, language: en, notifications: {email: true, push: false, sms: false}, privacy: {analytics: false, cookies: true}}
+
+empty_flow_seq: []
+empty_flow_map: {}
+single_item_seq: [only]
+single_item_map: {key: value}
+
+permissions: [read, write, execute, admin, audit, manage, deploy, configure]

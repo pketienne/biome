@@ -11,6 +11,10 @@ keywords.workspace   = true
 categories.workspace = true
 publish              = false
 
+[[bench]]
+harness = false
+name    = "yaml_parser"
+
 [dependencies]
 biome_console       = { workspace = true }
 biome_diagnostics   = { workspace = true }
@@ -23,10 +27,17 @@ tracing             = { workspace = true }
 
 [dev-dependencies]
 biome_test_utils  = { workspace = true }
+criterion         = { package = "codspeed-criterion-compat", version = "=3.0.5" }
 insta             = { workspace = true }
 quickcheck        = { workspace = true }
 quickcheck_macros = { workspace = true }
 tests_macros      = { workspace = true }
+
+[target.'cfg(all(target_family="unix", not(all(target_arch = "aarch64", target_env = "musl"))))'.dev-dependencies]
+tikv-jemallocator = { workspace = true }
+
+[target.'cfg(target_os = "windows")'.dev-dependencies]
+mimalloc = { workspace = true }
 
 [lints]
 workspace = true

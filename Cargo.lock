@@ -1880,9 +1880,12 @@ dependencies = [
  "biome_yaml_parser",
  "biome_yaml_syntax",
  "camino",
+ "codspeed-criterion-compat",
+ "mimalloc",
  "serde",
  "serde_json",
  "tests_macros",
+ "tikv-jemallocator",
 ]
 
 [[package]]
@@ -1897,10 +1900,13 @@ dependencies = [
  "biome_unicode_table",
  "biome_yaml_factory",
  "biome_yaml_syntax",
+ "codspeed-criterion-compat",
  "insta",
+ "mimalloc",
  "quickcheck",
  "quickcheck_macros",
  "tests_macros",
+ "tikv-jemallocator",
  "tracing",
 ]
 

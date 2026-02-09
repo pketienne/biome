@@ -1,0 +1,84 @@
+description: |
+  This is a block scalar that spans multiple lines
+  and preserves newlines exactly as written.
+
+  It can contain blank lines too.
+  Very useful for multi-line text content.
+
+summary: >
+  This is a folded scalar that wraps
+  into a single paragraph. Line breaks
+  become spaces unless followed by
+  a blank line.
+
+  This starts a new paragraph.
+
+quoted_double: "hello\nworld\ttab"
+quoted_single: 'no escapes here: just literal text'
+empty_string: ""
+special_chars: "contains: colons, {braces}, [brackets]"
+
+anchor_defaults: &defaults
+  timeout: 30
+  retries: 3
+  backoff: exponential
+  max_backoff: 300
+
+service_a:
+  name: auth-service
+  <<: *defaults
+  endpoint: /api/v1/auth
+  port: 8081
+
+service_b:
+  name: user-service
+  <<: *defaults
+  endpoint: /api/v1/users
+  port: 8082
+  timeout: 60
+
+service_c:
+  name: data-service
+  <<: *defaults
+  endpoint: /api/v1/data
+  port: 8083
+
+plain_scalar: this is just a plain scalar value
+boolean_true: true
+boolean_false: false
+null_value: null
+integer: 42
+float: 3.14159
+negative: -17
+scientific: 1.0e+6
+
+multiline_plain: this is a plain scalar
+  that continues on the next line
+  and the line after that
+
+nested_block_scalar:
+  key: |
+    indented block scalar
+    under a mapping key
+    with multiple lines
+
+list_of_scalars:
+  - |
+    first block
+    scalar item
+  - >
+    second folded
+    scalar item
+  - "third quoted item"
+  - 'fourth single quoted'
+  - plain fifth item
+
+deep:
+  nesting:
+    with:
+      mixed:
+        styles: [inline, flow, values]
+        block: |
+          and block
+          scalars too
+        plain: just a value

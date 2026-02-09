@@ -11,6 +11,10 @@ keywords.workspace   = true
 categories.workspace = true
 publish     = false
 
+[[bench]]
+harness = false
+name    = "yaml_formatter"
+
 [dependencies]
 biome_deserialize        = { workspace = true }
 biome_deserialize_macros = { workspace = true }
@@ -29,9 +33,16 @@ biome_yaml_parser    = { path = "../biome_yaml_parser" }
 biome_parser         = { path = "../biome_parser" }
 biome_service        = { path = "../biome_service" }
 biome_test_utils     = { path = "../biome_test_utils" }
+criterion            = { package = "codspeed-criterion-compat", version = "=3.0.5" }
 serde                = { workspace = true, features = ["derive"] }
 serde_json           = { workspace = true }
 tests_macros         = { path = "../tests_macros" }
+
+[target.'cfg(all(target_family="unix", not(all(target_arch = "aarch64", target_env = "musl"))))'.dev-dependencies]
+tikv-jemallocator = { workspace = true }
+
+[target.'cfg(target_os = "windows")'.dev-dependencies]
+mimalloc = { workspace = true }
 
 [lints]
 workspace = true
