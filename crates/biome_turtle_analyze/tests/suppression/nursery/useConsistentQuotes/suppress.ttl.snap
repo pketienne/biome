@@ -1,0 +1,11 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: suppress.ttl
+---
+# Input
+```turtle
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+# biome-ignore lint/nursery/useConsistentQuotes: testing suppression
+<http://example.org/alice> foaf:name 'Alice' .
+
+```

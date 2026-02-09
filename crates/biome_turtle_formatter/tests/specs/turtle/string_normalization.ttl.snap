@@ -1,0 +1,77 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: turtle/string_normalization.ttl
+---
+
+# Input
+
+```ttl
+@prefix ex: <http://example.org/> .
+
+# Unicode escape normalization
+ex:a ex:name "\u0041lice" .
+ex:b ex:name "\u0048ello" .
+ex:c ex:name "\U00000041lice" .
+
+# Keep escapes that should not be normalized
+ex:d ex:name "\n" .
+ex:e ex:name "\t" .
+ex:f ex:name "\\" .
+
+# Triple-quote demotion (no newlines → demote to single quotes)
+ex:g ex:name """Alice""" .
+ex:h ex:name '''Bob''' .
+
+# Triple-quotes with newlines should stay triple-quoted
+ex:i ex:name """Alice
+Bob""" .
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+Quote style: Double Quotes
+First predicate in new line: true
+Directive style: Turtle (@prefix/@base)
+-----
+
+```ttl
+@prefix ex: <http://example.org/> .
+
+# Unicode escape normalization
+ex:a
+	ex:name "Alice" .
+ex:b
+	ex:name "Hello" .
+ex:c
+	ex:name "Alice" .
+
+# Keep escapes that should not be normalized
+ex:d
+	ex:name "\n" .
+ex:e
+	ex:name "\t" .
+ex:f
+	ex:name "\\" .
+
+# Triple-quote demotion (no newlines → demote to single quotes)
+ex:g
+	ex:name "Alice" .
+ex:h
+	ex:name "Bob" .
+
+# Triple-quotes with newlines should stay triple-quoted
+ex:i
+	ex:name """Alice
+Bob""" .
+```

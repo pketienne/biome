@@ -1,0 +1,10 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: suppress.ttl
+---
+# Input
+```turtle
+# biome-ignore lint/nursery/noUndefinedPrefix: testing suppression
+<http://example.org/alice> undefined:name "Alice" .
+
+```

@@ -486,6 +486,7 @@ define_categories! {
     "assist/source/useSortedProperties": "https://biomejs.dev/assist/actions/use-sorted-properties",
     "assist/source/useSortedAttributes": "https://biomejs.dev/assist/actions/use-sorted-attributes",
     "assist/source/organizeImports": "https://biomejs.dev/assist/actions/organize-imports",
+    "assist/source/sortPrefixDeclarations": "https://biomejs.dev/assist/actions/sort-prefix-declarations",
     // end assist actions
     ; // start syntax rules
     "syntax/correctness/noTypeOnlyImportAttributes",

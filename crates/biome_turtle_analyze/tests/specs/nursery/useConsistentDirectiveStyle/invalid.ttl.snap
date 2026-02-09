@@ -13,7 +13,7 @@ ex:alice a foaf:Person .
 
 # Diagnostics
 ```
-invalid.ttl:2:1 lint/nursery/useConsistentDirectiveStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.ttl:2:1 lint/nursery/useConsistentDirectiveStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Mixed directive styles: found SPARQL style.
   
@@ -26,6 +26,14 @@ invalid.ttl:2:1 lint/nursery/useConsistentDirectiveStyle ━━━━━━━�
   i Use Turtle (@prefix/@base) style consistently throughout the document.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+  i Safe fix: Convert to Turtle-style directive.
+  
+    1 1 │   @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    2   │ - PREFIX·ex:·<http://example.org/>
+      2 │ + @prefix·ex:·<http://example.org/>·.
+    3 3 │   
+    4 4 │   ex:alice a foaf:Person .
   
 
 ```

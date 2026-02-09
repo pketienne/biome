@@ -1,0 +1,19 @@
+@prefix ex: <http://example.org/> .
+
+# Unicode escape normalization
+ex:a ex:name "\u0041lice" .
+ex:b ex:name "\u0048ello" .
+ex:c ex:name "\U00000041lice" .
+
+# Keep escapes that should not be normalized
+ex:d ex:name "\n" .
+ex:e ex:name "\t" .
+ex:f ex:name "\\" .
+
+# Triple-quote demotion (no newlines → demote to single quotes)
+ex:g ex:name """Alice""" .
+ex:h ex:name '''Bob''' .
+
+# Triple-quotes with newlines should stay triple-quoted
+ex:i ex:name """Alice
+Bob""" .

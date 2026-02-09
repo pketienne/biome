@@ -29,6 +29,7 @@ Line ending: LF
 Line width: 80
 Quote style: Double Quotes
 First predicate in new line: true
+Directive style: Turtle (@prefix/@base)
 -----
 
 ```ttl

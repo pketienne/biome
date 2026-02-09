@@ -16,6 +16,7 @@ publish              = true
 independent = true
 
 [dependencies]
+biome_configuration = { path = "../biome_configuration" }
 biome_diagnostics   = { workspace = true }
 biome_formatter     = { workspace = true }
 biome_turtle_syntax = { workspace = true }
@@ -23,7 +24,6 @@ biome_rowan         = { workspace = true }
 biome_suppression   = { workspace = true }
 
 [dev-dependencies]
-biome_configuration  = { path = "../biome_configuration" }
 biome_formatter_test = { path = "../biome_formatter_test" }
 biome_fs             = { path = "../biome_fs" }
 biome_parser         = { path = "../biome_parser" }

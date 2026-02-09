@@ -30,14 +30,15 @@ Line ending: LF
 Line width: 80
 Quote style: Double Quotes
 First predicate in new line: true
+Directive style: Turtle (@prefix/@base)
 -----
 
 ```ttl
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-BASE <http://example.org/>
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@base <http://example.org/> .
 
-PREFIX ex: <http://example.org/>
+@prefix ex: <http://example.org/> .
 
 <alice>
 	a foaf:Person .

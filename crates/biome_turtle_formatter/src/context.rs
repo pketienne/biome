@@ -1,4 +1,5 @@
 use crate::TurtleCommentStyle;
+use biome_configuration::turtle::TurtleDirectiveStyle;
 use biome_formatter::prelude::*;
 use biome_formatter::{
     CstFormatContext, FormatContext, FormatOptions, IndentStyle, IndentWidth, LineEnding,
@@ -62,6 +63,7 @@ pub struct TurtleFormatOptions {
     line_width: LineWidth,
     quote_style: QuoteStyle,
     first_predicate_in_new_line: bool,
+    directive_style: TurtleDirectiveStyle,
     _file_source: TurtleFileSource,
 }
 
@@ -74,6 +76,7 @@ impl Default for TurtleFormatOptions {
             line_width: LineWidth::default(),
             quote_style: QuoteStyle::default(),
             first_predicate_in_new_line: true,
+            directive_style: TurtleDirectiveStyle::default(),
             _file_source: TurtleFileSource::default(),
         }
     }
@@ -89,6 +92,7 @@ impl TurtleFormatOptions {
             line_width: LineWidth::default(),
             quote_style: QuoteStyle::default(),
             first_predicate_in_new_line: true,
+            directive_style: TurtleDirectiveStyle::default(),
         }
     }
 
@@ -153,6 +157,19 @@ impl TurtleFormatOptions {
     pub fn first_predicate_in_new_line(&self) -> bool {
         self.first_predicate_in_new_line
     }
+
+    pub fn with_directive_style(mut self, directive_style: TurtleDirectiveStyle) -> Self {
+        self.directive_style = directive_style;
+        self
+    }
+
+    pub fn set_directive_style(&mut self, directive_style: TurtleDirectiveStyle) {
+        self.directive_style = directive_style;
+    }
+
+    pub fn directive_style(&self) -> TurtleDirectiveStyle {
+        self.directive_style
+    }
 }
 
 impl FormatOptions for TurtleFormatOptions {
@@ -184,6 +201,7 @@ impl fmt::Display for TurtleFormatOptions {
         writeln!(f, "Line ending: {}", self.line_ending)?;
         writeln!(f, "Line width: {}", self.line_width.value())?;
         writeln!(f, "Quote style: {}", self.quote_style)?;
-        writeln!(f, "First predicate in new line: {}", self.first_predicate_in_new_line)
+        writeln!(f, "First predicate in new line: {}", self.first_predicate_in_new_line)?;
+        writeln!(f, "Directive style: {}", self.directive_style)
     }
 }

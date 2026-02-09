@@ -3,6 +3,43 @@ use biome_deserialize_macros::{Deserializable, Merge};
 use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth, QuoteStyle};
 use bpaf::Bpaf;
 use serde::{Deserialize, Serialize};
+use std::fmt;
+
+/// The style of directive declarations in Turtle files.
+#[derive(Clone, Copy, Debug, Default, Deserializable, Deserialize, Eq, Hash, Merge, PartialEq, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(rename_all = "camelCase")]
+pub enum TurtleDirectiveStyle {
+    /// Use Turtle-native `@prefix`/`@base` with trailing `.`
+    #[default]
+    Turtle,
+    /// Use SPARQL-compatible `PREFIX`/`BASE` without trailing `.`
+    Sparql,
+}
+
+impl fmt::Display for TurtleDirectiveStyle {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Turtle => write!(f, "Turtle (@prefix/@base)"),
+            Self::Sparql => write!(f, "SPARQL (PREFIX/BASE)"),
+        }
+    }
+}
+
+impl std::str::FromStr for TurtleDirectiveStyle {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "turtle" | "Turtle" => Ok(Self::Turtle),
+            "sparql" | "Sparql" | "SPARQL" => Ok(Self::Sparql),
+            _ => Err(std::format!(
+                "Unknown directive style '{}'. Expected 'turtle' or 'sparql'.",
+                s
+            )),
+        }
+    }
+}
 
 /// Options applied to Turtle (RDF) files
 #[derive(
@@ -63,6 +100,10 @@ pub struct TurtleFormatterConfiguration {
     /// Whether the first predicate should be on a new line after the subject. Defaults to true.
     #[bpaf(long("turtle-formatter-first-predicate-in-new-line"), argument("true|false"))]
     pub first_predicate_in_new_line: Option<bool>,
+
+    /// The directive style for prefix and base declarations. Defaults to "turtle".
+    #[bpaf(long("turtle-formatter-directive-style"), argument("turtle|sparql"))]
+    pub directive_style: Option<TurtleDirectiveStyle>,
 }
 
 impl TurtleFormatterConfiguration {
