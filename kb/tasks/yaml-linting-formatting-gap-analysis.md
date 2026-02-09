@@ -7,11 +7,11 @@
 | Parser (YAML 1.2.2) | **Complete** — 42 test files, full spec coverage, `---` document start fix applied |
 | Syntax/Factory | **Complete** — code generated |
 | Formatter | **Infrastructure only** — all nodes output verbatim (no formatting). `cargo codegen formatter yaml` not yet supported. |
-| Analyzer/Linter | **18 lint rules implemented** — covering core, style, and anchor/alias categories |
+| Analyzer/Linter | **23 lint rules implemented** — all gap analysis rules complete |
 | Configuration | **Complete** — formatter/linter/assist toggles |
 | Service Integration | **Complete** — parse, format, lint, code actions wired |
 
-### Implemented Lint Rules (18 total)
+### Implemented Lint Rules (23 total)
 
 | Rule | Category | Severity | Recommended |
 |------|----------|----------|-------------|
@@ -33,8 +33,13 @@
 | `useDocumentMarkers` | Style | Warning | No |
 | `useKeyNamingConvention` | Style | Warning | No |
 | `noEmptyDocument` | Style | Warning | No |
+| `noFloatTrailingZeros` | Style | Warning | No |
+| `useBlockStyle` | Style | Warning | No |
+| `useStringKeys` | Style | Warning | No |
+| `useLineLength` | Style | Warning | No |
+| `useCommentSpacing` | Style | Warning | No |
 
-All 18 rules have passing tests (36 test files: valid + invalid per rule, with snapshot tests).
+All 23 rules have passing tests (46 test files: valid + invalid per rule, with snapshot tests).
 
 ## Research: Popular YAML Tools
 
@@ -227,9 +232,9 @@ The formatter currently passes all nodes through verbatim mode. `cargo codegen f
 | **Hyphen spacing** after `-` in sequences | yamllint | High | Not started |
 | **Quote normalization** (prefer single/double, minimize escapes) | Prettier, yamllint, eslint-plugin-yml | Medium | **Lint rule only** (`useConsistentQuoteStyle`) |
 | **Consecutive blank line collapsing** | yamllint, eslint-plugin-yml | Medium | **Lint rule only** (`noConsecutiveBlankLines`) |
-| **Comment spacing** (space after `#`) | yamllint, eslint-plugin-yml | Medium | Not started |
-| **Line wrapping** at configured width | yamllint, Prettier | Medium | Not started |
-| **Block vs flow style** enforcement | eslint-plugin-yml, prettier-plugin-yaml | Low | Not started |
+| **Comment spacing** (space after `#`) | yamllint, eslint-plugin-yml | Medium | **Lint rule only** (`useCommentSpacing`) |
+| **Line wrapping** at configured width | yamllint, Prettier | Medium | **Lint rule only** (`useLineLength`) |
+| **Block vs flow style** enforcement | eslint-plugin-yml, prettier-plugin-yaml | Low | **Lint rule only** (`useBlockStyle`) |
 
 ### Core Lint Rules (Bug Prevention)
 
@@ -262,14 +267,14 @@ Opinionated rules for code consistency:
 | **useConsistentKeyOrdering** | Alphabetical key sorting | yamllint, eslint-plugin-yml, YAML LS | Medium | **Done** |
 | **useKeyNamingConvention** | camelCase, snake_case, kebab-case for keys | eslint-plugin-yml | Medium | **Done** |
 | **noConsecutiveBlankLines** | Max empty lines between content | yamllint, eslint-plugin-yml | Medium | **Done** |
-| **useBlockStyle** / **useFlowStyle** | Enforce collection style | eslint-plugin-yml, YAML LS | Low | Not started |
-| **useStringKeys** | Disallow non-string mapping keys | eslint-plugin-yml | Low | Not started |
+| **useBlockStyle** | Enforce block collection style | eslint-plugin-yml, YAML LS | Low | **Done** |
+| **useStringKeys** | Disallow non-string mapping keys | eslint-plugin-yml | Low | **Done** |
 | **noEmptyDocument** | Disallow empty YAML documents | eslint-plugin-yml | Low | **Done** |
-| **noFloatTrailingZeros** | `1.0` -> `1` normalization | eslint-plugin-yml | Low | Not started |
-| **useLineLength** | Maximum line length | yamllint | Low | Not started |
-| **useCommentSpacing** | Space after `#`, min distance from content | yamllint, eslint-plugin-yml | Low | Not started |
+| **noFloatTrailingZeros** | `1.0` -> `1` normalization | eslint-plugin-yml | Low | **Done** |
+| **useLineLength** | Maximum line length | yamllint | Low | **Done** |
+| **useCommentSpacing** | Space after `#`, min distance from content | yamllint, eslint-plugin-yml | Low | **Done** |
 
-**Style lint coverage: 7/12 (58%)**
+**Style lint coverage: 12/12 (100%)**
 
 ### Advanced Features
 
@@ -289,9 +294,9 @@ Opinionated rules for code consistency:
 |----------|-------------|-------|----------|
 | Formatter per-node rules | 0 | 14 | 0% |
 | Core lint rules (bug prevention) | 10 | 10 | 100% |
-| Style lint rules (consistency) | 7 | 12 | 58% |
+| Style lint rules (consistency) | 12 | 12 | 100% |
 | Advanced features | 0 (2 infra-ready) | 5 | 0% |
-| **Overall** | **17** | **41** | **41%** |
+| **Overall** | **22** | **41** | **54%** |
 
 **Note:** `noDuplicateFlowKeys` is implemented but not counted above as it overlaps with `noDuplicateKeys` (handles flow mappings specifically).
 
@@ -316,14 +321,9 @@ If unblocked, the priority order would be:
 7. Line wrapping
 8. Block vs flow style enforcement
 
-### Phase 2: Remaining Lint Rules (Ready to Implement)
+### Phase 2: Lint Rules — COMPLETE
 
-**Low Priority (all remaining):**
-1. `useBlockStyle` / `useFlowStyle` — enforce collection style
-2. `useStringKeys` — disallow non-string mapping keys
-3. `noFloatTrailingZeros` — `1.0` -> `1` normalization
-4. `useLineLength` — maximum line length
-5. `useCommentSpacing` — space after `#`, min distance from content
+All 22 unique lint rules (23 including `noDuplicateFlowKeys`) from the gap analysis are implemented and tested.
 
 ### Phase 3: Advanced Features (Future)
 - JSON Schema validation
@@ -334,7 +334,7 @@ If unblocked, the priority order would be:
 
 ## Key Insights
 
-1. **Linting is in excellent shape.** With 18 rules implemented, Biome covers 100% of core bug-prevention rules and 58% of style rules. All medium-priority gaps are closed; only low-priority style rules remain.
+1. **Linting is complete.** With 23 rules implemented, Biome covers 100% of core bug-prevention rules and 100% of style rules identified in the gap analysis. No lint rule gaps remain.
 
 2. **The formatter is the critical gap.** Zero formatting actually happens — all nodes output verbatim. This is blocked by missing codegen support for YAML in the formatter pipeline.
 
