@@ -2,7 +2,7 @@ use crate::TurtleCommentStyle;
 use biome_formatter::prelude::*;
 use biome_formatter::{
     CstFormatContext, FormatContext, FormatOptions, IndentStyle, IndentWidth, LineEnding,
-    LineWidth, TransformSourceMap,
+    LineWidth, QuoteStyle, TransformSourceMap,
 };
 
 use crate::comments::{FormatTurtleLeadingComment, TurtleComments};
@@ -54,13 +54,29 @@ impl CstFormatContext for TurtleFormatContext {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TurtleFormatOptions {
     indent_style: IndentStyle,
     indent_width: IndentWidth,
     line_ending: LineEnding,
     line_width: LineWidth,
+    quote_style: QuoteStyle,
+    first_predicate_in_new_line: bool,
     _file_source: TurtleFileSource,
+}
+
+impl Default for TurtleFormatOptions {
+    fn default() -> Self {
+        Self {
+            indent_style: IndentStyle::default(),
+            indent_width: IndentWidth::default(),
+            line_ending: LineEnding::default(),
+            line_width: LineWidth::default(),
+            quote_style: QuoteStyle::default(),
+            first_predicate_in_new_line: true,
+            _file_source: TurtleFileSource::default(),
+        }
+    }
 }
 
 impl TurtleFormatOptions {
@@ -71,6 +87,8 @@ impl TurtleFormatOptions {
             indent_width: IndentWidth::default(),
             line_ending: LineEnding::default(),
             line_width: LineWidth::default(),
+            quote_style: QuoteStyle::default(),
+            first_predicate_in_new_line: true,
         }
     }
 
@@ -109,6 +127,32 @@ impl TurtleFormatOptions {
     pub fn set_line_width(&mut self, line_width: LineWidth) {
         self.line_width = line_width;
     }
+
+    pub fn with_quote_style(mut self, quote_style: QuoteStyle) -> Self {
+        self.quote_style = quote_style;
+        self
+    }
+
+    pub fn set_quote_style(&mut self, quote_style: QuoteStyle) {
+        self.quote_style = quote_style;
+    }
+
+    pub fn quote_style(&self) -> QuoteStyle {
+        self.quote_style
+    }
+
+    pub fn with_first_predicate_in_new_line(mut self, first_predicate_in_new_line: bool) -> Self {
+        self.first_predicate_in_new_line = first_predicate_in_new_line;
+        self
+    }
+
+    pub fn set_first_predicate_in_new_line(&mut self, first_predicate_in_new_line: bool) {
+        self.first_predicate_in_new_line = first_predicate_in_new_line;
+    }
+
+    pub fn first_predicate_in_new_line(&self) -> bool {
+        self.first_predicate_in_new_line
+    }
 }
 
 impl FormatOptions for TurtleFormatOptions {
@@ -138,6 +182,8 @@ impl fmt::Display for TurtleFormatOptions {
         writeln!(f, "Indent style: {}", self.indent_style)?;
         writeln!(f, "Indent width: {}", self.indent_width.value())?;
         writeln!(f, "Line ending: {}", self.line_ending)?;
-        writeln!(f, "Line width: {}", self.line_width.value())
+        writeln!(f, "Line width: {}", self.line_width.value())?;
+        writeln!(f, "Quote style: {}", self.quote_style)?;
+        writeln!(f, "First predicate in new line: {}", self.first_predicate_in_new_line)
     }
 }

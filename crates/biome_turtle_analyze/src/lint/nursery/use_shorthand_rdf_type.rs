@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{Ast, FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::AstNode;
-use biome_turtle_syntax::{TurtleSyntaxKind, TurtleVerb};
+use biome_rowan::{AstNode, BatchMutationExt};
+use biome_turtle_syntax::{TurtleSyntaxKind, TurtleSyntaxToken, TurtleVerb};
+
+use crate::TurtleRuleAction;
 
 declare_lint_rule! {
     /// Suggest using the `a` shorthand for `rdf:type`.
@@ -34,6 +36,7 @@ declare_lint_rule! {
         language: "turtle",
         recommended: true,
         severity: Severity::Information,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -79,5 +82,28 @@ impl Rule for UseShorthandRdfType {
                 "The 'a' keyword is the idiomatic shorthand for rdf:type in Turtle."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<TurtleRuleAction> {
+        let node = ctx.query();
+        // Get the first meaningful token from the verb node
+        let old_token = node
+            .syntax()
+            .children_with_tokens()
+            .filter_map(|el| el.into_token())
+            .next()?;
+
+        let new_token =
+            TurtleSyntaxToken::new_detached(TurtleSyntaxKind::A_KW, "a", [], []);
+
+        let mut mutation = ctx.root().begin();
+        mutation.replace_token_transfer_trivia(old_token, new_token);
+
+        Some(TurtleRuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Replace with "<Emphasis>"a"</Emphasis>" shorthand." }.to_owned(),
+            mutation,
+        ))
     }
 }

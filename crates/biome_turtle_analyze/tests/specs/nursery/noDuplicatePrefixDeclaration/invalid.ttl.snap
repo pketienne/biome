@@ -14,7 +14,7 @@ ex:alice a foaf:Person .
 
 # Diagnostics
 ```
-invalid.ttl:2:1 lint/nursery/noDuplicatePrefixDeclaration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.ttl:2:1 lint/nursery/noDuplicatePrefixDeclaration  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × Duplicate prefix declaration for 'foaf:'.
   
@@ -27,6 +27,13 @@ invalid.ttl:2:1 lint/nursery/noDuplicatePrefixDeclaration ━━━━━━━�
   i Only the last declaration takes effect. Remove the duplicate.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+  i Safe fix: Remove the duplicate prefix declaration.
+  
+    1 1 │   @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    2   │ - @prefix·foaf:·<http://xmlns.com/foaf/0.1/>·.
+    3 2 │   @prefix ex: <http://example.org/> .
+    4 3 │   
   
 
 ```

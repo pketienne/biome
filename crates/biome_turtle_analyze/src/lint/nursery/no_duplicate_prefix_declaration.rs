@@ -1,9 +1,11 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{Ast, FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange};
+use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 use biome_turtle_syntax::{AnyTurtleDirective, AnyTurtleStatement, TurtleRoot};
 use std::collections::HashMap;
+
+use crate::TurtleRuleAction;
 
 declare_lint_rule! {
     /// Disallow duplicate prefix declarations in Turtle documents.
@@ -34,12 +36,14 @@ declare_lint_rule! {
         language: "turtle",
         recommended: true,
         severity: Severity::Error,
+        fix_kind: FixKind::Safe,
     }
 }
 
 pub struct DuplicatePrefix {
     namespace: String,
     range: TextRange,
+    directive: AnyTurtleDirective,
 }
 
 impl Rule for NoDuplicatePrefixDeclaration {
@@ -75,6 +79,7 @@ impl Rule for NoDuplicatePrefixDeclaration {
                     signals.push(DuplicatePrefix {
                         namespace: ns,
                         range,
+                        directive: directive.clone(),
                     });
                 } else {
                     seen.insert(ns, range);
@@ -98,5 +103,17 @@ impl Rule for NoDuplicatePrefixDeclaration {
                 "Only the last declaration takes effect. Remove the duplicate."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<TurtleRuleAction> {
+        let mut mutation = ctx.root().begin();
+        mutation.remove_node(state.directive.clone());
+
+        Some(TurtleRuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Remove the duplicate prefix declaration." }.to_owned(),
+            mutation,
+        ))
     }
 }

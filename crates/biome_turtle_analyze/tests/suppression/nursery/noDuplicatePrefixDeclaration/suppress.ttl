@@ -1,0 +1,4 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+# biome-ignore lint/nursery/noDuplicatePrefixDeclaration: intentional override
+@prefix foaf: <http://example.org/foaf/> .
+<http://example.org/alice> foaf:name "Alice" .

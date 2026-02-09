@@ -13,6 +13,7 @@ use std::ops::Deref;
 use std::{fs::read_to_string, slice};
 
 tests_macros::gen_tests! {"tests/specs/**/*.ttl", crate::run_test, "module"}
+tests_macros::gen_tests! {"tests/suppression/**/*.ttl", crate::run_suppression_test, "module"}
 
 fn run_test(input: &'static str, _: &str, _: &str, _: &str) {
     register_leak_checker();
@@ -21,10 +22,10 @@ fn run_test(input: &'static str, _: &str, _: &str, _: &str) {
     let file_name = input_file.file_name().unwrap();
 
     let (group, rule) = parse_test_path(input_file);
-    if rule == "specs" {
+    if rule == "specs" || rule == "suppression" {
         panic!("the test file must be placed in the {rule}/<group-name>/<rule-name>/ directory");
     }
-    if group == "specs" {
+    if group == "specs" || group == "suppression" {
         panic!("the test file must be placed in the {group}/{rule}/<rule-name>/ directory");
     }
     if biome_turtle_analyze::METADATA
@@ -66,6 +67,73 @@ fn run_test(input: &'static str, _: &str, _: &str, _: &str) {
 
         for action in signal.actions() {
             if !action.category.matches("quickfix.suppressRule") {
+                check_code_action(input_file, &input_code, &action);
+                code_fixes.push(code_fix_to_string(&input_code, action));
+            }
+        }
+
+        ControlFlow::<Never>::Continue(())
+    });
+
+    for error in errors {
+        diagnostics.push(diagnostic_to_string(file_name, &input_code, error));
+    }
+
+    let mut snapshot = String::new();
+    write_analyzer_snapshot(
+        &mut snapshot,
+        &input_code,
+        diagnostics.as_slice(),
+        code_fixes.as_slice(),
+        "turtle",
+        parsed.diagnostics().len(),
+    );
+
+    insta::with_settings!({
+        prepend_module_to_snapshot => false,
+        snapshot_path => input_file.parent().unwrap(),
+    }, {
+        insta::assert_snapshot!(file_name, snapshot, file_name);
+    });
+}
+
+fn run_suppression_test(input: &'static str, _: &str, _: &str, _: &str) {
+    register_leak_checker();
+
+    let input_file = Utf8Path::new(input);
+    let file_name = input_file.file_name().unwrap();
+    let input_code = read_to_string(input_file)
+        .unwrap_or_else(|err| panic!("failed to read {input_file:?}: {err:?}"));
+
+    let (group, rule) = parse_test_path(input_file);
+
+    let rule_filter = RuleFilter::Rule(group, rule);
+    let filter = AnalysisFilter {
+        enabled_rules: Some(slice::from_ref(&rule_filter)),
+        ..AnalysisFilter::default()
+    };
+
+    let parsed = parse_turtle(&input_code);
+    let root = parsed.tree();
+    let options = biome_analyze::AnalyzerOptions::default();
+
+    let mut diagnostics = Vec::new();
+    let mut code_fixes = Vec::new();
+
+    let (_, errors) = analyze(&root, filter, &options, |signal| {
+        if let Some(mut diag) = signal.diagnostic() {
+            for action in signal.actions() {
+                if action.is_suppression() {
+                    check_code_action(input_file, &input_code, &action);
+                    diag = diag.add_code_suggestion(CodeSuggestionAdvice::from(action));
+                }
+            }
+            diagnostics.push(diagnostic_to_string(file_name, &input_code, diag.into()));
+            return ControlFlow::Continue(());
+        }
+
+        for action in signal.actions() {
+            if action.category.matches("quickfix.suppressRule") {
                 check_code_action(input_file, &input_code, &action);
                 code_fixes.push(code_fix_to_string(&input_code, action));
             }

@@ -1,0 +1,6 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+ex:s ex:count "abc"^^xsd:integer .
+ex:s ex:flag "yes"^^xsd:boolean .
+ex:s ex:ratio "not-a-number"^^xsd:decimal .

@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{Ast, FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_turtle_syntax::TurtleString;
-use biome_rowan::TextRange;
+use biome_rowan::{BatchMutationExt, TextRange};
+use biome_turtle_syntax::{TurtleString, TurtleSyntaxToken};
+
+use crate::TurtleRuleAction;
 
 declare_lint_rule! {
     /// Enforce consistent use of quotes in Turtle string literals.
@@ -33,11 +35,13 @@ declare_lint_rule! {
         language: "turtle",
         recommended: false,
         severity: Severity::Information,
+        fix_kind: FixKind::Safe,
     }
 }
 
 pub struct InconsistentQuote {
     range: TextRange,
+    token: TurtleSyntaxToken,
 }
 
 impl Rule for UseConsistentQuotes {
@@ -60,6 +64,7 @@ impl Rule for UseConsistentQuotes {
         if text.starts_with('\'') {
             Some(InconsistentQuote {
                 range: token.text_trimmed_range(),
+                token: token.clone(),
             })
         } else {
             None
@@ -79,5 +84,24 @@ impl Rule for UseConsistentQuotes {
                 "Prefer double quotes (\") over single quotes (') for consistency."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<TurtleRuleAction> {
+        let text = state.token.text_trimmed();
+        // Replace outer single quotes with double quotes
+        // 'content' -> "content"
+        let inner = &text[1..text.len() - 1];
+        let new_text = format!("\"{inner}\"");
+        let new_token = TurtleSyntaxToken::new_detached(state.token.kind(), &new_text, [], []);
+
+        let mut mutation = ctx.root().begin();
+        mutation.replace_token_transfer_trivia(state.token.clone(), new_token);
+
+        Some(TurtleRuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Replace with double quotes." }.to_owned(),
+            mutation,
+        ))
     }
 }

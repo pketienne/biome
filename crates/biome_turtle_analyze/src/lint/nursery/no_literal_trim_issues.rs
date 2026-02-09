@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{Ast, FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_turtle_syntax::TurtleRdfLiteral;
-use biome_rowan::TextRange;
+use biome_rowan::{BatchMutationExt, TextRange};
+use biome_turtle_syntax::{TurtleRdfLiteral, TurtleSyntaxToken};
+
+use crate::TurtleRuleAction;
 
 declare_lint_rule! {
     /// Warn about string literals with leading or trailing whitespace.
@@ -33,6 +35,7 @@ declare_lint_rule! {
         language: "turtle",
         recommended: false,
         severity: Severity::Warning,
+        fix_kind: FixKind::Unsafe,
     }
 }
 
@@ -40,6 +43,7 @@ pub struct TrimIssue {
     range: TextRange,
     has_leading: bool,
     has_trailing: bool,
+    token: TurtleSyntaxToken,
 }
 
 impl Rule for NoLiteralTrimIssues {
@@ -79,6 +83,7 @@ impl Rule for NoLiteralTrimIssues {
                 range: token.text_trimmed_range(),
                 has_leading,
                 has_trailing,
+                token: token.clone(),
             })
         } else {
             None
@@ -100,5 +105,37 @@ impl Rule for NoLiteralTrimIssues {
                 },
             ),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<TurtleRuleAction> {
+        let text = state.token.text_trimmed();
+
+        // Determine quote style and extract/trim inner content
+        let (prefix, suffix, inner) = if text.starts_with("\"\"\"") && text.ends_with("\"\"\"") {
+            ("\"\"\"", "\"\"\"", &text[3..text.len() - 3])
+        } else if text.starts_with("'''") && text.ends_with("'''") {
+            ("'''", "'''", &text[3..text.len() - 3])
+        } else if text.starts_with('"') && text.ends_with('"') {
+            ("\"", "\"", &text[1..text.len() - 1])
+        } else if text.starts_with('\'') && text.ends_with('\'') {
+            ("'", "'", &text[1..text.len() - 1])
+        } else {
+            return None;
+        };
+
+        let trimmed = inner.trim();
+        let new_text = format!("{prefix}{trimmed}{suffix}");
+        let new_token =
+            TurtleSyntaxToken::new_detached(state.token.kind(), &new_text, [], []);
+
+        let mut mutation = ctx.root().begin();
+        mutation.replace_token_transfer_trivia(state.token.clone(), new_token);
+
+        Some(TurtleRuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Trim whitespace from string literal." }.to_owned(),
+            mutation,
+        ))
     }
 }

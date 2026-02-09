@@ -1,0 +1,70 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+ex:s ex:count "abc"^^xsd:integer .
+ex:s ex:flag "yes"^^xsd:boolean .
+ex:s ex:ratio "not-a-number"^^xsd:decimal .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:4:15 lint/nursery/noMalformedDatatype ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Value "abc" does not conform to datatype xsd:integer.
+  
+    2 │ @prefix ex: <http://example.org/> .
+    3 │ 
+  > 4 │ ex:s ex:count "abc"^^xsd:integer .
+      │               ^^^^^^^^^^^^^^^^^^
+    5 │ ex:s ex:flag "yes"^^xsd:boolean .
+    6 │ ex:s ex:ratio "not-a-number"^^xsd:decimal .
+  
+  i Expected an integer value (e.g. 42, -7, +0).
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.ttl:5:14 lint/nursery/noMalformedDatatype ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Value "yes" does not conform to datatype xsd:boolean.
+  
+    4 │ ex:s ex:count "abc"^^xsd:integer .
+  > 5 │ ex:s ex:flag "yes"^^xsd:boolean .
+      │              ^^^^^^^^^^^^^^^^^^
+    6 │ ex:s ex:ratio "not-a-number"^^xsd:decimal .
+    7 │ 
+  
+  i Expected a boolean value (true, false, 0, or 1).
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.ttl:6:15 lint/nursery/noMalformedDatatype ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Value "not-a-number" does not conform to datatype xsd:decimal.
+  
+    4 │ ex:s ex:count "abc"^^xsd:integer .
+    5 │ ex:s ex:flag "yes"^^xsd:boolean .
+  > 6 │ ex:s ex:ratio "not-a-number"^^xsd:decimal .
+      │               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    7 │ 
+  
+  i Expected a decimal value (e.g. 3.14, -0.5, +100.0).
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

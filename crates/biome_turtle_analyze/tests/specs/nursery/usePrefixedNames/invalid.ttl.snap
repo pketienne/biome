@@ -1,0 +1,30 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+<http://example.org/alice> <http://xmlns.com/foaf/0.1/name> "Alice" .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:3:28 lint/nursery/usePrefixedNames ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i Use prefixed name foaf:name instead of full IRI.
+  
+    1 │ @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+    2 │ 
+  > 3 │ <http://example.org/alice> <http://xmlns.com/foaf/0.1/name> "Alice" .
+      │                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ 
+  
+  i A matching prefix declaration is available. Using prefixed names is more concise.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

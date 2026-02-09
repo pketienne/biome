@@ -13,7 +13,7 @@ ex:bob ex:name 'Bob' .
 
 # Diagnostics
 ```
-invalid.ttl:3:18 lint/nursery/useConsistentQuotes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.ttl:3:18 lint/nursery/useConsistentQuotes  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   i Use double quotes for string literals.
   
@@ -28,11 +28,20 @@ invalid.ttl:3:18 lint/nursery/useConsistentQuotes ━━━━━━━━━━
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
+  i Safe fix: Replace with double quotes.
+  
+    1 1 │   @prefix ex: <http://example.org/> .
+    2 2 │   
+    3   │ - ex:alice·ex:name·'Alice'·.
+      3 │ + ex:alice·ex:name·"Alice"·.
+    4 4 │   ex:bob ex:name 'Bob' .
+    5 5 │   
+  
 
 ```
 
 ```
-invalid.ttl:4:16 lint/nursery/useConsistentQuotes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.ttl:4:16 lint/nursery/useConsistentQuotes  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   i Use double quotes for string literals.
   
@@ -44,6 +53,14 @@ invalid.ttl:4:16 lint/nursery/useConsistentQuotes ━━━━━━━━━━
   i Prefer double quotes (") over single quotes (') for consistency.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+  i Safe fix: Replace with double quotes.
+  
+    2 2 │   
+    3 3 │   ex:alice ex:name 'Alice' .
+    4   │ - ex:bob·ex:name·'Bob'·.
+      4 │ + ex:bob·ex:name·"Bob"·.
+    5 5 │   
   
 
 ```

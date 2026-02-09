@@ -9,17 +9,34 @@ impl FormatNodeRule<TurtleTriples> for FormatTurtleTriples {
         let predicates = node.predicates()?;
         let dot = node.dot_token()?;
 
-        write!(
-            f,
-            [
-                subject.format(),
-                indent(&biome_formatter::format_args!(
-                    hard_line_break(),
-                    predicates.format(),
+        let first_predicate_in_new_line = f.options().first_predicate_in_new_line();
+
+        if first_predicate_in_new_line {
+            write!(
+                f,
+                [
+                    subject.format(),
+                    indent(&biome_formatter::format_args!(
+                        hard_line_break(),
+                        predicates.format(),
+                        space(),
+                        dot.format(),
+                    )),
+                ]
+            )
+        } else {
+            write!(
+                f,
+                [
+                    subject.format(),
                     space(),
-                    dot.format(),
-                )),
-            ]
-        )
+                    indent(&biome_formatter::format_args!(
+                        predicates.format(),
+                        space(),
+                        dot.format(),
+                    )),
+                ]
+            )
+        }
     }
 }

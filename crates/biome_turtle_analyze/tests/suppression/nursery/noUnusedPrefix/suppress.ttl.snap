@@ -1,0 +1,12 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: suppress.ttl
+---
+# Input
+```turtle
+# biome-ignore lint/nursery/noUnusedPrefix: intentionally unused
+@prefix unused: <http://example.org/unused/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+<http://example.org/alice> foaf:name "Alice" .
+
+```

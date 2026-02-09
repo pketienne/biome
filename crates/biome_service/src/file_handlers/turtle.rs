@@ -19,7 +19,7 @@ use biome_configuration::turtle::{
     TurtleAssistConfiguration, TurtleAssistEnabled, TurtleFormatterConfiguration,
     TurtleFormatterEnabled, TurtleLinterConfiguration, TurtleLinterEnabled,
 };
-use biome_formatter::{FormatError, IndentStyle, IndentWidth, LineEnding, LineWidth, Printed};
+use biome_formatter::{FormatError, IndentStyle, IndentWidth, LineEnding, LineWidth, Printed, QuoteStyle};
 use biome_fs::BiomePath;
 use biome_turtle_analyze::analyze;
 use biome_turtle_formatter::context::TurtleFormatOptions;
@@ -41,6 +41,8 @@ pub struct TurtleFormatterSettings {
     pub indent_width: Option<IndentWidth>,
     pub indent_style: Option<IndentStyle>,
     pub enabled: Option<TurtleFormatterEnabled>,
+    pub quote_style: Option<QuoteStyle>,
+    pub first_predicate_in_new_line: Option<bool>,
 }
 
 impl From<TurtleFormatterConfiguration> for TurtleFormatterSettings {
@@ -51,6 +53,8 @@ impl From<TurtleFormatterConfiguration> for TurtleFormatterSettings {
             indent_width: configuration.indent_width,
             indent_style: configuration.indent_style,
             enabled: configuration.enabled,
+            quote_style: configuration.quote_style,
+            first_predicate_in_new_line: configuration.first_predicate_in_new_line,
         }
     }
 }
@@ -132,6 +136,13 @@ impl ServiceLanguage for TurtleLanguage {
             .or(global.line_ending)
             .unwrap_or_default();
 
+        let quote_style = language
+            .quote_style
+            .unwrap_or_default();
+        let first_predicate_in_new_line = language
+            .first_predicate_in_new_line
+            .unwrap_or(true);
+
         TurtleFormatOptions::new(
             document_file_source
                 .to_turtle_file_source()
@@ -141,6 +152,8 @@ impl ServiceLanguage for TurtleLanguage {
         .with_indent_width(indent_width)
         .with_line_width(line_width)
         .with_line_ending(line_ending)
+        .with_quote_style(quote_style)
+        .with_first_predicate_in_new_line(first_predicate_in_new_line)
     }
 
     fn resolve_analyzer_options(

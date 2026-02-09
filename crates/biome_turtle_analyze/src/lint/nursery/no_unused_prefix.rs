@@ -1,9 +1,11 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{Ast, FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange};
+use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 use biome_turtle_syntax::{AnyTurtleDirective, AnyTurtleStatement, TurtlePrefixedName, TurtleRoot};
 use std::collections::{HashMap, HashSet};
+
+use crate::TurtleRuleAction;
 
 declare_lint_rule! {
     /// Disallow unused prefix declarations in Turtle documents.
@@ -34,12 +36,14 @@ declare_lint_rule! {
         language: "turtle",
         recommended: true,
         severity: Severity::Warning,
+        fix_kind: FixKind::Safe,
     }
 }
 
 pub struct UnusedPrefix {
     namespace: String,
     range: TextRange,
+    directive: AnyTurtleDirective,
 }
 
 impl Rule for NoUnusedPrefix {
@@ -50,7 +54,7 @@ impl Rule for NoUnusedPrefix {
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let root = ctx.query();
-        let mut declared: HashMap<String, TextRange> = HashMap::new();
+        let mut declared: HashMap<String, (TextRange, AnyTurtleDirective)> = HashMap::new();
         let mut used: HashSet<String> = HashSet::new();
 
         // Collect all declared prefixes
@@ -59,18 +63,18 @@ impl Rule for NoUnusedPrefix {
                 let info = match directive {
                     AnyTurtleDirective::TurtlePrefixDeclaration(decl) => {
                         decl.namespace_token().ok().map(|t| {
-                            (t.text_trimmed().to_string(), directive.syntax().text_trimmed_range())
+                            (t.text_trimmed().to_string(), directive.syntax().text_trimmed_range(), directive.clone())
                         })
                     }
                     AnyTurtleDirective::TurtleSparqlPrefixDeclaration(decl) => {
                         decl.namespace_token().ok().map(|t| {
-                            (t.text_trimmed().to_string(), directive.syntax().text_trimmed_range())
+                            (t.text_trimmed().to_string(), directive.syntax().text_trimmed_range(), directive.clone())
                         })
                     }
                     _ => None,
                 };
-                if let Some((ns, range)) = info {
-                    declared.insert(ns, range);
+                if let Some((ns, range, dir)) = info {
+                    declared.insert(ns, (range, dir));
                 }
             }
         }
@@ -92,7 +96,7 @@ impl Rule for NoUnusedPrefix {
         declared
             .into_iter()
             .filter(|(ns, _)| !used.contains(ns.as_str()))
-            .map(|(namespace, range)| UnusedPrefix { namespace, range })
+            .map(|(namespace, (range, directive))| UnusedPrefix { namespace, range, directive })
             .collect()
     }
 
@@ -109,5 +113,17 @@ impl Rule for NoUnusedPrefix {
                 "Remove the unused prefix declaration."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<TurtleRuleAction> {
+        let mut mutation = ctx.root().begin();
+        mutation.remove_node(state.directive.clone());
+
+        Some(TurtleRuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Remove the unused prefix declaration." }.to_owned(),
+            mutation,
+        ))
     }
 }

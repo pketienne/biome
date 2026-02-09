@@ -1,6 +1,6 @@
 use crate::bool::Bool;
 use biome_deserialize_macros::{Deserializable, Merge};
-use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth};
+use biome_formatter::{IndentStyle, IndentWidth, LineEnding, LineWidth, QuoteStyle};
 use bpaf::Bpaf;
 use serde::{Deserialize, Serialize};
 
@@ -55,6 +55,14 @@ pub struct TurtleFormatterConfiguration {
     /// What's the max width of a line applied to Turtle files. Defaults to 80.
     #[bpaf(long("turtle-formatter-line-width"), argument("NUMBER"))]
     pub line_width: Option<LineWidth>,
+
+    /// The type of quotes used in Turtle string literals. Defaults to double.
+    #[bpaf(long("turtle-formatter-quote-style"), argument("double|single"))]
+    pub quote_style: Option<QuoteStyle>,
+
+    /// Whether the first predicate should be on a new line after the subject. Defaults to true.
+    #[bpaf(long("turtle-formatter-first-predicate-in-new-line"), argument("true|false"))]
+    pub first_predicate_in_new_line: Option<bool>,
 }
 
 impl TurtleFormatterConfiguration {
@@ -106,6 +114,7 @@ fn default_turtle_formatter() {
     assert_eq!(turtle_configuration.indent_width, None);
     assert_eq!(turtle_configuration.line_ending, None);
     assert_eq!(turtle_configuration.line_width, None);
+    assert_eq!(turtle_configuration.quote_style, None);
 }
 
 #[test]
