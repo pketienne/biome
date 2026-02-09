@@ -274,7 +274,7 @@ impl ExtensionHandler for TurtleFileHandler {
                 debug_formatter_ir: Some(debug_formatter_ir),
                 debug_type_info: None,
                 debug_registered_types: None,
-                debug_semantic_model: None,
+                debug_semantic_model: Some(debug_semantic_model),
             },
             analyzer: AnalyzerCapabilities {
                 lint: Some(lint),
@@ -348,6 +348,12 @@ fn debug_formatter_ir(
 
     let root_element = formatted.into_document();
     Ok(root_element.to_string())
+}
+
+fn debug_semantic_model(_path: &BiomePath, parse: AnyParse) -> Result<String, WorkspaceError> {
+    let tree: TurtleRoot = parse.tree();
+    let model = biome_turtle_semantic::semantic_model(&tree);
+    Ok(format!("{model:#?}"))
 }
 
 #[tracing::instrument(level = "debug", skip(parse, settings))]
@@ -448,7 +454,14 @@ fn lint(params: LintParams) -> LintResults {
 
     let mut process_lint = ProcessLint::new(&params);
 
-    let (_, analyze_diagnostics) = analyze(&tree, filter, &analyzer_options, |signal| {
+    let turtle_services = biome_turtle_analyze::TurtleAnalyzerServices {
+        semantic_model: params
+            .document_services
+            .as_turtle_services()
+            .and_then(|services| services.semantic_model.as_ref()),
+    };
+
+    let (_, analyze_diagnostics) = analyze(&tree, filter, &analyzer_options, turtle_services, |signal| {
         process_lint.process_signal(signal)
     });
 
@@ -477,7 +490,7 @@ pub(crate) fn code_actions(params: CodeActionsParams) -> PullActionsResult {
         plugins: _,
         categories,
         action_offset,
-        document_services: _,
+        document_services,
     } = params;
     let _ = debug_span!("Code actions Turtle", range =? range, path =? path).entered();
     let tree = parse.tree();
@@ -513,7 +526,13 @@ pub(crate) fn code_actions(params: CodeActionsParams) -> PullActionsResult {
 
     info!("Turtle runs the analyzer");
 
-    analyze(&tree, filter, &analyzer_options, |signal| {
+    let turtle_services = biome_turtle_analyze::TurtleAnalyzerServices {
+        semantic_model: document_services
+            .as_turtle_services()
+            .and_then(|services| services.semantic_model.as_ref()),
+    };
+
+    analyze(&tree, filter, &analyzer_options, turtle_services, |signal| {
         actions.extend(signal.actions().into_code_action_iter().map(|item| {
             CodeAction {
                 category: item.category.clone(),
@@ -564,7 +583,14 @@ pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceEr
         tree.syntax().text_range_with_trivia().len().into(),
     );
     loop {
-        let (action, _) = analyze(&tree, filter, &analyzer_options, |signal| {
+        let turtle_services = biome_turtle_analyze::TurtleAnalyzerServices {
+            semantic_model: params
+                .document_services
+                .as_turtle_services()
+                .and_then(|services| services.semantic_model.as_ref()),
+        };
+
+        let (action, _) = analyze(&tree, filter, &analyzer_options, turtle_services, |signal| {
             process_fix_all.process_signal(signal)
         });
 

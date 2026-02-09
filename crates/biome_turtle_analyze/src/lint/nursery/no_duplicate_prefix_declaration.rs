@@ -1,11 +1,11 @@
-use biome_analyze::{Ast, FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 use biome_turtle_syntax::{AnyTurtleDirective, AnyTurtleStatement, TurtleRoot};
-use std::collections::HashMap;
 
 use crate::TurtleRuleAction;
+use crate::services::semantic::Semantic;
 
 declare_lint_rule! {
     /// Disallow duplicate prefix declarations in Turtle documents.
@@ -47,43 +47,25 @@ pub struct DuplicatePrefix {
 }
 
 impl Rule for NoDuplicatePrefixDeclaration {
-    type Query = Ast<TurtleRoot>;
+    type Query = Semantic<TurtleRoot>;
     type State = DuplicatePrefix;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let root = ctx.query();
-        let mut seen: HashMap<String, TextRange> = HashMap::new();
+        let model = ctx.model();
         let mut signals = Vec::new();
 
-        for statement in root.statements() {
-            let directive = match statement {
-                AnyTurtleStatement::AnyTurtleDirective(d) => d,
-                _ => continue,
-            };
-
-            let namespace = match &directive {
-                AnyTurtleDirective::TurtlePrefixDeclaration(decl) => {
-                    decl.namespace_token().ok().map(|t| t.text_trimmed().to_string())
-                }
-                AnyTurtleDirective::TurtleSparqlPrefixDeclaration(decl) => {
-                    decl.namespace_token().ok().map(|t| t.text_trimmed().to_string())
-                }
-                _ => None,
-            };
-
-            if let Some(ns) = namespace {
-                let range = directive.syntax().text_trimmed_range();
-                if seen.contains_key(&ns) {
-                    signals.push(DuplicatePrefix {
-                        namespace: ns,
-                        range,
-                        directive: directive.clone(),
-                    });
-                } else {
-                    seen.insert(ns, range);
-                }
+        for binding in model.duplicate_prefixes() {
+            // Find the directive AST node at this range for the action
+            let directive = find_prefix_directive(root, binding.range);
+            if let Some(directive) = directive {
+                signals.push(DuplicatePrefix {
+                    namespace: binding.namespace.clone(),
+                    range: binding.range,
+                    directive,
+                });
             }
         }
 
@@ -116,4 +98,15 @@ impl Rule for NoDuplicatePrefixDeclaration {
             mutation,
         ))
     }
+}
+
+fn find_prefix_directive(root: &TurtleRoot, range: TextRange) -> Option<AnyTurtleDirective> {
+    for statement in root.statements() {
+        if let AnyTurtleStatement::AnyTurtleDirective(directive) = statement {
+            if directive.syntax().text_trimmed_range() == range {
+                return Some(directive);
+            }
+        }
+    }
+    None
 }

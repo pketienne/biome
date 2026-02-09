@@ -1,0 +1,23 @@
+[package]
+name                 = "biome_turtle_semantic"
+version              = "0.0.1"
+authors.workspace    = true
+edition.workspace    = true
+description          = "Biome's semantic model for Turtle (RDF)"
+homepage.workspace   = true
+repository.workspace = true
+license.workspace    = true
+keywords.workspace   = true
+categories.workspace = true
+publish              = true
+
+[dependencies]
+biome_turtle_syntax = { workspace = true }
+biome_rowan         = { workspace = true }
+rustc-hash          = { workspace = true }
+
+[dev-dependencies]
+biome_turtle_parser = { path = "../biome_turtle_parser" }
+
+[lints]
+workspace = true

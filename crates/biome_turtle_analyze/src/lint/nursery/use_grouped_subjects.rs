@@ -1,9 +1,11 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange};
-use biome_turtle_syntax::{AnyTurtleStatement, TurtleRoot, TurtleTriples};
-use std::collections::HashMap;
+use biome_rowan::TextRange;
+use biome_turtle_syntax::TurtleRoot;
+use std::collections::{HashMap, HashSet};
+
+use crate::services::semantic::Semantic;
 
 declare_lint_rule! {
     /// Suggest grouping triples with the same subject.
@@ -45,29 +47,39 @@ pub struct UngroupedSubject {
 }
 
 impl Rule for UseGroupedSubjects {
-    type Query = Ast<TurtleRoot>;
+    type Query = Semantic<TurtleRoot>;
     type State = UngroupedSubject;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let root = ctx.query();
+        let model = ctx.model();
+        let triples = model.triples();
         let mut signals = Vec::new();
-        let mut seen_subjects: HashMap<String, TextRange> = HashMap::new();
+        // Track first seen statement_range per subject
+        let mut seen_subjects: HashMap<&str, TextRange> = HashMap::new();
+        // Track which statement_ranges we've already reported
+        let mut reported: HashSet<TextRange> = HashSet::new();
 
-        for statement in root.statements() {
-            if let AnyTurtleStatement::TurtleTriples(triples) = &statement {
-                let subject_text = extract_subject_text(triples);
-                if let Some(subject) = subject_text {
-                    if let Some(_first_range) = seen_subjects.get(&subject) {
+        for triple in triples {
+            let subject = triple.subject.as_str();
+            let range = triple.statement_range;
+
+            match seen_subjects.get(subject) {
+                Some(first_range) if *first_range != range => {
+                    // Same subject in a different TurtleTriples block
+                    if reported.insert(range) {
                         signals.push(UngroupedSubject {
-                            range: triples.syntax().text_trimmed_range(),
-                            subject: subject.clone(),
+                            range,
+                            subject: triple.subject.clone(),
                         });
-                    } else {
-                        seen_subjects
-                            .insert(subject, triples.syntax().text_trimmed_range());
                     }
+                }
+                None => {
+                    seen_subjects.insert(subject, range);
+                }
+                _ => {
+                    // Same subject, same block — skip (using ; notation)
                 }
             }
         }
@@ -89,10 +101,4 @@ impl Rule for UseGroupedSubjects {
             }),
         )
     }
-}
-
-fn extract_subject_text(triples: &TurtleTriples) -> Option<String> {
-    // The subject is the first child of TurtleTriples
-    let subject = triples.subject().ok()?;
-    Some(subject.syntax().text_trimmed().to_string())
 }

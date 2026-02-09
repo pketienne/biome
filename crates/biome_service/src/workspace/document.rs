@@ -3,6 +3,7 @@ use crate::file_handlers::FormatEmbedNode;
 use crate::settings::ServiceLanguage;
 use crate::workspace::DocumentFileSource;
 use biome_css_syntax::{CssLanguage, CssRoot};
+use biome_turtle_syntax::TurtleRoot;
 use biome_diagnostics::Error;
 use biome_diagnostics::serde::Diagnostic as SerdeDiagnostic;
 use biome_js_syntax::JsLanguage;
@@ -260,6 +261,7 @@ pub enum DocumentServices {
     /// The document doesn't have any services
     None,
     Css(CssDocumentServices),
+    Turtle(TurtleDocumentServices),
 }
 
 impl From<CssDocumentServices> for DocumentServices {
@@ -268,9 +270,21 @@ impl From<CssDocumentServices> for DocumentServices {
     }
 }
 
+impl From<TurtleDocumentServices> for DocumentServices {
+    fn from(services: TurtleDocumentServices) -> Self {
+        Self::Turtle(services)
+    }
+}
+
 impl DocumentServices {
     pub fn new_css() -> Self {
         Self::Css(CssDocumentServices {
+            semantic_model: None,
+        })
+    }
+
+    pub fn new_turtle() -> Self {
+        Self::Turtle(TurtleDocumentServices {
             semantic_model: None,
         })
     }
@@ -286,6 +300,14 @@ impl DocumentServices {
             None
         }
     }
+
+    pub fn as_turtle_services(&self) -> Option<&TurtleDocumentServices> {
+        if let Self::Turtle(services) = self {
+            Some(services)
+        } else {
+            None
+        }
+    }
 }
 #[derive(Clone, Default, Debug)]
 pub struct CssDocumentServices {
@@ -296,6 +318,19 @@ pub struct CssDocumentServices {
 impl CssDocumentServices {
     pub fn with_css_semantic_model(mut self, root: &CssRoot) -> Self {
         self.semantic_model = Some(biome_css_semantic::semantic_model(root));
+        self
+    }
+}
+
+#[derive(Clone, Default, Debug)]
+pub struct TurtleDocumentServices {
+    /// Semantic model that belongs to the file
+    pub(crate) semantic_model: Option<biome_turtle_semantic::model::SemanticModel>,
+}
+
+impl TurtleDocumentServices {
+    pub fn with_turtle_semantic_model(mut self, root: &TurtleRoot) -> Self {
+        self.semantic_model = Some(biome_turtle_semantic::semantic_model(root));
         self
     }
 }

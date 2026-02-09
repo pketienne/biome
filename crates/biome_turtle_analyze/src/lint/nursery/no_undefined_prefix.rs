@@ -1,9 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange};
-use biome_turtle_syntax::{AnyTurtleDirective, AnyTurtleStatement, TurtlePrefixedName, TurtleRoot};
-use std::collections::HashSet;
+use biome_rowan::TextRange;
+use biome_turtle_syntax::TurtleRoot;
+
+use crate::services::semantic::Semantic;
 
 declare_lint_rule! {
     /// Disallow use of undeclared prefixes in Turtle documents.
@@ -43,50 +44,22 @@ pub struct UndefinedPrefix {
 }
 
 impl Rule for NoUndefinedPrefix {
-    type Query = Ast<TurtleRoot>;
+    type Query = Semantic<TurtleRoot>;
     type State = UndefinedPrefix;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let root = ctx.query();
-        let mut declared: HashSet<String> = HashSet::new();
+        let model = ctx.model();
+        let prefix_map = model.prefix_map();
         let mut signals = Vec::new();
 
-        // Collect all declared prefixes
-        for statement in root.statements() {
-            if let AnyTurtleStatement::AnyTurtleDirective(directive) = &statement {
-                let namespace = match directive {
-                    AnyTurtleDirective::TurtlePrefixDeclaration(decl) => {
-                        decl.namespace_token().ok().map(|t| t.text_trimmed().to_string())
-                    }
-                    AnyTurtleDirective::TurtleSparqlPrefixDeclaration(decl) => {
-                        decl.namespace_token().ok().map(|t| t.text_trimmed().to_string())
-                    }
-                    _ => None,
-                };
-                if let Some(ns) = namespace {
-                    declared.insert(ns);
-                }
-            }
-        }
-
-        // Check all prefixed names
-        for node in root.syntax().descendants() {
-            if let Some(prefixed_name) = TurtlePrefixedName::cast_ref(&node) {
-                if let Ok(token) = prefixed_name.value() {
-                    let text = token.text_trimmed();
-                    // Extract prefix part (everything before the first ':')
-                    if let Some(colon_pos) = text.find(':') {
-                        let prefix = &text[..=colon_pos]; // includes the ':'
-                        if !declared.contains(prefix) {
-                            signals.push(UndefinedPrefix {
-                                prefix: prefix.to_string(),
-                                range: prefixed_name.syntax().text_trimmed_range(),
-                            });
-                        }
-                    }
-                }
+        for prefix_ref in model.prefix_references() {
+            if !prefix_map.contains_key(&prefix_ref.namespace) {
+                signals.push(UndefinedPrefix {
+                    prefix: prefix_ref.namespace.clone(),
+                    range: prefix_ref.range,
+                });
             }
         }
 

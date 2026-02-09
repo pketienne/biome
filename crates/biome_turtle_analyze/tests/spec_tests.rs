@@ -5,7 +5,8 @@ use biome_test_utils::{
     assert_errors_are_absent, code_fix_to_string, diagnostic_to_string, has_bogus_nodes_or_empty_slots,
     parse_test_path, register_leak_checker, write_analyzer_snapshot,
 };
-use biome_turtle_analyze::analyze;
+use biome_turtle_analyze::{TurtleAnalyzerServices, analyze};
+use biome_turtle_semantic::semantic_model;
 use biome_turtle_parser::parse_turtle;
 use biome_turtle_syntax::TurtleLanguage;
 use camino::Utf8Path;
@@ -51,8 +52,10 @@ fn run_test(input: &'static str, _: &str, _: &str, _: &str) {
     let mut diagnostics = Vec::new();
     let mut code_fixes = Vec::new();
     let options = biome_analyze::AnalyzerOptions::default();
+    let model = semantic_model(&root);
+    let turtle_services = TurtleAnalyzerServices { semantic_model: Some(&model) };
 
-    let (_, errors) = analyze(&root, filter, &options, |signal| {
+    let (_, errors) = analyze(&root, filter, &options, turtle_services, |signal| {
         if let Some(mut diag) = signal.diagnostic() {
             for action in signal.actions() {
                 if !action.is_suppression() {
@@ -119,8 +122,10 @@ fn run_suppression_test(input: &'static str, _: &str, _: &str, _: &str) {
 
     let mut diagnostics = Vec::new();
     let mut code_fixes = Vec::new();
+    let model = semantic_model(&root);
+    let turtle_services = TurtleAnalyzerServices { semantic_model: Some(&model) };
 
-    let (_, errors) = analyze(&root, filter, &options, |signal| {
+    let (_, errors) = analyze(&root, filter, &options, turtle_services, |signal| {
         if let Some(mut diag) = signal.diagnostic() {
             for action in signal.actions() {
                 if action.is_suppression() {

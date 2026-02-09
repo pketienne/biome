@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange};
-use biome_turtle_syntax::{AnyTurtleDirective, AnyTurtleStatement, TurtleRoot};
+use biome_rowan::TextRange;
+use biome_turtle_syntax::TurtleRoot;
+
+use crate::services::semantic::Semantic;
 
 declare_lint_rule! {
     /// Enforce alphabetical ordering of prefix declarations.
@@ -44,41 +46,31 @@ pub struct UnsortedPrefix {
 }
 
 impl Rule for UseSortedPrefixes {
-    type Query = Ast<TurtleRoot>;
+    type Query = Semantic<TurtleRoot>;
     type State = UnsortedPrefix;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let root = ctx.query();
+        let model = ctx.model();
+        let declarations = model.prefix_declarations();
         let mut signals = Vec::new();
-        let mut prev_ns: Option<String> = None;
+        let mut prev_ns: Option<&str> = None;
 
-        for statement in root.statements() {
-            if let AnyTurtleStatement::AnyTurtleDirective(directive) = &statement {
-                let namespace = match directive {
-                    AnyTurtleDirective::TurtlePrefixDeclaration(decl) => {
-                        decl.namespace_token().ok().map(|t| t.text_trimmed().to_string())
-                    }
-                    AnyTurtleDirective::TurtleSparqlPrefixDeclaration(decl) => {
-                        decl.namespace_token().ok().map(|t| t.text_trimmed().to_string())
-                    }
-                    _ => None,
-                };
-
-                if let Some(ns) = namespace {
-                    if let Some(prev) = &prev_ns {
-                        if ns.to_lowercase() < prev.to_lowercase() {
-                            signals.push(UnsortedPrefix {
-                                range: directive.syntax().text_trimmed_range(),
-                                namespace: ns.clone(),
-                                previous_namespace: prev.clone(),
-                            });
-                        }
-                    }
-                    prev_ns = Some(ns);
+        for binding in declarations {
+            if binding.is_duplicate {
+                continue;
+            }
+            if let Some(prev) = prev_ns {
+                if binding.namespace.to_lowercase() < prev.to_lowercase() {
+                    signals.push(UnsortedPrefix {
+                        range: binding.range,
+                        namespace: binding.namespace.clone(),
+                        previous_namespace: prev.to_string(),
+                    });
                 }
             }
+            prev_ns = Some(&binding.namespace);
         }
 
         signals

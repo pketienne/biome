@@ -413,6 +413,14 @@ impl WorkspaceServer {
                         .with_css_semantic_model(&any_parse.tree())
                         .into();
                 }
+
+                if language.to_turtle_file_source().is_some()
+                    && (settings.is_linter_enabled() || settings.is_assist_enabled())
+                {
+                    services = TurtleDocumentServices::default()
+                        .with_turtle_semantic_model(&any_parse.tree())
+                        .into();
+                }
             }
 
             if persist_node_cache {
@@ -1472,6 +1480,14 @@ impl Workspace for WorkspaceServer {
         {
             services = CssDocumentServices::default()
                 .with_css_semantic_model(&parsed.any_parse.tree())
+                .into();
+        }
+
+        if document_source.to_turtle_file_source().is_some()
+            && (settings.is_linter_enabled() || settings.is_assist_enabled())
+        {
+            services = TurtleDocumentServices::default()
+                .with_turtle_semantic_model(&parsed.any_parse.tree())
                 .into();
         }
 

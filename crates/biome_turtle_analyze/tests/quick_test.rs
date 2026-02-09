@@ -1,7 +1,8 @@
 use biome_analyze::{AnalysisFilter, AnalyzerOptions, ControlFlow, Never, RuleFilter};
 use biome_diagnostics::{Diagnostic, DiagnosticExt, Severity, print_diagnostic_to_string};
-use biome_turtle_analyze::analyze;
+use biome_turtle_analyze::{TurtleAnalyzerServices, analyze};
 use biome_turtle_parser::parse_turtle;
+use biome_turtle_semantic::semantic_model;
 use biome_turtle_syntax::TextRange;
 use std::slice;
 
@@ -22,14 +23,18 @@ fn quick_test() {
     let mut error_ranges: Vec<TextRange> = Vec::new();
     let options = AnalyzerOptions::default();
     let rule_filter = RuleFilter::Rule("nursery", "noDuplicatePrefixDeclaration");
+    let tree = parsed.tree();
+    let model = semantic_model(&tree);
+    let turtle_services = TurtleAnalyzerServices { semantic_model: Some(&model) };
 
     analyze(
-        &parsed.tree(),
+        &tree,
         AnalysisFilter {
             enabled_rules: Some(slice::from_ref(&rule_filter)),
             ..AnalysisFilter::default()
         },
         &options,
+        turtle_services,
         |signal| {
             if let Some(diag) = signal.diagnostic() {
                 error_ranges.push(diag.location().span.unwrap());

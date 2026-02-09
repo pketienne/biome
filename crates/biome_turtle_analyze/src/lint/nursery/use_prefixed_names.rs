@@ -1,11 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange};
-use biome_turtle_syntax::{
-    AnyTurtleDirective, AnyTurtleStatement, TurtleRoot, TurtleSyntaxKind,
-};
-use std::collections::HashMap;
+use biome_rowan::TextRange;
+use biome_turtle_syntax::TurtleRoot;
+
+use crate::services::semantic::Semantic;
 
 declare_lint_rule! {
     /// Suggest using prefixed names instead of full IRIs when a matching prefix is declared.
@@ -40,93 +39,27 @@ declare_lint_rule! {
 
 pub struct ExpandableIri {
     range: TextRange,
-    full_iri: String,
     suggested: String,
 }
 
 impl Rule for UsePrefixedNames {
-    type Query = Ast<TurtleRoot>;
+    type Query = Semantic<TurtleRoot>;
     type State = ExpandableIri;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let root = ctx.query();
-        let mut signals = Vec::new();
+        let model = ctx.model();
 
-        // Collect prefix declarations: namespace -> IRI expansion
-        let mut prefixes: HashMap<String, String> = HashMap::new();
-        for statement in root.statements() {
-            if let AnyTurtleStatement::AnyTurtleDirective(directive) = &statement {
-                match directive {
-                    AnyTurtleDirective::TurtlePrefixDeclaration(decl) => {
-                        if let (Ok(ns), Ok(iri)) =
-                            (decl.namespace_token(), decl.iri_token())
-                        {
-                            let iri_text = iri.text_trimmed();
-                            // Remove angle brackets from IRI
-                            if iri_text.starts_with('<') && iri_text.ends_with('>') {
-                                let expansion = &iri_text[1..iri_text.len() - 1];
-                                prefixes.insert(
-                                    expansion.to_string(),
-                                    ns.text_trimmed().to_string(),
-                                );
-                            }
-                        }
-                    }
-                    AnyTurtleDirective::TurtleSparqlPrefixDeclaration(decl) => {
-                        if let (Ok(ns), Ok(iri)) =
-                            (decl.namespace_token(), decl.iri_token())
-                        {
-                            let iri_text = iri.text_trimmed();
-                            if iri_text.starts_with('<') && iri_text.ends_with('>') {
-                                let expansion = &iri_text[1..iri_text.len() - 1];
-                                prefixes.insert(
-                                    expansion.to_string(),
-                                    ns.text_trimmed().to_string(),
-                                );
-                            }
-                        }
-                    }
-                    _ => {}
-                }
-            }
-        }
-
-        if prefixes.is_empty() {
-            return signals;
-        }
-
-        // Scan all IRI reference tokens in the document
-        for token in root.syntax().descendants_tokens(biome_rowan::Direction::Next) {
-            if token.kind() == TurtleSyntaxKind::TURTLE_IRIREF_LITERAL {
-                let text = token.text_trimmed();
-                if text.starts_with('<') && text.ends_with('>') {
-                    let iri = &text[1..text.len() - 1];
-                    // Check if any declared prefix matches
-                    for (expansion, ns) in &prefixes {
-                        if iri.starts_with(expansion.as_str()) {
-                            let local_name = &iri[expansion.len()..];
-                            // Only suggest if local_name is a valid PN_LOCAL
-                            if !local_name.is_empty()
-                                && local_name
-                                    .chars()
-                                    .all(|c| c.is_alphanumeric() || c == '_' || c == '-' || c == '.')
-                            {
-                                signals.push(ExpandableIri {
-                                    range: token.text_trimmed_range(),
-                                    full_iri: text.to_string(),
-                                    suggested: format!("{ns}{local_name}"),
-                                });
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        signals
+        model
+            .expandable_iris()
+            .filter_map(|iri_ref| {
+                iri_ref.suggested_prefixed.as_ref().map(|suggested| ExpandableIri {
+                    range: iri_ref.range,
+                    suggested: suggested.clone(),
+                })
+            })
+            .collect()
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {

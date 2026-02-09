@@ -1655,6 +1655,7 @@ dependencies = [
  "biome_turtle_analyze",
  "biome_turtle_formatter",
  "biome_turtle_parser",
+ "biome_turtle_semantic",
  "biome_turtle_syntax",
  "boxcar",
  "camino",
@@ -1811,6 +1812,7 @@ dependencies = [
  "biome_suppression",
  "biome_test_utils",
  "biome_turtle_parser",
+ "biome_turtle_semantic",
  "biome_turtle_syntax",
  "camino",
  "filetime",
@@ -1861,6 +1863,16 @@ dependencies = [
  "quickcheck_macros",
  "tracing",
  "unicode-bom",
+]
+
+[[package]]
+name = "biome_turtle_semantic"
+version = "0.0.1"
+dependencies = [
+ "biome_rowan",
+ "biome_turtle_parser",
+ "biome_turtle_syntax",
+ "rustc-hash 2.1.1",
 ]
 
 [[package]]

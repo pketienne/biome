@@ -1,12 +1,13 @@
-use biome_analyze::{Ast, FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 use biome_rule_options::no_unused_prefix::NoUnusedPrefixOptions;
-use biome_turtle_syntax::{AnyTurtleDirective, AnyTurtleStatement, TurtlePrefixedName, TurtleRoot};
-use std::collections::{HashMap, HashSet};
+use biome_turtle_syntax::{AnyTurtleDirective, AnyTurtleStatement, TurtleRoot};
+use std::collections::HashSet;
 
 use crate::TurtleRuleAction;
+use crate::services::semantic::Semantic;
 
 declare_lint_rule! {
     /// Disallow unused prefix declarations in Turtle documents.
@@ -70,63 +71,38 @@ pub struct UnusedPrefix {
 }
 
 impl Rule for NoUnusedPrefix {
-    type Query = Ast<TurtleRoot>;
+    type Query = Semantic<TurtleRoot>;
     type State = UnusedPrefix;
     type Signals = Vec<Self::State>;
     type Options = NoUnusedPrefixOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let root = ctx.query();
+        let model = ctx.model();
         let options = ctx.options();
         let ignored: HashSet<&str> = options
             .ignored_prefixes
             .as_ref()
             .map(|arr| arr.iter().map(|s| s.as_ref()).collect())
             .unwrap_or_default();
-        let mut declared: HashMap<String, (TextRange, AnyTurtleDirective)> = HashMap::new();
-        let mut used: HashSet<String> = HashSet::new();
 
-        // Collect all declared prefixes
-        for statement in root.statements() {
-            if let AnyTurtleStatement::AnyTurtleDirective(directive) = &statement {
-                let info = match directive {
-                    AnyTurtleDirective::TurtlePrefixDeclaration(decl) => {
-                        decl.namespace_token().ok().map(|t| {
-                            (t.text_trimmed().to_string(), directive.syntax().text_trimmed_range(), directive.clone())
-                        })
-                    }
-                    AnyTurtleDirective::TurtleSparqlPrefixDeclaration(decl) => {
-                        decl.namespace_token().ok().map(|t| {
-                            (t.text_trimmed().to_string(), directive.syntax().text_trimmed_range(), directive.clone())
-                        })
-                    }
-                    _ => None,
-                };
-                if let Some((ns, range, dir)) = info {
-                    declared.insert(ns, (range, dir));
-                }
+        let mut signals = Vec::new();
+
+        for binding in model.unused_prefixes() {
+            if ignored.contains(binding.namespace.as_str()) {
+                continue;
+            }
+            // Find the directive AST node at this range for the action
+            if let Some(directive) = find_prefix_directive(root, binding.range) {
+                signals.push(UnusedPrefix {
+                    namespace: binding.namespace.clone(),
+                    range: binding.range,
+                    directive,
+                });
             }
         }
 
-        // Collect all used prefixes
-        for node in root.syntax().descendants() {
-            if let Some(prefixed_name) = TurtlePrefixedName::cast_ref(&node) {
-                if let Ok(token) = prefixed_name.value() {
-                    let text = token.text_trimmed();
-                    if let Some(colon_pos) = text.find(':') {
-                        let prefix = &text[..=colon_pos];
-                        used.insert(prefix.to_string());
-                    }
-                }
-            }
-        }
-
-        // Report unused (skip ignored prefixes)
-        declared
-            .into_iter()
-            .filter(|(ns, _)| !used.contains(ns.as_str()) && !ignored.contains(ns.as_str()))
-            .map(|(namespace, (range, directive))| UnusedPrefix { namespace, range, directive })
-            .collect()
+        signals
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
@@ -155,4 +131,15 @@ impl Rule for NoUnusedPrefix {
             mutation,
         ))
     }
+}
+
+fn find_prefix_directive(root: &TurtleRoot, range: TextRange) -> Option<AnyTurtleDirective> {
+    for statement in root.statements() {
+        if let AnyTurtleStatement::AnyTurtleDirective(directive) = statement {
+            if directive.syntax().text_trimmed_range() == range {
+                return Some(directive);
+            }
+        }
+    }
+    None
 }
