@@ -499,11 +499,10 @@ mod tests {
             YamlFormatOptions::default().with_line_width(LineWidth::try_from(30).unwrap());
         let formatted = format_node(options, &parse.syntax()).unwrap();
         let result = formatted.print().unwrap();
-        // With line_width=30, the flow mapping should wrap
-        assert!(
-            result.as_code().contains("{\n"),
-            "Expected wrapping but got: {:?}",
-            result.as_code()
+        // With line_width=30, Expand::Auto converts flow mapping to block style
+        assert_eq!(
+            result.as_code(),
+            "key:\nalpha: one\nbeta: two\ngamma: three\ndelta: four\n"
         );
     }
 
@@ -540,5 +539,77 @@ mod tests {
         let result = formatted.print().unwrap();
         // Blank lines between entries should be preserved (collapsed to single blank line)
         assert_eq!(result.as_code(), "key1: value1\n\nkey2: value2\n\nkey3: value3\n");
+    }
+
+    #[test]
+    fn flow_sequence_auto_fits_on_line() {
+        let src = "key: [1, 2, 3]\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default(); // Expand::Auto, line_width=80
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Fits on line -> stays compact flow
+        assert_eq!(result.as_code(), "key: [ 1, 2, 3 ]\n");
+    }
+
+    #[test]
+    fn flow_sequence_auto_exceeds_line_width() {
+        use biome_formatter::LineWidth;
+        let src = "key: [aaaa, bbbb, cccc, dddd]\n";
+        let parse = parse_yaml(src);
+        let options =
+            YamlFormatOptions::default().with_line_width(LineWidth::try_from(20).unwrap());
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Exceeds line width -> converts to block
+        assert_eq!(
+            result.as_code(),
+            "key:\n- aaaa\n- bbbb\n- cccc\n- dddd\n"
+        );
+    }
+
+    #[test]
+    fn flow_mapping_auto_fits_on_line() {
+        let src = "key: {a: 1, b: 2}\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default(); // Expand::Auto, line_width=80
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Fits on line -> stays compact flow
+        assert_eq!(result.as_code(), "key: { a: 1, b: 2 }\n");
+    }
+
+    #[test]
+    fn flow_mapping_auto_exceeds_line_width() {
+        use biome_formatter::LineWidth;
+        let src = "key: {alpha: 1, bravo: 2, charlie: 3}\n";
+        let parse = parse_yaml(src);
+        let options =
+            YamlFormatOptions::default().with_line_width(LineWidth::try_from(20).unwrap());
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Exceeds line width -> converts to block
+        assert_eq!(
+            result.as_code(),
+            "key:\nalpha: 1\nbravo: 2\ncharlie: 3\n"
+        );
+    }
+
+    #[test]
+    fn flow_sequence_never_stays_flow() {
+        use biome_formatter::{Expand, LineWidth};
+        let src = "key: [aaaa, bbbb, cccc, dddd]\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default()
+            .with_expand(Expand::Never)
+            .with_line_width(LineWidth::try_from(20).unwrap());
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        // Expand::Never keeps flow style even when exceeding line width
+        assert!(
+            result.as_code().contains('['),
+            "Expected flow style but got: {:?}",
+            result.as_code()
+        );
     }
 }

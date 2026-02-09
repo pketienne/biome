@@ -1006,7 +1006,7 @@ impl<'src> Lexer<'src> for YamlLexer<'src> {
     }
 
     fn rewind(&mut self, _: LexerCheckpoint<Self::Kind>) {
-        unimplemented!()
+        unimplemented!("YAML lexer doesn't support rewinding")
     }
 
     fn finish(self) -> Vec<ParseDiagnostic> {
