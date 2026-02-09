@@ -1,7 +1,7 @@
 use crate::prelude::MarkdownFormatContext;
-use crate::{FormatMarkdownSyntaxToken, MarkdownFormatter};
+use crate::FormatMarkdownSyntaxToken;
 use biome_formatter::formatter::Formatter;
-use biome_formatter::prelude::syntax_token_cow_slice;
+
 use biome_formatter::trivia::FormatToken;
 use biome_formatter::{Argument, Format, FormatResult};
 use biome_markdown_syntax::MarkdownSyntaxToken;
@@ -41,16 +41,3 @@ impl<'a> Format<MarkdownFormatContext> for FormatReplaced<'a> {
     }
 }
 
-pub(crate) fn on_skipped(
-    token: &MarkdownSyntaxToken,
-    f: &mut MarkdownFormatter,
-) -> FormatResult<()> {
-    FormatMarkdownSyntaxToken.format_skipped_token_trivia(token, f)
-}
-
-pub(crate) fn on_removed(
-    token: &MarkdownSyntaxToken,
-    f: &mut MarkdownFormatter,
-) -> FormatResult<()> {
-    FormatMarkdownSyntaxToken.format_removed(token, f)
-}

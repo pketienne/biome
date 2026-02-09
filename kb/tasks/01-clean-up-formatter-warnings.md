@@ -1,6 +1,6 @@
 # Clean Up Formatter Warnings
 
-**Status:** Planned
+**Status:** Completed
 **Created:** 2026-02-09
 **Effort:** Low
 **Impact:** Code tidiness, cleaner CI output

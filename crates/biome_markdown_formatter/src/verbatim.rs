@@ -8,7 +8,7 @@ use biome_formatter::{
     normalize_newlines,
 };
 use biome_markdown_syntax::MarkdownSyntaxNode;
-use biome_rowan::{AstNode, Direction, SyntaxElement, TextRange};
+use biome_rowan::{Direction, SyntaxElement, TextRange};
 
 /// Alias used by generated formatter code.
 pub fn format_verbatim_node(node: &MarkdownSyntaxNode) -> FormatMarkdownVerbatimNode<'_> {

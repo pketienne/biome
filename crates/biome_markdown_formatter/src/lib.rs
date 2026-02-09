@@ -7,7 +7,7 @@ mod generated;
 mod js;
 mod md;
 mod prelude;
-mod separated;
+
 mod trivia;
 mod verbatim;
 
@@ -15,7 +15,7 @@ use crate::comments::MarkdownCommentStyle;
 pub(crate) use crate::context::MarkdownFormatContext;
 use crate::context::MarkdownFormatOptions;
 use crate::cst::FormatMarkdownSyntaxNode;
-pub(crate) use crate::trivia::*;
+
 use crate::verbatim::{format_bogus_node, format_suppressed_node};
 use biome_formatter::comments::Comments;
 use biome_formatter::prelude::*;
@@ -118,7 +118,6 @@ where
 }
 
 /// Formatting specific [Iterator] extensions
-#[expect(dead_code)]
 pub(crate) trait FormattedIterExt {
     /// Converts every item to an object that knows how to format it.
     fn formatted<Context>(self) -> FormattedIter<Self, Self::Item, Context>
