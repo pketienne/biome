@@ -12,7 +12,7 @@ Visit [ example ](https://example.com) for more.
 
 # Diagnostics
 ```
-invalid.md:3:7 lint/style/noSpaceInLinks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:7 lint/style/noSpaceInLinks  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Unexpected space inside link text brackets.
   
@@ -23,6 +23,14 @@ invalid.md:3:7 lint/style/noSpaceInLinks ━━━━━━━━━━━━━
     4 │ 
   
   i Remove leading or trailing spaces from the link text.
+  
+  i Safe fix: Remove spaces from link text.
+  
+    1 1 │   # Links
+    2 2 │   
+    3   │ - Visit·[·example·](https://example.com)·for·more.
+      3 │ + Visit·[example](https://example.com)·for·more.
+    4 4 │   
   
 
 ```

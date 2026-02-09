@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/noParagraphContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/noParagraphContentIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Paragraph content has 2 space(s) of indentation.
   
@@ -24,5 +24,9 @@ invalid.md:3:1 lint/style/noParagraphContentIndent ━━━━━━━━━�
   
   i Remove leading indentation from paragraph text.
   
+  i Safe fix: Remove leading indentation.
+  
+    3 │ ··Indented·paragraph·text.
+      │ --                        
 
 ```

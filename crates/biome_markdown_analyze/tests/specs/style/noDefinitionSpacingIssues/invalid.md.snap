@@ -13,7 +13,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/noDefinitionSpacingIssues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/noDefinitionSpacingIssues  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Extra whitespace in link reference definition.
   
@@ -26,11 +26,20 @@ invalid.md:3:1 lint/style/noDefinitionSpacingIssues ━━━━━━━━━�
   
   i Use a single space after the colon in definitions.
   
+  i Safe fix: Normalize definition spacing.
+  
+    1 1 │   # Definition Spacing Issues
+    2 2 │   
+    3   │ - [foo]:···https://example.com
+      3 │ + [foo]:·https://example.com
+    4 4 │   [bar]:		https://other.com
+    5 5 │   
+  
 
 ```
 
 ```
-invalid.md:4:1 lint/style/noDefinitionSpacingIssues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/noDefinitionSpacingIssues  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Extra whitespace in link reference definition.
   
@@ -40,6 +49,14 @@ invalid.md:4:1 lint/style/noDefinitionSpacingIssues ━━━━━━━━━�
     5 │ 
   
   i Use a single space after the colon in definitions.
+  
+  i Safe fix: Normalize definition spacing.
+  
+    2 2 │   
+    3 3 │   [foo]:   https://example.com
+    4   │ - [bar]:→ → https://other.com
+      4 │ + [bar]:·https://other.com
+    5 5 │   
   
 
 ```

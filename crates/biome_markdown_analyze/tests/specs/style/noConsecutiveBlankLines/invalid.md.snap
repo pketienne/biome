@@ -19,7 +19,7 @@ Third paragraph.
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/style/noConsecutiveBlankLines ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/noConsecutiveBlankLines  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Found 2 consecutive blank lines.
   
@@ -33,11 +33,19 @@ invalid.md:4:1 lint/style/noConsecutiveBlankLines ━━━━━━━━━━
   
   i At most 1 consecutive blank line(s) allowed.
   
+  i Safe fix: Collapse consecutive blank lines.
+  
+     3  3 │   First paragraph.
+     4  4 │   
+     5    │ - 
+     6  5 │   Second paragraph.
+     7  6 │   
+  
 
 ```
 
 ```
-invalid.md:7:1 lint/style/noConsecutiveBlankLines ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:7:1 lint/style/noConsecutiveBlankLines  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Found 3 consecutive blank lines.
   
@@ -51,6 +59,15 @@ invalid.md:7:1 lint/style/noConsecutiveBlankLines ━━━━━━━━━━
     11 │ 
   
   i At most 1 consecutive blank line(s) allowed.
+  
+  i Safe fix: Collapse consecutive blank lines.
+  
+     6 6 │   Second paragraph.
+     7 7 │   
+     8   │ - 
+     9   │ - 
+    10 8 │   Third paragraph.
+    11 9 │   
   
 
 ```

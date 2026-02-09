@@ -14,7 +14,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/noCheckboxContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/noCheckboxContentIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Checkbox has 2 space(s) after brackets instead of 1.
   
@@ -27,11 +27,20 @@ invalid.md:3:1 lint/style/noCheckboxContentIndent ━━━━━━━━━━
   
   i Use exactly one space between the checkbox brackets and content.
   
+  i Safe fix: Normalize spacing after checkbox.
+  
+    1 1 │   # Extra space after checkbox
+    2 2 │   
+    3   │ - +·[x]··done·item·with·extra·space
+      3 │ + +·[x]·done·item·with·extra·space
+    4 4 │   + [ ]   not done with extra spaces
+    5 5 │   + [x] normal item
+  
 
 ```
 
 ```
-invalid.md:4:1 lint/style/noCheckboxContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/noCheckboxContentIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Checkbox has 3 space(s) after brackets instead of 1.
   
@@ -42,6 +51,15 @@ invalid.md:4:1 lint/style/noCheckboxContentIndent ━━━━━━━━━━
     6 │ 
   
   i Use exactly one space between the checkbox brackets and content.
+  
+  i Safe fix: Normalize spacing after checkbox.
+  
+    2 2 │   
+    3 3 │   + [x]  done item with extra space
+    4   │ - +·[·]···not·done·with·extra·spaces
+      4 │ + +·[·]·not·done·with·extra·spaces
+    5 5 │   + [x] normal item
+    6 6 │   
   
 
 ```

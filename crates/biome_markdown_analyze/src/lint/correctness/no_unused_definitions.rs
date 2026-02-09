@@ -1,8 +1,11 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
+use crate::MarkdownRuleAction;
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, TextRange, TextSize};
+use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
 
 use crate::utils::definition_utils::{collect_definitions, normalize_label};
 use crate::utils::fence_utils::FenceTracker;
@@ -37,6 +40,7 @@ declare_lint_rule! {
         language: "md",
         recommended: true,
         severity: Severity::Warning,
+        fix_kind: FixKind::Unsafe,
     }
 }
 
@@ -98,6 +102,51 @@ impl Rule for NoUnusedDefinitions {
         }
 
         signals
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
+        let root = ctx.root();
+        // Remove the definition line (replace with empty string)
+        let mut token = root
+            .syntax()
+            .token_at_offset(state.range.start())
+            .right_biased()?;
+        let mut tokens = vec![token.clone()];
+        while token.text_range().end() < state.range.end() {
+            token = token.next_token()?;
+            tokens.push(token.clone());
+        }
+        let first = &tokens[0];
+        let last = tokens.last()?;
+        let prefix_len = u32::from(state.range.start() - first.text_range().start()) as usize;
+        let suffix_start = u32::from(state.range.end() - last.text_range().start()) as usize;
+        let prefix = &first.text()[..prefix_len];
+        let suffix = &last.text()[suffix_start..];
+        // Remove the definition line - just keep prefix and suffix
+        let new_text = format!("{}{}", prefix, suffix);
+        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
+            first.kind(),
+            &new_text,
+            [],
+            [],
+        );
+        let mut mutation = ctx.root().begin();
+        mutation.replace_element_discard_trivia(first.clone().into(), new_token.into());
+        for t in &tokens[1..] {
+            let empty = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
+                t.kind(),
+                "",
+                [],
+                [],
+            );
+            mutation.replace_element_discard_trivia(t.clone().into(), empty.into());
+        }
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Remove the unused definition." }.to_owned(),
+            mutation,
+        ))
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {

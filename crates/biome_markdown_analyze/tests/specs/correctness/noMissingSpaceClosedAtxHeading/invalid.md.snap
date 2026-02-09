@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:1 lint/correctness/noMissingSpaceClosedAtxHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:1 lint/correctness/noMissingSpaceClosedAtxHeading  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing space before closing hashes in ATX heading.
   
@@ -23,11 +23,15 @@ invalid.md:1:1 lint/correctness/noMissingSpaceClosedAtxHeading ━━━━━�
   
   i Add a space before the closing hash characters.
   
+  i Safe fix: Add a space before the closing hashes.
+  
+    1 │ ##·Heading·##
+      │           +  
 
 ```
 
 ```
-invalid.md:3:1 lint/correctness/noMissingSpaceClosedAtxHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/correctness/noMissingSpaceClosedAtxHeading  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing space before closing hashes in ATX heading.
   
@@ -39,5 +43,9 @@ invalid.md:3:1 lint/correctness/noMissingSpaceClosedAtxHeading ━━━━━�
   
   i Add a space before the closing hash characters.
   
+  i Safe fix: Add a space before the closing hashes.
+  
+    3 │ ###·Another·heading·###
+      │                    +   
 
 ```

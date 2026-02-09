@@ -10,7 +10,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:1 lint/correctness/noReversedLinks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:1 lint/correctness/noReversedLinks  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Reversed link syntax detected. Use [text](url) instead of (text)[url].
   
@@ -19,6 +19,12 @@ invalid.md:1:1 lint/correctness/noReversedLinks ━━━━━━━━━━�
     2 │ 
   
   i Swap the parentheses and brackets to fix the link syntax.
+  
+  i Safe fix: Fix the link syntax.
+  
+    1   │ - (click·here)[https://example.com]
+      1 │ + [click·here](https://example.com)
+    2 2 │   
   
 
 ```

@@ -14,7 +14,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:1 lint/style/noHeadingTrailingPunctuation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:1 lint/style/noHeadingTrailingPunctuation  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Heading ends with trailing punctuation '.'.
   
@@ -25,11 +25,15 @@ invalid.md:1:1 lint/style/noHeadingTrailingPunctuation ━━━━━━━━�
   
   i Remove trailing punctuation from headings.
   
+  i Safe fix: Remove trailing punctuation.
+  
+    1 │ #·Heading·with·period.
+      │                      -
 
 ```
 
 ```
-invalid.md:3:1 lint/style/noHeadingTrailingPunctuation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/noHeadingTrailingPunctuation  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Heading ends with trailing punctuation ':'.
   
@@ -42,11 +46,15 @@ invalid.md:3:1 lint/style/noHeadingTrailingPunctuation ━━━━━━━━�
   
   i Remove trailing punctuation from headings.
   
+  i Safe fix: Remove trailing punctuation.
+  
+    3 │ ##·Heading·with·colon:
+      │                      -
 
 ```
 
 ```
-invalid.md:5:1 lint/style/noHeadingTrailingPunctuation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/style/noHeadingTrailingPunctuation  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Heading ends with trailing punctuation '!'.
   
@@ -58,5 +66,9 @@ invalid.md:5:1 lint/style/noHeadingTrailingPunctuation ━━━━━━━━�
   
   i Remove trailing punctuation from headings.
   
+  i Safe fix: Remove trailing punctuation.
+  
+    5 │ ###·Heading·with·exclamation!
+      │                             -
 
 ```

@@ -14,7 +14,7 @@ typescript adds static types to javascript.
 
 # Diagnostics
 ```
-invalid.md:1:3 lint/style/useProperNames ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:3 lint/style/useProperNames  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Found "javascript" instead of "JavaScript".
   
@@ -25,11 +25,18 @@ invalid.md:1:3 lint/style/useProperNames ━━━━━━━━━━━━━
   
   i Use the correct capitalization for proper names.
   
+  i Safe fix: Use the correct capitalization.
+  
+    1   │ - #·javascript·Guide
+      1 │ + #·JavaScript·Guide
+    2 2 │   
+    3 3 │   Use javascript for web development.
+  
 
 ```
 
 ```
-invalid.md:3:5 lint/style/useProperNames ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:5 lint/style/useProperNames  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Found "javascript" instead of "JavaScript".
   
@@ -42,11 +49,20 @@ invalid.md:3:5 lint/style/useProperNames ━━━━━━━━━━━━━
   
   i Use the correct capitalization for proper names.
   
+  i Safe fix: Use the correct capitalization.
+  
+    1 1 │   # javascript Guide
+    2 2 │   
+    3   │ - Use·javascript·for·web·development.
+      3 │ + Use·JavaScript·for·web·development.
+    4 4 │   
+    5 5 │   typescript adds static types to javascript.
+  
 
 ```
 
 ```
-invalid.md:5:1 lint/style/useProperNames ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/style/useProperNames  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Found "typescript" instead of "TypeScript".
   
@@ -58,11 +74,19 @@ invalid.md:5:1 lint/style/useProperNames ━━━━━━━━━━━━━
   
   i Use the correct capitalization for proper names.
   
+  i Safe fix: Use the correct capitalization.
+  
+    3 3 │   Use javascript for web development.
+    4 4 │   
+    5   │ - typescript·adds·static·types·to·javascript.
+      5 │ + TypeScript·adds·static·types·to·javascript.
+    6 6 │   
+  
 
 ```
 
 ```
-invalid.md:5:33 lint/style/useProperNames ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:33 lint/style/useProperNames  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Found "javascript" instead of "JavaScript".
   
@@ -73,6 +97,14 @@ invalid.md:5:33 lint/style/useProperNames ━━━━━━━━━━━━�
     6 │ 
   
   i Use the correct capitalization for proper names.
+  
+  i Safe fix: Use the correct capitalization.
+  
+    3 3 │   Use javascript for web development.
+    4 4 │   
+    5   │ - typescript·adds·static·types·to·javascript.
+      5 │ + typescript·adds·static·types·to·JavaScript.
+    6 6 │   
   
 
 ```

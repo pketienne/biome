@@ -12,7 +12,7 @@ Some text	with a tab in the middle.
 
 # Diagnostics
 ```
-invalid.md:3:10 lint/style/noHardTabs ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:10 lint/style/noHardTabs  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Hard tabs are not allowed.
   
@@ -23,6 +23,14 @@ invalid.md:3:10 lint/style/noHardTabs ━━━━━━━━━━━━━━
     4 │ 
   
   i Use spaces instead of tabs for indentation.
+  
+  i Safe fix: Replace tab with spaces.
+  
+    1 1 │   # Heading
+    2 2 │   
+    3   │ - Some·text→ with·a·tab·in·the·middle.
+      3 │ + Some·text····with·a·tab·in·the·middle.
+    4 4 │   
   
 
 ```

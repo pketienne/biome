@@ -13,7 +13,7 @@ This line has three trailing spaces
 
 # Diagnostics
 ```
-invalid.md:3:34 lint/style/noTrailingHardBreakSpaces ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:34 lint/style/noTrailingHardBreakSpaces  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Trailing spaces used for hard line breaks.
   
@@ -25,6 +25,15 @@ invalid.md:3:34 lint/style/noTrailingHardBreakSpaces ━━━━━━━━━
     5 │ 
   
   i Use a trailing backslash instead of spaces for hard breaks.
+  
+  i Safe fix: Replace trailing spaces with a backslash.
+  
+    1 1 │   # Heading
+    2 2 │   
+    3   │ - This·line·has·two·trailing·spaces··
+      3 │ + This·line·has·two·trailing·spaces\
+    4 4 │   This line has three trailing spaces···
+    5 5 │   
   
 
 ```

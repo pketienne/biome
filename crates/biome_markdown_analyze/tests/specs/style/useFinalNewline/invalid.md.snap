@@ -11,7 +11,7 @@ This file does not end with a newline.
 
 # Diagnostics
 ```
-invalid.md:3:38 lint/style/useFinalNewline ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:38 lint/style/useFinalNewline  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! File does not end with a newline.
   
@@ -21,6 +21,14 @@ invalid.md:3:38 lint/style/useFinalNewline ━━━━━━━━━━━━�
       │                                      ^
   
   i Add a trailing newline at the end of the file.
+  
+  i Safe fix: Add a trailing newline.
+  
+    1 1 │   # Hello
+    2 2 │   
+    3   │ - This·file·does·not·end·with·a·newline.
+      3 │ + This·file·does·not·end·with·a·newline.
+      4 │ + 
   
 
 ```

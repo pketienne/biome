@@ -14,7 +14,7 @@ Some text.
 
 # Diagnostics
 ```
-invalid.md:1:3 lint/style/noHeadingContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:3 lint/style/noHeadingContentIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Extra spaces between heading marker and content.
   
@@ -25,11 +25,18 @@ invalid.md:1:3 lint/style/noHeadingContentIndent ━━━━━━━━━━�
   
   i Use exactly one space between the heading marker and content.
   
+  i Safe fix: Remove extra spaces.
+  
+    1   │ - #··Too·many·spaces
+      1 │ + #·Too·many·spaces
+    2 2 │   
+    3 3 │   Some text.
+  
 
 ```
 
 ```
-invalid.md:5:4 lint/style/noHeadingContentIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:4 lint/style/noHeadingContentIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Extra spaces between heading marker and content.
   
@@ -40,6 +47,14 @@ invalid.md:5:4 lint/style/noHeadingContentIndent ━━━━━━━━━━�
     6 │ 
   
   i Use exactly one space between the heading marker and content.
+  
+  i Safe fix: Remove extra spaces.
+  
+    3 3 │   Some text.
+    4 4 │   
+    5   │ - ##··Also·too·many
+      5 │ + ##·Also·too·many
+    6 6 │   
   
 
 ```

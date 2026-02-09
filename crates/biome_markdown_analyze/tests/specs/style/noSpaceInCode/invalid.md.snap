@@ -12,7 +12,7 @@ Use ` code ` in your text.
 
 # Diagnostics
 ```
-invalid.md:3:5 lint/style/noSpaceInCode ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:5 lint/style/noSpaceInCode  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Unexpected space at the edge of inline code span.
   
@@ -23,6 +23,14 @@ invalid.md:3:5 lint/style/noSpaceInCode ━━━━━━━━━━━━━�
     4 │ 
   
   i Remove leading or trailing spaces from the code span content.
+  
+  i Safe fix: Remove spaces from code span edges.
+  
+    1 1 │   # Code spans
+    2 2 │   
+    3   │ - Use·`·code·`·in·your·text.
+      3 │ + Use·`code`·in·your·text.
+    4 4 │   
   
 
 ```

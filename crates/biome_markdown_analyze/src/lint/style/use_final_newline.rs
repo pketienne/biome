@@ -1,8 +1,11 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
+use crate::MarkdownRuleAction;
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, TextRange, TextSize};
+use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
 
 declare_lint_rule! {
     /// Require files to end with a single newline character.
@@ -29,6 +32,7 @@ declare_lint_rule! {
         language: "md",
         recommended: true,
         severity: Severity::Warning,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -61,6 +65,30 @@ impl Rule for UseFinalNewline {
         }
 
         None
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
+        let root = ctx.root();
+        // Append newline to the last token
+        let token = root
+            .syntax()
+            .token_at_offset(state.range.end() - TextSize::from(1))
+            .right_biased()?;
+        let new_text = format!("{}\n", token.text());
+        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
+            token.kind(),
+            &new_text,
+            [],
+            [],
+        );
+        let mut mutation = ctx.root().begin();
+        mutation.replace_element_discard_trivia(token.into(), new_token.into());
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Add a trailing newline." }.to_owned(),
+            mutation,
+        ))
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {

@@ -14,7 +14,7 @@ Some text.
 
 # Diagnostics
 ```
-invalid.md:1:1 lint/style/noHeadingIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:1 lint/style/noHeadingIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Headings should not be indented.
   
@@ -25,11 +25,15 @@ invalid.md:1:1 lint/style/noHeadingIndent ━━━━━━━━━━━━�
   
   i Remove the leading whitespace before the heading.
   
+  i Safe fix: Remove leading whitespace.
+  
+    1 │ ··#·Indented·heading
+      │ --                  
 
 ```
 
 ```
-invalid.md:5:1 lint/style/noHeadingIndent ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/style/noHeadingIndent  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Headings should not be indented.
   
@@ -41,5 +45,9 @@ invalid.md:5:1 lint/style/noHeadingIndent ━━━━━━━━━━━━�
   
   i Remove the leading whitespace before the heading.
   
+  i Safe fix: Remove leading whitespace.
+  
+    5 │ ···##·Also·indented
+      │ ---                
 
 ```

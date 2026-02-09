@@ -12,7 +12,7 @@ This file has CRLF line endings.
 
 # Diagnostics
 ```
-invalid.md:1:13 lint/style/useConsistentLinebreakStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:13 lint/style/useConsistentLinebreakStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected LF (\n) line endings.
   
@@ -25,11 +25,15 @@ invalid.md:1:13 lint/style/useConsistentLinebreakStyle ━━━━━━━━�
   
   i Use consistent line endings throughout the document.
   
+  i Safe fix: Fix the line ending.
+  
+    1 │ #·Linebreaks␍
+      │             
 
 ```
 
 ```
-invalid.md:2:1 lint/style/useConsistentLinebreakStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:2:1 lint/style/useConsistentLinebreakStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected LF (\n) line endings.
   
@@ -42,11 +46,19 @@ invalid.md:2:1 lint/style/useConsistentLinebreakStyle ━━━━━━━━�
   
   i Use consistent line endings throughout the document.
   
+  i Safe fix: Fix the line ending.
+  
+    1 1 │   # Linebreaks␍
+    2   │ - ␍
+      2 │ + 
+    3 3 │   This file has CRLF line endings.␍
+    4 4 │   
+  
 
 ```
 
 ```
-invalid.md:3:33 lint/style/useConsistentLinebreakStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:33 lint/style/useConsistentLinebreakStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Expected LF (\n) line endings.
   
@@ -58,6 +70,14 @@ invalid.md:3:33 lint/style/useConsistentLinebreakStyle ━━━━━━━━�
       │ 
   
   i Use consistent line endings throughout the document.
+  
+  i Safe fix: Fix the line ending.
+  
+    1 1 │   # Linebreaks␍
+    2 2 │   ␍
+    3   │ - This·file·has·CRLF·line·endings.␍
+      3 │ + This·file·has·CRLF·line·endings.
+    4 4 │   
   
 
 ```

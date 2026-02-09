@@ -15,7 +15,7 @@ $ npm run build
 
 # Diagnostics
 ```
-invalid.md:4:1 lint/style/noShellDollarPrompt ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/noShellDollarPrompt  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Don't use dollar sign prompts in shell code blocks.
   
@@ -27,11 +27,15 @@ invalid.md:4:1 lint/style/noShellDollarPrompt ━━━━━━━━━━━�
   
   i Remove the dollar sign prefix to make the code easier to copy.
   
+  i Safe fix: Remove dollar sign prompt.
+  
+    4 │ $·npm·install
+      │ --           
 
 ```
 
 ```
-invalid.md:5:1 lint/style/noShellDollarPrompt ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:5:1 lint/style/noShellDollarPrompt  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Don't use dollar sign prompts in shell code blocks.
   
@@ -44,5 +48,9 @@ invalid.md:5:1 lint/style/noShellDollarPrompt ━━━━━━━━━━━�
   
   i Remove the dollar sign prefix to make the code easier to copy.
   
+  i Safe fix: Remove dollar sign prompt.
+  
+    5 │ $·npm·run·build
+      │ --             
 
 ```

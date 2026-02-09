@@ -12,7 +12,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:1:1 lint/correctness/noMissingSpaceAtxHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:1:1 lint/correctness/noMissingSpaceAtxHeading  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing space after hash characters in atx heading.
   
@@ -23,11 +23,15 @@ invalid.md:1:1 lint/correctness/noMissingSpaceAtxHeading ━━━━━━━�
   
   i Add a space between the hash characters and the heading text.
   
+  i Safe fix: Add a space after the hash characters.
+  
+    1 │ #·Heading·without·space
+      │  +                     
 
 ```
 
 ```
-invalid.md:3:1 lint/correctness/noMissingSpaceAtxHeading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/correctness/noMissingSpaceAtxHeading  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Missing space after hash characters in atx heading.
   
@@ -39,5 +43,9 @@ invalid.md:3:1 lint/correctness/noMissingSpaceAtxHeading ━━━━━━━�
   
   i Add a space between the hash characters and the heading text.
   
+  i Safe fix: Add a space after the hash characters.
+  
+    3 │ ##·Another·heading
+      │   +               
 
 ```

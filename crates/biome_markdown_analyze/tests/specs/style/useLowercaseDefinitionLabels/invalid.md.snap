@@ -13,7 +13,7 @@ expression: invalid.md
 
 # Diagnostics
 ```
-invalid.md:3:1 lint/style/useLowercaseDefinitionLabels ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:3:1 lint/style/useLowercaseDefinitionLabels  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Definition label "FOO" should be lowercase.
   
@@ -26,11 +26,20 @@ invalid.md:3:1 lint/style/useLowercaseDefinitionLabels ━━━━━━━━�
   
   i Use lowercase labels for consistency.
   
+  i Safe fix: Lowercase the definition label.
+  
+    1 1 │   # Uppercase Labels
+    2 2 │   
+    3   │ - [FOO]:·https://example.com
+      3 │ + [foo]:·https://example.com
+    4 4 │   [Bar]: https://other.com
+    5 5 │   
+  
 
 ```
 
 ```
-invalid.md:4:1 lint/style/useLowercaseDefinitionLabels ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.md:4:1 lint/style/useLowercaseDefinitionLabels  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Definition label "Bar" should be lowercase.
   
@@ -40,6 +49,14 @@ invalid.md:4:1 lint/style/useLowercaseDefinitionLabels ━━━━━━━━�
     5 │ 
   
   i Use lowercase labels for consistency.
+  
+  i Safe fix: Lowercase the definition label.
+  
+    2 2 │   
+    3 3 │   [FOO]: https://example.com
+    4   │ - [Bar]:·https://other.com
+      4 │ + [bar]:·https://other.com
+    5 5 │   
   
 
 ```

@@ -1,8 +1,12 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, TextRange, TextSize};
+use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+
+use crate::MarkdownRuleAction;
 
 declare_lint_rule! {
     /// Disallow extra spaces between heading markers and content.
@@ -30,6 +34,7 @@ declare_lint_rule! {
         language: "md",
         recommended: true,
         severity: Severity::Warning,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -79,6 +84,38 @@ impl Rule for NoHeadingContentIndent {
         }
 
         signals
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
+        let root = ctx.root();
+        let token = root
+            .syntax()
+            .token_at_offset(state.range.start())
+            .right_biased()?;
+        // The range points to extra spaces (in trivia territory).
+        // Use the full token text (including trivia) to compute the fix.
+        let token_text = token.text().to_string();
+        let token_start = token.text_range().start();
+        let rel_start = u32::from(state.range.start() - token_start) as usize;
+        let rel_end = u32::from(state.range.end() - token_start) as usize;
+        // Build replacement text with the extra spaces removed
+        let mut new_text = String::with_capacity(token_text.len());
+        new_text.push_str(&token_text[..rel_start]);
+        new_text.push_str(&token_text[rel_end..]);
+        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
+            token.kind(),
+            &new_text,
+            [],
+            [],
+        );
+        let mut mutation = ctx.root().begin();
+        mutation.replace_element_discard_trivia(token.into(), new_token.into());
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Remove extra spaces." }.to_owned(),
+            mutation,
+        ))
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
