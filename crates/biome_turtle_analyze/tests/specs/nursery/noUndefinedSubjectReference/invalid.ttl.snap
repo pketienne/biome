@@ -1,0 +1,32 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix ex: <http://example.org/> .
+ex:alice ex:knows ex:bob .
+ex:alice ex:knows ex:carol .
+ex:bob ex:name "Bob" .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:3:1 lint/nursery/noUndefinedSubjectReference ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i 'ex:carol' is used as an object but never defined as a subject in this document.
+  
+    1 │ @prefix ex: <http://example.org/> .
+    2 │ ex:alice ex:knows ex:bob .
+  > 3 │ ex:alice ex:knows ex:carol .
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ ex:bob ex:name "Bob" .
+    5 │ 
+  
+  i If this resource is defined externally, add its prefix to the 'allowedPrefixes' option.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

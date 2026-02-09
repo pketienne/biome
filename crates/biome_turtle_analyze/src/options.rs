@@ -3,6 +3,8 @@ pub type NoDuplicatePrefixDeclaration =
     <lint::nursery::no_duplicate_prefix_declaration::NoDuplicatePrefixDeclaration as biome_analyze::Rule>::Options;
 pub type NoUndefinedPrefix =
     <lint::nursery::no_undefined_prefix::NoUndefinedPrefix as biome_analyze::Rule>::Options;
+pub type NoUndefinedSubjectReference =
+    <lint::nursery::no_undefined_subject_reference::NoUndefinedSubjectReference as biome_analyze::Rule>::Options;
 pub type NoUnusedPrefix =
     <lint::nursery::no_unused_prefix::NoUnusedPrefix as biome_analyze::Rule>::Options;
 pub type NoInvalidIri =

@@ -1,0 +1,13 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: valid.ttl
+---
+# Input
+```turtle
+@prefix ex: <http://example.org/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+ex:alice foaf:name "Alice" .
+ex:alice ex:knows ex:bob .
+ex:bob foaf:name "Bob" .
+
+```

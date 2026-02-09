@@ -225,6 +225,7 @@ pub mod no_unassigned_variables;
 pub mod no_undeclared_dependencies;
 pub mod no_undeclared_env_vars;
 pub mod no_undeclared_variables;
+pub mod no_undefined_subject_reference;
 pub mod no_unknown_at_rules;
 pub mod no_unknown_attribute;
 pub mod no_unknown_function;
