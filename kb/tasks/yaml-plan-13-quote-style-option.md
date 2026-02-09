@@ -1,6 +1,6 @@
 # Plan 13: Quote Style Formatter Option
 
-## Status: PENDING
+## Status: COMPLETE (implemented 2026-02-09)
 
 ## Context
 
