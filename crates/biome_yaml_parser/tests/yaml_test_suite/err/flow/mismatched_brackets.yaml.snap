@@ -1,0 +1,100 @@
+---
+source: crates/biome_yaml_parser/tests/spec_test.rs
+expression: snapshot
+---
+## Input
+```yaml
+[1, 2}
+
+```
+
+## AST
+
+```
+YamlRoot {
+    documents: YamlDocumentList [
+        YamlDocument {
+            bom_token: missing (optional),
+            directives: YamlDirectiveList [],
+            dashdashdash_token: missing (optional),
+            node: YamlFlowInBlockNode {
+                properties: missing (optional),
+                flow_start_token: FLOW_START@0..0 "" [] [],
+                flow: YamlBogusFlowNode {
+                    items: [
+                        YamlBogus {
+                            items: [
+                                L_BRACK@0..1 "[" [] [],
+                                YamlFlowSequenceEntryList [
+                                    YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@1..2 "1" [] [],
+                                        },
+                                    },
+                                    COMMA@2..4 "," [] [Whitespace(" ")],
+                                    YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@4..5 "2" [] [],
+                                        },
+                                    },
+                                ],
+                                R_CURLY@5..6 "}" [] [],
+                            ],
+                        },
+                    ],
+                },
+                flow_end_token: FLOW_END@6..6 "" [] [],
+            },
+            dotdotdot_token: missing (optional),
+        },
+    ],
+    eof_token: EOF@6..7 "" [Newline("\n")] [],
+}
+```
+
+## CST
+
+```
+0: YAML_ROOT@0..7
+  0: YAML_DOCUMENT_LIST@0..6
+    0: YAML_DOCUMENT@0..6
+      0: (empty)
+      1: YAML_DIRECTIVE_LIST@0..0
+      2: (empty)
+      3: YAML_FLOW_IN_BLOCK_NODE@0..6
+        0: (empty)
+        1: FLOW_START@0..0 "" [] []
+        2: YAML_BOGUS_FLOW_NODE@0..6
+          0: YAML_BOGUS@0..6
+            0: L_BRACK@0..1 "[" [] []
+            1: YAML_FLOW_SEQUENCE_ENTRY_LIST@1..5
+              0: YAML_FLOW_YAML_NODE@1..2
+                0: (empty)
+                1: YAML_PLAIN_SCALAR@1..2
+                  0: PLAIN_LITERAL@1..2 "1" [] []
+              1: COMMA@2..4 "," [] [Whitespace(" ")]
+              2: YAML_FLOW_YAML_NODE@4..5
+                0: (empty)
+                1: YAML_PLAIN_SCALAR@4..5
+                  0: PLAIN_LITERAL@4..5 "2" [] []
+            2: R_CURLY@5..6 "}" [] []
+        3: FLOW_END@6..6 "" [] []
+      4: (empty)
+  1: EOF@6..7 "" [Newline("\n")] []
+
+```
+
+## Diagnostics
+
+```
+mismatched_brackets.yaml:1:6 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Expected `]`
+  
+  > 1 │ [1, 2}
+      │      ^
+    2 │ 
+  
+```

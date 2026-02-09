@@ -24,7 +24,7 @@ use biome_yaml_formatter::format_node;
 use biome_yaml_parser::parse_yaml_with_cache;
 use biome_yaml_syntax::{YamlLanguage, YamlSyntaxNode, YamlRoot};
 use biome_parser::AnyParse;
-use biome_rowan::{AstNode, NodeCache};
+use biome_rowan::{AstNode, NodeCache, TextRange};
 use camino::Utf8Path;
 use either::Either;
 use std::borrow::Cow;
@@ -231,7 +231,7 @@ impl ExtensionHandler for YamlFileHandler {
             },
             formatter: FormatterCapabilities {
                 format: Some(format),
-                format_range: None,
+                format_range: Some(format_range),
                 format_on_type: None,
                 format_embedded: None,
             },
@@ -278,6 +278,19 @@ fn debug_syntax_tree(_biome_path: &BiomePath, parse: AnyParse) -> GetSyntaxTreeR
         cst: format!("{syntax:#?}"),
         ast: format!("{tree:#?}"),
     }
+}
+
+fn format_range(
+    path: &BiomePath,
+    document_file_source: &DocumentFileSource,
+    parse: AnyParse,
+    settings: &Settings,
+    range: TextRange,
+) -> Result<Printed, WorkspaceError> {
+    let options = settings.format_options::<YamlLanguage>(path, document_file_source);
+    let tree = parse.syntax();
+    let printed = biome_yaml_formatter::format_range(options, &tree, range)?;
+    Ok(printed)
 }
 
 fn format(

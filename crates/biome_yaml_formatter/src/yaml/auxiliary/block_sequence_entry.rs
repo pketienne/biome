@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use biome_formatter::write;
+use biome_formatter::{FormatOptions, IndentStyle, write};
 use biome_yaml_syntax::{AnyYamlBlockInBlockNode, AnyYamlBlockNode, YamlBlockSequenceEntry};
 
 #[derive(Debug, Clone, Default)]
@@ -31,16 +31,18 @@ impl FormatNodeRule<YamlBlockSequenceEntry> for FormatYamlBlockSequenceEntry {
                         if let Some(properties) = mapping.properties() {
                             write!(f, [space(), properties.format()])?;
                         }
-                        write!(
-                            f,
-                            [align(2, &format_with(|f| {
-                                write!(f, [space(), mapping.entries().format()])?;
-                                write!(
-                                    f,
-                                    [format_synthetic_token(&mapping.mapping_end_token()?)]
-                                )
-                            }))]
-                        )?;
+                        let content = format_with(|f| {
+                            write!(f, [space(), mapping.entries().format()])?;
+                            write!(
+                                f,
+                                [format_synthetic_token(&mapping.mapping_end_token()?)]
+                            )
+                        });
+                        if f.options().indent_style() == IndentStyle::Tab {
+                            write!(f, [indent(&content)])?;
+                        } else {
+                            write!(f, [align(2, &content)])?;
+                        }
                     }
                     // Block sequence: same pattern as block mapping
                     AnyYamlBlockInBlockNode::YamlBlockSequence(sequence) => {

@@ -559,10 +559,40 @@ impl<'src> YamlLexer<'src> {
         let token_end = loop {
             match self.current_byte() {
                 Some(b'\\') => {
-                    if matches!(self.peek_byte(), Some(b'"')) {
-                        self.advance(2)
-                    } else {
-                        self.advance(1)
+                    self.advance(1); // skip backslash
+                    match self.current_byte() {
+                        // Single-char escapes per YAML 1.2.2 spec
+                        // \0 \a \b \t \n \v \f \r \e \" \\ \/ \<space> \_ \N \L \P
+                        Some(
+                            b'0' | b'a' | b'b' | b't' | b'n' | b'v' | b'f' | b'r' | b'e'
+                            | b'"' | b'\\' | b'/' | b' ' | b'_' | b'N' | b'L' | b'P',
+                        ) => {
+                            self.advance(1);
+                        }
+                        // \xNN — 2 hex digits
+                        Some(b'x') => {
+                            self.advance(1);
+                            self.consume_hex_digits(2);
+                        }
+                        // \uNNNN — 4 hex digits
+                        Some(b'u') => {
+                            self.advance(1);
+                            self.consume_hex_digits(4);
+                        }
+                        // \UNNNNNNNN — 8 hex digits
+                        Some(b'U') => {
+                            self.advance(1);
+                            self.consume_hex_digits(8);
+                        }
+                        // \<newline> — line continuation (escaped line break)
+                        Some(b'\n' | b'\r') => {
+                            // Don't advance — let the outer loop handle the line break
+                        }
+                        // Invalid escape — advance past the character
+                        Some(_) => {
+                            self.advance(1);
+                        }
+                        None => {}
                     }
                 }
                 Some(b'"') => {
@@ -779,6 +809,16 @@ impl<'src> YamlLexer<'src> {
             self.advance(1);
         }
         LexToken::new(COMMENT, start, self.current_coordinate)
+    }
+
+    /// Consume up to `count` hex digits for escape sequences like \xNN, \uNNNN, \UNNNNNNNN
+    fn consume_hex_digits(&mut self, count: usize) {
+        for _ in 0..count {
+            match self.current_byte() {
+                Some(c) if c.is_ascii_hexdigit() => self.advance(1),
+                _ => break,
+            }
+        }
     }
 
     fn consume_reserved_indicator(&mut self) -> LexToken {

@@ -108,7 +108,12 @@ fn parse_flow_sequence(p: &mut YamlParser) -> CompletedMarker {
     p.bump(T!['[']);
     FlowSequenceEntryList.parse_list(p);
     if !p.eat(T![']']) {
-        p.error(expected_flow_sequence_closing_bracket(p.cur_range()));
+        if p.at(T!['}']) {
+            p.error(expected_flow_sequence_closing_bracket(p.cur_range()));
+            p.bump(T!['}']);
+        } else {
+            p.error(expected_flow_sequence_closing_bracket(p.cur_range()));
+        }
     }
 
     m.complete(p, YAML_FLOW_SEQUENCE)
@@ -120,7 +125,12 @@ fn parse_flow_mapping(p: &mut YamlParser) -> CompletedMarker {
     p.bump(T!['{']);
     FlowMapEntryList.parse_list(p);
     if !p.eat(T!['}']) {
-        p.error(expected_flow_mapping_closing_quote(p.cur_range()));
+        if p.at(T![']']) {
+            p.error(expected_flow_mapping_closing_quote(p.cur_range()));
+            p.bump(T![']']);
+        } else {
+            p.error(expected_flow_mapping_closing_quote(p.cur_range()));
+        }
     }
 
     m.complete(p, YAML_FLOW_MAPPING)
@@ -136,6 +146,7 @@ impl ParseRecovery for FlowSequenceEntryRecovery {
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
         p.at(T![,])
             || p.at(T![']'])
+            || p.at(T!['}'])
             || p.at(ALIAS_LITERAL)
             || is_at_flow_yaml_node(p)
             || is_at_flow_json_node(p)
@@ -190,7 +201,7 @@ impl ParseSeparatedList for FlowSequenceEntryList {
     }
 
     fn is_at_list_end(&self, p: &mut Self::Parser<'_>) -> bool {
-        p.at(T![']']) || p.at(FLOW_END)
+        p.at(T![']']) || p.at(T!['}']) || p.at(FLOW_END)
     }
 
     fn recover(
@@ -220,6 +231,7 @@ impl ParseRecovery for FlowMapEntryRecovery {
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
         p.at(T![,])
             || p.at(T!['}'])
+            || p.at(T![']'])
             || p.at(T![:])
             || p.at(ALIAS_LITERAL)
             || is_at_flow_yaml_node(p)
@@ -249,7 +261,7 @@ impl ParseSeparatedList for FlowMapEntryList {
     }
 
     fn is_at_list_end(&self, p: &mut Self::Parser<'_>) -> bool {
-        p.at(T!['}']) || p.at(FLOW_END)
+        p.at(T!['}']) || p.at(T![']']) || p.at(FLOW_END)
     }
 
     fn recover(

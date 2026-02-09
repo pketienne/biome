@@ -606,6 +606,60 @@ a:
 }
 
 #[test]
+fn lex_double_quoted_escape_sequences() {
+    // Standard single-char escapes
+    assert_lex!(
+        r#""hello\nworld""#,
+        FLOW_START:0,
+        DOUBLE_QUOTED_LITERAL:14,
+        FLOW_END:0,
+    );
+}
+
+#[test]
+fn lex_double_quoted_hex_escape() {
+    // \x41 = 'A'
+    assert_lex!(
+        r#""\x41""#,
+        FLOW_START:0,
+        DOUBLE_QUOTED_LITERAL:6,
+        FLOW_END:0,
+    );
+}
+
+#[test]
+fn lex_double_quoted_unicode_escape() {
+    // \u0041 = 'A'
+    assert_lex!(
+        r#""\u0041""#,
+        FLOW_START:0,
+        DOUBLE_QUOTED_LITERAL:8,
+        FLOW_END:0,
+    );
+}
+
+#[test]
+fn lex_double_quoted_long_unicode_escape() {
+    // \U00000041 = 'A'
+    assert_lex!(
+        r#""\U00000041""#,
+        FLOW_START:0,
+        DOUBLE_QUOTED_LITERAL:12,
+        FLOW_END:0,
+    );
+}
+
+#[test]
+fn lex_double_quoted_all_single_char_escapes() {
+    assert_lex!(
+        r#""\0\a\b\t\n\v\f\r\e\"\\\/\ \_\N\L\P""#,
+        FLOW_START:0,
+        DOUBLE_QUOTED_LITERAL:36,
+        FLOW_END:0,
+    );
+}
+
+#[test]
 fn lex_reserved_indicator_at() {
     assert_lex!(
         "@value",
