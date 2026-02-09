@@ -423,7 +423,33 @@ impl<'src> YamlLexer<'src> {
                 // of the plain literal even though it's "plain safe"
                 self.advance(1); // ':'
             } else if is_space(c) {
+                // Save position before whitespace. If the next non-space character
+                // doesn't continue the plain scalar, restore position so the whitespace
+                // becomes separate trivia tokens instead of being part of the scalar text.
+                let before_whitespace = self.current_coordinate;
                 self.consume_whitespaces();
+                match self.current_byte() {
+                    // Characters that continue the plain scalar — whitespace is internal
+                    Some(c)
+                        if is_plain_safe(c, in_flow_collection)
+                            && c != b':'
+                            && c != b'#' => {}
+                    Some(c)
+                        if is_non_blank_char(c)
+                            && self.peek_byte().is_some_and(|p| p == b'#') => {}
+                    Some(b':')
+                        if self
+                            .peek_byte()
+                            .is_some_and(|c| is_plain_safe(c, in_flow_collection)) => {}
+                    // Line break — might be multiline scalar, let the break handler decide
+                    Some(c) if is_break(c) => {}
+                    // Anything else (comment, flow indicator, EOF) — scalar ends before
+                    // the whitespace
+                    _ => {
+                        self.current_coordinate = before_whitespace;
+                        break;
+                    }
+                }
             } else if is_break(c) {
                 let might_be_token_end = self.current_coordinate;
                 if !self.is_scalar_continuation() {

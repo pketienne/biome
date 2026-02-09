@@ -1,0 +1,5 @@
+key: value # inline comment
+name: test # another comment
+list: # comment after key
+  - item1
+  - item2 # item comment
