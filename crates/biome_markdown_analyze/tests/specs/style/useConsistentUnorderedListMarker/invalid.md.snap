@@ -4,12 +4,23 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Mixed list markers
+# Plus markers should use dash (default marker is "-")
 
 + first item
-1. second item
++ second item
 + third item
-2) fourth item
+
+# Mixed unordered markers
+
++ alpha
++ beta
+
+# Single wrong marker among ordered items
+
++ item one
+1. ordered item
++ item two
+2. another ordered
 
 ```
 
@@ -19,23 +30,48 @@ invalid.md:3:1 lint/style/useConsistentUnorderedListMarker  FIXABLE  ━━━�
 
   ! Expected "-" but found "+" as list marker.
   
-    1 │ # Mixed list markers
+    1 │ # Plus markers should use dash (default marker is "-")
     2 │ 
   > 3 │ + first item
       │ ^^^^^^^^^^^^
-    4 │ 1. second item
+    4 │ + second item
     5 │ + third item
   
   i Use a consistent unordered list marker.
   
   i Safe fix: Use the consistent list marker.
   
-    1 1 │   # Mixed list markers
-    2 2 │   
-    3   │ - +·first·item
-      3 │ + -
-    4 4 │   1. second item
-    5 5 │   + third item
+     1  1 │   # Plus markers should use dash (default marker is "-")
+     2  2 │   
+     3    │ - +·first·item
+        3 │ + -
+     4  4 │   + second item
+     5  5 │   + third item
+  
+
+```
+
+```
+invalid.md:4:1 lint/style/useConsistentUnorderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "-" but found "+" as list marker.
+  
+    3 │ + first item
+  > 4 │ + second item
+      │ ^^^^^^^^^^^^^
+    5 │ + third item
+    6 │ 
+  
+  i Use a consistent unordered list marker.
+  
+  i Safe fix: Use the consistent list marker.
+  
+     2  2 │   
+     3  3 │   + first item
+     4    │ - +·second·item
+        4 │ + -
+     5  5 │   + third item
+     6  6 │   
   
 
 ```
@@ -46,22 +82,125 @@ invalid.md:5:1 lint/style/useConsistentUnorderedListMarker  FIXABLE  ━━━�
   ! Expected "-" but found "+" as list marker.
   
     3 │ + first item
-    4 │ 1. second item
+    4 │ + second item
   > 5 │ + third item
       │ ^^^^^^^^^^^^
-    6 │ 2) fourth item
-    7 │ 
+    6 │ 
+    7 │ # Mixed unordered markers
   
   i Use a consistent unordered list marker.
   
   i Safe fix: Use the consistent list marker.
   
-    3 3 │   + first item
-    4 4 │   1. second item
-    5   │ - +·third·item
-      5 │ + -
-    6 6 │   2) fourth item
-    7 7 │   
+     3  3 │   + first item
+     4  4 │   + second item
+     5    │ - +·third·item
+        5 │ + -
+     6  6 │   
+     7  7 │   # Mixed unordered markers
+  
+
+```
+
+```
+invalid.md:9:1 lint/style/useConsistentUnorderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "-" but found "+" as list marker.
+  
+     7 │ # Mixed unordered markers
+     8 │ 
+   > 9 │ + alpha
+       │ ^^^^^^^
+    10 │ + beta
+    11 │ 
+  
+  i Use a consistent unordered list marker.
+  
+  i Safe fix: Use the consistent list marker.
+  
+     7  7 │   # Mixed unordered markers
+     8  8 │   
+     9    │ - +·alpha
+        9 │ + -
+    10 10 │   + beta
+    11 11 │   
+  
+
+```
+
+```
+invalid.md:10:1 lint/style/useConsistentUnorderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "-" but found "+" as list marker.
+  
+     9 │ + alpha
+  > 10 │ + beta
+       │ ^^^^^^
+    11 │ 
+    12 │ # Single wrong marker among ordered items
+  
+  i Use a consistent unordered list marker.
+  
+  i Safe fix: Use the consistent list marker.
+  
+     8  8 │   
+     9  9 │   + alpha
+    10    │ - +·beta
+       10 │ + -
+    11 11 │   
+    12 12 │   # Single wrong marker among ordered items
+  
+
+```
+
+```
+invalid.md:14:1 lint/style/useConsistentUnorderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "-" but found "+" as list marker.
+  
+    12 │ # Single wrong marker among ordered items
+    13 │ 
+  > 14 │ + item one
+       │ ^^^^^^^^^^
+    15 │ 1. ordered item
+    16 │ + item two
+  
+  i Use a consistent unordered list marker.
+  
+  i Safe fix: Use the consistent list marker.
+  
+    12 12 │   # Single wrong marker among ordered items
+    13 13 │   
+    14    │ - +·item·one
+       14 │ + -
+    15 15 │   1. ordered item
+    16 16 │   + item two
+  
+
+```
+
+```
+invalid.md:16:1 lint/style/useConsistentUnorderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "-" but found "+" as list marker.
+  
+    14 │ + item one
+    15 │ 1. ordered item
+  > 16 │ + item two
+       │ ^^^^^^^^^^
+    17 │ 2. another ordered
+    18 │ 
+  
+  i Use a consistent unordered list marker.
+  
+  i Safe fix: Use the consistent list marker.
+  
+    14 14 │   + item one
+    15 15 │   1. ordered item
+    16    │ - +·item·two
+       16 │ + -
+    17 17 │   2. another ordered
+    18 18 │   
   
 
 ```

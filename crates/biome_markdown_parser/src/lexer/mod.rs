@@ -279,6 +279,9 @@ impl<'src> MarkdownLexer<'src> {
             _ => return self.consume_textual(),
         };
 
+        // Save position so we can revert if this is not a thematic break
+        let saved_position = self.position;
+
         let mut count = 0;
         loop {
             self.consume_whitespace();
@@ -293,7 +296,9 @@ impl<'src> MarkdownLexer<'src> {
         if matches!(self.current_byte(), Some(b'\n' | b'\r') | None) && count >= 3 {
             return MD_THEMATIC_BREAK_LITERAL;
         }
-        ERROR_TOKEN
+        // Not a thematic break: revert and consume as a single textual character
+        self.position = saved_position;
+        self.consume_textual()
     }
 
     /// Get the UTF8 char which starts at the current byte

@@ -1,5 +1,6 @@
 ---
 source: crates/biome_markdown_analyze/tests/spec_tests.rs
+assertion_line: 70
 expression: invalid.md
 ---
 # Input
@@ -9,5 +10,67 @@ expression: invalid.md
   | A | B |
   | --- | --- |
   | 1 | 2 |
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/noTableIndentation  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Table rows should not be indented.
+  
+    1 │ # Indented table
+    2 │ 
+  > 3 │   | A | B |
+      │ ^^^^^^^^^^^
+    4 │   | --- | --- |
+    5 │   | 1 | 2 |
+  
+  i Remove indentation from table rows.
+  
+  i Safe fix: Remove table row indentation.
+  
+    3 │ ··|·A·|·B·|
+      │ --         
+
+```
+
+```
+invalid.md:4:1 lint/style/noTableIndentation  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Table rows should not be indented.
+  
+    3 │   | A | B |
+  > 4 │   | --- | --- |
+      │ ^^^^^^^^^^^^^^^
+    5 │   | 1 | 2 |
+    6 │ 
+  
+  i Remove indentation from table rows.
+  
+  i Safe fix: Remove table row indentation.
+  
+    4 │ ··|·---·|·---·|
+      │ --             
+
+```
+
+```
+invalid.md:5:1 lint/style/noTableIndentation  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Table rows should not be indented.
+  
+    3 │   | A | B |
+    4 │   | --- | --- |
+  > 5 │   | 1 | 2 |
+      │ ^^^^^^^^^^^
+    6 │ 
+  
+  i Remove indentation from table rows.
+  
+  i Safe fix: Remove table row indentation.
+  
+    5 │ ··|·1·|·2·|
+      │ --         
 
 ```

@@ -1,4 +1,12 @@
 <!-- should not generate diagnostics -->
-# Hello
+# Consistent dash markers
 
-Plain text.
+No unordered list items here, just ordered:
+
+1. first
+2. second
+3. third
+
+# No lists
+
+Just plain text.

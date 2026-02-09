@@ -4,11 +4,37 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Code fences
+# Tilde fences should use backticks (default)
 
 ~~~js
 const x = 1;
 ~~~
+
+# Multiple tilde fences
+
+~~~python
+print("hello")
+~~~
+
+~~~
+plain code block
+~~~
+
+# Mixed: backtick followed by tilde (only tildes flagged)
+
+```rust
+fn main() {}
+```
+
+~~~css
+body { color: red; }
+~~~
+
+# Four-tilde fence
+
+~~~~
+long fence
+~~~~
 
 ```
 
@@ -18,7 +44,7 @@ invalid.md:3:1 lint/style/useConsistentCodeFenceMarker  FIXABLE  ━━━━━
 
   ! Expected backticks but found tildes for code fence marker.
   
-    1 │ # Code fences
+    1 │ # Tilde fences should use backticks (default)
     2 │ 
   > 3 │ ~~~js
       │ ^^^
@@ -29,12 +55,116 @@ invalid.md:3:1 lint/style/useConsistentCodeFenceMarker  FIXABLE  ━━━━━
   
   i Safe fix: Use the consistent code fence marker.
   
-    1 1 │   # Code fences
-    2 2 │   
-    3   │ - ~~~js
-      3 │ + ```js
-    4 4 │   const x = 1;
-    5 5 │   ~~~
+     1  1 │   # Tilde fences should use backticks (default)
+     2  2 │   
+     3    │ - ~~~js
+        3 │ + ```js
+     4  4 │   const x = 1;
+     5  5 │   ~~~
+  
+
+```
+
+```
+invalid.md:9:1 lint/style/useConsistentCodeFenceMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected backticks but found tildes for code fence marker.
+  
+     7 │ # Multiple tilde fences
+     8 │ 
+   > 9 │ ~~~python
+       │ ^^^
+    10 │ print("hello")
+    11 │ ~~~
+  
+  i Use consistent code fence markers throughout the document.
+  
+  i Safe fix: Use the consistent code fence marker.
+  
+     7  7 │   # Multiple tilde fences
+     8  8 │   
+     9    │ - ~~~python
+        9 │ + ```python
+    10 10 │   print("hello")
+    11 11 │   ~~~
+  
+
+```
+
+```
+invalid.md:13:1 lint/style/useConsistentCodeFenceMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected backticks but found tildes for code fence marker.
+  
+    11 │ ~~~
+    12 │ 
+  > 13 │ ~~~
+       │ ^^^
+    14 │ plain code block
+    15 │ ~~~
+  
+  i Use consistent code fence markers throughout the document.
+  
+  i Safe fix: Use the consistent code fence marker.
+  
+    11 11 │   ~~~
+    12 12 │   
+    13    │ - ~~~
+       13 │ + ```
+    14 14 │   plain code block
+    15 15 │   ~~~
+  
+
+```
+
+```
+invalid.md:23:1 lint/style/useConsistentCodeFenceMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected backticks but found tildes for code fence marker.
+  
+    21 │ ```
+    22 │ 
+  > 23 │ ~~~css
+       │ ^^^
+    24 │ body { color: red; }
+    25 │ ~~~
+  
+  i Use consistent code fence markers throughout the document.
+  
+  i Safe fix: Use the consistent code fence marker.
+  
+    21 21 │   ```
+    22 22 │   
+    23    │ - ~~~css
+       23 │ + ```css
+    24 24 │   body { color: red; }
+    25 25 │   ~~~
+  
+
+```
+
+```
+invalid.md:29:1 lint/style/useConsistentCodeFenceMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected backticks but found tildes for code fence marker.
+  
+    27 │ # Four-tilde fence
+    28 │ 
+  > 29 │ ~~~~
+       │ ^^^^
+    30 │ long fence
+    31 │ ~~~~
+  
+  i Use consistent code fence markers throughout the document.
+  
+  i Safe fix: Use the consistent code fence marker.
+  
+    27 27 │   # Four-tilde fence
+    28 28 │   
+    29    │ - ~~~~
+       29 │ + ````
+    30 30 │   long fence
+    31 31 │   ~~~~
   
 
 ```

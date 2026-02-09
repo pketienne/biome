@@ -4,12 +4,25 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Mixed ordered list markers
+# Mixed ordered list markers (default delimiter is ".")
 
 1. first item
 2) second item
 3. third item
 4) fourth item
+
+# All paren delimiters should be flagged
+
+1) alpha
+2) beta
+3) gamma
+
+# Single paren item among dot items
+
+1. one
+2. two
+3) three
+4. four
 
 ```
 
@@ -29,12 +42,12 @@ invalid.md:4:1 lint/style/useConsistentOrderedListMarker  FIXABLE  ━━━━�
   
   i Safe fix: Use the consistent ordered list delimiter.
   
-    2 2 │   
-    3 3 │   1. first item
-    4   │ - 2)·second·item
-      4 │ + 2.
-    5 5 │   3. third item
-    6 6 │   4) fourth item
+     2  2 │   
+     3  3 │   1. first item
+     4    │ - 2)·second·item
+        4 │ + 2.
+     5  5 │   3. third item
+     6  6 │   4) fourth item
   
 
 ```
@@ -49,16 +62,121 @@ invalid.md:6:1 lint/style/useConsistentOrderedListMarker  FIXABLE  ━━━━�
   > 6 │ 4) fourth item
       │ ^^^^^^^^^^^^^^
     7 │ 
+    8 │ # All paren delimiters should be flagged
   
   i Use a consistent ordered list delimiter.
   
   i Safe fix: Use the consistent ordered list delimiter.
   
-    4 4 │   2) second item
-    5 5 │   3. third item
-    6   │ - 4)·fourth·item
-      6 │ + 4.
-    7 7 │   
+     4  4 │   2) second item
+     5  5 │   3. third item
+     6    │ - 4)·fourth·item
+        6 │ + 4.
+     7  7 │   
+     8  8 │   # All paren delimiters should be flagged
+  
+
+```
+
+```
+invalid.md:10:1 lint/style/useConsistentOrderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "." but found ")" as ordered list delimiter.
+  
+     8 │ # All paren delimiters should be flagged
+     9 │ 
+  > 10 │ 1) alpha
+       │ ^^^^^^^^
+    11 │ 2) beta
+    12 │ 3) gamma
+  
+  i Use a consistent ordered list delimiter.
+  
+  i Safe fix: Use the consistent ordered list delimiter.
+  
+     8  8 │   # All paren delimiters should be flagged
+     9  9 │   
+    10    │ - 1)·alpha
+       10 │ + 1.
+    11 11 │   2) beta
+    12 12 │   3) gamma
+  
+
+```
+
+```
+invalid.md:11:1 lint/style/useConsistentOrderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "." but found ")" as ordered list delimiter.
+  
+    10 │ 1) alpha
+  > 11 │ 2) beta
+       │ ^^^^^^^
+    12 │ 3) gamma
+    13 │ 
+  
+  i Use a consistent ordered list delimiter.
+  
+  i Safe fix: Use the consistent ordered list delimiter.
+  
+     9  9 │   
+    10 10 │   1) alpha
+    11    │ - 2)·beta
+       11 │ + 2.
+    12 12 │   3) gamma
+    13 13 │   
+  
+
+```
+
+```
+invalid.md:12:1 lint/style/useConsistentOrderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "." but found ")" as ordered list delimiter.
+  
+    10 │ 1) alpha
+    11 │ 2) beta
+  > 12 │ 3) gamma
+       │ ^^^^^^^^
+    13 │ 
+    14 │ # Single paren item among dot items
+  
+  i Use a consistent ordered list delimiter.
+  
+  i Safe fix: Use the consistent ordered list delimiter.
+  
+    10 10 │   1) alpha
+    11 11 │   2) beta
+    12    │ - 3)·gamma
+       12 │ + 3.
+    13 13 │   
+    14 14 │   # Single paren item among dot items
+  
+
+```
+
+```
+invalid.md:18:1 lint/style/useConsistentOrderedListMarker  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected "." but found ")" as ordered list delimiter.
+  
+    16 │ 1. one
+    17 │ 2. two
+  > 18 │ 3) three
+       │ ^^^^^^^^
+    19 │ 4. four
+    20 │ 
+  
+  i Use a consistent ordered list delimiter.
+  
+  i Safe fix: Use the consistent ordered list delimiter.
+  
+    16 16 │   1. one
+    17 17 │   2. two
+    18    │ - 3)·three
+       18 │ + 3.
+    19 19 │   4. four
+    20 20 │   
   
 
 ```

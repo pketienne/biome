@@ -1,4 +1,15 @@
 <!-- should not generate diagnostics -->
-# Hello
+# Aligned pipes
 
-Plain text.
+| A          | B     |
+| ---------- | ----- |
+| long value | short |
+
+# Single row table
+
+| Header |
+| ------ |
+
+# No tables at all
+
+Just plain text.

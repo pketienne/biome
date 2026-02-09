@@ -1,5 +1,6 @@
 ---
 source: crates/biome_markdown_analyze/tests/spec_tests.rs
+assertion_line: 70
 expression: invalid.md
 ---
 # Input
@@ -10,5 +11,39 @@ expression: invalid.md
 | --- | --- |
 | 1 | 2 | 3 |
 | 4 | 5 | 6 | 7 |
+
+```
+
+# Diagnostics
+```
+invalid.md:5:1 lint/correctness/noHiddenTableCell ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Row has 1 hidden cell(s) that won't be rendered.
+  
+    3 │ | A | B |
+    4 │ | --- | --- |
+  > 5 │ | 1 | 2 | 3 |
+      │ ^^^^^^^^^^^^^
+    6 │ | 4 | 5 | 6 | 7 |
+    7 │ 
+  
+  i Remove extra cells or add columns to the table header and separator.
+  
+
+```
+
+```
+invalid.md:6:1 lint/correctness/noHiddenTableCell ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Row has 2 hidden cell(s) that won't be rendered.
+  
+    4 │ | --- | --- |
+    5 │ | 1 | 2 | 3 |
+  > 6 │ | 4 | 5 | 6 | 7 |
+      │ ^^^^^^^^^^^^^^^^^
+    7 │ 
+  
+  i Remove extra cells or add columns to the table header and separator.
+  
 
 ```

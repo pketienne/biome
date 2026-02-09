@@ -1,7 +1,11 @@
 # Inconsistent list indent
 
 + first item
-  + nested item
-     + deeply nested with wrong indent
-+ back to top
-   + nested with different indent
+ + second item with 1 space indent
++ third item back at 0
+
+# Another inconsistent block
+
++ alpha
+ + beta slightly indented
++ gamma

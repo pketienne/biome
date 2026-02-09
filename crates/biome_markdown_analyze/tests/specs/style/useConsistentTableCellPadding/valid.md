@@ -1,4 +1,23 @@
 <!-- should not generate diagnostics -->
-# Hello
+# Properly padded table
 
-Plain text.
+| A | B | C |
+| --- | --- | --- |
+| 1 | 2 | 3 |
+
+# Another padded table
+
+| Name | Age |
+| --- | --- |
+| Alice | 30 |
+| Bob | 25 |
+
+# Single column padded
+
+| Header |
+| --- |
+| Value |
+
+# No tables at all
+
+Just plain text with no tables.

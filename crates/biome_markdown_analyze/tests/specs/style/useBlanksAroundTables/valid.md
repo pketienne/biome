@@ -1,4 +1,20 @@
 <!-- should not generate diagnostics -->
-# Hello
+# Table with proper blank lines
 
-Plain text.
+Some text before.
+
+| A | B |
+| --- | --- |
+| 1 | 2 |
+
+Some text after.
+
+# Table at start of section
+
+| X | Y |
+| --- | --- |
+| 3 | 4 |
+
+# No tables
+
+Just plain text.

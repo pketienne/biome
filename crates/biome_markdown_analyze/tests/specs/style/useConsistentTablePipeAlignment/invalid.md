@@ -1,5 +1,12 @@
 # Misaligned pipes
 
-| A | BB | CCC |
+| A | B |
+| --- | --- |
+| long value | short |
+
+# Different column widths without alignment
+
+| Name | Age | City |
 | --- | --- | --- |
-| long value | b | c |
+| Alice | 30 | New York |
+| Bob | 25 | LA |

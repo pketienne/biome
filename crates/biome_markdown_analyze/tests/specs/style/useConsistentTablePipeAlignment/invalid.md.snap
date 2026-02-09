@@ -6,8 +6,142 @@ expression: invalid.md
 ```md
 # Misaligned pipes
 
-| A | BB | CCC |
+| A | B |
+| --- | --- |
+| long value | short |
+
+# Different column widths without alignment
+
+| Name | Age | City |
 | --- | --- | --- |
-| long value | b | c |
+| Alice | 30 | New York |
+| Bob | 25 | LA |
+
+```
+
+# Diagnostics
+```
+invalid.md:4:1 lint/style/useConsistentTablePipeAlignment  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Table pipes are not aligned with other rows.
+  
+    3 │ | A | B |
+  > 4 │ | --- | --- |
+      │ ^^^^^^^^^^^^^
+    5 │ | long value | short |
+    6 │ 
+  
+  i Align pipe characters vertically for readability.
+  
+  i Unsafe fix: Align table pipes.
+  
+     2  2 │   
+     3  3 │   | A | B |
+     4    │ - |·---·|·---·|
+        4 │ + |·---·|·---·|
+     5  5 │   | long value | short |
+     6  6 │   
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/useConsistentTablePipeAlignment  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Table pipes are not aligned with other rows.
+  
+    3 │ | A | B |
+    4 │ | --- | --- |
+  > 5 │ | long value | short |
+      │ ^^^^^^^^^^^^^^^^^^^^^^
+    6 │ 
+    7 │ # Different column widths without alignment
+  
+  i Align pipe characters vertically for readability.
+  
+  i Unsafe fix: Align table pipes.
+  
+     3  3 │   | A | B |
+     4  4 │   | --- | --- |
+     5    │ - |·long·value·|·short·|
+        5 │ + |·long·value·|·short·|
+     6  6 │   
+     7  7 │   # Different column widths without alignment
+  
+
+```
+
+```
+invalid.md:10:1 lint/style/useConsistentTablePipeAlignment  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Table pipes are not aligned with other rows.
+  
+     9 │ | Name | Age | City |
+  > 10 │ | --- | --- | --- |
+       │ ^^^^^^^^^^^^^^^^^^^
+    11 │ | Alice | 30 | New York |
+    12 │ | Bob | 25 | LA |
+  
+  i Align pipe characters vertically for readability.
+  
+  i Unsafe fix: Align table pipes.
+  
+     8  8 │   
+     9  9 │   | Name | Age | City |
+    10    │ - |·---·|·---·|·---·|
+       10 │ + |·---··|·---·|·---··|
+    11 11 │   | Alice | 30 | New York |
+    12 12 │   | Bob | 25 | LA |
+  
+
+```
+
+```
+invalid.md:11:1 lint/style/useConsistentTablePipeAlignment  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Table pipes are not aligned with other rows.
+  
+     9 │ | Name | Age | City |
+    10 │ | --- | --- | --- |
+  > 11 │ | Alice | 30 | New York |
+       │ ^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 │ | Bob | 25 | LA |
+    13 │ 
+  
+  i Align pipe characters vertically for readability.
+  
+  i Unsafe fix: Align table pipes.
+  
+     9  9 │   | Name | Age | City |
+    10 10 │   | --- | --- | --- |
+    11    │ - |·Alice·|·30·|·New·York·|
+       11 │ + |·Alice·|·30··|·New·York·|
+    12 12 │   | Bob | 25 | LA |
+    13 13 │   
+  
+
+```
+
+```
+invalid.md:12:1 lint/style/useConsistentTablePipeAlignment  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Table pipes are not aligned with other rows.
+  
+    10 │ | --- | --- | --- |
+    11 │ | Alice | 30 | New York |
+  > 12 │ | Bob | 25 | LA |
+       │ ^^^^^^^^^^^^^^^^^
+    13 │ 
+  
+  i Align pipe characters vertically for readability.
+  
+  i Unsafe fix: Align table pipes.
+  
+    10 10 │   | --- | --- | --- |
+    11 11 │   | Alice | 30 | New York |
+    12    │ - |·Bob·|·25·|·LA·|
+       12 │ + |·Bob··|·25··|·LA···|
+    13 13 │   
+  
 
 ```

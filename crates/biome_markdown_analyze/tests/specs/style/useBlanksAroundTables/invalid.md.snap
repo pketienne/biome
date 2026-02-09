@@ -4,12 +4,133 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Tables without blank lines
-
+# Missing blank line before table
 Some text before table.
 | A | B |
 | --- | --- |
 | 1 | 2 |
+
+# Missing blank line after table
+
+| X | Y |
+| --- | --- |
+| 3 | 4 |
 Some text after table.
+
+# Missing blank lines both before and after
+Text before.
+| Name | Age |
+| --- | --- |
+| Alice | 30 |
+Text after.
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/useBlanksAroundTables  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line before table.
+  
+    1 │ # Missing blank line before table
+    2 │ Some text before table.
+  > 3 │ | A | B |
+      │ ^^^^^^^^^
+    4 │ | --- | --- |
+    5 │ | 1 | 2 |
+  
+  i Add a blank line around tables for readability.
+  
+  i Safe fix: Insert blank line before table.
+  
+     1  1 │   # Missing blank line before table
+     2  2 │   Some text before table.
+     3    │ - |·A·|·B·|
+        3 │ + 
+        4 │ + |·A·|·B·|
+     4  5 │   | --- | --- |
+     5  6 │   | 1 | 2 |
+  
+
+```
+
+```
+invalid.md:11:1 lint/style/useBlanksAroundTables  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line after table.
+  
+     9 │ | X | Y |
+    10 │ | --- | --- |
+  > 11 │ | 3 | 4 |
+       │ ^^^^^^^^^
+    12 │ Some text after table.
+    13 │ 
+  
+  i Add a blank line around tables for readability.
+  
+  i Safe fix: Insert blank line after table.
+  
+     9  9 │   | X | Y |
+    10 10 │   | --- | --- |
+    11    │ - |·3·|·4·|
+       11 │ + |·3·|·4·|
+       12 │ + 
+    12 13 │   Some text after table.
+    13 14 │   
+  
+
+```
+
+```
+invalid.md:16:1 lint/style/useBlanksAroundTables  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line before table.
+  
+    14 │ # Missing blank lines both before and after
+    15 │ Text before.
+  > 16 │ | Name | Age |
+       │ ^^^^^^^^^^^^^^
+    17 │ | --- | --- |
+    18 │ | Alice | 30 |
+  
+  i Add a blank line around tables for readability.
+  
+  i Safe fix: Insert blank line before table.
+  
+    14 14 │   # Missing blank lines both before and after
+    15 15 │   Text before.
+    16    │ - |·Name·|·Age·|
+       16 │ + 
+       17 │ + |·Name·|·Age·|
+    17 18 │   | --- | --- |
+    18 19 │   | Alice | 30 |
+  
+
+```
+
+```
+invalid.md:18:1 lint/style/useBlanksAroundTables  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing blank line after table.
+  
+    16 │ | Name | Age |
+    17 │ | --- | --- |
+  > 18 │ | Alice | 30 |
+       │ ^^^^^^^^^^^^^^
+    19 │ Text after.
+    20 │ 
+  
+  i Add a blank line around tables for readability.
+  
+  i Safe fix: Insert blank line after table.
+  
+    16 16 │   | Name | Age |
+    17 17 │   | --- | --- |
+    18    │ - |·Alice·|·30·|
+       18 │ + |·Alice·|·30·|
+       19 │ + 
+    19 20 │   Text after.
+    20 21 │   
+  
 
 ```

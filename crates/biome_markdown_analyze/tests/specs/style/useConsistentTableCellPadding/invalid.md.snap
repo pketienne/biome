@@ -4,10 +4,125 @@ expression: invalid.md
 ---
 # Input
 ```md
-# Inconsistent cell padding
+# Compact cells should be flagged (default style is "padded")
 
-|A|B |C|
-|---|--- |---|
-|1|2 |3|
+|A|B|C|
+|---|---|---|
+|1|2|3|
+
+# Another compact table
+
+|Name|Age|
+|---|---|
+|Alice|30|
+|Bob|25|
+
+# Mixed: some rows padded, some compact
+
+| X | Y | Z |
+| --- | --- | --- |
+|a|b|c|
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected padded cell padding in table row.
+  
+    1 │ # Compact cells should be flagged (default style is "padded")
+    2 │ 
+  > 3 │ |A|B|C|
+      │ ^^^^^^^
+    4 │ |---|---|---|
+    5 │ |1|2|3|
+  
+  i Use consistent cell padding throughout tables.
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected padded cell padding in table row.
+  
+    3 │ |A|B|C|
+    4 │ |---|---|---|
+  > 5 │ |1|2|3|
+      │ ^^^^^^^
+    6 │ 
+    7 │ # Another compact table
+  
+  i Use consistent cell padding throughout tables.
+  
+
+```
+
+```
+invalid.md:9:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected padded cell padding in table row.
+  
+     7 │ # Another compact table
+     8 │ 
+   > 9 │ |Name|Age|
+       │ ^^^^^^^^^^
+    10 │ |---|---|
+    11 │ |Alice|30|
+  
+  i Use consistent cell padding throughout tables.
+  
+
+```
+
+```
+invalid.md:11:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected padded cell padding in table row.
+  
+     9 │ |Name|Age|
+    10 │ |---|---|
+  > 11 │ |Alice|30|
+       │ ^^^^^^^^^^
+    12 │ |Bob|25|
+    13 │ 
+  
+  i Use consistent cell padding throughout tables.
+  
+
+```
+
+```
+invalid.md:12:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected padded cell padding in table row.
+  
+    10 │ |---|---|
+    11 │ |Alice|30|
+  > 12 │ |Bob|25|
+       │ ^^^^^^^^
+    13 │ 
+    14 │ # Mixed: some rows padded, some compact
+  
+  i Use consistent cell padding throughout tables.
+  
+
+```
+
+```
+invalid.md:18:1 lint/style/useConsistentTableCellPadding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Expected padded cell padding in table row.
+  
+    16 │ | X | Y | Z |
+    17 │ | --- | --- | --- |
+  > 18 │ |a|b|c|
+       │ ^^^^^^^
+    19 │ 
+  
+  i Use consistent cell padding throughout tables.
+  
 
 ```

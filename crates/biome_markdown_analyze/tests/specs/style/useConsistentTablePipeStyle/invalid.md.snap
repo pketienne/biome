@@ -1,14 +1,179 @@
 ---
 source: crates/biome_markdown_analyze/tests/spec_tests.rs
+assertion_line: 70
 expression: invalid.md
 ---
 # Input
 ```md
-# Inconsistent pipe style
+# Missing leading pipes (default style is "both")
 
-| A | B |
-| --- | --- |
+A | B |
+--- | --- |
 1 | 2 |
-| 3 | 4
+
+# Mixed: some rows have both pipes, some only trailing
+
+| X | Y |
+| --- | --- |
+X | Y |
+1 | 2 |
+
+# Three columns missing leading
+
+A | B | C |
+--- | --- | --- |
+1 | 2 | 3 |
+4 | 5 | 6 |
+
+```
+
+# Diagnostics
+```
+invalid.md:3:1 lint/style/useConsistentTablePipeStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing leading or trailing pipe in table row.
+  
+    1 │ # Missing leading pipes (default style is "both")
+    2 │ 
+  > 3 │ A | B |
+      │ ^^^^^^^
+    4 │ --- | --- |
+    5 │ 1 | 2 |
+  
+  i Use consistent pipe style throughout the table.
+  
+
+```
+
+```
+invalid.md:4:1 lint/style/useConsistentTablePipeStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing leading or trailing pipe in table row.
+  
+    3 │ A | B |
+  > 4 │ --- | --- |
+      │ ^^^^^^^^^^^
+    5 │ 1 | 2 |
+    6 │ 
+  
+  i Use consistent pipe style throughout the table.
+  
+
+```
+
+```
+invalid.md:5:1 lint/style/useConsistentTablePipeStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing leading or trailing pipe in table row.
+  
+    3 │ A | B |
+    4 │ --- | --- |
+  > 5 │ 1 | 2 |
+      │ ^^^^^^^
+    6 │ 
+    7 │ # Mixed: some rows have both pipes, some only trailing
+  
+  i Use consistent pipe style throughout the table.
+  
+
+```
+
+```
+invalid.md:11:1 lint/style/useConsistentTablePipeStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing leading or trailing pipe in table row.
+  
+     9 │ | X | Y |
+    10 │ | --- | --- |
+  > 11 │ X | Y |
+       │ ^^^^^^^
+    12 │ 1 | 2 |
+    13 │ 
+  
+  i Use consistent pipe style throughout the table.
+  
+
+```
+
+```
+invalid.md:12:1 lint/style/useConsistentTablePipeStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing leading or trailing pipe in table row.
+  
+    10 │ | --- | --- |
+    11 │ X | Y |
+  > 12 │ 1 | 2 |
+       │ ^^^^^^^
+    13 │ 
+    14 │ # Three columns missing leading
+  
+  i Use consistent pipe style throughout the table.
+  
+
+```
+
+```
+invalid.md:16:1 lint/style/useConsistentTablePipeStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing leading or trailing pipe in table row.
+  
+    14 │ # Three columns missing leading
+    15 │ 
+  > 16 │ A | B | C |
+       │ ^^^^^^^^^^^
+    17 │ --- | --- | --- |
+    18 │ 1 | 2 | 3 |
+  
+  i Use consistent pipe style throughout the table.
+  
+
+```
+
+```
+invalid.md:17:1 lint/style/useConsistentTablePipeStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing leading or trailing pipe in table row.
+  
+    16 │ A | B | C |
+  > 17 │ --- | --- | --- |
+       │ ^^^^^^^^^^^^^^^^^
+    18 │ 1 | 2 | 3 |
+    19 │ 4 | 5 | 6 |
+  
+  i Use consistent pipe style throughout the table.
+  
+
+```
+
+```
+invalid.md:18:1 lint/style/useConsistentTablePipeStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing leading or trailing pipe in table row.
+  
+    16 │ A | B | C |
+    17 │ --- | --- | --- |
+  > 18 │ 1 | 2 | 3 |
+       │ ^^^^^^^^^^^
+    19 │ 4 | 5 | 6 |
+    20 │ 
+  
+  i Use consistent pipe style throughout the table.
+  
+
+```
+
+```
+invalid.md:19:1 lint/style/useConsistentTablePipeStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing leading or trailing pipe in table row.
+  
+    17 │ --- | --- | --- |
+    18 │ 1 | 2 | 3 |
+  > 19 │ 4 | 5 | 6 |
+       │ ^^^^^^^^^^^
+    20 │ 
+  
+  i Use consistent pipe style throughout the table.
+  
 
 ```
