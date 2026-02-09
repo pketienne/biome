@@ -7,14 +7,16 @@ use biome_formatter::{
     Buffer, CstFormatContext, Format, FormatContext, FormatElement, FormatResult,
     LINE_TERMINATORS, normalize_newlines,
 };
-use biome_rowan::{AstNode, Direction, SyntaxElement, TextRange};
+use biome_rowan::{Direction, SyntaxElement, TextRange};
 use biome_yaml_syntax::YamlSyntaxNode;
 
 /// Alias used by generated formatter code.
+#[allow(dead_code)]
 pub fn format_verbatim_node(node: &YamlSyntaxNode) -> FormatYamlVerbatimNode<'_> {
     format_yaml_verbatim_node(node)
 }
 
+#[allow(dead_code)]
 pub fn format_yaml_verbatim_node(node: &YamlSyntaxNode) -> FormatYamlVerbatimNode<'_> {
     FormatYamlVerbatimNode {
         node,

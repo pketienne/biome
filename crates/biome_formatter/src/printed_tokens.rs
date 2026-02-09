@@ -30,6 +30,14 @@ impl PrintedTokens {
 
         let range = token.text_trimmed_range();
 
+        // Skip zero-width tokens (e.g. synthetic tokens like MAPPING_START,
+        // SEQUENCE_START, FLOW_START in YAML). These tokens have no text content
+        // and share their start offset with adjacent real tokens, which would
+        // cause false "printed twice" panics.
+        if range.is_empty() {
+            return;
+        }
+
         if !self.offsets.insert(range.start()) {
             panic!(
                 "You tried to print the token '{token:?}' twice, and this is not valid.\
@@ -69,7 +77,15 @@ impl PrintedTokens {
         let mut offsets = self.offsets.clone();
 
         for token in root.descendants_tokens(Direction::Next) {
-            if !offsets.shift_remove(&token.text_trimmed_range().start()) {
+            let range = token.text_trimmed_range();
+
+            // Skip zero-width tokens — they have no text content and are not
+            // tracked (see `track_token`).
+            if range.is_empty() {
+                continue;
+            }
+
+            if !offsets.shift_remove(&range.start()) {
                 panic!(
                     "token has not been seen by the formatter: {token:#?}.\
                         \nUse `format_replaced` if you want to replace a token from the formatted output.\

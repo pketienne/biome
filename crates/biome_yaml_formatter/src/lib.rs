@@ -3,11 +3,10 @@
 mod comments;
 pub mod context;
 mod cst;
-// TODO: The following modules require running `cargo codegen formatter yaml`:
-// mod generated;
-// mod yaml;  // per-node formatting rules
-// mod separated;
-// mod trivia;
+mod generated;
+mod yaml;
+mod separated;
+mod trivia;
 mod prelude;
 mod verbatim;
 
@@ -15,6 +14,7 @@ use crate::comments::YamlCommentStyle;
 pub(crate) use crate::context::YamlFormatContext;
 use crate::context::YamlFormatOptions;
 use crate::cst::FormatYamlSyntaxNode;
+pub(crate) use crate::trivia::*;
 use crate::verbatim::{format_bogus_node, format_suppressed_node};
 use biome_formatter::comments::Comments;
 use biome_formatter::prelude::*;
@@ -115,7 +115,6 @@ where
 }
 
 /// Formatting specific [Iterator] extensions
-#[expect(dead_code)]
 pub(crate) trait FormattedIterExt {
     /// Converts every item to an object that knows how to format it.
     fn formatted<Context>(self) -> FormattedIter<Self, Self::Item, Context>
@@ -337,5 +336,45 @@ mod tests {
         let result = formatted.print().unwrap();
         // Empty input should produce empty output
         assert_eq!(result.as_code(), src);
+    }
+
+    #[test]
+    fn simple_mapping() {
+        let src = "key: value\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "key: value\n");
+    }
+
+    #[test]
+    fn nested_mapping() {
+        let src = "parent:\n  child: value\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "parent:\n\tchild: value\n");
+    }
+
+    #[test]
+    fn block_sequence() {
+        let src = "- item1\n- item2\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "- item1\n- item2\n");
+    }
+
+    #[test]
+    fn multiple_keys() {
+        let src = "key1: value1\nkey2: value2\n";
+        let parse = parse_yaml(src);
+        let options = YamlFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "key1: value1\nkey2: value2\n");
     }
 }

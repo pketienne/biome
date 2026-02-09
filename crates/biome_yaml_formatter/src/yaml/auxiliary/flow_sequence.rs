@@ -1,10 +1,19 @@
 use crate::prelude::*;
-use biome_rowan::AstNode;
+use biome_formatter::write;
 use biome_yaml_syntax::YamlFlowSequence;
+
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatYamlFlowSequence;
+
 impl FormatNodeRule<YamlFlowSequence> for FormatYamlFlowSequence {
     fn fmt_fields(&self, node: &YamlFlowSequence, f: &mut YamlFormatter) -> FormatResult<()> {
-        format_verbatim_node(node.syntax()).fmt(f)
+        write!(
+            f,
+            [
+                node.l_brack_token()?.format(),
+                soft_block_indent(&node.entries().format()),
+                node.r_brack_token()?.format(),
+            ]
+        )
     }
 }
