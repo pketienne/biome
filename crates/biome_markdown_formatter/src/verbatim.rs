@@ -19,7 +19,7 @@ pub fn format_markdown_verbatim_node(node: &MarkdownSyntaxNode) -> FormatMarkdow
     FormatMarkdownVerbatimNode {
         node,
         kind: VerbatimKind::Verbatim {
-            length: node.text_range_with_trivia().len(),
+            length: node.text_trimmed_range().len(),
         },
         format_comments: true,
     }

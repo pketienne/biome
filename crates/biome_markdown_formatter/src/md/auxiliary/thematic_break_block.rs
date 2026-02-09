@@ -1,6 +1,7 @@
 use crate::prelude::*;
+use crate::trivia::format_replaced;
+use biome_formatter::write;
 use biome_markdown_syntax::MdThematicBreakBlock;
-use biome_rowan::AstNode;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatMdThematicBreakBlock;
 impl FormatNodeRule<MdThematicBreakBlock> for FormatMdThematicBreakBlock {
@@ -9,6 +10,7 @@ impl FormatNodeRule<MdThematicBreakBlock> for FormatMdThematicBreakBlock {
         node: &MdThematicBreakBlock,
         f: &mut MarkdownFormatter,
     ) -> FormatResult<()> {
-        format_verbatim_node(node.syntax()).fmt(f)
+        let token = node.value_token()?;
+        write!(f, [format_replaced(&token, &text("---", token.text_range().start()))])
     }
 }

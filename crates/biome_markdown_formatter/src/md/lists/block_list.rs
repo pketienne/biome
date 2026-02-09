@@ -5,6 +5,10 @@ pub(crate) struct FormatMdBlockList;
 impl FormatRule<MdBlockList> for FormatMdBlockList {
     type Context = MarkdownFormatContext;
     fn fmt(&self, node: &MdBlockList, f: &mut MarkdownFormatter) -> FormatResult<()> {
-        f.join().entries(node.iter().formatted()).finish()
+        let mut join = f.join_nodes_with_hardline();
+        for block in node.iter() {
+            join.entry(block.syntax(), &block.format());
+        }
+        join.finish()
     }
 }

@@ -323,6 +323,7 @@ mod tests {
     use crate::format_node;
     use biome_markdown_parser::parse_markdown;
 
+
     #[test]
     fn smoke_test() {
         let src = "# Hello\n\nWorld\n";
@@ -382,5 +383,57 @@ mod tests {
         let formatted = format_node(options, &parse.syntax()).unwrap();
         let result = formatted.print().unwrap();
         assert_eq!(result.as_code(), src);
+    }
+
+    #[test]
+    fn normalizes_thematic_break_stars() {
+        let src = "***\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "---\n");
+    }
+
+    #[test]
+    fn normalizes_thematic_break_underscores() {
+        let src = "___\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "---\n");
+    }
+
+    #[test]
+    fn normalizes_heading_space() {
+        let src = "#Hello\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "# Hello\n");
+    }
+
+    #[test]
+    fn normalizes_heading_extra_spaces() {
+        let src = "##  Title\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "## Title\n");
+    }
+
+    #[test]
+    fn trailing_hashes_preserved_by_parser() {
+        // Parser doesn't separate trailing hashes from content,
+        // so they stay as-is. Removal requires parser changes.
+        let src = "### Heading ###\n";
+        let parse = parse_markdown(src);
+        let options = MarkdownFormatOptions::default();
+        let formatted = format_node(options, &parse.syntax()).unwrap();
+        let result = formatted.print().unwrap();
+        assert_eq!(result.as_code(), "### Heading ###\n");
     }
 }

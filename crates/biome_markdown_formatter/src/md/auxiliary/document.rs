@@ -2,7 +2,6 @@ use crate::prelude::*;
 use crate::trivia::format_removed;
 use biome_formatter::write;
 use biome_markdown_syntax::MdDocument;
-use biome_rowan::AstNode;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatMdDocument;
 impl FormatNodeRule<MdDocument> for FormatMdDocument {
@@ -10,7 +9,7 @@ impl FormatNodeRule<MdDocument> for FormatMdDocument {
         if let Some(bom) = node.bom_token() {
             write!(f, [bom.format()])?;
         }
-        write!(f, [format_verbatim_node(node.value().syntax())])?;
+        write!(f, [node.value().format()])?;
         if let Ok(eof) = node.eof_token() {
             write!(f, [format_removed(&eof)])?;
         }

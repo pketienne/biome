@@ -1,0 +1,45 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: md/document/preserve_content.md
+---
+
+# Input
+
+```md
+# Title
+
+Some paragraph text here.
+
+Another paragraph.
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```md
+# Title
+
+Some paragraph text here.
+
+Another paragraph.
+```
+
+
+
+## Unimplemented nodes/tokens
+
+" Titl" => 1..6
+"Some paragraph text here." => 9..34
+"Another paragraph." => 36..54
