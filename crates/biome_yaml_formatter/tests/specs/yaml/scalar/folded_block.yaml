@@ -1,0 +1,5 @@
+content: >
+  This is a folded block scalar.
+  Lines get folded into one.
+
+  Blank lines become newlines.

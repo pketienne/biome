@@ -1,0 +1,2 @@
+explicit_string: !!str 123
+explicit_int: !!int "456"

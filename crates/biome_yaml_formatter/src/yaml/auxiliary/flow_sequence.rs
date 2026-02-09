@@ -11,7 +11,7 @@ impl FormatNodeRule<YamlFlowSequence> for FormatYamlFlowSequence {
             f,
             [
                 node.l_brack_token()?.format(),
-                soft_block_indent(&node.entries().format()),
+                node.entries().format(),
                 node.r_brack_token()?.format(),
             ]
         )

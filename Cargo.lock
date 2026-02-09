@@ -1869,12 +1869,19 @@ dependencies = [
  "biome_deserialize_macros",
  "biome_diagnostics",
  "biome_formatter",
+ "biome_formatter_test",
+ "biome_fs",
  "biome_parser",
  "biome_rowan",
+ "biome_service",
  "biome_suppression",
+ "biome_test_utils",
  "biome_yaml_parser",
  "biome_yaml_syntax",
  "camino",
+ "serde",
+ "serde_json",
+ "tests_macros",
 ]
 
 [[package]]

@@ -1,0 +1,31 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/flow/sequence.yaml
+---
+
+# Input
+
+```yaml
+simple: [1, 2, 3]
+strings: [hello, world]
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```yaml
+simple: [1, 2, 3]
+strings: [hello, world]
+```

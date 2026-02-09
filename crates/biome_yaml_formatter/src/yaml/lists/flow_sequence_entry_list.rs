@@ -9,8 +9,8 @@ pub(crate) struct FormatYamlFlowSequenceEntryList;
 impl FormatRule<YamlFlowSequenceEntryList> for FormatYamlFlowSequenceEntryList {
     type Context = YamlFormatContext;
     fn fmt(&self, node: &YamlFlowSequenceEntryList, f: &mut YamlFormatter) -> FormatResult<()> {
-        f.join_with(soft_line_break_or_space())
-            .entries(node.format_separated(",", TrailingSeparator::default()))
+        f.join_with(space())
+            .entries(node.format_separated(",", TrailingSeparator::Omit))
             .finish()
     }
 }

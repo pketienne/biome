@@ -1,0 +1,33 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/sequence/simple.yaml
+---
+
+# Input
+
+```yaml
+- item1
+- item2
+- item3
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```yaml
+- item1
+- item2
+- item3
+```

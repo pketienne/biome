@@ -1,0 +1,33 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/mapping/multiple_keys.yaml
+---
+
+# Input
+
+```yaml
+first: one
+second: two
+third: three
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```yaml
+first: one
+second: two
+third: three
+```

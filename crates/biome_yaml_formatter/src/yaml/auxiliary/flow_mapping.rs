@@ -11,7 +11,7 @@ impl FormatNodeRule<YamlFlowMapping> for FormatYamlFlowMapping {
             f,
             [
                 node.l_curly_token()?.format(),
-                soft_block_indent(&node.entries().format()),
+                node.entries().format(),
                 node.r_curly_token()?.format(),
             ]
         )

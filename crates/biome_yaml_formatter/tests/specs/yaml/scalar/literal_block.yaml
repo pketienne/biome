@@ -1,0 +1,5 @@
+content: |
+  This is a literal block scalar.
+  It preserves newlines.
+
+  Including blank lines.

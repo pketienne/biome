@@ -1,0 +1,37 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/scalar/quoted.yaml
+---
+
+# Input
+
+```yaml
+single: 'hello world'
+double: "hello world"
+with_special: "line1\nline2"
+empty_single: ''
+empty_double: ""
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```yaml
+single: 'hello world'
+double: "hello world"
+with_special: "line1\nline2"
+empty_single: ''
+empty_double: ""
+```

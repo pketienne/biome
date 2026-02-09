@@ -1,0 +1,32 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/properties/tag.yaml
+---
+
+# Input
+
+```yaml
+explicit_string: !!str 123
+explicit_int: !!int "456"
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```yaml
+explicit_string:
+!!str 123
+explicit_int: !!int "456"
+```

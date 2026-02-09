@@ -1,0 +1,40 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/properties/anchor_alias.yaml
+---
+
+# Input
+
+```yaml
+defaults: &defaults
+  timeout: 30
+  retries: 3
+production:
+  <<: *defaults
+  timeout: 60
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```yaml
+defaults:
+&defaults
+  timeout: 30
+retries: 3
+production:
+  <<: *defaults
+  timeout: 60
+```

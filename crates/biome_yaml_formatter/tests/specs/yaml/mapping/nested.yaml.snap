@@ -1,0 +1,35 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/mapping/nested.yaml
+---
+
+# Input
+
+```yaml
+parent:
+  child: value
+  another:
+    deep: nested
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```yaml
+parent:
+	child: value
+	another:
+		deep: nested
+```

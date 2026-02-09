@@ -1,0 +1,5 @@
+single: 'hello world'
+double: "hello world"
+with_special: "line1\nline2"
+empty_single: ''
+empty_double: ""
