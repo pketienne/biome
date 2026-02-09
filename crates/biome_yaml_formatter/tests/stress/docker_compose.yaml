@@ -1,0 +1,122 @@
+version: "3.8"
+
+x-common-env: &common-env
+  LOG_LEVEL: info
+  TZ: UTC
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: "20"
+        BUILD_DATE: "${BUILD_DATE}"
+      target: production
+    image: myapp:${TAG:-latest}
+    container_name: myapp
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    environment:
+      <<: *common-env
+      DATABASE_URL: postgres://user:pass@db:5432/myapp
+      REDIS_URL: redis://cache:6379
+      SESSION_SECRET: ${SESSION_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+    volumes:
+      - ./src:/app/src
+      - node_modules:/app/node_modules
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`app.local`)"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
+
+  db:
+    image: postgres:16-alpine
+    container_name: myapp-db
+    restart: unless-stopped
+    environment:
+      <<: *common-env
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: myapp
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "pg_isready -U user -d myapp"]
+
+  cache:
+    image: redis:7-alpine
+    container_name: myapp-cache
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "redis-cli", "ping"]
+
+  nginx:
+    image: nginx:alpine
+    container_name: myapp-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+    networks:
+      - frontend
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  node_modules:
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+    internal: true

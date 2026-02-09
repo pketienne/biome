@@ -1,0 +1,100 @@
+# Edge cases for YAML formatting
+
+# Empty values
+empty_string: ""
+empty_single: ''
+null_value:
+tilde_null: ~
+explicit_null: null
+
+# Special characters in strings
+special_strings:
+  colon_in_value: "key: value"
+  hash_in_value: "not a #comment"
+  at_sign: user@example.com
+  url: https://example.com/path?query=value&other=123
+  windows_path: "C:\\Users\\name\\file.txt"
+  newlines: "line1\nline2\nline3"
+  tabs: "col1\tcol2\tcol3"
+  unicode: "Hello \u0048\u0065\u006C\u006C\u006F"
+
+# Numeric edge cases
+numbers:
+  integer: 42
+  negative: -17
+  float: 3.14159
+  scientific: 6.022e23
+  infinity: .inf
+  neg_infinity: -.inf
+  not_a_number: .nan
+  hex: 0xFF
+  octal: 0o77
+
+# Boolean-like strings (should stay as strings when quoted)
+booleans:
+  yaml_true: true
+  yaml_false: false
+  quoted_true: "true"
+  quoted_false: "false"
+  yes_val: "yes"
+  no_val: "no"
+  on_val: "on"
+  off_val: "off"
+
+# Multiline strings
+multiline:
+  literal_block: |
+    This is a literal block scalar.
+    It preserves newlines exactly.
+
+    Including blank lines.
+    And trailing content.
+  folded_block: >
+    This is a folded block scalar.
+    It folds newlines into spaces.
+
+    But preserves blank lines
+    as paragraph separators.
+  literal_strip: |-
+    No trailing newline
+    after this block
+  literal_keep: |+
+    Keeps trailing
+    newlines
+
+
+  folded_strip: >-
+    No trailing newline
+    after this fold
+  plain_multiline: this is a plain
+    scalar that spans
+    multiple lines
+
+# Flow collections
+flow:
+  empty_map: {}
+  empty_seq: []
+  inline_map: {name: John, age: 30, active: true}
+  inline_seq: [1, 2, 3, 4, 5]
+  nested_flow: {users: [{name: alice}, {name: bob}], count: 2}
+  mixed: [{key: value}, plain, "quoted", 42, true, null]
+
+# Long lines
+long:
+  description: "This is a very long string value that exceeds the typical line width limit of eighty characters and should be handled gracefully by the formatter"
+  list_of_long:
+    - "First long item that contains quite a lot of text and may need special handling"
+    - "Second long item that is similarly lengthy and tests the formatter behavior"
+
+# Keys with special characters
+"quoted key": value1
+'single quoted key': value2
+
+# Nested empty structures
+nested_empty:
+  empty_map: {}
+  empty_list: []
+  map_with_empty:
+    key1: {}
+    key2: []
+    key3:

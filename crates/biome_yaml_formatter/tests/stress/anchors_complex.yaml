@@ -1,0 +1,86 @@
+defaults: &defaults
+  adapter: postgres
+  host: localhost
+  timeout: 30
+  pool: 5
+
+development:
+  <<: *defaults
+  database: myapp_dev
+  debug: true
+
+test:
+  <<: *defaults
+  database: myapp_test
+  pool: 1
+
+production:
+  <<: *defaults
+  host: db.example.com
+  database: myapp_prod
+  pool: 25
+  ssl: true
+
+# Multiple anchors and aliases
+base_user: &base_user
+  role: user
+  permissions:
+    - read
+    - list
+
+admin_user: &admin_user
+  <<: *base_user
+  role: admin
+  permissions:
+    - read
+    - list
+    - write
+    - delete
+    - admin
+
+users:
+  - name: alice
+    <<: *admin_user
+    email: alice@example.com
+  - name: bob
+    <<: *base_user
+    email: bob@example.com
+  - name: charlie
+    <<: *base_user
+    email: charlie@example.com
+
+# Tagged values
+typed_values:
+  timestamp: !timestamp 2026-02-09T12:00:00Z
+  binary: !binary |
+    R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7
+  custom: !custom_type
+    field1: value1
+    field2: value2
+
+# Deeply nested structure
+infrastructure:
+  aws:
+    regions:
+      us-east-1:
+        vpc:
+          cidr: 10.0.0.0/16
+          subnets:
+            public:
+              - cidr: 10.0.1.0/24
+                az: us-east-1a
+              - cidr: 10.0.2.0/24
+                az: us-east-1b
+            private:
+              - cidr: 10.0.10.0/24
+                az: us-east-1a
+              - cidr: 10.0.11.0/24
+                az: us-east-1b
+        rds:
+          engine: postgres
+          version: "16"
+          instance_class: db.r6g.xlarge
+          multi_az: true
+      eu-west-1:
+        vpc:
+          cidr: 10.1.0.0/16
