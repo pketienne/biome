@@ -1,0 +1,12 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: valid.yaml
+---
+# Input
+```yaml
+# should not generate diagnostics
+price: 1
+rate: 2.5
+ratio: 3.14
+
+```

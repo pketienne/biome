@@ -1,0 +1,4 @@
+# should not generate diagnostics
+price: 1
+rate: 2.5
+ratio: 3.14

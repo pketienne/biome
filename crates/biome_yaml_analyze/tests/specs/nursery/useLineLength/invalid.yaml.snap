@@ -1,0 +1,26 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+very_long_key: this is a very long value that exceeds the maximum line length limit and should be wrapped or shortened to improve readability of the yaml file overall
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:1 lint/nursery/useLineLength ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Line exceeds the maximum length of 120 characters.
+  
+  > 1 │ very_long_key: this is a very long value that exceeds the maximum line length limit and should be wrapped or shortened to improve readability of the yaml file overall
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    2 │ 
+  
+  i Break long lines into multiple lines for better readability.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

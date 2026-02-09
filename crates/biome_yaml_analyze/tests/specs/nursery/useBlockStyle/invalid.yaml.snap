@@ -1,0 +1,26 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+items: {key: value}
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:8 lint/nursery/useBlockStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Use block style instead of flow style for collections.
+  
+  > 1 │ items: {key: value}
+      │        ^^^^^^^^^^^^
+    2 │ 
+  
+  i Block style is more readable and consistent. Replace flow syntax with block indentation.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
