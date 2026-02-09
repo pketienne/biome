@@ -1,5 +1,7 @@
 #![deny(clippy::use_self)]
 
+mod lint;
+pub mod options;
 mod registry;
 mod suppression_action;
 
@@ -10,7 +12,7 @@ use biome_analyze::{
     LanguageRoot, MatchQueryParams, MetadataRegistry, RuleAction, RuleRegistry,
     to_analyzer_suppressions,
 };
-use biome_deserialize::TextRange;
+use biome_rowan::TextRange;
 use biome_diagnostics::Error;
 use biome_suppression::{SuppressionDiagnostic, parse_suppression_comment};
 use biome_turtle_syntax::TurtleLanguage;
@@ -136,5 +138,67 @@ mod tests {
 
         assert!(result.is_none());
         assert!(errors.is_empty());
+    }
+
+    #[test]
+    fn lint_detects_duplicate_prefix() {
+        let src = r#"
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+<http://example.org/alice> a foaf:Person .
+"#;
+
+        let parsed = parse_turtle(src);
+        let options = AnalyzerOptions::default();
+        let mut diagnostics = vec![];
+        let (_, errors) = analyze(
+            &parsed.tree(),
+            AnalysisFilter::default(),
+            &options,
+            |signal| {
+                if let Some(diag) = signal.diagnostic() {
+                    let text = format!("{:?}", diag);
+                    diagnostics.push(text);
+                }
+                ControlFlow::<Never>::Continue(())
+            },
+        );
+
+        assert!(errors.is_empty());
+        assert!(
+            !diagnostics.is_empty(),
+            "Expected at least one diagnostic for duplicate prefix, got none"
+        );
+    }
+
+    #[test]
+    fn lint_detects_rdf_type_shorthand() {
+        let src = r#"
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+<http://example.org/alice> rdf:type foaf:Person .
+"#;
+
+        let parsed = parse_turtle(src);
+        let options = AnalyzerOptions::default();
+        let mut diagnostics = vec![];
+        let (_, errors) = analyze(
+            &parsed.tree(),
+            AnalysisFilter::default(),
+            &options,
+            |signal| {
+                if let Some(diag) = signal.diagnostic() {
+                    let text = format!("{:?}", diag);
+                    diagnostics.push(text);
+                }
+                ControlFlow::<Never>::Continue(())
+            },
+        );
+
+        assert!(errors.is_empty());
+        assert!(
+            !diagnostics.is_empty(),
+            "Expected at least one diagnostic for rdf:type usage, got none"
+        );
     }
 }

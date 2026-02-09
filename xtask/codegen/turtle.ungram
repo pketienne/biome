@@ -114,7 +114,8 @@ TurtlePredicateObjectPair =
 // https://www.w3.org/TR/turtle/#grammar-production-verb
 // predicate | 'a'
 TurtleVerb =
-	AnyTurtleVerb
+	any_turtle_verb: AnyTurtleVerb?
+	a_token: 'a'?
 
 AnyTurtleVerb =
 	TurtleIri
@@ -141,7 +142,8 @@ AnyTurtleObject =
 // IRI
 // https://www.w3.org/TR/turtle/#grammar-production-iri
 TurtleIri =
-	value: AnyTurtleIriValue
+	value: AnyTurtleIriValue?
+	iriref: 'turtle_iriref_literal'?
 
 AnyTurtleIriValue =
 	TurtlePrefixedName

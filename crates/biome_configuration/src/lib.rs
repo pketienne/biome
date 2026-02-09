@@ -20,6 +20,7 @@ pub mod javascript;
 pub mod json;
 pub mod markdown;
 pub mod max_size;
+pub mod turtle;
 mod overrides;
 pub mod vcs;
 
@@ -61,6 +62,7 @@ pub use html::{HtmlConfiguration, html_configuration};
 pub use javascript::{JsConfiguration, js_configuration};
 pub use json::{JsonConfiguration, json_configuration};
 pub use markdown::{MarkdownConfiguration, markdown_configuration};
+pub use turtle::{TurtleConfiguration, turtle_configuration};
 pub use overrides::{
     OverrideAssistConfiguration, OverrideFilesConfiguration, OverrideFormatterConfiguration,
     OverrideGlobs, OverrideLinterConfiguration, OverridePattern, Overrides,
@@ -175,6 +177,11 @@ pub struct Configuration {
     #[bpaf(external(markdown_configuration), optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub markdown: Option<MarkdownConfiguration>,
+
+    /// Specific configuration for the Turtle (RDF) language
+    #[bpaf(external(turtle_configuration), optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub turtle: Option<TurtleConfiguration>,
 
     /// A list of granular patterns that should be applied only to a sub set of files
     #[bpaf(hide, pure(Default::default()))]

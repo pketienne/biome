@@ -20,11 +20,11 @@ biome_rowan          = { workspace = true }
 biome_suppression    = { workspace = true }
 biome_turtle_syntax  = { workspace = true }
 
+[build-dependencies]
+filetime = { workspace = true }
+
 [dev-dependencies]
 biome_turtle_parser = { path = "../biome_turtle_parser" }
-biome_test_utils    = { path = "../biome_test_utils" }
-insta               = { workspace = true, features = ["glob"] }
-tests_macros        = { path = "../tests_macros" }
 
 [lints]
 workspace = true

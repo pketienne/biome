@@ -94,10 +94,16 @@ impl TurtleDatatypeAnnotation {
     }
 }
 impl TurtleIri {
-    pub fn with_value(self, element: AnyTurtleIriValue) -> Self {
+    pub fn with_value(self, element: Option<AnyTurtleIriValue>) -> Self {
+        Self::unwrap_cast(self.syntax.splice_slots(
+            0usize..=0usize,
+            once(element.map(|element| element.into_syntax().into())),
+        ))
+    }
+    pub fn with_iriref_token(self, element: Option<SyntaxToken>) -> Self {
         Self::unwrap_cast(
             self.syntax
-                .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
+                .splice_slots(1usize..=1usize, once(element.map(|element| element.into()))),
         )
     }
 }
@@ -284,10 +290,16 @@ impl TurtleTriples {
     }
 }
 impl TurtleVerb {
-    pub fn with_any_turtle_verb(self, element: AnyTurtleVerb) -> Self {
+    pub fn with_any_turtle_verb(self, element: Option<AnyTurtleVerb>) -> Self {
+        Self::unwrap_cast(self.syntax.splice_slots(
+            0usize..=0usize,
+            once(element.map(|element| element.into_syntax().into())),
+        ))
+    }
+    pub fn with_a_token_token(self, element: Option<SyntaxToken>) -> Self {
         Self::unwrap_cast(
             self.syntax
-                .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
+                .splice_slots(1usize..=1usize, once(element.map(|element| element.into()))),
         )
     }
 }

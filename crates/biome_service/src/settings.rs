@@ -17,7 +17,7 @@ use biome_configuration::{
     FilesIgnoreUnknownEnabled, FormatterConfiguration, GraphqlConfiguration, GritConfiguration,
     JsConfiguration, JsonConfiguration, LinterConfiguration, OverrideAssistConfiguration,
     OverrideFormatterConfiguration, OverrideGlobs, OverrideLinterConfiguration, Overrides, Rules,
-    push_to_analyzer_assist, push_to_analyzer_rules,
+    TurtleConfiguration, push_to_analyzer_assist, push_to_analyzer_rules,
 };
 use biome_css_formatter::context::CssFormatOptions;
 use biome_css_parser::CssParserOptions;
@@ -36,6 +36,8 @@ use biome_html_formatter::HtmlFormatOptions;
 use biome_html_parser::HtmlParseOptions;
 use biome_html_syntax::HtmlLanguage;
 use biome_markdown_syntax::MarkdownLanguage;
+use biome_turtle_formatter::context::TurtleFormatOptions;
+use biome_turtle_syntax::TurtleLanguage;
 use biome_js_formatter::context::JsFormatOptions;
 use biome_js_parser::JsParserOptions;
 use biome_js_syntax::JsLanguage;
@@ -180,6 +182,10 @@ impl Settings {
         // markdown settings
         if let Some(markdown) = configuration.markdown {
             self.languages.markdown = markdown.into();
+        }
+        // turtle settings
+        if let Some(turtle) = configuration.turtle {
+            self.languages.turtle = turtle.into();
         }
 
         // plugin settings
@@ -509,6 +515,7 @@ pub struct LanguageListSettings {
     pub html: LanguageSettings<HtmlLanguage>,
     pub grit: LanguageSettings<GritLanguage>,
     pub markdown: LanguageSettings<MarkdownLanguage>,
+    pub turtle: LanguageSettings<TurtleLanguage>,
 }
 
 impl From<JsConfiguration> for LanguageSettings<JsLanguage> {
@@ -662,6 +669,22 @@ impl From<MarkdownConfiguration> for LanguageSettings<MarkdownLanguage> {
             language_setting.linter = linter.into();
         }
         if let Some(assist) = markdown.assist {
+            language_setting.assist = assist.into();
+        }
+        language_setting
+    }
+}
+
+impl From<TurtleConfiguration> for LanguageSettings<TurtleLanguage> {
+    fn from(turtle: TurtleConfiguration) -> Self {
+        let mut language_setting: Self = Self::default();
+        if let Some(formatter) = turtle.formatter {
+            language_setting.formatter = formatter.into();
+        }
+        if let Some(linter) = turtle.linter {
+            language_setting.linter = linter.into();
+        }
+        if let Some(assist) = turtle.assist {
             language_setting.assist = assist.into();
         }
         language_setting

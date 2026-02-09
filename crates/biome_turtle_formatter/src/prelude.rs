@@ -6,6 +6,8 @@ pub(crate) use crate::{
     AsFormat, FormatNodeRule, FormattedIterExt as _, IntoFormat, TurtleFormatContext,
     TurtleFormatter,
 };
+pub(crate) use crate::trivia::*;
+pub(crate) use crate::verbatim::*;
 pub(crate) use biome_formatter::prelude::*;
 pub(crate) use biome_rowan::{
     AstNode as _, AstNodeList as _, AstNodeSlotMap as _, AstSeparatedList as _,

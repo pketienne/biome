@@ -11,8 +11,7 @@ use biome_rowan::{AstNode, Direction, SyntaxElement, TextRange};
 use biome_turtle_syntax::{TurtleLanguage, TurtleSyntaxNode};
 
 /// "Formats" a node according to its original formatting in the source text.
-#[expect(unused)]
-pub fn format_turtle_verbatim_node(node: &TurtleSyntaxNode) -> FormatTurtleVerbatimNode<'_> {
+pub fn format_verbatim_node(node: &TurtleSyntaxNode) -> FormatTurtleVerbatimNode<'_> {
     FormatTurtleVerbatimNode {
         node,
         kind: VerbatimKind::Verbatim {

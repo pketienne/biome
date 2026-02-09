@@ -109,4 +109,23 @@ mod tests {
         let result = parse_turtle(src);
         assert!(!result.has_errors(), "Expected no errors, got: {:?}", result.diagnostics());
     }
+
+    #[test]
+    fn parser_a_keyword_test() {
+        let src = "ex:bob a ex:Person .";
+
+        let result = parse_turtle(src);
+        assert!(!result.has_errors(), "Expected no errors, got: {:?}", result.diagnostics());
+
+        // Verify the tree structure contains TURTLE_TRIPLES (not TURTLE_BOGUS_STATEMENT)
+        let tree_str = format!("{:#?}", result.syntax());
+        assert!(
+            tree_str.contains("TURTLE_TRIPLES"),
+            "Expected TURTLE_TRIPLES in AST, got:\n{tree_str}"
+        );
+        assert!(
+            !tree_str.contains("TURTLE_BOGUS"),
+            "Expected no TURTLE_BOGUS in AST, got:\n{tree_str}"
+        );
+    }
 }

@@ -282,10 +282,14 @@ impl TurtleIri {
     pub fn as_fields(&self) -> TurtleIriFields {
         TurtleIriFields {
             value: self.value(),
+            iriref_token: self.iriref_token(),
         }
     }
-    pub fn value(&self) -> SyntaxResult<AnyTurtleIriValue> {
-        support::required_node(&self.syntax, 0usize)
+    pub fn value(&self) -> Option<AnyTurtleIriValue> {
+        support::node(&self.syntax, 0usize)
+    }
+    pub fn iriref_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, 1usize)
     }
 }
 impl Serialize for TurtleIri {
@@ -298,7 +302,8 @@ impl Serialize for TurtleIri {
 }
 #[derive(Serialize)]
 pub struct TurtleIriFields {
-    pub value: SyntaxResult<AnyTurtleIriValue>,
+    pub value: Option<AnyTurtleIriValue>,
+    pub iriref_token: Option<SyntaxToken>,
 }
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct TurtleNumericLiteral {
@@ -837,10 +842,14 @@ impl TurtleVerb {
     pub fn as_fields(&self) -> TurtleVerbFields {
         TurtleVerbFields {
             any_turtle_verb: self.any_turtle_verb(),
+            a_token_token: self.a_token_token(),
         }
     }
-    pub fn any_turtle_verb(&self) -> SyntaxResult<AnyTurtleVerb> {
-        support::required_node(&self.syntax, 0usize)
+    pub fn any_turtle_verb(&self) -> Option<AnyTurtleVerb> {
+        support::node(&self.syntax, 0usize)
+    }
+    pub fn a_token_token(&self) -> Option<SyntaxToken> {
+        support::token(&self.syntax, 1usize)
     }
 }
 impl Serialize for TurtleVerb {
@@ -853,7 +862,8 @@ impl Serialize for TurtleVerb {
 }
 #[derive(Serialize)]
 pub struct TurtleVerbFields {
-    pub any_turtle_verb: SyntaxResult<AnyTurtleVerb>,
+    pub any_turtle_verb: Option<AnyTurtleVerb>,
+    pub a_token_token: Option<SyntaxToken>,
 }
 #[derive(Clone, PartialEq, Eq, Hash, Serialize)]
 pub enum AnyTurtleDirective {
@@ -1381,7 +1391,11 @@ impl std::fmt::Debug for TurtleIri {
         let result = if current_depth < 16 {
             DEPTH.set(current_depth + 1);
             f.debug_struct("TurtleIri")
-                .field("value", &support::DebugSyntaxResult(self.value()))
+                .field("value", &support::DebugOptionalElement(self.value()))
+                .field(
+                    "iriref_token",
+                    &support::DebugOptionalElement(self.iriref_token()),
+                )
                 .finish()
         } else {
             f.debug_struct("TurtleIri").finish()
@@ -2081,7 +2095,11 @@ impl std::fmt::Debug for TurtleVerb {
             f.debug_struct("TurtleVerb")
                 .field(
                     "any_turtle_verb",
-                    &support::DebugSyntaxResult(self.any_turtle_verb()),
+                    &support::DebugOptionalElement(self.any_turtle_verb()),
+                )
+                .field(
+                    "a_token_token",
+                    &support::DebugOptionalElement(self.a_token_token()),
                 )
                 .finish()
         } else {

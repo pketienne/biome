@@ -185,10 +185,17 @@ impl SyntaxFactory for TurtleSyntaxFactory {
             }
             TURTLE_IRI => {
                 let mut elements = (&children).into_iter();
-                let mut slots: RawNodeSlots<1usize> = RawNodeSlots::default();
+                let mut slots: RawNodeSlots<2usize> = RawNodeSlots::default();
                 let mut current_element = elements.next();
                 if let Some(element) = &current_element
                     && AnyTurtleIriValue::can_cast(element.kind())
+                {
+                    slots.mark_present();
+                    current_element = elements.next();
+                }
+                slots.next_slot();
+                if let Some(element) = &current_element
+                    && element.kind() == TURTLE_IRIREF_LITERAL
                 {
                     slots.mark_present();
                     current_element = elements.next();
@@ -554,10 +561,17 @@ impl SyntaxFactory for TurtleSyntaxFactory {
             }
             TURTLE_VERB => {
                 let mut elements = (&children).into_iter();
-                let mut slots: RawNodeSlots<1usize> = RawNodeSlots::default();
+                let mut slots: RawNodeSlots<2usize> = RawNodeSlots::default();
                 let mut current_element = elements.next();
                 if let Some(element) = &current_element
                     && AnyTurtleVerb::can_cast(element.kind())
+                {
+                    slots.mark_present();
+                    current_element = elements.next();
+                }
+                slots.next_slot();
+                if let Some(element) = &current_element
+                    && element.kind() == T![a]
                 {
                     slots.mark_present();
                     current_element = elements.next();

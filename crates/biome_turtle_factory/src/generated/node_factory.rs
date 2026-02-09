@@ -72,11 +72,35 @@ pub fn turtle_datatype_annotation(
         ],
     ))
 }
-pub fn turtle_iri(value: AnyTurtleIriValue) -> TurtleIri {
-    TurtleIri::unwrap_cast(SyntaxNode::new_detached(
-        TurtleSyntaxKind::TURTLE_IRI,
-        [Some(SyntaxElement::Node(value.into_syntax()))],
-    ))
+pub fn turtle_iri() -> TurtleIriBuilder {
+    TurtleIriBuilder {
+        value: None,
+        iriref_token: None,
+    }
+}
+pub struct TurtleIriBuilder {
+    value: Option<AnyTurtleIriValue>,
+    iriref_token: Option<SyntaxToken>,
+}
+impl TurtleIriBuilder {
+    pub fn with_value(mut self, value: AnyTurtleIriValue) -> Self {
+        self.value = Some(value);
+        self
+    }
+    pub fn with_iriref_token(mut self, iriref_token: SyntaxToken) -> Self {
+        self.iriref_token = Some(iriref_token);
+        self
+    }
+    pub fn build(self) -> TurtleIri {
+        TurtleIri::unwrap_cast(SyntaxNode::new_detached(
+            TurtleSyntaxKind::TURTLE_IRI,
+            [
+                self.value
+                    .map(|token| SyntaxElement::Node(token.into_syntax())),
+                self.iriref_token.map(|token| SyntaxElement::Token(token)),
+            ],
+        ))
+    }
 }
 pub fn turtle_numeric_literal(value_token: SyntaxToken) -> TurtleNumericLiteral {
     TurtleNumericLiteral::unwrap_cast(SyntaxNode::new_detached(
@@ -245,11 +269,35 @@ pub fn turtle_triples(
         ],
     ))
 }
-pub fn turtle_verb(any_turtle_verb: AnyTurtleVerb) -> TurtleVerb {
-    TurtleVerb::unwrap_cast(SyntaxNode::new_detached(
-        TurtleSyntaxKind::TURTLE_VERB,
-        [Some(SyntaxElement::Node(any_turtle_verb.into_syntax()))],
-    ))
+pub fn turtle_verb() -> TurtleVerbBuilder {
+    TurtleVerbBuilder {
+        any_turtle_verb: None,
+        a_token_token: None,
+    }
+}
+pub struct TurtleVerbBuilder {
+    any_turtle_verb: Option<AnyTurtleVerb>,
+    a_token_token: Option<SyntaxToken>,
+}
+impl TurtleVerbBuilder {
+    pub fn with_any_turtle_verb(mut self, any_turtle_verb: AnyTurtleVerb) -> Self {
+        self.any_turtle_verb = Some(any_turtle_verb);
+        self
+    }
+    pub fn with_a_token_token(mut self, a_token_token: SyntaxToken) -> Self {
+        self.a_token_token = Some(a_token_token);
+        self
+    }
+    pub fn build(self) -> TurtleVerb {
+        TurtleVerb::unwrap_cast(SyntaxNode::new_detached(
+            TurtleSyntaxKind::TURTLE_VERB,
+            [
+                self.any_turtle_verb
+                    .map(|token| SyntaxElement::Node(token.into_syntax())),
+                self.a_token_token.map(|token| SyntaxElement::Token(token)),
+            ],
+        ))
+    }
 }
 pub fn turtle_collection_object_list<I>(items: I) -> TurtleCollectionObjectList
 where

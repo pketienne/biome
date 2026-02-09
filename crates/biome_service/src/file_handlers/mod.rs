@@ -7,6 +7,7 @@ use crate::diagnostics::{QueryDiagnostic, SearchError};
 pub use crate::file_handlers::astro::AstroFileHandler;
 use crate::file_handlers::graphql::GraphqlFileHandler;
 use crate::file_handlers::ignore::IgnoreFileHandler;
+use crate::file_handlers::turtle::TurtleFileHandler;
 pub use crate::file_handlers::svelte::SvelteFileHandler;
 pub use crate::file_handlers::vue::VueFileHandler;
 use crate::settings::Settings;
@@ -37,6 +38,9 @@ use biome_html_syntax::{HtmlFileSource, HtmlLanguage};
 use biome_markdown_analyze::METADATA as markdown_metadata;
 use biome_markdown_syntax::file_source::MarkdownFileSource;
 use biome_markdown_syntax::MarkdownLanguage;
+use biome_turtle_analyze::METADATA as turtle_metadata;
+use biome_turtle_syntax::TurtleFileSource;
+use biome_turtle_syntax::TurtleLanguage;
 use biome_js_analyze::METADATA as js_metadata;
 use biome_js_parser::{JsParserOptions, parse};
 use biome_js_syntax::{
@@ -73,6 +77,7 @@ pub(crate) mod javascript;
 pub(crate) mod json;
 pub(crate) mod markdown;
 pub mod svelte;
+pub(crate) mod turtle;
 mod unknown;
 pub mod vue;
 
@@ -88,6 +93,7 @@ pub enum DocumentFileSource {
     Html(HtmlFileSource),
     Grit(GritFileSource),
     Markdown(MarkdownFileSource),
+    Turtle(TurtleFileSource),
     // Ignore files
     Ignore,
     #[default]
@@ -133,6 +139,12 @@ impl From<GritFileSource> for DocumentFileSource {
 impl From<MarkdownFileSource> for DocumentFileSource {
     fn from(value: MarkdownFileSource) -> Self {
         Self::Markdown(value)
+    }
+}
+
+impl From<TurtleFileSource> for DocumentFileSource {
+    fn from(value: TurtleFileSource) -> Self {
+        Self::Turtle(value)
     }
 }
 
@@ -219,6 +231,9 @@ impl DocumentFileSource {
         if let Ok(file_source) = MarkdownFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
+        if let Ok(file_source) = TurtleFileSource::try_from_extension(extension) {
+            return Ok(file_source.into());
+        }
         Err(FileSourceError::UnknownExtension)
     }
 
@@ -248,6 +263,9 @@ impl DocumentFileSource {
             return Ok(file_source.into());
         }
         if let Ok(file_source) = MarkdownFileSource::try_from_language_id(language_id) {
+            return Ok(file_source.into());
+        }
+        if let Ok(file_source) = TurtleFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
         Err(FileSourceError::UnknownLanguageId)
@@ -395,6 +413,13 @@ impl DocumentFileSource {
         }
     }
 
+    pub fn to_turtle_file_source(&self) -> Option<TurtleFileSource> {
+        match self {
+            Self::Turtle(turtle) => Some(*turtle),
+            _ => None,
+        }
+    }
+
     /// The file can be parsed
     pub fn can_parse(path: &Utf8Path) -> bool {
         let file_source = Self::from(path);
@@ -405,7 +430,8 @@ impl DocumentFileSource {
             | Self::Json(_)
             | Self::Html(_)
             | Self::Grit(_)
-            | Self::Markdown(_) => true,
+            | Self::Markdown(_)
+            | Self::Turtle(_) => true,
             Self::Ignore => false,
             Self::Unknown => false,
         }
@@ -421,7 +447,8 @@ impl DocumentFileSource {
             | Self::Json(_)
             | Self::Html(_)
             | Self::Grit(_)
-            | Self::Markdown(_) => true,
+            | Self::Markdown(_)
+            | Self::Turtle(_) => true,
             Self::Ignore => true,
             Self::Unknown => false,
         }
@@ -438,6 +465,7 @@ impl DocumentFileSource {
             | Self::Json(_)
             | Self::Grit(_)
             | Self::Markdown(_)
+            | Self::Turtle(_)
             | Self::Ignore
             | Self::Unknown => false,
         }
@@ -473,6 +501,7 @@ impl std::fmt::Display for DocumentFileSource {
             Self::Html(_) => write!(fmt, "HTML"),
             Self::Grit(_) => write!(fmt, "Grit"),
             Self::Markdown(_) => write!(fmt, "Markdown"),
+            Self::Turtle(_) => write!(fmt, "Turtle"),
             Self::Ignore => write!(fmt, "Ignore"),
             Self::Unknown => write!(fmt, "Unknown"),
         }
@@ -1060,6 +1089,7 @@ pub(crate) struct Features {
     html: HtmlFileHandler,
     grit: GritFileHandler,
     markdown: MarkdownFileHandler,
+    turtle: TurtleFileHandler,
     ignore: IgnoreFileHandler,
 }
 
@@ -1076,6 +1106,7 @@ impl Features {
             html: HtmlFileHandler {},
             grit: GritFileHandler {},
             markdown: MarkdownFileHandler {},
+            turtle: TurtleFileHandler {},
             ignore: IgnoreFileHandler {},
             unknown: UnknownFileHandler::default(),
         }
@@ -1097,6 +1128,7 @@ impl Features {
             DocumentFileSource::Html(_) => self.html.capabilities(),
             DocumentFileSource::Grit(_) => self.grit.capabilities(),
             DocumentFileSource::Markdown(_) => self.markdown.capabilities(),
+            DocumentFileSource::Turtle(_) => self.turtle.capabilities(),
             DocumentFileSource::Ignore => self.ignore.capabilities(),
             DocumentFileSource::Unknown => self.unknown.capabilities(),
         }
@@ -1314,6 +1346,25 @@ impl RegistryVisitor<GraphqlLanguage> for SyntaxVisitor<'_> {
     fn record_rule<R>(&mut self)
     where
         R: Rule<Options: Default, Query: Queryable<Language = GraphqlLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.enabled_rules.push(RuleFilter::Rule(
+            <R::Group as RuleGroup>::NAME,
+            R::METADATA.name,
+        ))
+    }
+}
+
+impl RegistryVisitor<TurtleLanguage> for SyntaxVisitor<'_> {
+    fn record_category<C: GroupCategory<Language = TurtleLanguage>>(&mut self) {
+        if C::CATEGORY == RuleCategory::Syntax {
+            C::record_groups(self)
+        }
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = TurtleLanguage, Output: Clone>>
             + 'static,
     {
         self.enabled_rules.push(RuleFilter::Rule(
@@ -1675,6 +1726,30 @@ impl RegistryVisitor<GraphqlLanguage> for LintVisitor<'_, '_> {
     }
 }
 
+impl RegistryVisitor<TurtleLanguage> for LintVisitor<'_, '_> {
+    fn record_category<C: GroupCategory<Language = TurtleLanguage>>(&mut self) {
+        if C::CATEGORY == RuleCategory::Lint {
+            C::record_groups(self)
+        }
+    }
+
+    fn record_group<G: RuleGroup<Language = TurtleLanguage>>(&mut self) {
+        G::record_rules(self)
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = TurtleLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.push_rule::<R, <R::Query as Queryable>::Language>(
+            turtle_metadata
+                .find_rule(R::Group::NAME, R::METADATA.name)
+                .map(RuleFilter::from),
+        )
+    }
+}
+
 impl RegistryVisitor<HtmlLanguage> for LintVisitor<'_, '_> {
     fn record_category<C: GroupCategory<Language = HtmlLanguage>>(&mut self) {
         if C::CATEGORY == RuleCategory::Lint {
@@ -1869,6 +1944,22 @@ impl RegistryVisitor<GraphqlLanguage> for AssistsVisitor<'_, '_> {
     fn record_rule<R>(&mut self)
     where
         R: Rule<Options: Default, Query: Queryable<Language = GraphqlLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.push_rule::<R, <R::Query as Queryable>::Language>();
+    }
+}
+
+impl RegistryVisitor<TurtleLanguage> for AssistsVisitor<'_, '_> {
+    fn record_category<C: GroupCategory<Language = TurtleLanguage>>(&mut self) {
+        if C::CATEGORY == RuleCategory::Action {
+            C::record_groups(self)
+        }
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = TurtleLanguage, Output: Clone>>
             + 'static,
     {
         self.push_rule::<R, <R::Query as Queryable>::Language>();
