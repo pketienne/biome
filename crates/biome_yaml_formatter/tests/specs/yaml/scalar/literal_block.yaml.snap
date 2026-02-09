@@ -29,8 +29,7 @@ Line width: 80
 -----
 
 ```yaml
-content:
-	|
+content: |
   This is a literal block scalar.
   It preserves newlines.
 

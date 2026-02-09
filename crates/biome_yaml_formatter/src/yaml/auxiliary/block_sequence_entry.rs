@@ -1,6 +1,6 @@
 use crate::prelude::*;
 use biome_formatter::write;
-use biome_yaml_syntax::{AnyYamlBlockNode, YamlBlockSequenceEntry};
+use biome_yaml_syntax::{AnyYamlBlockInBlockNode, AnyYamlBlockNode, YamlBlockSequenceEntry};
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatYamlBlockSequenceEntry;
@@ -15,9 +15,55 @@ impl FormatNodeRule<YamlBlockSequenceEntry> for FormatYamlBlockSequenceEntry {
 
         if let Some(value) = node.value() {
             match &value {
-                AnyYamlBlockNode::AnyYamlBlockInBlockNode(_) => {
-                    write!(f, [hard_line_break(), block_indent(&value.format())])?;
-                }
+                AnyYamlBlockNode::AnyYamlBlockInBlockNode(inner) => match inner {
+                    // Block scalars: indicator (|/>) stays on same line as dash
+                    AnyYamlBlockInBlockNode::YamlLiteralScalar(_)
+                    | AnyYamlBlockInBlockNode::YamlFoldedScalar(_) => {
+                        write!(f, [space(), inner.format()])?;
+                    }
+                    // Block mapping: properties on same line as dash, entries indented below
+                    AnyYamlBlockInBlockNode::YamlBlockMapping(mapping) => {
+                        f.comments().mark_suppression_checked(mapping.syntax());
+                        if let Some(properties) = mapping.properties() {
+                            write!(f, [space(), properties.format()])?;
+                        }
+                        write!(
+                            f,
+                            [hard_line_break(), block_indent(&format_with(|f| {
+                                write!(
+                                    f,
+                                    [format_synthetic_token(&mapping.mapping_start_token()?)]
+                                )?;
+                                write!(f, [mapping.entries().format()])?;
+                                write!(
+                                    f,
+                                    [format_synthetic_token(&mapping.mapping_end_token()?)]
+                                )
+                            }))]
+                        )?;
+                    }
+                    // Block sequence: same pattern as block mapping
+                    AnyYamlBlockInBlockNode::YamlBlockSequence(sequence) => {
+                        f.comments().mark_suppression_checked(sequence.syntax());
+                        if let Some(properties) = sequence.properties() {
+                            write!(f, [space(), properties.format()])?;
+                        }
+                        write!(
+                            f,
+                            [hard_line_break(), block_indent(&format_with(|f| {
+                                write!(
+                                    f,
+                                    [format_synthetic_token(&sequence.sequence_start_token()?)]
+                                )?;
+                                write!(f, [sequence.entries().format()])?;
+                                write!(
+                                    f,
+                                    [format_synthetic_token(&sequence.sequence_end_token()?)]
+                                )
+                            }))]
+                        )?;
+                    }
+                },
                 _ => {
                     write!(f, [space(), value.format()])?;
                 }
