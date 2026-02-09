@@ -21,3 +21,9 @@ pub type NoLiteralTrimIssues =
     <lint::nursery::no_literal_trim_issues::NoLiteralTrimIssues as biome_analyze::Rule>::Options;
 pub type NoDuplicateTriple =
     <lint::nursery::no_duplicate_triple::NoDuplicateTriple as biome_analyze::Rule>::Options;
+pub type NoEmptyPrefixedName =
+    <lint::nursery::no_empty_prefixed_name::NoEmptyPrefixedName as biome_analyze::Rule>::Options;
+pub type NoMissingSemicolonBeforeDot =
+    <lint::nursery::no_missing_semicolon_before_dot::NoMissingSemicolonBeforeDot as biome_analyze::Rule>::Options;
+pub type UseBlanksAroundBlocks =
+    <lint::nursery::use_blanks_around_blocks::UseBlanksAroundBlocks as biome_analyze::Rule>::Options;

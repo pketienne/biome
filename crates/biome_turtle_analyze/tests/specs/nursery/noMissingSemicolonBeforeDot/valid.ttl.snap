@@ -1,0 +1,23 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: valid.ttl
+---
+# Input
+```turtle
+@prefix ex: <http://example.org/> .
+
+# Using semicolons correctly
+ex:alice ex:name "Alice" ;
+    ex:age "30" .
+
+# Different subjects with blank line separator
+ex:bob ex:name "Bob" .
+
+ex:carol ex:name "Carol" .
+
+# Same subject in separate blocks with blank line (not flagged — useGroupedSubjects handles this)
+ex:dave ex:name "Dave" .
+
+ex:dave ex:age "40" .
+
+```

@@ -1,0 +1,5 @@
+@prefix ex: <http://example.org/> .
+
+# Same subject on adjacent lines — likely missing semicolon
+ex:alice ex:name "Alice" .
+ex:alice ex:age "30" .

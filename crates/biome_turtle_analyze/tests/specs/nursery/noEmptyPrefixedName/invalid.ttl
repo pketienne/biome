@@ -1,0 +1,4 @@
+@prefix ex: <http://example.org/> .
+
+# Bare prefix without local name — likely a mistake
+ex:alice ex:knows ex: .

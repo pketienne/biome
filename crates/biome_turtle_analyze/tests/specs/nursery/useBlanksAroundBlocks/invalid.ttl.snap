@@ -1,0 +1,52 @@
+---
+source: crates/biome_turtle_analyze/tests/spec_tests.rs
+expression: invalid.ttl
+---
+# Input
+```turtle
+@prefix ex: <http://example.org/> .
+
+# Different subjects without blank line separator
+ex:alice ex:name "Alice" .
+ex:bob ex:name "Bob" .
+ex:carol ex:name "Carol" .
+
+```
+
+# Diagnostics
+```
+invalid.ttl:5:1 lint/nursery/useBlanksAroundBlocks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i Triple block for 'ex:bob' is not separated by a blank line from the previous block.
+  
+    3 │ # Different subjects without blank line separator
+    4 │ ex:alice ex:name "Alice" .
+  > 5 │ ex:bob ex:name "Bob" .
+      │ ^^^^^^^^^^^^^^^^^^^^^^
+    6 │ ex:carol ex:name "Carol" .
+    7 │ 
+  
+  i Add a blank line between triple blocks with different subjects for readability.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.ttl:6:1 lint/nursery/useBlanksAroundBlocks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i Triple block for 'ex:carol' is not separated by a blank line from the previous block.
+  
+    4 │ ex:alice ex:name "Alice" .
+    5 │ ex:bob ex:name "Bob" .
+  > 6 │ ex:carol ex:name "Carol" .
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    7 │ 
+  
+  i Add a blank line between triple blocks with different subjects for readability.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

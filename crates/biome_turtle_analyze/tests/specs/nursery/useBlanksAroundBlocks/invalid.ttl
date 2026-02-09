@@ -1,0 +1,6 @@
+@prefix ex: <http://example.org/> .
+
+# Different subjects without blank line separator
+ex:alice ex:name "Alice" .
+ex:bob ex:name "Bob" .
+ex:carol ex:name "Carol" .
