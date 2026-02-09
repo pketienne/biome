@@ -12,6 +12,12 @@
 - Only checks prefixed-name objects; skips literals, blank nodes, and full IRIs
 - Commit: `c59ec7a62f`
 
+### ~~2. `xsd:double` literal short notation~~ — DONE
+- Completed the formatter's literal short notation support (was missing `xsd:double`)
+- Converts e.g. `"4.2E9"^^xsd:double` → `4.2E9`, validates against Turtle DOUBLE grammar
+- All 4 XSD shorthand types now supported: boolean, integer, decimal, double
+- Commit: `80531b53bc`
+
 ## Remaining Work
 
 ### 1. LSP features
