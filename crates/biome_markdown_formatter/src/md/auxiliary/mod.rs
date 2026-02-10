@@ -19,7 +19,6 @@ pub(crate) mod inline_code;
 pub(crate) mod inline_emphasis;
 pub(crate) mod inline_image;
 pub(crate) mod inline_image_alt;
-pub(crate) mod inline_image_link;
 pub(crate) mod inline_image_source;
 pub(crate) mod inline_italic;
 pub(crate) mod inline_link;

@@ -169,7 +169,6 @@ MdDocument {
                         ],
                         r_paren_token: R_PAREN@53..54 ")" [] [],
                     },
-                    link: missing (optional),
                 },
             ],
             hard_line: missing (optional),
@@ -288,7 +287,6 @@ MdDocument {
               8: MD_TEXTUAL@52..53
                 0: MD_TEXTUAL_LITERAL@52..53 "g" [] []
             2: R_PAREN@53..54 ")" [] []
-          3: (empty)
       1: (empty)
   2: EOF@54..55 "" [Newline("\n")] []
 

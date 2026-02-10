@@ -852,8 +852,6 @@ fn try_parse_inline_image(p: &mut MarkdownParser) -> bool {
         p.bump_remap(R_PAREN);
         source.complete(p, MD_INLINE_IMAGE_SOURCE);
 
-        // Slot 3: MdInlineImageLink — absent for basic images
-
         m.complete(p, MD_INLINE_IMAGE);
         Ok(())
     })

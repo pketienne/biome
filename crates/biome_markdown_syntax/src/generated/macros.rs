@@ -93,10 +93,6 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::MdInlineImageAlt::new_unchecked(node) };
                     $body
                 }
-                $crate::MarkdownSyntaxKind::MD_INLINE_IMAGE_LINK => {
-                    let $pattern = unsafe { $crate::MdInlineImageLink::new_unchecked(node) };
-                    $body
-                }
                 $crate::MarkdownSyntaxKind::MD_INLINE_IMAGE_SOURCE => {
                     let $pattern = unsafe { $crate::MdInlineImageSource::new_unchecked(node) };
                     $body

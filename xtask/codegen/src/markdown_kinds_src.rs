@@ -71,7 +71,7 @@ pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
         "MD_INLINE_IMAGE",
         "MD_INLINE_IMAGE_ALT",
         "MD_INDENTED_CODE_LINE",
-        "MD_INLINE_IMAGE_LINK",
+
         "MD_INLINE_IMAGE_SOURCE",
         "MD_INDENTED_CODE_LINE_LIST",
         "MD_HARD_LINE",

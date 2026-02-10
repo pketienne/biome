@@ -304,37 +304,15 @@ pub fn md_inline_image(
     excl_token: SyntaxToken,
     alt: MdInlineImageAlt,
     source: MdInlineImageSource,
-) -> MdInlineImageBuilder {
-    MdInlineImageBuilder {
-        excl_token,
-        alt,
-        source,
-        link: None,
-    }
-}
-pub struct MdInlineImageBuilder {
-    excl_token: SyntaxToken,
-    alt: MdInlineImageAlt,
-    source: MdInlineImageSource,
-    link: Option<MdInlineImageLink>,
-}
-impl MdInlineImageBuilder {
-    pub fn with_link(mut self, link: MdInlineImageLink) -> Self {
-        self.link = Some(link);
-        self
-    }
-    pub fn build(self) -> MdInlineImage {
-        MdInlineImage::unwrap_cast(SyntaxNode::new_detached(
-            MarkdownSyntaxKind::MD_INLINE_IMAGE,
-            [
-                Some(SyntaxElement::Token(self.excl_token)),
-                Some(SyntaxElement::Node(self.alt.into_syntax())),
-                Some(SyntaxElement::Node(self.source.into_syntax())),
-                self.link
-                    .map(|token| SyntaxElement::Node(token.into_syntax())),
-            ],
-        ))
-    }
+) -> MdInlineImage {
+    MdInlineImage::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_INLINE_IMAGE,
+        [
+            Some(SyntaxElement::Token(excl_token)),
+            Some(SyntaxElement::Node(alt.into_syntax())),
+            Some(SyntaxElement::Node(source.into_syntax())),
+        ],
+    ))
 }
 pub fn md_inline_image_alt(
     l_brack_token: SyntaxToken,
@@ -347,20 +325,6 @@ pub fn md_inline_image_alt(
             Some(SyntaxElement::Token(l_brack_token)),
             Some(SyntaxElement::Node(content.into_syntax())),
             Some(SyntaxElement::Token(r_brack_token)),
-        ],
-    ))
-}
-pub fn md_inline_image_link(
-    l_paren_token: SyntaxToken,
-    content: MdInlineItemList,
-    r_paren_token: SyntaxToken,
-) -> MdInlineImageLink {
-    MdInlineImageLink::unwrap_cast(SyntaxNode::new_detached(
-        MarkdownSyntaxKind::MD_INLINE_IMAGE_LINK,
-        [
-            Some(SyntaxElement::Token(l_paren_token)),
-            Some(SyntaxElement::Node(content.into_syntax())),
-            Some(SyntaxElement::Token(r_paren_token)),
         ],
     ))
 }

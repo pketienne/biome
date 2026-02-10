@@ -230,25 +230,17 @@ MdInlineImage =
 	'!'
 	alt: MdInlineImageAlt
 	source: MdInlineImageSource
-	link: MdInlineImageLink?
 
-// [![alt](image)](link)
-//   ^^^^^
+// ![alt](image)
+//   ^^^
 MdInlineImageAlt =
 	'['
 	content: MdInlineItemList
 	']'
 
-// [![alt](image)](link)
-//        ^^^^^^^
+// ![alt](image)
+//        ^^^^^
 MdInlineImageSource =
-	'('
-	content: MdInlineItemList
-	')'
-
-// [![alt](image)](link)
-//                ^^^^^^
-MdInlineImageLink =
 	'('
 	content: MdInlineItemList
 	')'
