@@ -27,7 +27,12 @@ block_mapping.yaml:2:3 assist/source/useFlowStyle  FIXABLE  ━━━━━━�
   
   i Safe fix: Convert to flow style.
   
-    2 │ ··{host:·localhost,·port:·8080}host:·localhost
-      │   +++++++++++++++++++++++++++++               
+    1 1 │   config:
+    2   │ - ··host:·localhost
+    3   │ - ··port:·8080
+      2 │ + ··{host:·localhost,·port:·8080}·
+      3 │ + ···
+    4 4 │   
+  
 
 ```

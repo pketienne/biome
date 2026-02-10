@@ -29,7 +29,7 @@ flow_sequence.yaml:1:7 assist/source/useBlockStyle  FIXABLE  ━━━━━━�
       1 │ + tags:·
       2 │ + ··-·alpha
       3 │ + ··-·beta
-      4 │ + ··-·gamma[alpha,·beta,·gamma]
+      4 │ + ··-·gamma··
     2 5 │   empty: []
     3 6 │   single: [one]
   
@@ -51,8 +51,12 @@ flow_sequence.yaml:2:8 assist/source/useBlockStyle  FIXABLE  ━━━━━━�
   
   i Safe fix: Convert to block style.
   
-    2 │ empty:·[][]
-      │        ++  
+    1 1 │   tags: [alpha, beta, gamma]
+    2   │ - empty:·[]
+      2 │ + empty:·[]
+    3 3 │   single: [one]
+    4 4 │   
+  
 
 ```
 
@@ -75,7 +79,7 @@ flow_sequence.yaml:3:9 assist/source/useBlockStyle  FIXABLE  ━━━━━━�
     2 2 │   empty: []
     3   │ - single:·[one]
       3 │ + single:·
-      4 │ + ··-·one[one]
+      4 │ + ··-·one
     4 5 │   
   
 

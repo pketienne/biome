@@ -3,7 +3,7 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::category;
-use biome_rowan::{AstNode, AstNodeList, BatchMutationExt, TextRange};
+use biome_rowan::{AstNode, AstNodeList, BatchMutationExt, Direction, TextRange};
 use biome_yaml_syntax::{
     AnyYamlBlockMapEntry, YamlBlockMapping, YamlBlockSequence, YamlLanguage, YamlRoot,
     YamlSyntaxKind, YamlSyntaxToken,
@@ -56,6 +56,12 @@ impl Rule for UseFlowStyle {
         for node in root.syntax().descendants() {
             match node.kind() {
                 YamlSyntaxKind::YAML_BLOCK_MAPPING => {
+                    // Skip if this mapping is nested inside another block mapping/sequence
+                    // (i.e., it's a value in a parent collection, not a top-level collection)
+                    if is_nested_block_collection(&node) {
+                        continue;
+                    }
+
                     // Only convert flat mappings (no nested block/flow nodes as values)
                     if let Some(mapping) = YamlBlockMapping::cast(node) {
                         let has_nested = mapping.entries().iter().any(|entry| {
@@ -86,6 +92,11 @@ impl Rule for UseFlowStyle {
                     }
                 }
                 YamlSyntaxKind::YAML_BLOCK_SEQUENCE => {
+                    // Skip if nested inside another block collection
+                    if is_nested_block_collection(&node) {
+                        continue;
+                    }
+
                     if let Some(seq) = YamlBlockSequence::cast(node) {
                         // Only convert flat sequences (entries are simple scalars)
                         let has_nested = seq.syntax().descendants().skip(1).any(|d| {
@@ -150,14 +161,24 @@ impl Rule for UseFlowStyle {
                 }
             };
 
-            let first_token = node
-                .children_with_tokens()
-                .filter_map(|c| c.into_token())
-                .next()?;
+            // Collect all tokens in the block node
+            let tokens: Vec<_> = node.descendants_tokens(Direction::Next).collect();
 
+            if tokens.is_empty() {
+                return None;
+            }
+
+            // Replace the first token with the flow text
+            let first_token = tokens[0].clone();
             let new_token =
                 YamlSyntaxToken::new_detached(first_token.kind(), &flow_text, [], []);
             mutation.replace_token_transfer_trivia(first_token, new_token);
+
+            // Remove all subsequent tokens
+            for token in &tokens[1..] {
+                let empty = YamlSyntaxToken::new_detached(token.kind(), "", [], []);
+                mutation.replace_token_transfer_trivia(token.clone(), empty);
+            }
 
             return Some(RuleAction::new(
                 ctx.metadata().action_category(ctx.category(), ctx.group()),
@@ -215,4 +236,25 @@ fn block_sequence_to_flow(seq: &YamlBlockSequence) -> Option<String> {
     }
 
     Some(format!("[{}]", items.join(", ")))
+}
+
+/// Check if a block collection is deeply nested (2+ ancestor block collections).
+/// A collection that is the direct value of a top-level key (depth 1) is fine
+/// to convert. Only skip collections nested 2+ levels deep.
+fn is_nested_block_collection(node: &biome_yaml_syntax::YamlSyntaxNode) -> bool {
+    let mut depth = 0;
+    let mut parent = node.parent();
+    while let Some(p) = parent {
+        if matches!(
+            p.kind(),
+            YamlSyntaxKind::YAML_BLOCK_MAPPING | YamlSyntaxKind::YAML_BLOCK_SEQUENCE
+        ) {
+            depth += 1;
+            if depth >= 2 {
+                return true;
+            }
+        }
+        parent = p.parent();
+    }
+    false
 }

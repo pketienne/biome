@@ -29,7 +29,14 @@ block_sequence.yaml:2:3 assist/source/useFlowStyle  FIXABLE  ━━━━━━�
   
   i Safe fix: Convert to flow style.
   
-    2 │ ··[]-·alpha
-      │   ++       
+    1 1 │   tags:
+    2   │ - ··-·alpha
+    3   │ - ··-·beta
+    4   │ - ··-·gamma
+      2 │ + ··[]·
+      3 │ + ···
+      4 │ + ···
+    5 5 │   
+  
 
 ```

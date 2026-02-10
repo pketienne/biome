@@ -3,7 +3,7 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::category;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange};
+use biome_rowan::{AstNode, BatchMutationExt, Direction, TextRange};
 use biome_yaml_syntax::{YamlLanguage, YamlRoot, YamlSyntaxKind, YamlSyntaxToken};
 
 declare_source_rule! {
@@ -124,31 +124,24 @@ impl Rule for UseBlockStyle {
                 FlowKind::Sequence => flow_sequence_to_block(&text)?,
             };
 
-            // Replace the first token of the flow node with the block text
-            let first_token = node
-                .children_with_tokens()
-                .filter_map(|c| c.into_token())
-                .next()?;
+            // Collect all tokens in the flow node
+            let tokens: Vec<_> = node.descendants_tokens(Direction::Next).collect();
 
-            // We need to replace the entire flow node text. Replace the first token
-            // and remove subsequent tokens by replacing them with empty tokens.
-            // Actually, the simplest approach: replace the whole node's text representation.
-            // Find the token covering the start of the flow node.
-            let covering_token = node
-                .covering_element(TextRange::new(state.range.start(), state.range.start()))
-                .into_token()
-                .unwrap_or(first_token);
+            if tokens.is_empty() {
+                return None;
+            }
 
-            // Build new text that replaces the full flow node
-            let original_full = covering_token.text().to_string();
-            let trimmed_start = node.text_trimmed_range().start()
-                - covering_token.text_trimmed_range().start();
-            let prefix = &original_full[..trimmed_start.into()];
-            let new_full = format!("{prefix}{block_text}");
-
+            // Replace the first token with the block text
+            let first_token = tokens[0].clone();
             let new_token =
-                YamlSyntaxToken::new_detached(covering_token.kind(), &new_full, [], []);
-            mutation.replace_token_transfer_trivia(covering_token, new_token);
+                YamlSyntaxToken::new_detached(first_token.kind(), &block_text, [], []);
+            mutation.replace_token_transfer_trivia(first_token, new_token);
+
+            // Remove all subsequent tokens by replacing with empty tokens
+            for token in &tokens[1..] {
+                let empty = YamlSyntaxToken::new_detached(token.kind(), "", [], []);
+                mutation.replace_token_transfer_trivia(token.clone(), empty);
+            }
 
             return Some(RuleAction::new(
                 ctx.metadata().action_category(ctx.category(), ctx.group()),

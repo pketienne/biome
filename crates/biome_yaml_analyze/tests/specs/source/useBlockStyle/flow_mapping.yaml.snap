@@ -28,7 +28,7 @@ flow_mapping.yaml:1:9 assist/source/useBlockStyle  FIXABLE  ━━━━━━�
     1   │ - config:·{host:·localhost,·port:·8080}
       1 │ + config:·
       2 │ + ··host:·localhost
-      3 │ + ··port:·8080{host:·localhost,·port:·8080}
+      3 │ + ··port:·8080···
     2 4 │   empty: {}
     3 5 │   simple: {a: 1}
   
@@ -50,8 +50,12 @@ flow_mapping.yaml:2:8 assist/source/useBlockStyle  FIXABLE  ━━━━━━�
   
   i Safe fix: Convert to block style.
   
-    2 │ empty:·{}{}
-      │        ++  
+    1 1 │   config: {host: localhost, port: 8080}
+    2   │ - empty:·{}
+      2 │ + empty:·{}
+    3 3 │   simple: {a: 1}
+    4 4 │   
+  
 
 ```
 
@@ -74,7 +78,7 @@ flow_mapping.yaml:3:9 assist/source/useBlockStyle  FIXABLE  ━━━━━━�
     2 2 │   empty: {}
     3   │ - simple:·{a:·1}
       3 │ + simple:·
-      4 │ + ··a:·1{a:·1}
+      4 │ + ··a:·1·
     4 5 │   
   
 

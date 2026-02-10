@@ -2,6 +2,8 @@ mod binding;
 mod builder;
 mod model;
 mod reference;
+#[cfg(test)]
+mod tests;
 
 use biome_rowan::AstNode;
 use biome_yaml_syntax::YamlRoot;

@@ -3,8 +3,8 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
-use biome_yaml_syntax::{YamlLanguage, YamlRoot, YamlSyntaxToken};
+use biome_rowan::{AstNode, BatchMutationExt, Direction, TextRange, TextSize, TriviaPieceKind};
+use biome_yaml_syntax::{YamlLanguage, YamlRoot};
 
 declare_lint_rule! {
     /// Enforce a space after the `#` character in comments.
@@ -101,41 +101,108 @@ impl Rule for UseCommentSpacing {
         let root = ctx.query();
         let mut mutation = ctx.root().begin();
 
-        // Find the token covering the comment
-        let token = root
-            .syntax()
-            .covering_element(TextRange::new(state.start(), state.start()))
-            .into_token()?;
-
-        let text = token.text().to_string();
-        // Insert a space after each '#' that is immediately followed by non-space
-        let mut result = String::with_capacity(text.len() + 1);
-        let mut chars = text.chars().peekable();
-        while let Some(c) = chars.next() {
-            result.push(c);
-            if c == '#' {
-                if let Some(&next) = chars.peek() {
-                    if next != ' ' && next != '\n' && next != '!' {
-                        result.push(' ');
-                    }
+        // Comments are trivia in YAML, so covering_element() won't return them.
+        // We need to find the token whose trivia contains the comment at `state`.
+        for token in root.syntax().descendants_tokens(Direction::Next) {
+            // Check leading trivia
+            let mut found_in_leading = false;
+            for piece in token.leading_trivia().pieces() {
+                if piece.kind() == TriviaPieceKind::SingleLineComment
+                    && piece.text_range().start() <= state.start()
+                    && piece.text_range().end() >= state.end()
+                {
+                    found_in_leading = true;
+                    break;
                 }
+            }
+
+            if found_in_leading {
+                let new_leading: Vec<(TriviaPieceKind, String)> = token
+                    .leading_trivia()
+                    .pieces()
+                    .map(|piece| {
+                        if piece.kind() == TriviaPieceKind::SingleLineComment
+                            && piece.text_range().start() <= state.start()
+                            && piece.text_range().end() >= state.end()
+                        {
+                            (piece.kind(), fix_comment_spacing(piece.text()))
+                        } else {
+                            (piece.kind(), piece.text().to_string())
+                        }
+                    })
+                    .collect();
+
+                let trivia_refs: Vec<(TriviaPieceKind, &str)> = new_leading
+                    .iter()
+                    .map(|(k, s)| (*k, s.as_str()))
+                    .collect();
+                let new_token = token.with_leading_trivia(trivia_refs.iter().copied());
+                mutation.replace_token_discard_trivia(token, new_token);
+
+                return Some(RuleAction::new(
+                    ctx.metadata().action_category(ctx.category(), ctx.group()),
+                    ctx.metadata().applicability(),
+                    markup! { "Add space after '#'." }.to_owned(),
+                    mutation,
+                ));
+            }
+
+            // Check trailing trivia
+            let mut found_in_trailing = false;
+            for piece in token.trailing_trivia().pieces() {
+                if piece.kind() == TriviaPieceKind::SingleLineComment
+                    && piece.text_range().start() <= state.start()
+                    && piece.text_range().end() >= state.end()
+                {
+                    found_in_trailing = true;
+                    break;
+                }
+            }
+
+            if found_in_trailing {
+                let new_trailing: Vec<(TriviaPieceKind, String)> = token
+                    .trailing_trivia()
+                    .pieces()
+                    .map(|piece| {
+                        if piece.kind() == TriviaPieceKind::SingleLineComment
+                            && piece.text_range().start() <= state.start()
+                            && piece.text_range().end() >= state.end()
+                        {
+                            (piece.kind(), fix_comment_spacing(piece.text()))
+                        } else {
+                            (piece.kind(), piece.text().to_string())
+                        }
+                    })
+                    .collect();
+
+                let trivia_refs: Vec<(TriviaPieceKind, &str)> = new_trailing
+                    .iter()
+                    .map(|(k, s)| (*k, s.as_str()))
+                    .collect();
+                let new_token = token.with_trailing_trivia(trivia_refs.iter().copied());
+                mutation.replace_token_discard_trivia(token, new_token);
+
+                return Some(RuleAction::new(
+                    ctx.metadata().action_category(ctx.category(), ctx.group()),
+                    ctx.metadata().applicability(),
+                    markup! { "Add space after '#'." }.to_owned(),
+                    mutation,
+                ));
             }
         }
 
-        if result == text {
-            return None;
-        }
-
-        let new_token = YamlSyntaxToken::new_detached(token.kind(), &result, [], []);
-        mutation.replace_token_transfer_trivia(token, new_token);
-
-        Some(RuleAction::new(
-            ctx.metadata().action_category(ctx.category(), ctx.group()),
-            ctx.metadata().applicability(),
-            markup! { "Add space after '#'." }.to_owned(),
-            mutation,
-        ))
+        None
     }
+}
+
+/// Insert a space after `#` in a comment trivia piece if missing.
+fn fix_comment_spacing(text: &str) -> String {
+    if let Some(rest) = text.strip_prefix('#') {
+        if !rest.is_empty() && !rest.starts_with(' ') && !rest.starts_with('!') {
+            return format!("# {rest}");
+        }
+    }
+    text.to_string()
 }
 
 /// Find the position of an inline comment `#` that is not inside a string.

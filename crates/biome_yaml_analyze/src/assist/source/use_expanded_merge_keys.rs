@@ -3,7 +3,7 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::category;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange};
+use biome_rowan::{AstNode, BatchMutationExt, Direction, TextRange};
 use biome_yaml_semantic::semantic_model;
 use biome_yaml_syntax::{YamlLanguage, YamlRoot, YamlSyntaxKind, YamlSyntaxToken};
 
@@ -109,16 +109,43 @@ impl Rule for UseExpandedMergeKeys {
                 None => continue,
             };
 
-            // Navigate: anchor_property → properties wrapper → value node (mapping)
-            let value_node = match anchor_syntax.parent().and_then(|p| p.parent()) {
-                Some(n) => n,
-                None => continue,
-            };
-
-            // Find the block mapping under the value node
-            let mapping = value_node.descendants().find(|d| {
-                d.kind() == YamlSyntaxKind::YAML_BLOCK_MAPPING
-            });
+            // Walk up from the anchor property to find its sibling block mapping.
+            // The tree structure varies, so we walk ancestors until we find a node
+            // whose children include a YAML_BLOCK_MAPPING.
+            let mut mapping = None;
+            let mut current = Some(anchor_syntax.clone());
+            while let Some(node) = current {
+                // Check siblings at this level
+                if let Some(parent) = node.parent() {
+                    for child in parent.children() {
+                        if child.kind() == YamlSyntaxKind::YAML_BLOCK_MAPPING {
+                            mapping = Some(child);
+                            break;
+                        }
+                    }
+                    if mapping.is_some() {
+                        break;
+                    }
+                    // Also check descendants of sibling nodes (e.g., through indented blocks)
+                    for child in parent.children() {
+                        if child.text_trimmed_range() != anchor_syntax.text_trimmed_range()
+                        {
+                            if let Some(m) = child.descendants().find(|d| {
+                                d.kind() == YamlSyntaxKind::YAML_BLOCK_MAPPING
+                            }) {
+                                mapping = Some(m);
+                                break;
+                            }
+                        }
+                    }
+                    if mapping.is_some() {
+                        break;
+                    }
+                    current = Some(parent);
+                } else {
+                    break;
+                }
+            }
 
             let mapping = match mapping {
                 Some(m) => m,
@@ -174,11 +201,15 @@ impl Rule for UseExpandedMergeKeys {
                 continue;
             }
 
-            let first_token = node
-                .children_with_tokens()
-                .filter_map(|c| c.into_token())
-                .next()?;
+            // Collect all tokens in the merge entry node
+            let tokens: Vec<_> = node.descendants_tokens(Direction::Next).collect();
 
+            if tokens.is_empty() {
+                return None;
+            }
+
+            // Replace the first token with the expanded text
+            let first_token = tokens[0].clone();
             let new_token = YamlSyntaxToken::new_detached(
                 first_token.kind(),
                 &state.expanded_text,
@@ -186,6 +217,12 @@ impl Rule for UseExpandedMergeKeys {
                 [],
             );
             mutation.replace_token_transfer_trivia(first_token, new_token);
+
+            // Remove all subsequent tokens
+            for token in &tokens[1..] {
+                let empty = YamlSyntaxToken::new_detached(token.kind(), "", [], []);
+                mutation.replace_token_transfer_trivia(token.clone(), empty);
+            }
 
             return Some(RuleAction::new(
                 ctx.metadata().action_category(ctx.category(), ctx.group()),

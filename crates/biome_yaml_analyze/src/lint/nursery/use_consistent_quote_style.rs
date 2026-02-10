@@ -122,71 +122,93 @@ impl Rule for UseConsistentQuoteStyle {
         let mut mutation = ctx.root().begin();
         let preferred = ctx.options().preferred_quote();
 
-        for node in root.syntax().descendants() {
-            if node.text_trimmed_range() != *state {
-                continue;
+        // Use covering_element to find the node at the state range directly
+        let element = root.syntax().covering_element(*state);
+        let node = match element {
+            biome_rowan::NodeOrToken::Node(n) => n,
+            biome_rowan::NodeOrToken::Token(t) => t.parent()?,
+        };
+
+        // Walk up to find the scalar node if we landed on a child
+        let scalar_node = node
+            .ancestors()
+            .find(|n| {
+                matches!(
+                    n.kind(),
+                    biome_yaml_syntax::YamlSyntaxKind::YAML_SINGLE_QUOTED_SCALAR
+                        | biome_yaml_syntax::YamlSyntaxKind::YAML_DOUBLE_QUOTED_SCALAR
+                )
+            })
+            .or_else(|| {
+                // The node itself might be the scalar
+                if matches!(
+                    node.kind(),
+                    biome_yaml_syntax::YamlSyntaxKind::YAML_SINGLE_QUOTED_SCALAR
+                        | biome_yaml_syntax::YamlSyntaxKind::YAML_DOUBLE_QUOTED_SCALAR
+                ) {
+                    Some(node.clone())
+                } else {
+                    None
+                }
+            })?;
+
+        match preferred {
+            PreferredQuote::Double => {
+                let scalar = biome_yaml_syntax::YamlSingleQuotedScalar::cast(scalar_node)?;
+                let token = scalar.value_token().ok()?;
+                let text = token.text_trimmed();
+
+                // Convert 'content' to "content"
+                let inner = &text[1..text.len() - 1];
+                // In single-quoted YAML, '' is an escaped single quote
+                let inner = inner.replace("''", "'");
+                // Escape any double quotes in content
+                let inner = inner.replace('"', "\\\"");
+                let new_text = format!("\"{inner}\"");
+
+                let new_token = biome_yaml_syntax::YamlSyntaxToken::new_detached(
+                    token.kind(),
+                    &new_text,
+                    [],
+                    [],
+                );
+                mutation.replace_token_transfer_trivia(token, new_token);
+
+                Some(RuleAction::new(
+                    ctx.metadata().action_category(ctx.category(), ctx.group()),
+                    ctx.metadata().applicability(),
+                    markup! { "Convert to double quotes." }.to_owned(),
+                    mutation,
+                ))
             }
+            PreferredQuote::Single => {
+                let scalar = biome_yaml_syntax::YamlDoubleQuotedScalar::cast(scalar_node)?;
+                let token = scalar.value_token().ok()?;
+                let text = token.text_trimmed();
 
-            match preferred {
-                PreferredQuote::Double => {
-                    let scalar = biome_yaml_syntax::YamlSingleQuotedScalar::cast(node)?;
-                    let token = scalar.value_token().ok()?;
-                    let text = token.text_trimmed();
+                // Convert "content" to 'content'
+                let inner = &text[1..text.len() - 1];
+                // Unescape double-quote escapes
+                let inner = inner.replace("\\\"", "\"");
+                // Escape single quotes for single-quoted YAML ('' represents ')
+                let inner = inner.replace('\'', "''");
+                let new_text = format!("'{inner}'");
 
-                    // Convert 'content' to "content"
-                    let inner = &text[1..text.len() - 1];
-                    // In single-quoted YAML, '' is an escaped single quote
-                    let inner = inner.replace("''", "'");
-                    // Escape any double quotes in content
-                    let inner = inner.replace('"', "\\\"");
-                    let new_text = format!("\"{inner}\"");
+                let new_token = biome_yaml_syntax::YamlSyntaxToken::new_detached(
+                    token.kind(),
+                    &new_text,
+                    [],
+                    [],
+                );
+                mutation.replace_token_transfer_trivia(token, new_token);
 
-                    let new_token = biome_yaml_syntax::YamlSyntaxToken::new_detached(
-                        token.kind(),
-                        &new_text,
-                        [],
-                        [],
-                    );
-                    mutation.replace_token_transfer_trivia(token, new_token);
-
-                    return Some(RuleAction::new(
-                        ctx.metadata().action_category(ctx.category(), ctx.group()),
-                        ctx.metadata().applicability(),
-                        markup! { "Convert to double quotes." }.to_owned(),
-                        mutation,
-                    ));
-                }
-                PreferredQuote::Single => {
-                    let scalar = biome_yaml_syntax::YamlDoubleQuotedScalar::cast(node)?;
-                    let token = scalar.value_token().ok()?;
-                    let text = token.text_trimmed();
-
-                    // Convert "content" to 'content'
-                    let inner = &text[1..text.len() - 1];
-                    // Unescape double-quote escapes
-                    let inner = inner.replace("\\\"", "\"");
-                    // Escape single quotes for single-quoted YAML ('' represents ')
-                    let inner = inner.replace('\'', "''");
-                    let new_text = format!("'{inner}'");
-
-                    let new_token = biome_yaml_syntax::YamlSyntaxToken::new_detached(
-                        token.kind(),
-                        &new_text,
-                        [],
-                        [],
-                    );
-                    mutation.replace_token_transfer_trivia(token, new_token);
-
-                    return Some(RuleAction::new(
-                        ctx.metadata().action_category(ctx.category(), ctx.group()),
-                        ctx.metadata().applicability(),
-                        markup! { "Convert to single quotes." }.to_owned(),
-                        mutation,
-                    ));
-                }
+                Some(RuleAction::new(
+                    ctx.metadata().action_category(ctx.category(), ctx.group()),
+                    ctx.metadata().applicability(),
+                    markup! { "Convert to single quotes." }.to_owned(),
+                    mutation,
+                ))
             }
         }
-
-        None
     }
 }
