@@ -98,7 +98,7 @@ AnyCodeBlock =
 // ^^^^^^^^
 // The space before "code" is intentional.
 MdIndentCodeBlock =
-	lines: MdIndentedCodeLineList
+	content: MdInlineItemList
 
 MdIndentedCodeLineList = MdIndentedCodeLine*
 
@@ -121,9 +121,7 @@ MdCodeNameList = MdTextual*
 // html block
 MdHtmlBlock = MdTextual
 
-MdLinkBlock = label: MdTextual
-                url: MdTextual
-                title: MdTextual?
+MdLinkBlock = content: MdInlineItemList
 
 MdQuote = AnyMdBlock
 

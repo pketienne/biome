@@ -54,6 +54,11 @@ pub(crate) fn parse_any_block(p: &mut MarkdownParser) {
             let para = parse_paragraph(p);
             maybe_wrap_setext_header(p, para);
         }
+    } else if at_link_definition(p) {
+        if !try_parse_link_definition(p) {
+            let para = parse_paragraph(p);
+            maybe_wrap_setext_header(p, para);
+        }
     } else {
         let para = parse_paragraph(p);
         // Check if this paragraph is followed by a setext underline (=== or ---)
@@ -338,12 +343,34 @@ fn parse_order_bullet(p: &mut MarkdownParser) {
 }
 
 pub(crate) fn at_indent_code_block(p: &mut MarkdownParser) -> bool {
-    p.before_whitespace_count() > 4
+    p.before_whitespace_count() >= 4
 }
 
 pub(crate) fn parse_indent_code_block(p: &mut MarkdownParser) {
-    // Stub: treat as paragraph
-    let _para = parse_paragraph(p);
+    let m = p.start();
+    let content = p.start();
+    let mut first = true;
+
+    while !p.at(T![EOF]) {
+        if !first && p.has_preceding_line_break() {
+            // Blank lines are allowed inside indented code blocks,
+            // but stop if next non-blank line has < 4 indent
+            if p.has_preceding_blank_line() {
+                if p.before_whitespace_count() < 4 {
+                    break;
+                }
+            } else if p.before_whitespace_count() < 4 {
+                break;
+            }
+        }
+        first = false;
+        let textual = p.start();
+        p.bump_any();
+        textual.complete(p, MD_TEXTUAL);
+    }
+
+    content.complete(p, MD_INLINE_ITEM_LIST);
+    m.complete(p, MD_INDENT_CODE_BLOCK);
 }
 
 pub(crate) fn parse_paragraph(p: &mut MarkdownParser) -> biome_parser::CompletedMarker {
@@ -870,6 +897,68 @@ fn parse_table_row(p: &mut MarkdownParser) {
 
     content.complete(p, MD_INLINE_ITEM_LIST);
     row.complete(p, MD_TABLE_ROW);
+}
+
+// === Link Reference Definitions ===
+
+/// Quick check: the current token is `[` with at most 3 spaces of indentation.
+fn at_link_definition(p: &mut MarkdownParser) -> bool {
+    p.cur() == MD_TEXTUAL_LITERAL
+        && p.cur_text() == "["
+        && p.before_whitespace_count() <= 3
+}
+
+/// Non-destructive lookahead: check if the current line matches `[label]:`.
+/// Always rewinds regardless of result.
+fn is_link_definition_line(p: &mut MarkdownParser) -> bool {
+    let mut found = false;
+    let _ = try_parse(p, |p| {
+        // Skip past [
+        p.bump_any();
+        let mut first = true;
+        // Find ] on same line
+        while !p.at(T![EOF]) && (first || !p.has_preceding_line_break()) {
+            first = false;
+            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "]" {
+                p.bump_any();
+                // Must be followed by :
+                if !p.at(T![EOF])
+                    && !p.has_preceding_line_break()
+                    && p.cur() == MD_TEXTUAL_LITERAL
+                    && p.cur_text() == ":"
+                {
+                    found = true;
+                }
+                break;
+            }
+            p.bump_any();
+        }
+        Err::<(), ()>(()) // Always rewind
+    });
+    found
+}
+
+/// Try to parse a link reference definition: `[label]: url "title"`.
+/// Returns true if successfully parsed into an MdLinkBlock node.
+fn try_parse_link_definition(p: &mut MarkdownParser) -> bool {
+    try_parse(p, |p| {
+        if !is_link_definition_line(p) {
+            return Err(());
+        }
+        let m = p.start();
+        let content = p.start();
+        let mut first = true;
+        while !p.at(T![EOF]) && (first || !p.has_preceding_line_break()) {
+            first = false;
+            let textual = p.start();
+            p.bump_any();
+            textual.complete(p, MD_TEXTUAL);
+        }
+        content.complete(p, MD_INLINE_ITEM_LIST);
+        m.complete(p, MD_LINK_BLOCK);
+        Ok(())
+    })
+    .is_ok()
 }
 
 // === Setext Headers ===

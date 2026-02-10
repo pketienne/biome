@@ -124,7 +124,7 @@ impl MdIndent {
     }
 }
 impl MdIndentCodeBlock {
-    pub fn with_lines(self, element: MdIndentedCodeLineList) -> Self {
+    pub fn with_content(self, element: MdInlineItemList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
@@ -350,23 +350,11 @@ impl MdInlineStrikethrough {
     }
 }
 impl MdLinkBlock {
-    pub fn with_label(self, element: MdTextual) -> Self {
+    pub fn with_content(self, element: MdInlineItemList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
-    }
-    pub fn with_url(self, element: MdTextual) -> Self {
-        Self::unwrap_cast(
-            self.syntax
-                .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
-        )
-    }
-    pub fn with_title(self, element: Option<MdTextual>) -> Self {
-        Self::unwrap_cast(self.syntax.splice_slots(
-            2usize..=2usize,
-            once(element.map(|element| element.into_syntax().into())),
-        ))
     }
 }
 impl MdOrderBullet {

@@ -118,10 +118,10 @@ pub fn md_indent(value_token: SyntaxToken) -> MdIndent {
         [Some(SyntaxElement::Token(value_token))],
     ))
 }
-pub fn md_indent_code_block(lines: MdIndentedCodeLineList) -> MdIndentCodeBlock {
+pub fn md_indent_code_block(content: MdInlineItemList) -> MdIndentCodeBlock {
     MdIndentCodeBlock::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_INDENT_CODE_BLOCK,
-        [Some(SyntaxElement::Node(lines.into_syntax()))],
+        [Some(SyntaxElement::Node(content.into_syntax()))],
     ))
 }
 pub fn md_indented_code_line(indentation: MdIndent, content: MdTextual) -> MdIndentedCodeLine {
@@ -287,34 +287,11 @@ pub fn md_inline_strikethrough(
         ],
     ))
 }
-pub fn md_link_block(label: MdTextual, url: MdTextual) -> MdLinkBlockBuilder {
-    MdLinkBlockBuilder {
-        label,
-        url,
-        title: None,
-    }
-}
-pub struct MdLinkBlockBuilder {
-    label: MdTextual,
-    url: MdTextual,
-    title: Option<MdTextual>,
-}
-impl MdLinkBlockBuilder {
-    pub fn with_title(mut self, title: MdTextual) -> Self {
-        self.title = Some(title);
-        self
-    }
-    pub fn build(self) -> MdLinkBlock {
-        MdLinkBlock::unwrap_cast(SyntaxNode::new_detached(
-            MarkdownSyntaxKind::MD_LINK_BLOCK,
-            [
-                Some(SyntaxElement::Node(self.label.into_syntax())),
-                Some(SyntaxElement::Node(self.url.into_syntax())),
-                self.title
-                    .map(|token| SyntaxElement::Node(token.into_syntax())),
-            ],
-        ))
-    }
+pub fn md_link_block(content: MdInlineItemList) -> MdLinkBlock {
+    MdLinkBlock::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_LINK_BLOCK,
+        [Some(SyntaxElement::Node(content.into_syntax()))],
+    ))
 }
 pub fn md_order_bullet(marker_token: SyntaxToken, content: MdInlineItemList) -> MdOrderBullet {
     MdOrderBullet::unwrap_cast(SyntaxNode::new_detached(

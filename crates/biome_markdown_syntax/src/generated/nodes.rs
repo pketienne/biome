@@ -391,10 +391,10 @@ impl MdIndentCodeBlock {
     }
     pub fn as_fields(&self) -> MdIndentCodeBlockFields {
         MdIndentCodeBlockFields {
-            lines: self.lines(),
+            content: self.content(),
         }
     }
-    pub fn lines(&self) -> MdIndentedCodeLineList {
+    pub fn content(&self) -> MdInlineItemList {
         support::list(&self.syntax, 0usize)
     }
 }
@@ -408,7 +408,7 @@ impl Serialize for MdIndentCodeBlock {
 }
 #[derive(Serialize)]
 pub struct MdIndentCodeBlockFields {
-    pub lines: MdIndentedCodeLineList,
+    pub content: MdInlineItemList,
 }
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct MdIndentedCodeLine {
@@ -891,19 +891,11 @@ impl MdLinkBlock {
     }
     pub fn as_fields(&self) -> MdLinkBlockFields {
         MdLinkBlockFields {
-            label: self.label(),
-            url: self.url(),
-            title: self.title(),
+            content: self.content(),
         }
     }
-    pub fn label(&self) -> SyntaxResult<MdTextual> {
-        support::required_node(&self.syntax, 0usize)
-    }
-    pub fn url(&self) -> SyntaxResult<MdTextual> {
-        support::required_node(&self.syntax, 1usize)
-    }
-    pub fn title(&self) -> Option<MdTextual> {
-        support::node(&self.syntax, 2usize)
+    pub fn content(&self) -> MdInlineItemList {
+        support::list(&self.syntax, 0usize)
     }
 }
 impl Serialize for MdLinkBlock {
@@ -916,9 +908,7 @@ impl Serialize for MdLinkBlock {
 }
 #[derive(Serialize)]
 pub struct MdLinkBlockFields {
-    pub label: SyntaxResult<MdTextual>,
-    pub url: SyntaxResult<MdTextual>,
-    pub title: Option<MdTextual>,
+    pub content: MdInlineItemList,
 }
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct MdOrderBullet {
@@ -1969,7 +1959,7 @@ impl std::fmt::Debug for MdIndentCodeBlock {
         let result = if current_depth < 16 {
             DEPTH.set(current_depth + 1);
             f.debug_struct("MdIndentCodeBlock")
-                .field("lines", &self.lines())
+                .field("content", &self.content())
                 .finish()
         } else {
             f.debug_struct("MdIndentCodeBlock").finish()
@@ -2554,9 +2544,7 @@ impl std::fmt::Debug for MdLinkBlock {
         let result = if current_depth < 16 {
             DEPTH.set(current_depth + 1);
             f.debug_struct("MdLinkBlock")
-                .field("label", &support::DebugSyntaxResult(self.label()))
-                .field("url", &support::DebugSyntaxResult(self.url()))
-                .field("title", &support::DebugOptionalElement(self.title()))
+                .field("content", &self.content())
                 .finish()
         } else {
             f.debug_struct("MdLinkBlock").finish()
