@@ -357,7 +357,73 @@ Two patterns dominate:
 
 ---
 
-## 8. Recommended Next Steps
+## 8. Spec Grounding: YAML 1.1 vs 1.2
+
+The YAML specification has two major versions in active use. Tools target different versions, and several key features exist specifically because the specs diverge. Understanding this is critical for Biome's design decisions.
+
+### 8.1 Key Spec Differences
+
+| Area | YAML 1.1 (2005) | YAML 1.2 (2009/2021) | Impact |
+|------|-----------------|----------------------|--------|
+| **Boolean values** | `yes/no`, `on/off`, `y/n`, `true/false` (+ case variants, 22 total) | Only `true/false`, `True/False`, `TRUE/FALSE` (6 total) | The `truthy` lint rule exists because of this. 1.1 booleans are a major source of bugs (`country: NO` → `false`). |
+| **Octal integers** | C-style `0777` | Explicit prefix `0o777` | The `octal-values` lint rule exists because `0777` is an integer in 1.1 but a string in 1.2. |
+| **Sexagesimal integers** | `1:30:00` = 5400 (base-60) | Not supported (parsed as string) | No tool has a specific rule for this, but parsers must handle it. |
+| **Merge keys** | `<<` is a type-specific merge key (`!!merge`) | Not in core spec (implementation-defined) | `key-duplicates` rule special-cases `<<`. serde-yaml has `Value::apply_merge()`. |
+| **Binary integers** | `0b1010` supported | Not in core schema | Minor; rarely seen in practice. |
+| **Null values** | `~`, `null`, `Null`, `NULL`, empty | Same in core schema | No divergence; tools are consistent. |
+| **Tag resolution** | Implicit tag resolution includes booleans, octals, sexagesimal | Core schema is narrower; JSON schema subset is strictest | Affects how scalars are interpreted. |
+| **Core/JSON/Failsafe schemas** | Single implicit typing scheme | Three built-in schemas with different strictness | 1.2 lets users choose strictness level. |
+
+### 8.2 Which Spec Do Tools Target?
+
+| Tool | Spec Version | Notes |
+|------|:---:|-------|
+| yamllint (Py) | 1.1 (pyyaml) | Respects `%YAML 1.2` directive to narrow truthy set |
+| yaml-lint-rs | 1.1/1.2 (yaml-rust2) | yaml-rust2 targets 1.2 but tool doesn't distinguish |
+| yamllint-rs | 1.1 (yaml-rust) | Original yaml-rust is 1.1-based |
+| yamlfmt | 1.1 (yaml.v3 Go) | Go yaml.v3 is closer to 1.1 in boolean handling |
+| prettier | 1.2 (yaml-unist-parser) | Uses 1.2 core schema |
+| yamlfix | 1.1 (ruyaml) | ruyaml is a ruamel.yaml fork, which supports both 1.1 and 1.2 |
+| yaml-rust2 | **1.2** | Explicit 1.2 targeting |
+| saphyr | **1.2** | Explicit 1.2 targeting |
+| serde-yaml | **1.1** (libyaml) | libyaml implements 1.1 |
+| vscode-yaml | Configurable | `yaml.yamlVersion` setting: `"1.1"` or `"1.2"` (default `"1.2"`) |
+
+### 8.3 Feature Spec Classification
+
+| Feature | Spec Basis | Details |
+|---------|-----------|---------|
+| `indentation` | **Spec-mandated** | Both 1.1 and 1.2 define indentation rules. Tools enforce consistency beyond what the spec requires (e.g., fixed width). |
+| `key-duplicates` | **Spec-mandated** | YAML 1.2 Section 3.2.1.3: "mapping keys are unique." Both specs prohibit duplicate keys, though 1.1 is less strict in practice. |
+| `key-ordering` | **Tool-opinion** | Neither spec defines key ordering. Alphabetical ordering is a stylistic choice. |
+| `truthy` | **Spec-divergence** | The 22 truthy values in 1.1 vs 6 in 1.2 is the primary motivation for this rule. |
+| `octal-values` | **Spec-divergence** | `0777` is octal in 1.1, string in 1.2. `0o777` is octal in 1.2 only. |
+| `float-values` | **Spec-divergence** | 1.1 and 1.2 differ on which float representations are valid (e.g., `.inf` vs `.Inf`). |
+| `empty-values` | **Tool-opinion** | Both specs allow empty values (`key:` with no value = null). Forbidding them is a style choice. |
+| `document-start/end` | **Spec-ambiguity** | Both specs define `---`/`...` markers but don't require them for single documents. Requiring/forbidding is a tool choice. |
+| `comments` spacing | **Tool-opinion** | The spec defines `#` as starting a comment but says nothing about spacing around it. |
+| `line-length` | **Tool-opinion** | Neither spec defines a maximum line length. |
+| `trailing-spaces` | **Tool-opinion** | The spec doesn't prohibit trailing whitespace. |
+| `quoted-strings` | **Tool-opinion** | The spec allows all scalar styles freely. Enforcing a quote style is a stylistic choice. |
+| `braces/brackets` spacing | **Tool-opinion** | The spec doesn't define spacing inside flow collection indicators. |
+| `colons/commas/hyphens` spacing | **Spec-ambiguity** | The spec defines these as indicators but is permissive about surrounding whitespace. Tools enforce stricter limits. |
+| `anchors` (undeclared/unused) | **Spec-mandated** (undeclared) / **Tool-opinion** (unused) | Undeclared aliases are a spec error. Unused anchors are valid but wasteful. |
+| `new-lines` type | **Tool-opinion** | The spec normalizes line breaks during processing but doesn't mandate input format. |
+| Merge keys (`<<`) | **Spec-divergence** | Defined in YAML 1.1 type repository. Not part of 1.2 core spec. |
+| JSON Schema validation | **Beyond spec** | YAML specs don't define schema validation. This is an ecosystem addition. |
+
+### 8.4 Implications for Biome
+
+1. **Biome should target YAML 1.2** as the primary spec, since it's the current standard (2021 revision). YAML 1.1 compatibility should be opt-in.
+2. **The `truthy` rule is essential** — it catches the most common YAML 1.1 → 1.2 pitfall. Biome should default to 1.2 booleans (`true`/`false` only) and flag 1.1-style booleans.
+3. **Octal handling** should default to 1.2 behavior (`0o` prefix). A rule should flag C-style `0777` octals.
+4. **Merge key (`<<`) support** should be available but not enabled by default, since it's a 1.1 feature.
+5. **The parser must handle both specs** at the scanning level, since real-world YAML files mix conventions. The `%YAML` directive should control interpretation (as yamllint does).
+6. **Spec-mandated features** (indentation, key uniqueness, undeclared aliases) should be errors by default. **Tool-opinion features** (line-length, trailing-spaces, key-ordering) should be configurable warnings.
+
+---
+
+## 9. Recommended Next Steps
 
 ### Phase 1: Parser Foundation
 1. **Design Biome's YAML CST** — Study saphyr's span tracking and `Representation` variant. Build a lossless tree with trivia (comments, whitespace) as first-class nodes.

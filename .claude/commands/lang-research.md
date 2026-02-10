@@ -39,6 +39,7 @@ Provide each agent with:
 - The feature locations within each repo (from tools.md)
 - The extraction depth (broad or deep, per user preference)
 - The language name for context
+- Instruction to classify each feature's spec basis: spec-mandated, spec-divergence (between spec versions), spec-ambiguity, or tool-opinion. For YAML, reference the YAML 1.1 (2005) and YAML 1.2 (2009/2021) specifications.
 
 Update the todo list as each agent completes.
 
@@ -63,6 +64,9 @@ Features present in multiple tools, ranked by prevalence. These are the stronges
 
 ### Unique and Notable Features
 Features found in only one tool that may still warrant Biome implementation. Include rationale.
+
+### Spec Grounding
+For each major feature area, classify whether tools are enforcing spec-mandated behavior, addressing spec-version differences (e.g., YAML 1.1 vs 1.2 boolean/octal/merge-key semantics), filling spec gaps, or imposing tool-specific opinions. Identify where the spec versions diverge and how each tool handles it.
 
 ### Architectural Observations
 Cross-tool patterns in implementation approach, configuration design, error handling, or extensibility that should inform Biome's design.
