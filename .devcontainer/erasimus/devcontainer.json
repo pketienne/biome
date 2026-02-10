@@ -3,9 +3,10 @@
 	"image": "mcr.microsoft.com/devcontainers/rust:1",
 	"remoteUser": "vscode",
 	"mounts": [
-		"source=/home/pke/.bash_aliases,target=/home/vscode/.bash_aliases,type=bind,readonly"
+		"source=/home/pke/.bash_aliases,target=/home/vscode/.bash_aliases,type=bind,readonly",
+		"source=/home/pke/.claude,target=/home/vscode/.claude,type=bind"
 	],
-	"postCreateCommand": "rustup show && cargo install cargo-binstall && cargo binstall -y cargo-insta",
+	"postCreateCommand": "curl -fsSL https://claude.ai/install.sh | bash && rustup show && cargo install cargo-binstall && cargo binstall -y cargo-insta",
 	"customizations": {
 		"vscode": {
 			"extensions": [
