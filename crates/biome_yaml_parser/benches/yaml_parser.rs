@@ -39,6 +39,18 @@ fn yaml_test_cases() -> Vec<(&'static str, &'static str)> {
             include_str!("fixtures/flow_collections.yaml"),
         ),
         ("mixed_styles", include_str!("fixtures/mixed_styles.yaml")),
+        (
+            "kubernetes_deployment",
+            include_str!("fixtures/kubernetes_deployment.yaml"),
+        ),
+        (
+            "github_actions",
+            include_str!("fixtures/github_actions.yaml"),
+        ),
+        (
+            "docker_compose",
+            include_str!("fixtures/docker_compose.yaml"),
+        ),
     ]
 }
 

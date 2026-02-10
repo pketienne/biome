@@ -1,0 +1,207 @@
+version: "3.8"
+
+x-common-env: &common-env
+  TZ: UTC
+  LOG_LEVEL: info
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+        BUILD_VERSION: "1.2.3"
+      cache_from:
+        - registry.example.com/web:latest
+    image: registry.example.com/web:1.2.3
+    container_name: web-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    environment:
+      <<: *common-env
+      NODE_ENV: production
+      DATABASE_URL: postgres://db:5432/app
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY_FILE: /run/secrets/app_secret
+    secrets:
+      - app_secret
+      - tls_cert
+      - tls_key
+    volumes:
+      - app-data:/var/lib/app/data
+      - ./config:/etc/app/config:ro
+      - /var/log/app:/var/log/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`example.com`)"
+      - "traefik.http.services.web.loadbalancer.server.port=8080"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      <<: *common-env
+      POSTGRES_DB: app
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    secrets:
+      - db_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+    networks:
+      - backend
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "pg_isready -U app_user -d app"]
+    shm_size: 256mb
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    environment:
+      <<: *common-env
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "redis-cli", "ping"]
+
+  migrations:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrations
+    environment:
+      <<: *common-env
+      DATABASE_URL: postgres://db:5432/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: "no"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["./worker", "--concurrency", "4"]
+    restart: unless-stopped
+    environment:
+      <<: *common-env
+      WORKER_QUEUES: default,email,notifications
+      DATABASE_URL: postgres://db:5432/app
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot-data:/etc/letsencrypt:ro
+      - static-files:/usr/share/nginx/html:ro
+    depends_on:
+      - web
+    networks:
+      - frontend
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "nginx", "-t"]
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+    internal: true
+
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  app-data:
+    driver: local
+  certbot-data:
+    driver: local
+  static-files:
+    driver: local
+
+secrets:
+  app_secret:
+    file: ./secrets/app_secret.txt
+  db_password:
+    file: ./secrets/db_password.txt
+  tls_cert:
+    file: ./secrets/tls_cert.pem
+  tls_key:
+    file: ./secrets/tls_key.pem

@@ -1,0 +1,63 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/scalar/block_scalar_indicators.yaml
+---
+
+# Input
+
+```yaml
+literal_keep: |+
+  keep trailing newlines
+
+
+literal_strip: |-
+  strip trailing newlines
+literal_indent: |2
+    explicit two-space indent
+  not part of scalar
+folded_keep: >+
+  keep trailing newlines
+
+
+folded_strip: >-
+  strip trailing newlines
+folded_indent: >2
+    explicit two-space indent
+  not part of scalar
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Space
+Indent width: 2
+Line ending: LF
+Line width: 80
+Quote style: Double Quotes
+Expand: Auto
+-----
+
+```yaml
+literal_keep: |+
+  keep trailing newlines
+
+literal_strip: |-
+  strip trailing newlines
+literal_indent: |2
+    explicit two-space indent
+  not part of scalar
+folded_keep: >+
+  keep trailing newlines
+
+folded_strip: >-
+  strip trailing newlines
+folded_indent: >2
+    explicit two-space indent
+  not part of scalar
+```

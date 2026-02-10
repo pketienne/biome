@@ -6,7 +6,7 @@ use biome_yaml_syntax::{
     AnyYamlBlockMapEntry, AnyYamlBlockNode, AnyYamlFlowNode, YamlBlockMapping,
 };
 
-use super::no_duplicate_keys::get_key_text;
+use crate::lint::correctness::no_duplicate_keys::get_key_text;
 
 declare_lint_rule! {
     /// Validates that merge keys (`<<`) have alias values.

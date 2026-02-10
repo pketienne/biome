@@ -1,0 +1,30 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+: missing key value
+name: John
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:1 lint/correctness/noEmptyKeys  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Empty mapping keys are not allowed.
+  
+  > 1 │ : missing key value
+      │ ^
+    2 │ name: John
+    3 │ 
+  
+  i Provide a key name or use null explicitly if a null key is intended.
+  
+  i Unsafe fix: Remove the entry with the empty key.
+  
+    1 │ :·missing·key·value
+      │ -------------------
+
+```

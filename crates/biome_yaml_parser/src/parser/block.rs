@@ -195,6 +195,12 @@ fn parse_block_map_implicit_entry(p: &mut YamlParser) -> ParsedSyntax {
         // Value can be completely empty according to the spec
         parse_any_block_node(p).ok();
         Present(m.complete(p, YAML_BLOCK_MAP_IMPLICIT_ENTRY))
+    } else if p.at(T![:]) {
+        // Bare colon with no key: `: value` is equivalent to `{null: value}`
+        let m = p.start();
+        p.bump(T![:]);
+        parse_any_block_node(p).ok();
+        Present(m.complete(p, YAML_BLOCK_MAP_IMPLICIT_ENTRY))
     } else {
         Absent
     }

@@ -1,0 +1,30 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+{name: John, age: 30, name: Jane}
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:2 lint/correctness/noDuplicateFlowKeys ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The key name was already declared.
+  
+  > 1 │ {name: John, age: 30, name: Jane}
+      │  ^^^^
+    2 │ 
+  
+  i This is where a duplicated key was declared again.
+  
+  > 1 │ {name: John, age: 30, name: Jane}
+      │                       ^^^^
+    2 │ 
+  
+  i If a key is defined multiple times, only the last definition takes effect. Previous definitions are ignored.
+  
+
+```

@@ -1,0 +1,102 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+# Single unused anchor
+first: &unused value1
+second: value2
+
+# Multiple unused anchors
+a: &orphan1 val1
+b: &orphan2 val2
+c: regular_value
+
+# Flow context unused
+flow: &flow_orphan {key: value}
+other: plain_value
+
+```
+
+# Diagnostics
+```
+invalid.yaml:2:8 lint/suspicious/noUnusedAnchors  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The anchor unused is defined but never referenced.
+  
+    1 │ # Single unused anchor
+  > 2 │ first: &unused value1
+      │        ^^^^^^^
+    3 │ second: value2
+    4 │ 
+  
+  i Remove the unused anchor or add an alias that references it.
+  
+  i Safe fix: Remove unused anchor.
+  
+    2 │ first:·&unused·value1
+      │        --------      
+
+```
+
+```
+invalid.yaml:6:4 lint/suspicious/noUnusedAnchors  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The anchor orphan1 is defined but never referenced.
+  
+    5 │ # Multiple unused anchors
+  > 6 │ a: &orphan1 val1
+      │    ^^^^^^^^
+    7 │ b: &orphan2 val2
+    8 │ c: regular_value
+  
+  i Remove the unused anchor or add an alias that references it.
+  
+  i Safe fix: Remove unused anchor.
+  
+    6 │ a:·&orphan1·val1
+      │    ---------    
+
+```
+
+```
+invalid.yaml:7:4 lint/suspicious/noUnusedAnchors  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The anchor orphan2 is defined but never referenced.
+  
+    5 │ # Multiple unused anchors
+    6 │ a: &orphan1 val1
+  > 7 │ b: &orphan2 val2
+      │    ^^^^^^^^
+    8 │ c: regular_value
+    9 │ 
+  
+  i Remove the unused anchor or add an alias that references it.
+  
+  i Safe fix: Remove unused anchor.
+  
+    7 │ b:·&orphan2·val2
+      │    ---------    
+
+```
+
+```
+invalid.yaml:11:7 lint/suspicious/noUnusedAnchors  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The anchor flow_orphan is defined but never referenced.
+  
+    10 │ # Flow context unused
+  > 11 │ flow: &flow_orphan {key: value}
+       │       ^^^^^^^^^^^^
+    12 │ other: plain_value
+    13 │ 
+  
+  i Remove the unused anchor or add an alias that references it.
+  
+  i Safe fix: Remove unused anchor.
+  
+    11 │ flow:·&flow_orphan·{key:·value}
+       │       -------------            
+
+```

@@ -1,0 +1,30 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+#bad comment
+key: value
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:1 lint/style/useCommentSpacing  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Comment should have a space after the '#' character.
+  
+  > 1 │ #bad comment
+      │ ^^^^^^^^^^^^
+    2 │ key: value
+    3 │ 
+  
+  i Add a space between '#' and the comment text for readability.
+  
+  i Safe fix: Add space after '#'.
+  
+    1 │ #·bad·comment
+      │  +           
+
+```

@@ -1,0 +1,26 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+name:
+age: 30
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:5 lint/correctness/noEmptyValues ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Empty mapping values result in implicit null.
+  
+  > 1 │ name:
+      │     ^
+    2 │ age: 30
+    3 │ 
+  
+  i Use an explicit null value or provide a meaningful value.
+  
+
+```

@@ -1,0 +1,135 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+# Simple duplicate
+first: &anchor value1
+second: &anchor value2
+
+# Triple duplicate
+a: &dup one
+b: &dup two
+c: &dup three
+
+# Nested duplicate anchors
+outer:
+  inner1: &nested val1
+  inner2: &nested val2
+
+# Flow context duplicate
+flow1: &flow_dup {key: 1}
+flow2: &flow_dup [a, b]
+
+```
+
+# Diagnostics
+```
+invalid.yaml:2:8 lint/correctness/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The anchor anchor is defined multiple times.
+  
+    1 │ # Simple duplicate
+  > 2 │ first: &anchor value1
+      │        ^^^^^^^
+    3 │ second: &anchor value2
+    4 │ 
+  
+  i This is where a duplicated anchor was declared again.
+  
+    1 │ # Simple duplicate
+    2 │ first: &anchor value1
+  > 3 │ second: &anchor value2
+      │         ^^^^^^^
+    4 │ 
+    5 │ # Triple duplicate
+  
+  i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
+  
+
+```
+
+```
+invalid.yaml:6:4 lint/correctness/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The anchor dup is defined multiple times.
+  
+    5 │ # Triple duplicate
+  > 6 │ a: &dup one
+      │    ^^^^
+    7 │ b: &dup two
+    8 │ c: &dup three
+  
+  i This is where a duplicated anchor was declared again.
+  
+    5 │ # Triple duplicate
+    6 │ a: &dup one
+  > 7 │ b: &dup two
+      │    ^^^^
+    8 │ c: &dup three
+    9 │ 
+  
+  i This is where a duplicated anchor was declared again.
+  
+     6 │ a: &dup one
+     7 │ b: &dup two
+   > 8 │ c: &dup three
+       │    ^^^^
+     9 │ 
+    10 │ # Nested duplicate anchors
+  
+  i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
+  
+
+```
+
+```
+invalid.yaml:12:11 lint/correctness/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The anchor nested is defined multiple times.
+  
+    10 │ # Nested duplicate anchors
+    11 │ outer:
+  > 12 │   inner1: &nested val1
+       │           ^^^^^^^
+    13 │   inner2: &nested val2
+    14 │ 
+  
+  i This is where a duplicated anchor was declared again.
+  
+    11 │ outer:
+    12 │   inner1: &nested val1
+  > 13 │   inner2: &nested val2
+       │           ^^^^^^^
+    14 │ 
+    15 │ # Flow context duplicate
+  
+  i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
+  
+
+```
+
+```
+invalid.yaml:16:8 lint/correctness/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The anchor flow_dup is defined multiple times.
+  
+    15 │ # Flow context duplicate
+  > 16 │ flow1: &flow_dup {key: 1}
+       │        ^^^^^^^^^
+    17 │ flow2: &flow_dup [a, b]
+    18 │ 
+  
+  i This is where a duplicated anchor was declared again.
+  
+    15 │ # Flow context duplicate
+    16 │ flow1: &flow_dup {key: 1}
+  > 17 │ flow2: &flow_dup [a, b]
+       │        ^^^^^^^^^
+    18 │ 
+  
+  i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
+  
+
+```

@@ -1,0 +1,31 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+key: value
+other: data
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:1 lint/style/useDocumentMarkers  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Missing document start marker ---.
+  
+  > 1 │ key: value
+      │ ^^^^^^^^^^
+  > 2 │ other: data
+      │ ^^^^^^^^^^^
+    3 │ 
+  
+  i Add a --- marker at the beginning of the document.
+  
+  i Safe fix: Add document start marker.
+  
+    1 │ ---key:·value
+      │ +++          
+
+```

@@ -1,0 +1,48 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+price: 1.0
+rate: 2.50
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:8 lint/suspicious/noFloatTrailingZeros ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Float value has unnecessary trailing zeros.
+  
+  > 1 │ price: 1.0
+      │        ^^^
+    2 │ rate: 2.50
+    3 │ 
+  
+  i Remove trailing zeros from the decimal portion of the number.
+  
+
+```
+
+```
+invalid.yaml:2:7 lint/suspicious/noFloatTrailingZeros  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Float value has unnecessary trailing zeros.
+  
+    1 │ price: 1.0
+  > 2 │ rate: 2.50
+      │       ^^^^
+    3 │ 
+  
+  i Remove trailing zeros from the decimal portion of the number.
+  
+  i Safe fix: Remove trailing zeros.
+  
+    1 1 │   price: 1.0
+    2   │ - rate:·2.50
+      2 │ + rate:·2.5
+    3 3 │   
+  
+
+```

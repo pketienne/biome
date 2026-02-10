@@ -1,0 +1,55 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+port: 0777
+mode: 0644
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:7 lint/suspicious/noImplicitOctalValues  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Ambiguous number with leading zero may be interpreted as octal.
+  
+  > 1 │ port: 0777
+      │       ^^^^
+    2 │ mode: 0644
+    3 │ 
+  
+  i Remove the leading zero or use explicit octal notation (0o prefix) to clarify intent.
+  
+  i Safe fix: Convert to explicit octal notation.
+  
+    1   │ - port:·0777
+      1 │ + port:·0o777
+    2 2 │   mode: 0644
+    3 3 │   
+  
+
+```
+
+```
+invalid.yaml:2:7 lint/suspicious/noImplicitOctalValues  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Ambiguous number with leading zero may be interpreted as octal.
+  
+    1 │ port: 0777
+  > 2 │ mode: 0644
+      │       ^^^^
+    3 │ 
+  
+  i Remove the leading zero or use explicit octal notation (0o prefix) to clarify intent.
+  
+  i Safe fix: Convert to explicit octal notation.
+  
+    1 1 │   port: 0777
+    2   │ - mode:·0644
+      2 │ + mode:·0o644
+    3 3 │   
+  
+
+```

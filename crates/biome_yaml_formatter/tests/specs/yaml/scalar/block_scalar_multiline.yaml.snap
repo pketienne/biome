@@ -1,0 +1,75 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/scalar/block_scalar_multiline.yaml
+---
+
+# Input
+
+```yaml
+literal_multi: |
+  first line
+  second line
+  third line
+
+  after blank line
+folded_multi: >
+  first line
+  second line
+  third line
+
+  after blank line
+literal_trailing: |+
+  content here
+
+
+folded_trailing: >+
+  content here
+
+
+nested:
+  block: |
+    indented literal
+    with multiple lines
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Space
+Indent width: 2
+Line ending: LF
+Line width: 80
+Quote style: Double Quotes
+Expand: Auto
+-----
+
+```yaml
+literal_multi: |
+  first line
+  second line
+  third line
+
+  after blank line
+folded_multi: >
+  first line
+  second line
+  third line
+
+  after blank line
+literal_trailing: |+
+  content here
+
+folded_trailing: >+
+  content here
+
+nested:
+  block: |
+    indented literal
+    with multiple lines
+```

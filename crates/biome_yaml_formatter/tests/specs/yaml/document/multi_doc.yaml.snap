@@ -1,19 +1,20 @@
 ---
 source: crates/biome_formatter_test/src/snapshot_builder.rs
-info: yaml/document/directives.yaml
+info: yaml/document/multi_doc.yaml
 ---
 
 # Input
 
 ```yaml
-%YAML 1.2
 ---
-key: value
-...
-%YAML 1.2
+name: first
+value: 1
 ---
-second: document
-...
+name: second
+value: 2
+---
+name: third
+value: 3
 
 ```
 
@@ -34,12 +35,13 @@ Expand: Auto
 -----
 
 ```yaml
-%YAML 1.2
 ---
-key: value
-...
-%YAML 1.2
+name: first
+value: 1
 ---
-second: document
-...
+name: second
+value: 2
+---
+name: third
+value: 3
 ```

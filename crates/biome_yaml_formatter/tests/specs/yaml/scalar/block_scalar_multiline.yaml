@@ -1,0 +1,24 @@
+literal_multi: |
+  first line
+  second line
+  third line
+
+  after blank line
+folded_multi: >
+  first line
+  second line
+  third line
+
+  after blank line
+literal_trailing: |+
+  content here
+
+
+folded_trailing: >+
+  content here
+
+
+nested:
+  block: |
+    indented literal
+    with multiple lines

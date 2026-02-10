@@ -1,0 +1,29 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+key: value   
+other: data
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:11 lint/style/noTrailingSpaces  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Trailing whitespace is not allowed.
+  
+  > 1 │ key: value···
+      │           ^^^
+    2 │ other: data
+    3 │ 
+  
+  i Remove the trailing whitespace at the end of the line.
+  
+  i Safe fix: Remove trailing whitespace.
+  
+  
+
+```

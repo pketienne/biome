@@ -1,0 +1,82 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+enabled: True
+disabled: FALSE
+active: True
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:10 lint/style/useConsistentBooleanStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Use lowercase true instead of True.
+  
+  > 1 │ enabled: True
+      │          ^^^^
+    2 │ disabled: FALSE
+    3 │ active: True
+  
+  i For consistency, always use lowercase true and false for boolean values.
+  
+  i Safe fix: Replace with lowercase true.
+  
+    1   │ - enabled:·True
+      1 │ + enabled:·true
+    2 2 │   disabled: FALSE
+    3 3 │   active: True
+  
+
+```
+
+```
+invalid.yaml:2:11 lint/style/useConsistentBooleanStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Use lowercase false instead of FALSE.
+  
+    1 │ enabled: True
+  > 2 │ disabled: FALSE
+      │           ^^^^^
+    3 │ active: True
+    4 │ 
+  
+  i For consistency, always use lowercase true and false for boolean values.
+  
+  i Safe fix: Replace with lowercase false.
+  
+    1 1 │   enabled: True
+    2   │ - disabled:·FALSE
+      2 │ + disabled:·false
+    3 3 │   active: True
+    4 4 │   
+  
+
+```
+
+```
+invalid.yaml:3:9 lint/style/useConsistentBooleanStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Use lowercase true instead of True.
+  
+    1 │ enabled: True
+    2 │ disabled: FALSE
+  > 3 │ active: True
+      │         ^^^^
+    4 │ 
+  
+  i For consistency, always use lowercase true and false for boolean values.
+  
+  i Safe fix: Replace with lowercase true.
+  
+    1 1 │   enabled: True
+    2 2 │   disabled: FALSE
+    3   │ - active:·True
+      3 │ + active:·true
+    4 4 │   
+  
+
+```

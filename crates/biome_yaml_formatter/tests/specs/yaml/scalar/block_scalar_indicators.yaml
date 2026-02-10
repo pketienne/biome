@@ -1,0 +1,18 @@
+literal_keep: |+
+  keep trailing newlines
+
+
+literal_strip: |-
+  strip trailing newlines
+literal_indent: |2
+    explicit two-space indent
+  not part of scalar
+folded_keep: >+
+  keep trailing newlines
+
+
+folded_strip: >-
+  strip trailing newlines
+folded_indent: >2
+    explicit two-space indent
+  not part of scalar

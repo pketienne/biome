@@ -1,0 +1,36 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+a: &x
+  b: *y
+c: &y
+  d: *x
+
+```
+
+# Diagnostics
+```
+invalid.yaml:4:6 lint/correctness/noCircularAliases ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The alias *x creates a circular reference.
+  
+    2 │   b: *y
+    3 │ c: &y
+  > 4 │   d: *x
+      │      ^^
+    5 │ 
+  
+  i This anchor &x is part of the cycle.
+  
+  > 1 │ a: &x
+      │    ^^
+    2 │   b: *y
+    3 │ c: &y
+  
+  i Circular alias chains cause infinite loops in YAML processors.
+  
+
+```
