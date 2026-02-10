@@ -1,0 +1,14 @@
+{
+	"name": "Biome (erasimus)",
+	"image": "mcr.microsoft.com/devcontainers/rust:1",
+	"postCreateCommand": "rustup show && cargo install cargo-binstall && cargo binstall -y cargo-insta",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"rust-lang.rust-analyzer",
+				"tamasfe.even-better-toml",
+				"serayuzgur.crates"
+			]
+		}
+	}
+}
