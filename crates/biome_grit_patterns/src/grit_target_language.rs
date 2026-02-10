@@ -1,8 +1,10 @@
 mod css_target_language;
 mod js_target_language;
+mod yaml_target_language;
 
 pub use css_target_language::CssTargetLanguage;
 pub use js_target_language::JsTargetLanguage;
+pub use yaml_target_language::YamlTargetLanguage;
 
 use camino::Utf8Path;
 use grit_util::{AnalysisLogs, Ast, CodeRange, EffectRange, Language, Parser, SnippetTree};
@@ -18,6 +20,7 @@ use biome_string_case::StrOnlyExtension;
 use crate::CompileError;
 use crate::grit_css_parser::GritCssParser;
 use crate::grit_js_parser::GritJsParser;
+use crate::grit_yaml_parser::GritYamlParser;
 use crate::grit_target_node::{GritTargetNode, GritTargetSyntaxKind};
 use crate::grit_tree::GritTargetTree;
 
@@ -206,7 +209,8 @@ macro_rules! generate_target_language {
 
 generate_target_language! {
     [CssTargetLanguage, GritCssParser, "CSS"],
-    [JsTargetLanguage, GritJsParser, "JavaScript"]
+    [JsTargetLanguage, GritJsParser, "JavaScript"],
+    [YamlTargetLanguage, GritYamlParser, "YAML"]
 }
 
 impl Default for GritTargetLanguage {
@@ -229,6 +233,7 @@ impl GritTargetLanguage {
         {
             GritSyntaxKind::CSS_KW => Some(Self::CssTargetLanguage(CssTargetLanguage)),
             GritSyntaxKind::JS_KW => Some(Self::JsTargetLanguage(JsTargetLanguage)),
+            GritSyntaxKind::YAML_KW => Some(Self::YamlTargetLanguage(YamlTargetLanguage)),
             _ => None,
         }
     }
@@ -240,6 +245,7 @@ impl GritTargetLanguage {
             "cjs" | "js" | "jsx" | "mjs" | "ts" | "tsx" => {
                 Some(Self::JsTargetLanguage(JsTargetLanguage))
             }
+            "yaml" | "yml" => Some(Self::YamlTargetLanguage(YamlTargetLanguage)),
             _ => None,
         }
     }

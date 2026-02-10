@@ -170,6 +170,6 @@ impl LanguageKind {
     }
 
     pub fn supports_grit(&self) -> bool {
-        matches!(self, Self::Css | Self::Js)
+        matches!(self, Self::Css | Self::Js | Self::Yaml)
     }
 }

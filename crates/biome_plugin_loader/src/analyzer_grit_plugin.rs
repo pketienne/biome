@@ -47,6 +47,8 @@ impl AnalyzerPlugin for AnalyzerGritPlugin {
         match &self.grit_query.language {
             GritTargetLanguage::JsTargetLanguage(_) => PluginTargetLanguage::JavaScript,
             GritTargetLanguage::CssTargetLanguage(_) => PluginTargetLanguage::Css,
+            // YAML plugins are not supported yet; default to JavaScript.
+            GritTargetLanguage::YamlTargetLanguage(_) => PluginTargetLanguage::JavaScript,
         }
     }
 

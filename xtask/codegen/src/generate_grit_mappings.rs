@@ -149,6 +149,11 @@ impl LanguageConfig {
                 syntax_module: "biome_css_syntax",
                 legacy_patterns: &[],
             },
+            LanguageKind::Yaml => Self {
+                syntax_kind_type: "YamlSyntaxKind",
+                syntax_module: "biome_yaml_syntax",
+                legacy_patterns: &[],
+            },
             _ => unimplemented!("Grit mappings are not supported for {:?}", language_kind),
         }
     }

@@ -85,5 +85,8 @@ fn is_file_compatible_with_pattern(
         GritTargetLanguage::CssTargetLanguage(_) => {
             matches!(file_source, DocumentFileSource::Css(_))
         }
+        GritTargetLanguage::YamlTargetLanguage(_) => {
+            matches!(file_source, DocumentFileSource::Yaml(_))
+        }
     }
 }

@@ -2,7 +2,7 @@ use super::{
     AnalyzerCapabilities, AnalyzerVisitorBuilder, Capabilities, CodeActionsParams,
     DebugCapabilities, DocumentFileSource, EnabledForPath, ExtensionHandler, FixAllParams,
     FormatterCapabilities, LintParams, LintResults, ParseResult, ParserCapabilities, ProcessFixAll,
-    ProcessLint, SearchCapabilities,
+    ProcessLint, SearchCapabilities, search,
 };
 use crate::configuration::to_analyzer_rules;
 use crate::settings::{OverrideSettings, check_feature_activity};
@@ -236,7 +236,9 @@ impl ExtensionHandler for YamlFileHandler {
                 format_on_type: None,
                 format_embedded: None,
             },
-            search: SearchCapabilities { search: None },
+            search: SearchCapabilities {
+                search: Some(search),
+            },
         }
     }
 }

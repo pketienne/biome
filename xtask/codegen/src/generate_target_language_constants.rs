@@ -36,11 +36,13 @@ pub fn generate_target_language_constants(
     let syntax_kind = match language_kind {
         LanguageKind::Css => "CssSyntaxKind",
         LanguageKind::Js => "JsSyntaxKind",
+        LanguageKind::Yaml => "YamlSyntaxKind",
         _ => unimplemented!(),
     };
     let syntax_kind_module = match language_kind {
         LanguageKind::Css => "biome_css_syntax",
         LanguageKind::Js => "biome_js_syntax",
+        LanguageKind::Yaml => "biome_yaml_syntax",
         _ => unimplemented!(),
     };
 

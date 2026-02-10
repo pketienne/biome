@@ -50,6 +50,7 @@ pub const GRIT_KINDS_SRC: KindsSrc = KindsSrc {
         "json",
         "grit",
         "html",
+        "yaml",
         // language flavors:
         "typescript",
         "jsx",

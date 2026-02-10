@@ -11,6 +11,7 @@ mod grit_css_parser;
 mod grit_definitions;
 mod grit_file;
 mod grit_js_parser;
+mod grit_yaml_parser;
 mod grit_node;
 mod grit_node_patterns;
 mod grit_query;
