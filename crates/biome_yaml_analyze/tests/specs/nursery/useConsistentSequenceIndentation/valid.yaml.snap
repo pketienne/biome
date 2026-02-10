@@ -1,0 +1,16 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: valid.yaml
+---
+# Input
+```yaml
+# should not generate diagnostics
+# All indented (consistent)
+parent:
+  - item1
+  - item2
+other:
+  - a
+  - b
+
+```

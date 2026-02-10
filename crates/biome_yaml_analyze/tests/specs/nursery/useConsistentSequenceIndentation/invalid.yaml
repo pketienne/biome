@@ -1,0 +1,7 @@
+# Mixed: first indented, second non-indented
+parent:
+  - item1
+  - item2
+other:
+- a
+- b

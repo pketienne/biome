@@ -1,0 +1,8 @@
+# should not generate diagnostics
+# All indented (consistent)
+parent:
+  - item1
+  - item2
+other:
+  - a
+  - b

@@ -257,6 +257,7 @@ define_categories! {
     "lint/nursery/useConsistentKeyOrdering": "https://biomejs.dev/linter/rules/use-consistent-key-ordering",
     "lint/nursery/useConsistentQuoteStyle": "https://biomejs.dev/linter/rules/use-consistent-quote-style",
     "lint/nursery/useConsistentIndentation": "https://biomejs.dev/linter/rules/use-consistent-indentation",
+    "lint/nursery/useConsistentSequenceIndentation": "https://biomejs.dev/linter/rules/use-consistent-sequence-indentation",
     "lint/nursery/useConsistentGraphqlDescriptions": "https://biomejs.dev/linter/rules/use-consistent-graphql-descriptions",
     "lint/nursery/useConsistentMethodSignatures": "https://biomejs.dev/linter/rules/use-consistent-method-signatures",
     "lint/nursery/useConsistentObjectDefinition": "https://biomejs.dev/linter/rules/use-consistent-object-definition",

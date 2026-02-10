@@ -1,0 +1,35 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+# Mixed: first indented, second non-indented
+parent:
+  - item1
+  - item2
+other:
+- a
+- b
+
+```
+
+# Diagnostics
+```
+invalid.yaml:6:1 lint/nursery/useConsistentSequenceIndentation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Inconsistent sequence indentation: found non-indented style, but indented style was used earlier.
+  
+    4 │   - item2
+    5 │ other:
+  > 6 │ - a
+      │ ^
+    7 │ - b
+    8 │ 
+  
+  i Use consistent sequence indentation throughout the file.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

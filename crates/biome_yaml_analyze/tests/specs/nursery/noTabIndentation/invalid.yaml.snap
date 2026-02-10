@@ -9,7 +9,24 @@ key:
 
 ```
 
+_Note: The parser emitted 1 diagnostics which are not shown here._
+
 # Diagnostics
+```
+invalid.yaml:2:1 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Tabs are not allowed in YAML indentation
+  
+    1 │ key:
+  > 2 │ 	value: indented with tab
+      │ ^^
+    3 │ 
+  
+  i YAML 1.2.2 forbids tab characters in indentation. Use spaces instead. See https://yaml.org/spec/1.2.2/#61-indentation-spaces
+  
+
+```
+
 ```
 invalid.yaml:2:1 lint/nursery/noTabIndentation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

@@ -28,5 +28,26 @@
 | 16 | Lint rule expansion (5 new rules: noEmptyKeys, noEmptySequenceEntries, useConsistentIndentation, noAnchorReferences, useQuotedStrings) | COMPLETE |
 | 17 | Multi-document support hardening (directive lexing, edge case tests) | COMPLETE |
 
-## Remaining Deferred Items
-- JSON Schema validation (Plan 14) — requires new `jsonschema` crate dependency, YAML-to-JSON converter, error range mapping; estimated 8-15 days
+## Remaining Work
+
+### Major Feature
+
+- **JSON Schema validation (Plan 14)** — Validate YAML against JSON schemas (e.g., Kubernetes manifests, CI configs). Requires new `jsonschema` crate dependency, YAML-to-JSON converter, and error range mapping. Estimated 8-15 days.
+
+### New Lint Rules
+
+- **useConsistentSequenceIndentation** — Enforce that all block sequences in a file use the same indentation style (compact `- key: value` vs non-compact with extra indent), similar to yamllint's `indent-sequences: consistent`. The formatter already handles compact layout via `align(2, ...)` on regular block nodes; no new AST nodes needed.
+
+### Infrastructure Gaps
+
+- **Semantic model** — No `biome_yaml_semantic` crate exists. Current anchor/alias lint rules (`noDuplicateAnchors`, `noUndeclaredAliases`, `noUnusedAnchors`, `useValidMergeKeys`) each independently traverse the full syntax tree to collect anchors and aliases. A semantic model (following the simpler GraphQL pattern) would pre-compute anchor bindings, alias references, and document-level scoping in a single traversal, enabling O(1) lookups. Would also enable future rules like circular reference detection and forward-reference warnings. Performance benefit scales with the number of anchor-related rules.
+
+- **Rename capability** — `rename: None` in `crates/biome_service/src/file_handlers/yaml.rs:227`. Only JavaScript implements rename. For YAML this would apply to anchors (`&name`) and aliases (`*name`) — renaming an anchor updates all referencing aliases. Existing lint rules already collect anchor/alias mappings that could be reused. Simpler than JS rename since YAML anchors have flat document-level scope (no nesting, closures, or module systems).
+
+- **Search capability (GritQL)** — `search: SearchCapabilities { search: None }` in `yaml.rs:238`. Search in Biome is structural pattern matching using GritQL, not text search. Currently only JavaScript and CSS are supported as Grit target languages (`crates/biome_grit_patterns/src/grit_target_language.rs:207-210`). Implementing for YAML requires: a `YamlTargetLanguage` variant, a `GritYamlParser` that converts YAML AST to Grit format, and wiring in the CLI compatibility check. Depends on Grit ecosystem support for YAML.
+
+- **Lexer `rewind()`** — `unimplemented!()` at `crates/biome_yaml_parser/src/lexer/mod.rs:1008`. Part of the `Lexer` trait; enables speculative parsing (try one interpretation, rewind on failure). Not needed because the YAML lexer uses eager disambiguation via a token buffer (`VecDeque<LexToken>`). GraphQL and Grit lexers also don't implement it. Would only matter if speculative parsing or `BufferedLexer` were ever needed.
+
+### Cleanup
+
+- **Unused compact notation syntax kinds** — Four ghost syntax kinds (`YAML_COMPACT_MAPPING`, `YAML_COMPACT_MAPPING_INDENTED`, `YAML_COMPACT_SEQUENCE`, `YAML_COMPACT_SEQUENCE_INDENTED`) defined in `xtask/codegen/src/yaml_kinds_src.rs` and generated into `crates/biome_yaml_syntax/src/generated/kind.rs:72-75`. Never parsed, no AST structs, no formatters. Remnants of an earlier design superseded by the `align(2, ...)` approach. Can be safely deleted.
