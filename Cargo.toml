@@ -109,6 +109,7 @@ biome_yaml_analyze           = { path = "./crates/biome_yaml_analyze", version =
 biome_yaml_factory           = { path = "./crates/biome_yaml_factory", version = "0.0.1" }
 biome_yaml_formatter         = { path = "./crates/biome_yaml_formatter", version = "0.0.1" }
 biome_yaml_parser            = { path = "./crates/biome_yaml_parser", version = "0.0.1" }
+biome_yaml_semantic          = { path = "./crates/biome_yaml_semantic", version = "0.0.0" }
 biome_yaml_syntax            = { path = "./crates/biome_yaml_syntax", version = "0.0.1" }
 boa_engine                   = "0.21.0"
 boxcar                       = "0.2.14"

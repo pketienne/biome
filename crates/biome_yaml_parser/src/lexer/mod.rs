@@ -1,8 +1,9 @@
+use std::cell::RefCell;
 use std::collections::VecDeque;
 
 use biome_parser::{
     diagnostic::ParseDiagnostic,
-    lexer::{Lexer, LexerCheckpoint},
+    lexer::{Lexer, LexerCheckpoint, LexerWithCheckpoint, TokenFlags},
 };
 use biome_rowan::{TextLen, TextRange, TextSize};
 use biome_unicode_table::{Dispatch::WHS, lookup_byte};
@@ -24,6 +25,21 @@ pub(crate) struct YamlLexer<'src> {
 
     /// Cache of tokens to be emitted to the parser
     tokens: VecDeque<LexToken>,
+
+    /// Saved lexer states for rewind support.
+    /// Uses `RefCell` because `LexerWithCheckpoint::checkpoint()` takes `&self`,
+    /// but we need to push state into this collection.
+    saved_states: RefCell<Vec<SavedLexerState>>,
+}
+
+/// Snapshot of YAML-specific lexer state for rewind support.
+#[derive(Clone)]
+struct SavedLexerState {
+    position: TextSize,
+    coordinate: TextCoordinate,
+    scopes: Vec<BlockScope>,
+    tokens: VecDeque<LexToken>,
+    diagnostics_len: usize,
 }
 
 impl<'src> YamlLexer<'src> {
@@ -38,6 +54,7 @@ impl<'src> YamlLexer<'src> {
                 q.push_back(LexToken::default());
                 q
             },
+            saved_states: RefCell::new(Vec::new()),
         }
     }
 
@@ -1005,8 +1022,23 @@ impl<'src> Lexer<'src> for YamlLexer<'src> {
         false
     }
 
-    fn rewind(&mut self, _: LexerCheckpoint<Self::Kind>) {
-        unimplemented!("YAML lexer doesn't support rewinding")
+    fn rewind(&mut self, checkpoint: LexerCheckpoint<Self::Kind>) {
+        let position = checkpoint.position;
+        let mut saved_states = self.saved_states.borrow_mut();
+        if let Some(idx) = saved_states
+            .iter()
+            .rposition(|s| s.position == position)
+        {
+            let saved = saved_states.remove(idx);
+            self.current_coordinate = saved.coordinate;
+            self.scopes = saved.scopes;
+            self.tokens = saved.tokens;
+            self.diagnostics.truncate(saved.diagnostics_len);
+            // Remove any saved states created after this checkpoint
+            saved_states.retain(|s| {
+                u32::from(s.position) <= u32::from(position)
+            });
+        }
     }
 
     fn finish(self) -> Vec<ParseDiagnostic> {
@@ -1081,6 +1113,28 @@ impl<'src> Lexer<'src> for YamlLexer<'src> {
     }
 }
 
+impl<'src> LexerWithCheckpoint<'src> for YamlLexer<'src> {
+    fn checkpoint(&self) -> LexerCheckpoint<Self::Kind> {
+        let cp = LexerCheckpoint {
+            position: TextSize::from(self.current_coordinate.offset as u32),
+            current_start: self.current_start(),
+            current_kind: self.current(),
+            current_flags: TokenFlags::empty(),
+            after_line_break: false,
+            unicode_bom_length: 0,
+            diagnostics_pos: self.diagnostics.len() as u32,
+        };
+        self.saved_states.borrow_mut().push(SavedLexerState {
+            position: cp.position,
+            coordinate: self.current_coordinate,
+            scopes: self.scopes.clone(),
+            tokens: self.tokens.clone(),
+            diagnostics_len: self.diagnostics.len(),
+        });
+        cp
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct LexToken {
     start: TextCoordinate,
@@ -1123,7 +1177,7 @@ impl LexToken {
 /// Scope of one Yaml collection. Stores the leftmost border of the scope. Any tokens to the right
 /// of this border will belong to that scope.
 /// https://yaml.org/spec/1.2.2/#82-block-collection-styles
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum BlockScope {
     Sequence(usize),
     Map(usize),

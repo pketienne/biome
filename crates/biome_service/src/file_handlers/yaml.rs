@@ -6,7 +6,7 @@ use super::{
 };
 use crate::configuration::to_analyzer_rules;
 use crate::settings::{OverrideSettings, check_feature_activity};
-use crate::workspace::{FixFileResult, PullActionsResult};
+use crate::workspace::{FixFileResult, PullActionsResult, RenameResult};
 use crate::{
     WorkspaceError,
     settings::{ServiceLanguage, Settings},
@@ -19,12 +19,13 @@ use biome_configuration::yaml::{
 };
 use biome_formatter::{Expand, IndentStyle, IndentWidth, LineEnding, LineWidth, Printed, QuoteStyle};
 use biome_fs::BiomePath;
+use biome_text_edit::TextEdit;
 use biome_yaml_analyze::analyze;
 use biome_yaml_formatter::format_node;
 use biome_yaml_parser::parse_yaml_with_cache;
-use biome_yaml_syntax::{YamlLanguage, YamlSyntaxNode, YamlRoot};
+use biome_yaml_syntax::{YamlLanguage, YamlSyntaxKind, YamlSyntaxNode, YamlRoot};
 use biome_parser::AnyParse;
-use biome_rowan::{AstNode, NodeCache, TextRange};
+use biome_rowan::{AstNode, Direction, NodeCache, TextRange, TextSize};
 use camino::Utf8Path;
 use either::Either;
 use std::borrow::Cow;
@@ -224,7 +225,7 @@ impl ExtensionHandler for YamlFileHandler {
             analyzer: AnalyzerCapabilities {
                 lint: Some(lint),
                 code_actions: Some(code_actions),
-                rename: None,
+                rename: Some(rename),
                 fix_all: Some(fix_all),
                 update_snippets: None,
                 pull_diagnostics_and_actions: None,
@@ -462,4 +463,127 @@ pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceEr
             });
         }
     }
+}
+
+fn rename(
+    _path: &BiomePath,
+    parse: AnyParse,
+    symbol_at: TextSize,
+    new_name: String,
+) -> Result<RenameResult, WorkspaceError> {
+    let syntax: YamlSyntaxNode = parse.syntax();
+
+    // Find the token at the cursor position
+    let token = syntax
+        .descendants_tokens(Direction::Next)
+        .find(|token| token.text_range().contains(symbol_at));
+
+    let Some(token) = token else {
+        return Err(WorkspaceError::RenameError(
+            biome_js_analyze::utils::rename::RenameError::CannotFindDeclaration(new_name),
+        ));
+    };
+
+    // Check if the token is an anchor or alias
+    let prefix = match token.kind() {
+        YamlSyntaxKind::ANCHOR_PROPERTY_LITERAL => '&',
+        YamlSyntaxKind::ALIAS_LITERAL => '*',
+        _ => {
+            return Err(WorkspaceError::RenameError(
+                biome_js_analyze::utils::rename::RenameError::CannotBeRenamed {
+                    original_name: token.text_trimmed().to_string(),
+                    original_range: token.text_range(),
+                    new_name,
+                },
+            ));
+        }
+    };
+
+    // Extract the bare anchor/alias name (without & or * prefix)
+    let text = token.text_trimmed();
+    let old_name = text
+        .strip_prefix(prefix)
+        .unwrap_or(text)
+        .to_string();
+
+    // Find the containing YAML document (for multi-doc scoping)
+    let document_node = token
+        .parent()
+        .and_then(|node| {
+            node.ancestors()
+                .find(|n| n.kind() == YamlSyntaxKind::YAML_DOCUMENT)
+        });
+
+    // Search within the document (or root if no document found)
+    let search_root = document_node.unwrap_or_else(|| syntax.clone());
+
+    // Collect all anchor and alias tokens with the matching name
+    let mut edits: Vec<(TextRange, String)> = Vec::new();
+
+    for descendant_token in search_root.descendants_tokens(Direction::Next) {
+        let kind = descendant_token.kind();
+        let (pfx, is_anchor_or_alias) = match kind {
+            YamlSyntaxKind::ANCHOR_PROPERTY_LITERAL => ('&', true),
+            YamlSyntaxKind::ALIAS_LITERAL => ('*', true),
+            _ => ('\0', false),
+        };
+
+        if !is_anchor_or_alias {
+            continue;
+        }
+
+        let dt_text = descendant_token.text_trimmed();
+        let dt_name = dt_text.strip_prefix(pfx).unwrap_or(dt_text);
+
+        if dt_name == old_name {
+            // Compute range of just the name portion (after the prefix character)
+            let full_range = descendant_token.text_trimmed_range();
+            let name_start = full_range.start() + TextSize::from(1); // skip & or *
+            let name_range = TextRange::new(name_start, full_range.end());
+            edits.push((name_range, new_name.clone()));
+        }
+    }
+
+    if edits.is_empty() {
+        return Err(WorkspaceError::RenameError(
+            biome_js_analyze::utils::rename::RenameError::CannotFindDeclaration(new_name),
+        ));
+    }
+
+    // Build the new source text with all replacements applied
+    let source = syntax.to_string();
+    let mut new_source = String::with_capacity(source.len());
+    let mut last_offset = TextSize::from(0);
+
+    // Sort edits by start position
+    let mut edits = edits;
+    edits.sort_by_key(|(range, _)| range.start());
+
+    for (range, replacement) in &edits {
+        let start: usize = range.start().into();
+        let end: usize = range.end().into();
+        let last: usize = last_offset.into();
+        new_source.push_str(&source[last..start]);
+        new_source.push_str(replacement);
+        last_offset = TextSize::from(end as u32);
+    }
+    let last: usize = last_offset.into();
+    new_source.push_str(&source[last..]);
+
+    // Compute the overall affected range
+    let first_start = edits.first().unwrap().0.start();
+    let last_end = edits.last().unwrap().0.end();
+    // Adjust last_end for any length difference from replacements
+    let total_old_len: usize = edits.iter().map(|(r, _)| usize::from(r.len())).sum::<usize>();
+    let total_new_len: usize = edits.len() * new_name.len();
+    let len_diff = total_new_len as i64 - total_old_len as i64;
+    let adjusted_end = (u32::from(last_end) as i64 + len_diff) as u32;
+    let result_range = TextRange::new(first_start, TextSize::from(adjusted_end));
+
+    let indels = TextEdit::from_unicode_words(&source, &new_source);
+
+    Ok(RenameResult {
+        range: result_range,
+        indels,
+    })
 }

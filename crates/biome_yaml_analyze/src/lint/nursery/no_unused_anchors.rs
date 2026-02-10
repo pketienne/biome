@@ -1,9 +1,9 @@
 use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange};
-use biome_yaml_syntax::{YamlAliasNode, YamlAnchorProperty, YamlRoot};
-use rustc_hash::{FxHashMap, FxHashSet};
+use biome_rowan::TextRange;
+use biome_yaml_semantic::semantic_model;
+use biome_yaml_syntax::YamlRoot;
 
 declare_lint_rule! {
     /// Disallow unused anchors in YAML documents.
@@ -48,31 +48,15 @@ impl Rule for NoUnusedAnchors {
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let root = ctx.query();
-        let mut anchors = FxHashMap::<String, TextRange>::default();
+        let model = semantic_model(root);
 
-        for anchor in root.syntax().descendants().filter_map(YamlAnchorProperty::cast) {
-            let Ok(token) = anchor.value_token() else {
-                continue;
-            };
-            let text = token.text_trimmed();
-            let name = text.strip_prefix('&').unwrap_or(text).to_string();
-            anchors.entry(name).or_insert(token.text_trimmed_range());
-        }
-
-        let referenced_anchors: FxHashSet<String> = root
-            .syntax()
-            .descendants()
-            .filter_map(YamlAliasNode::cast)
-            .filter_map(|alias| {
-                let text = alias.value_token().ok()?.text_trimmed().to_string();
-                Some(text.strip_prefix('*').unwrap_or(&text).to_string())
+        model
+            .all_anchors()
+            .filter(|anchor| anchor.all_aliases().is_empty())
+            .map(|anchor| UnusedAnchorState {
+                anchor_name: anchor.name().to_string(),
+                range: anchor.range(),
             })
-            .collect();
-
-        anchors
-            .into_iter()
-            .filter(|(name, _)| !referenced_anchors.contains(name))
-            .map(|(anchor_name, range)| UnusedAnchorState { anchor_name, range })
             .collect::<Vec<_>>()
             .into_boxed_slice()
     }

@@ -1,0 +1,23 @@
+[package]
+name                 = "biome_yaml_semantic"
+version              = "0.0.0"
+authors.workspace    = true
+edition.workspace    = true
+description          = "Biome's semantic model for YAML"
+homepage.workspace   = true
+repository.workspace = true
+license.workspace    = true
+keywords.workspace   = true
+categories.workspace = true
+publish              = false
+
+[dependencies]
+biome_yaml_syntax = { workspace = true }
+biome_rowan       = { workspace = true }
+rustc-hash        = { workspace = true }
+
+[dev-dependencies]
+biome_yaml_parser = { path = "../biome_yaml_parser" }
+
+[lints]
+workspace = true

@@ -1,9 +1,9 @@
 use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange};
-use biome_yaml_syntax::{YamlAnchorProperty, YamlRoot};
-use rustc_hash::FxHashMap;
+use biome_rowan::TextRange;
+use biome_yaml_semantic::semantic_model;
+use biome_yaml_syntax::YamlRoot;
 
 declare_lint_rule! {
     /// Disallow duplicate anchor names in a YAML document.
@@ -50,32 +50,15 @@ impl Rule for NoDuplicateAnchors {
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let root = ctx.query();
-        let mut anchors = FxHashMap::<String, (TextRange, Vec<TextRange>)>::default();
+        let model = semantic_model(root);
 
-        for anchor in root.syntax().descendants().filter_map(YamlAnchorProperty::cast) {
-            let Ok(token) = anchor.value_token() else {
-                continue;
-            };
-            let text = token.text_trimmed();
-            let name = text.strip_prefix('&').unwrap_or(text).to_string();
-
-            if let Some((_, duplicates)) = anchors.get_mut(&name) {
-                duplicates.push(token.text_trimmed_range());
-            } else {
-                anchors.insert(name, (token.text_trimmed_range(), Vec::new()));
-            }
-        }
-
-        anchors
-            .into_iter()
-            .filter(|(_, (_, duplicates))| !duplicates.is_empty())
-            .map(
-                |(anchor_name, (first_range, duplicate_ranges))| DuplicateAnchorState {
-                    anchor_name,
-                    first_range,
-                    duplicate_ranges,
-                },
-            )
+        model
+            .all_duplicate_anchors()
+            .map(|dup| DuplicateAnchorState {
+                anchor_name: dup.name().to_string(),
+                first_range: dup.first_range(),
+                duplicate_ranges: dup.duplicate_ranges().to_vec(),
+            })
             .collect::<Vec<_>>()
             .into_boxed_slice()
     }
