@@ -28,6 +28,9 @@
 | 16 | Lint rule expansion (5 new rules: noEmptyKeys, noEmptySequenceEntries, useConsistentIndentation, noAnchorReferences, useQuotedStrings) | COMPLETE |
 | 17 | Multi-document support hardening (directive lexing, edge case tests) | COMPLETE |
 | 18 | `useConsistentSequenceIndentation` lint rule (yamllint `indent-sequences: consistent`) | COMPLETE |
+| 19 | Semantic model (`biome_yaml_semantic` crate) | COMPLETE |
+| 20 | Rename capability (anchor/alias LSP rename) | COMPLETE |
+| 21 | Lexer `rewind()` / `checkpoint()` implementation | COMPLETE |
 
 ## Remaining Work
 
@@ -37,9 +40,9 @@
 
 ### Infrastructure Gaps
 
-#### Semantic Model
+#### Semantic Model — COMPLETE (Plan 19)
 
-No `biome_yaml_semantic` crate exists. A pre-computed data structure built from a single syntax tree traversal that maps anchor declarations (`&name`) to alias references (`*name`), scoped per YAML document. Other Biome languages have dedicated crates: `biome_js_semantic` (scope chains, variable bindings, hoisting, closures), `biome_css_semantic` (rule hierarchy, custom properties), `biome_graphql_semantic` (fragment/type bindings).
+`biome_yaml_semantic` crate implemented. A pre-computed data structure built from a single syntax tree traversal that maps anchor declarations (`&name`) to alias references (`*name`), scoped per YAML document. Other Biome languages have dedicated crates: `biome_js_semantic` (scope chains, variable bindings, hoisting, closures), `biome_css_semantic` (rule hierarchy, custom properties), `biome_graphql_semantic` (fragment/type bindings).
 
 **Current problem:** Each anchor/alias lint rule independently walks the entire syntax tree:
 - `noDuplicateAnchors` — full traversal, collects anchors into `FxHashMap`
@@ -82,11 +85,11 @@ pub struct YamlSemanticModelData {
 
 ---
 
-#### Rename Capability
+#### Rename Capability — COMPLETE (Plan 20)
 
 LSP "rename symbol" support for YAML anchors and aliases. Place cursor on an anchor or alias, rename it, and all related references update together.
 
-**Current state:** `rename: None` at `crates/biome_service/src/file_handlers/yaml.rs:227`. Only JavaScript implements rename in Biome (via its semantic model + `BatchMutation`).
+**Implemented:** `rename: Some(rename)` at `crates/biome_service/src/file_handlers/yaml.rs`. Finds token at cursor, extracts anchor/alias name, collects all matching tokens in same YAML document, builds `TextEdit` via string replacement.
 
 **Type signature** (from `crates/biome_service/src/file_handlers/mod.rs:986`):
 ```rust
@@ -154,16 +157,11 @@ biome search '<pattern>'
 
 ---
 
-#### Lexer `rewind()`
+#### Lexer `rewind()` — COMPLETE (Plan 21)
 
 The `Lexer` trait (`crates/biome_parser/src/lexer.rs:50-51`) requires a `rewind()` method that restores the lexer to a previously saved checkpoint, enabling speculative parsing.
 
-**Current state:** `crates/biome_yaml_parser/src/lexer/mod.rs:1008-1010`:
-```rust
-fn rewind(&mut self, _: LexerCheckpoint<Self::Kind>) {
-    unimplemented!("YAML lexer doesn't support rewinding")
-}
-```
+**Implemented:** `checkpoint()` and `rewind()` via `SavedLexerState` struct + `RefCell<Vec<SavedLexerState>>`. Captures/restores `current_coordinate`, `scopes` (block scope stack), `tokens` (VecDeque buffer), and diagnostics length. `LexerWithCheckpoint` trait implemented.
 
 **Who uses it:** JS and CSS parsers rely on it for disambiguation (e.g., `()` could be grouping or arrow function start). HTML uses it internally in the lexer.
 
