@@ -1,0 +1,7 @@
+# Nested flow collections should be skipped
+nested: {a: {b: 1}}
+nested_seq: [a, [b, c]]
+# Block style should not be flagged
+block:
+  a: 1
+  b: 2

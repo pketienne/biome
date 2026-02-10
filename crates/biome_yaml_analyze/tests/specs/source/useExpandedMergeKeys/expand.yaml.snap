@@ -1,0 +1,14 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: expand.yaml
+---
+# Input
+```yaml
+defaults: &defaults
+  color: blue
+  size: large
+custom:
+  <<: *defaults
+  color: red
+
+```

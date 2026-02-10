@@ -1,0 +1,81 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: flow_mapping.yaml
+---
+# Input
+```yaml
+config: {host: localhost, port: 8080}
+empty: {}
+simple: {a: 1}
+
+```
+
+# Diagnostics
+```
+flow_mapping.yaml:1:9 assist/source/useBlockStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This flow mapping can be converted to block style.
+  
+  > 1 │ config: {host: localhost, port: 8080}
+      │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    2 │ empty: {}
+    3 │ simple: {a: 1}
+  
+  i Block style is often more readable for multi-entry collections.
+  
+  i Safe fix: Convert to block style.
+  
+    1   │ - config:·{host:·localhost,·port:·8080}
+      1 │ + config:·
+      2 │ + ··host:·localhost
+      3 │ + ··port:·8080{host:·localhost,·port:·8080}
+    2 4 │   empty: {}
+    3 5 │   simple: {a: 1}
+  
+
+```
+
+```
+flow_mapping.yaml:2:8 assist/source/useBlockStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This flow mapping can be converted to block style.
+  
+    1 │ config: {host: localhost, port: 8080}
+  > 2 │ empty: {}
+      │        ^^
+    3 │ simple: {a: 1}
+    4 │ 
+  
+  i Block style is often more readable for multi-entry collections.
+  
+  i Safe fix: Convert to block style.
+  
+    2 │ empty:·{}{}
+      │        ++  
+
+```
+
+```
+flow_mapping.yaml:3:9 assist/source/useBlockStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This flow mapping can be converted to block style.
+  
+    1 │ config: {host: localhost, port: 8080}
+    2 │ empty: {}
+  > 3 │ simple: {a: 1}
+      │         ^^^^^^
+    4 │ 
+  
+  i Block style is often more readable for multi-entry collections.
+  
+  i Safe fix: Convert to block style.
+  
+    1 1 │   config: {host: localhost, port: 8080}
+    2 2 │   empty: {}
+    3   │ - simple:·{a:·1}
+      3 │ + simple:·
+      4 │ + ··a:·1{a:·1}
+    4 5 │   
+  
+
+```

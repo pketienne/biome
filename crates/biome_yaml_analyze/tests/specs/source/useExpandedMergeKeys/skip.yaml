@@ -1,0 +1,6 @@
+# No merge keys present
+simple:
+  key: value
+# Alias without merge key
+base: &base hello
+ref: *base

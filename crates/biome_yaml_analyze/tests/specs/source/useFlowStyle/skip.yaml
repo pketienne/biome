@@ -1,0 +1,6 @@
+# Nested block collections should be skipped
+nested:
+  child:
+    key: value
+# Flow style should not be flagged
+flow: {a: 1, b: 2}

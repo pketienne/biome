@@ -1,0 +1,33 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: block_mapping.yaml
+---
+# Input
+```yaml
+config:
+  host: localhost
+  port: 8080
+
+```
+
+# Diagnostics
+```
+block_mapping.yaml:2:3 assist/source/useFlowStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This block mapping can be converted to flow style.
+  
+    1 │ config:
+  > 2 │   host: localhost
+      │   ^^^^^^^^^^^^^^^
+  > 3 │   port: 8080
+      │   ^^^^^^^^^^
+    4 │ 
+  
+  i Flow style is more compact for simple, single-level collections.
+  
+  i Safe fix: Convert to flow style.
+  
+    2 │ ··{host:·localhost,·port:·8080}host:·localhost
+      │   +++++++++++++++++++++++++++++               
+
+```

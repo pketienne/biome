@@ -1,0 +1,35 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: block_sequence.yaml
+---
+# Input
+```yaml
+tags:
+  - alpha
+  - beta
+  - gamma
+
+```
+
+# Diagnostics
+```
+block_sequence.yaml:2:3 assist/source/useFlowStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This block sequence can be converted to flow style.
+  
+    1 │ tags:
+  > 2 │   - alpha
+      │   ^^^^^^^
+  > 3 │   - beta
+  > 4 │   - gamma
+      │   ^^^^^^^
+    5 │ 
+  
+  i Flow style is more compact for simple, single-level collections.
+  
+  i Safe fix: Convert to flow style.
+  
+    2 │ ··[]-·alpha
+      │   ++       
+
+```

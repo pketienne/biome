@@ -1,0 +1,36 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: skip.yaml
+---
+# Input
+```yaml
+# Nested block collections should be skipped
+nested:
+  child:
+    key: value
+# Flow style should not be flagged
+flow: {a: 1, b: 2}
+
+```
+
+# Diagnostics
+```
+skip.yaml:4:5 assist/source/useFlowStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This block mapping can be converted to flow style.
+  
+    2 │ nested:
+    3 │   child:
+  > 4 │     key: value
+      │     ^^^^^^^^^^
+    5 │ # Flow style should not be flagged
+    6 │ flow: {a: 1, b: 2}
+  
+  i Flow style is more compact for simple, single-level collections.
+  
+  i Safe fix: Convert to flow style.
+  
+    4 │ ····{key:·value}key:·value
+      │     ++++++++++++          
+
+```

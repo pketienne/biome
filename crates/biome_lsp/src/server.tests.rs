@@ -28,12 +28,14 @@ use tower::{Service, ServiceExt};
 use tower_lsp_server::LspService;
 use tower_lsp_server::jsonrpc::{self, Request, Response};
 use tower_lsp_server::ls_types::{
-    self as lsp, ClientCapabilities, CodeDescription, DidChangeConfigurationParams,
-    DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-    DidSaveTextDocumentParams, DocumentFormattingParams, FormattingOptions, InitializeParams,
-    InitializeResult, InitializedParams, Position, PublishDiagnosticsParams, Range,
-    TextDocumentContentChangeEvent, TextDocumentIdentifier, TextDocumentItem, TextEdit, Uri,
-    VersionedTextDocumentIdentifier, WorkDoneProgressParams, WorkspaceFolder,
+    self as lsp, ClientCapabilities, CodeDescription, CompletionParams, CompletionResponse,
+    DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentFormattingParams,
+    FormattingOptions, GotoDefinitionParams, GotoDefinitionResponse, Hover, HoverParams,
+    InitializeParams, InitializeResult, InitializedParams, Position, PublishDiagnosticsParams,
+    Range, TextDocumentContentChangeEvent, TextDocumentIdentifier, TextDocumentItem,
+    TextDocumentPositionParams, TextEdit, Uri, VersionedTextDocumentIdentifier,
+    WorkDoneProgressParams, WorkspaceFolder,
 };
 
 use crate::WorkspaceSettings;
@@ -4210,6 +4212,307 @@ async fn should_not_return_error_on_code_actions_for_grit_files() -> Result<()> 
     assert_eq!(res, vec![]);
 
     server.close_document().await?;
+    server.shutdown().await?;
+    reader.abort();
+
+    Ok(())
+}
+
+// #endregion
+
+// #region YAML LSP TESTS
+
+#[tokio::test]
+async fn yaml_hover_on_alias() -> Result<()> {
+    let factory = ServerFactory::default();
+    let (service, client) = factory.create().into_inner();
+    let (stream, sink) = client.split();
+    let mut server = Server::new(service);
+
+    let (sender, _receiver) = channel(CHANNEL_BUFFER_SIZE);
+    let reader = tokio::spawn(client_handler(stream, sink, sender));
+
+    server.initialize().await?;
+    server.initialized().await?;
+
+    let yaml_content = "base: &anchor hello\nref: *anchor\n";
+    server
+        .open_named_document(yaml_content, uri!("test.yaml"), "yaml")
+        .await?;
+
+    // Hover over the alias `*anchor` (line 1, character 6 = within `*anchor`)
+    let hover_result: Option<Hover> = server
+        .request(
+            "textDocument/hover",
+            "hover_alias",
+            HoverParams {
+                text_document_position_params: TextDocumentPositionParams {
+                    text_document: TextDocumentIdentifier {
+                        uri: uri!("test.yaml"),
+                    },
+                    position: Position {
+                        line: 1,
+                        character: 6,
+                    },
+                },
+                work_done_progress_params: WorkDoneProgressParams::default(),
+            },
+        )
+        .await?;
+
+    // Should return hover content about the alias
+    assert!(
+        hover_result.is_some(),
+        "Expected hover result for alias, got None"
+    );
+    let hover = hover_result.unwrap();
+    match &hover.contents {
+        lsp::HoverContents::Markup(markup) => {
+            assert!(
+                markup.value.contains("anchor"),
+                "Hover content should reference the anchor name, got: {}",
+                markup.value
+            );
+        }
+        _ => panic!("Expected Markup hover contents"),
+    }
+
+    server.shutdown().await?;
+    reader.abort();
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn yaml_hover_on_anchor() -> Result<()> {
+    let factory = ServerFactory::default();
+    let (service, client) = factory.create().into_inner();
+    let (stream, sink) = client.split();
+    let mut server = Server::new(service);
+
+    let (sender, _receiver) = channel(CHANNEL_BUFFER_SIZE);
+    let reader = tokio::spawn(client_handler(stream, sink, sender));
+
+    server.initialize().await?;
+    server.initialized().await?;
+
+    let yaml_content = "base: &anchor hello\nref: *anchor\n";
+    server
+        .open_named_document(yaml_content, uri!("test.yaml"), "yaml")
+        .await?;
+
+    // Hover over the anchor `&anchor` (line 0, character 7 = within `&anchor`)
+    let hover_result: Option<Hover> = server
+        .request(
+            "textDocument/hover",
+            "hover_anchor",
+            HoverParams {
+                text_document_position_params: TextDocumentPositionParams {
+                    text_document: TextDocumentIdentifier {
+                        uri: uri!("test.yaml"),
+                    },
+                    position: Position {
+                        line: 0,
+                        character: 7,
+                    },
+                },
+                work_done_progress_params: WorkDoneProgressParams::default(),
+            },
+        )
+        .await?;
+
+    assert!(
+        hover_result.is_some(),
+        "Expected hover result for anchor, got None"
+    );
+
+    server.shutdown().await?;
+    reader.abort();
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn yaml_hover_on_plain_text_returns_none() -> Result<()> {
+    let factory = ServerFactory::default();
+    let (service, client) = factory.create().into_inner();
+    let (stream, sink) = client.split();
+    let mut server = Server::new(service);
+
+    let (sender, _receiver) = channel(CHANNEL_BUFFER_SIZE);
+    let reader = tokio::spawn(client_handler(stream, sink, sender));
+
+    server.initialize().await?;
+    server.initialized().await?;
+
+    let yaml_content = "key: value\n";
+    server
+        .open_named_document(yaml_content, uri!("test.yaml"), "yaml")
+        .await?;
+
+    // Hover over plain text (no anchor/alias)
+    let hover_result: Option<serde_json::Value> = server
+        .request(
+            "textDocument/hover",
+            "hover_plain",
+            HoverParams {
+                text_document_position_params: TextDocumentPositionParams {
+                    text_document: TextDocumentIdentifier {
+                        uri: uri!("test.yaml"),
+                    },
+                    position: Position {
+                        line: 0,
+                        character: 0,
+                    },
+                },
+                work_done_progress_params: WorkDoneProgressParams::default(),
+            },
+        )
+        .await?;
+
+    // When no hover info, the LSP returns null which deserializes as Value::Null
+    let is_empty = match &hover_result {
+        None => true,
+        Some(v) => v.is_null(),
+    };
+    assert!(
+        is_empty,
+        "Expected no hover for plain text, got: {:?}",
+        hover_result
+    );
+
+    server.shutdown().await?;
+    reader.abort();
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn yaml_goto_definition_alias_to_anchor() -> Result<()> {
+    let factory = ServerFactory::default();
+    let (service, client) = factory.create().into_inner();
+    let (stream, sink) = client.split();
+    let mut server = Server::new(service);
+
+    let (sender, _receiver) = channel(CHANNEL_BUFFER_SIZE);
+    let reader = tokio::spawn(client_handler(stream, sink, sender));
+
+    server.initialize().await?;
+    server.initialized().await?;
+
+    let yaml_content = "base: &anchor hello\nref: *anchor\n";
+    server
+        .open_named_document(yaml_content, uri!("test.yaml"), "yaml")
+        .await?;
+
+    // Go to definition on alias `*anchor` (line 1, character 6)
+    let goto_result: Option<GotoDefinitionResponse> = server
+        .request(
+            "textDocument/definition",
+            "goto_def",
+            GotoDefinitionParams {
+                text_document_position_params: TextDocumentPositionParams {
+                    text_document: TextDocumentIdentifier {
+                        uri: uri!("test.yaml"),
+                    },
+                    position: Position {
+                        line: 1,
+                        character: 6,
+                    },
+                },
+                work_done_progress_params: WorkDoneProgressParams::default(),
+                partial_result_params: Default::default(),
+            },
+        )
+        .await?;
+
+    assert!(
+        goto_result.is_some(),
+        "Expected goto definition result for alias, got None"
+    );
+
+    // Should navigate to the anchor on line 0
+    match goto_result.unwrap() {
+        GotoDefinitionResponse::Scalar(location) => {
+            assert_eq!(location.range.start.line, 0, "Should navigate to line 0");
+        }
+        GotoDefinitionResponse::Array(locations) => {
+            assert!(!locations.is_empty(), "Should have at least one location");
+            assert_eq!(
+                locations[0].range.start.line, 0,
+                "Should navigate to line 0"
+            );
+        }
+        _ => panic!("Unexpected goto definition response type"),
+    }
+
+    server.shutdown().await?;
+    reader.abort();
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn yaml_completions_for_alias() -> Result<()> {
+    let factory = ServerFactory::default();
+    let (service, client) = factory.create().into_inner();
+    let (stream, sink) = client.split();
+    let mut server = Server::new(service);
+
+    let (sender, _receiver) = channel(CHANNEL_BUFFER_SIZE);
+    let reader = tokio::spawn(client_handler(stream, sink, sender));
+
+    server.initialize().await?;
+    server.initialized().await?;
+
+    let yaml_content = "base: &myanchor hello\nref: *\n";
+    server
+        .open_named_document(yaml_content, uri!("test.yaml"), "yaml")
+        .await?;
+
+    // Request completions at the `*` position (line 1, character 5 = right after `*`)
+    let completion_result: Option<CompletionResponse> = server
+        .request(
+            "textDocument/completion",
+            "completions",
+            CompletionParams {
+                text_document_position: TextDocumentPositionParams {
+                    text_document: TextDocumentIdentifier {
+                        uri: uri!("test.yaml"),
+                    },
+                    position: Position {
+                        line: 1,
+                        character: 5,
+                    },
+                },
+                work_done_progress_params: WorkDoneProgressParams::default(),
+                partial_result_params: Default::default(),
+                context: None,
+            },
+        )
+        .await?;
+
+    // Should return completions with anchor names
+    assert!(
+        completion_result.is_some(),
+        "Expected completions for alias position, got None"
+    );
+
+    match completion_result.unwrap() {
+        CompletionResponse::Array(items) => {
+            assert!(
+                !items.is_empty(),
+                "Should have at least one completion item"
+            );
+            assert!(
+                items.iter().any(|item| item.label.contains("myanchor")),
+                "Completions should include 'myanchor', got: {:?}",
+                items.iter().map(|i| &i.label).collect::<Vec<_>>()
+            );
+        }
+        _ => panic!("Expected array completion response"),
+    }
+
     server.shutdown().await?;
     reader.abort();
 

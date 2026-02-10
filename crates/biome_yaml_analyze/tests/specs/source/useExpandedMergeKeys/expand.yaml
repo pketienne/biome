@@ -1,0 +1,6 @@
+defaults: &defaults
+  color: blue
+  size: large
+custom:
+  <<: *defaults
+  color: red

@@ -1,0 +1,82 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: flow_sequence.yaml
+---
+# Input
+```yaml
+tags: [alpha, beta, gamma]
+empty: []
+single: [one]
+
+```
+
+# Diagnostics
+```
+flow_sequence.yaml:1:7 assist/source/useBlockStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This flow sequence can be converted to block style.
+  
+  > 1 │ tags: [alpha, beta, gamma]
+      │       ^^^^^^^^^^^^^^^^^^^^
+    2 │ empty: []
+    3 │ single: [one]
+  
+  i Block style is often more readable for multi-entry collections.
+  
+  i Safe fix: Convert to block style.
+  
+    1   │ - tags:·[alpha,·beta,·gamma]
+      1 │ + tags:·
+      2 │ + ··-·alpha
+      3 │ + ··-·beta
+      4 │ + ··-·gamma[alpha,·beta,·gamma]
+    2 5 │   empty: []
+    3 6 │   single: [one]
+  
+
+```
+
+```
+flow_sequence.yaml:2:8 assist/source/useBlockStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This flow sequence can be converted to block style.
+  
+    1 │ tags: [alpha, beta, gamma]
+  > 2 │ empty: []
+      │        ^^
+    3 │ single: [one]
+    4 │ 
+  
+  i Block style is often more readable for multi-entry collections.
+  
+  i Safe fix: Convert to block style.
+  
+    2 │ empty:·[][]
+      │        ++  
+
+```
+
+```
+flow_sequence.yaml:3:9 assist/source/useBlockStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This flow sequence can be converted to block style.
+  
+    1 │ tags: [alpha, beta, gamma]
+    2 │ empty: []
+  > 3 │ single: [one]
+      │         ^^^^^
+    4 │ 
+  
+  i Block style is often more readable for multi-entry collections.
+  
+  i Safe fix: Convert to block style.
+  
+    1 1 │   tags: [alpha, beta, gamma]
+    2 2 │   empty: []
+    3   │ - single:·[one]
+      3 │ + single:·
+      4 │ + ··-·one[one]
+    4 5 │   
+  
+
+```
