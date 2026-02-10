@@ -446,6 +446,7 @@ pub mod use_valid_aria_values;
 pub mod use_valid_autocomplete;
 pub mod use_valid_for_direction;
 pub mod use_valid_lang;
+pub mod use_valid_schema;
 pub mod use_valid_typeof;
 pub mod use_vue_consistent_define_props_declaration;
 pub mod use_vue_consistent_v_bind_style;

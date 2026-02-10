@@ -1,0 +1,12 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: valid.yaml
+---
+# Input
+```yaml
+# should not generate diagnostics
+# yaml-language-server: $schema=test-schema.json
+name: John
+age: 30
+
+```

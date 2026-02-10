@@ -1,0 +1,46 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+# yaml-language-server: $schema=test-schema.json
+age: 30
+extra: bad
+
+```
+
+# Diagnostics
+```
+invalid.yaml:2:1 lint/nursery/useValidSchema ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Schema validation error: Additional properties are not allowed ('extra' was unexpected)
+  
+    1 │ # yaml-language-server: $schema=test-schema.json
+  > 2 │ age: 30
+      │ ^^^^^^^
+  > 3 │ extra: bad
+      │ ^^^^^^^^^^
+    4 │ 
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:2:1 lint/nursery/useValidSchema ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Schema validation error: "name" is a required property
+  
+    1 │ # yaml-language-server: $schema=test-schema.json
+  > 2 │ age: 30
+      │ ^^^^^^^
+  > 3 │ extra: bad
+      │ ^^^^^^^^^^
+    4 │ 
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

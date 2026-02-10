@@ -1,0 +1,4 @@
+# should not generate diagnostics
+# yaml-language-server: $schema=test-schema.json
+name: John
+age: 30

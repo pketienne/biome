@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=test-schema.json
+age: 30
+extra: bad

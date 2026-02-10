@@ -1,6 +1,6 @@
 # Plan 14: JSON Schema Validation for YAML
 
-## Status: PENDING (future phase)
+## Status: IMPLEMENTED (initial version)
 
 ## Context
 

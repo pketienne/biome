@@ -289,6 +289,7 @@ define_categories! {
     "lint/nursery/useSpread": "https://biomejs.dev/linter/rules/no-spread",
     "lint/nursery/useStringKeys": "https://biomejs.dev/linter/rules/use-string-keys",
     "lint/nursery/useValidMergeKeys": "https://biomejs.dev/linter/rules/use-valid-merge-keys",
+    "lint/nursery/useValidSchema": "https://biomejs.dev/linter/rules/use-valid-schema",
     "lint/nursery/useVueConsistentDefinePropsDeclaration": "https://biomejs.dev/linter/rules/use-vue-consistent-define-props-declaration",
     "lint/nursery/useVueConsistentVBindStyle": "https://biomejs.dev/linter/rules/use-vue-consistent-v-bind-style",
     "lint/nursery/useVueConsistentVOnStyle": "https://biomejs.dev/linter/rules/use-vue-consistent-v-on-style",
