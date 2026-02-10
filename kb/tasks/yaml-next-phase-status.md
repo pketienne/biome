@@ -37,13 +37,143 @@
 
 ### Infrastructure Gaps
 
-- **Semantic model** — No `biome_yaml_semantic` crate exists. Current anchor/alias lint rules (`noDuplicateAnchors`, `noUndeclaredAliases`, `noUnusedAnchors`, `useValidMergeKeys`) each independently traverse the full syntax tree to collect anchors and aliases. A semantic model (following the simpler GraphQL pattern) would pre-compute anchor bindings, alias references, and document-level scoping in a single traversal, enabling O(1) lookups. Would also enable future rules like circular reference detection and forward-reference warnings. Performance benefit scales with the number of anchor-related rules.
+#### Semantic Model
 
-- **Rename capability** — `rename: None` in `crates/biome_service/src/file_handlers/yaml.rs:227`. Only JavaScript implements rename. For YAML this would apply to anchors (`&name`) and aliases (`*name`) — renaming an anchor updates all referencing aliases. Existing lint rules already collect anchor/alias mappings that could be reused. Simpler than JS rename since YAML anchors have flat document-level scope (no nesting, closures, or module systems).
+No `biome_yaml_semantic` crate exists. A pre-computed data structure built from a single syntax tree traversal that maps anchor declarations (`&name`) to alias references (`*name`), scoped per YAML document. Other Biome languages have dedicated crates: `biome_js_semantic` (scope chains, variable bindings, hoisting, closures), `biome_css_semantic` (rule hierarchy, custom properties), `biome_graphql_semantic` (fragment/type bindings).
 
-- **Search capability (GritQL)** — `search: SearchCapabilities { search: None }` in `yaml.rs:238`. Search in Biome is structural pattern matching using GritQL, not text search. Currently only JavaScript and CSS are supported as Grit target languages (`crates/biome_grit_patterns/src/grit_target_language.rs:207-210`). Implementing for YAML requires: a `YamlTargetLanguage` variant, a `GritYamlParser` that converts YAML AST to Grit format, and wiring in the CLI compatibility check. Depends on Grit ecosystem support for YAML.
+**Current problem:** Each anchor/alias lint rule independently walks the entire syntax tree:
+- `noDuplicateAnchors` — full traversal, collects anchors into `FxHashMap`
+- `noUndeclaredAliases` — two full traversals (anchors + aliases)
+- `noUnusedAnchors` — two full traversals (anchors + aliases), then compares sets
+- `useValidMergeKeys` — full traversal to find `<<` keys and check alias values
 
-- **Lexer `rewind()`** — `unimplemented!()` at `crates/biome_yaml_parser/src/lexer/mod.rs:1008`. Part of the `Lexer` trait; enables speculative parsing (try one interpretation, rewind on failure). Not needed because the YAML lexer uses eager disambiguation via a token buffer (`VecDeque<LexToken>`). GraphQL and Grit lexers also don't implement it. Would only matter if speculative parsing or `BufferedLexer` were ever needed.
+Running all 4 rules = ~8 full tree traversals with redundant anchor/alias collection.
+
+**What a semantic model would provide:**
+- Single traversal to build model, then O(1) hash lookups per rule
+- Anchor bindings — name, range, document scope, referenced node
+- Alias references — name, range, resolved anchor (or unresolved)
+- Document scoping — anchors per-document in multi-doc YAML; aliases can't cross `---` boundaries
+- Pre-computed maps — anchor→aliases, alias→anchor, unresolved aliases, duplicate anchors
+
+**Proposed structure** (following GraphQL's simpler pattern):
+```rust
+pub struct YamlSemanticModelData {
+    pub root: YamlRoot,
+    pub anchors: Vec<YamlAnchor>,
+    pub anchors_by_name: FxHashMap<String, Vec<AnchorId>>,
+    pub aliases: Vec<YamlAlias>,
+    pub anchor_to_aliases: FxHashMap<AnchorId, Vec<AliasId>>,
+    pub alias_to_anchor: FxHashMap<AliasId, Option<AnchorId>>,
+    pub unresolved_aliases: Vec<UnresolvedAlias>,
+    pub documents: Vec<DocumentScope>,
+}
+```
+
+**What it unlocks:** rename capability, go-to-definition (alias→anchor), future rules (`noCircularAliases`, `noForwardAliasReferences`, `preferInlineValues`), ~4x fewer tree traversals when running all anchor-related rules.
+
+**Effort:** Medium. Follow GraphQL semantic crate as template. New crate, event-based builder, service integration, refactor 4 existing lint rules.
+
+**Key reference files:**
+- `crates/biome_graphql_semantic/src/semantic_model/model.rs` — simplest existing model
+- `crates/biome_graphql_semantic/src/events.rs` — event extraction pattern
+- `crates/biome_css_semantic/src/semantic_model/builder.rs` — builder pattern
+- `crates/biome_yaml_analyze/src/lint/nursery/no_unused_anchors.rs` — existing traversal logic to replace
+
+---
+
+#### Rename Capability
+
+LSP "rename symbol" support for YAML anchors and aliases. Place cursor on an anchor or alias, rename it, and all related references update together.
+
+**Current state:** `rename: None` at `crates/biome_service/src/file_handlers/yaml.rs:227`. Only JavaScript implements rename in Biome (via its semantic model + `BatchMutation`).
+
+**Type signature** (from `crates/biome_service/src/file_handlers/mod.rs:986`):
+```rust
+type Rename = fn(&BiomePath, AnyParse, TextSize, String) -> Result<RenameResult, WorkspaceError>;
+```
+
+**Example:**
+```yaml
+defaults: &default_config    # anchor declaration
+  timeout: 30
+production:
+  <<: *default_config        # alias reference (must also rename)
+staging:
+  <<: *default_config        # alias reference (must also rename)
+```
+Renaming `default_config` → `defaults` produces 3 text edits (1 anchor + 2 aliases).
+
+**Two implementation paths:**
+1. With semantic model — query `anchor_to_aliases` map, get all ranges instantly
+2. Without semantic model — traverse tree to collect anchors/aliases (reuse logic from existing lint rules)
+
+**Why simpler than JS:** YAML anchors have flat, document-scoped semantics — no lexical scoping, closures, hoisting, or module imports. Just find all `&name` and `*name` with matching names in the same document.
+
+**What's needed:**
+- A `rename` function in `yaml.rs`
+- Find token at cursor, determine if anchor or alias, extract name
+- Find all anchors/aliases with that name in same document
+- Build `TextEdit` list (strip `&`/`*` prefix, replace name portion)
+- Register as `rename: Some(rename)` in capabilities
+- Validation: new name doesn't conflict, is valid YAML identifier
+
+**Key reference files:**
+- `crates/biome_service/src/file_handlers/javascript.rs:1069-1108` — JS rename implementation
+- `crates/biome_service/src/workspace.rs:1126-1141` — `RenameParams` and `RenameResult` types
+- `crates/biome_js_analyze/src/utils/rename.rs` — JS rename infrastructure
+- `crates/biome_yaml_analyze/src/lint/nursery/no_unused_anchors.rs` — existing anchor/alias collection
+
+---
+
+#### Search Capability (GritQL)
+
+Biome's `biome search` command uses GritQL — a structural pattern matching language that operates on ASTs, not text. It enables queries like "find all mappings where key is `apiVersion`" and returns precise text ranges.
+
+**Current state:** `search: SearchCapabilities { search: None }` at `yaml.rs:238`. The path-level check returns `true` (YAML files are "searchable"), but no search function is wired — it's a placeholder.
+
+**Who has it:** Only JavaScript and CSS. JSON also has `search: None`.
+
+**Architecture:**
+```
+biome search '<pattern>'
+  → CLI parses pattern into GritQuery (with target language)
+  → Checks is_file_compatible_with_pattern()
+  → Calls search(path, parse, query, settings)
+  → GritQuery.execute() matches pattern against AST
+  → Returns Vec<TextRange>
+```
+
+**What's missing — 4 components:**
+1. `YamlTargetLanguage` — add to `generate_target_language!` macro in `crates/biome_grit_patterns/src/grit_target_language.rs:207-210` (currently only JS and CSS)
+2. `GritYamlParser` — new parser converting YAML's rowan AST into Grit's internal tree representation (bulk of the work)
+3. CLI compatibility check — add YAML arm to `is_file_compatible_with_pattern()` in `crates/biome_cli/src/execute/process_file/search.rs:79-89`
+4. Wire up handler — change `search: None` to `search: Some(search)` in YAML file handler
+
+**Why it's blocked:** The Grit pattern engine needs to understand YAML's AST node types. This requires either upstream Grit support for YAML or building a complete YAML-to-Grit AST mapping — significant work with unclear external dependency status.
+
+---
+
+#### Lexer `rewind()`
+
+The `Lexer` trait (`crates/biome_parser/src/lexer.rs:50-51`) requires a `rewind()` method that restores the lexer to a previously saved checkpoint, enabling speculative parsing.
+
+**Current state:** `crates/biome_yaml_parser/src/lexer/mod.rs:1008-1010`:
+```rust
+fn rewind(&mut self, _: LexerCheckpoint<Self::Kind>) {
+    unimplemented!("YAML lexer doesn't support rewinding")
+}
+```
+
+**Who uses it:** JS and CSS parsers rely on it for disambiguation (e.g., `()` could be grouping or arrow function start). HTML uses it internally in the lexer.
+
+**Who else doesn't implement it:** GraphQL and Grit parsers also have `unimplemented!()`.
+
+**Why YAML doesn't need it:** The YAML lexer uses a different architecture — it maintains a `VecDeque<LexToken>` token buffer and eagerly disambiguates tokens during lexing. The parser never calls `checkpoint()` or `rewind()` anywhere.
+
+**What implementing it would require:** Capturing and restoring `current_coordinate` (offset + column), `scopes: Vec<BlockScope>` (indentation tracking), `tokens: VecDeque<LexToken>` (token buffer), and `diagnostics` state. Non-trivial due to stateful scope tracking.
+
+**Impact:** None currently. Would only matter if speculative parsing patterns (`BufferedLexer` wrapping) or advanced error recovery via backtracking were ever needed. Lowest priority item.
 
 ### Cleanup
 
