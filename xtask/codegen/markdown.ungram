@@ -58,6 +58,7 @@ AnyLeafBlock =
 	| AnyCodeBlock
 	| MdHtmlBlock
 	| MdLinkBlock
+	| MdTable
 	| MdParagraph
 
 AnyContainerBlock =
@@ -150,7 +151,7 @@ MdOrderBullet =
 // Another block paragraph
 MdParagraph =
 	list: MdInlineItemList
-	hard_line: MdHardLine
+	hard_line: MdHardLine?
 
 MdInlineItemList = AnyMdInline*
 
@@ -159,6 +160,7 @@ AnyMdInline =
 	MdInlineCode
 	| MdInlineEmphasis
 	| MdInlineItalic
+	| MdInlineStrikethrough
 	| MdInlineLink
 	| MdInlineImage
 	| MdHtmlBlock
@@ -227,6 +229,27 @@ MdInlineImageLink =
 	'('
 	content: MdInlineItemList
 	')'
+
+// ~~strikethrough~~
+// ^^^^^^^^^^^^^^^^^
+MdInlineStrikethrough =
+	l_fence: '~~'
+	content: MdInlineItemList
+	r_fence: '~~'
+
+// GFM Table
+// | h1 | h2 |
+// |----|-----|
+// | a  | b  |
+MdTable =
+	header: MdTableRow
+	separator: MdTableRow
+	rows: MdTableRowList
+
+MdTableRowList = MdTableRow*
+
+MdTableRow =
+	content: MdInlineItemList
 
 // ***
 // ---

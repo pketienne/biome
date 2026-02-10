@@ -92,6 +92,10 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::MdInlineLink::new_unchecked(node) };
                     $body
                 }
+                $crate::MarkdownSyntaxKind::MD_INLINE_STRIKETHROUGH => {
+                    let $pattern = unsafe { $crate::MdInlineStrikethrough::new_unchecked(node) };
+                    $body
+                }
                 $crate::MarkdownSyntaxKind::MD_LINK_BLOCK => {
                     let $pattern = unsafe { $crate::MdLinkBlock::new_unchecked(node) };
                     $body
@@ -118,6 +122,14 @@ macro_rules! map_syntax_node {
                 }
                 $crate::MarkdownSyntaxKind::MD_SOFT_BREAK => {
                     let $pattern = unsafe { $crate::MdSoftBreak::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_TABLE => {
+                    let $pattern = unsafe { $crate::MdTable::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_TABLE_ROW => {
+                    let $pattern = unsafe { $crate::MdTableRow::new_unchecked(node) };
                     $body
                 }
                 $crate::MarkdownSyntaxKind::MD_TEXTUAL => {
@@ -158,6 +170,10 @@ macro_rules! map_syntax_node {
                 }
                 $crate::MarkdownSyntaxKind::MD_ORDER_LIST => {
                     let $pattern = unsafe { $crate::MdOrderList::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_TABLE_ROW_LIST => {
+                    let $pattern = unsafe { $crate::MdTableRowList::new_unchecked(node) };
                     $body
                 }
                 _ => unreachable!(),

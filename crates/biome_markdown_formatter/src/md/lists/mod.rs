@@ -7,3 +7,4 @@ pub(crate) mod hash_list;
 pub(crate) mod indented_code_line_list;
 pub(crate) mod inline_item_list;
 pub(crate) mod order_list;
+pub(crate) mod table_row_list;

@@ -273,6 +273,20 @@ pub fn md_inline_link(
         ],
     ))
 }
+pub fn md_inline_strikethrough(
+    l_fence_token: SyntaxToken,
+    content: MdInlineItemList,
+    r_fence_token: SyntaxToken,
+) -> MdInlineStrikethrough {
+    MdInlineStrikethrough::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_INLINE_STRIKETHROUGH,
+        [
+            Some(SyntaxElement::Token(l_fence_token)),
+            Some(SyntaxElement::Node(content.into_syntax())),
+            Some(SyntaxElement::Token(r_fence_token)),
+        ],
+    ))
+}
 pub fn md_link_block(label: MdTextual, url: MdTextual) -> MdLinkBlockBuilder {
     MdLinkBlockBuilder {
         label,
@@ -317,14 +331,31 @@ pub fn md_order_list_item(md_order_list: MdOrderList) -> MdOrderListItem {
         [Some(SyntaxElement::Node(md_order_list.into_syntax()))],
     ))
 }
-pub fn md_paragraph(list: MdInlineItemList, hard_line: MdHardLine) -> MdParagraph {
-    MdParagraph::unwrap_cast(SyntaxNode::new_detached(
-        MarkdownSyntaxKind::MD_PARAGRAPH,
-        [
-            Some(SyntaxElement::Node(list.into_syntax())),
-            Some(SyntaxElement::Node(hard_line.into_syntax())),
-        ],
-    ))
+pub fn md_paragraph(list: MdInlineItemList) -> MdParagraphBuilder {
+    MdParagraphBuilder {
+        list,
+        hard_line: None,
+    }
+}
+pub struct MdParagraphBuilder {
+    list: MdInlineItemList,
+    hard_line: Option<MdHardLine>,
+}
+impl MdParagraphBuilder {
+    pub fn with_hard_line(mut self, hard_line: MdHardLine) -> Self {
+        self.hard_line = Some(hard_line);
+        self
+    }
+    pub fn build(self) -> MdParagraph {
+        MdParagraph::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_PARAGRAPH,
+            [
+                Some(SyntaxElement::Node(self.list.into_syntax())),
+                self.hard_line
+                    .map(|token| SyntaxElement::Node(token.into_syntax())),
+            ],
+        ))
+    }
 }
 pub fn md_quote(any_md_block: AnyMdBlock) -> MdQuote {
     MdQuote::unwrap_cast(SyntaxNode::new_detached(
@@ -345,6 +376,22 @@ pub fn md_soft_break(value_token: SyntaxToken) -> MdSoftBreak {
     MdSoftBreak::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_SOFT_BREAK,
         [Some(SyntaxElement::Token(value_token))],
+    ))
+}
+pub fn md_table(header: MdTableRow, separator: MdTableRow, rows: MdTableRowList) -> MdTable {
+    MdTable::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_TABLE,
+        [
+            Some(SyntaxElement::Node(header.into_syntax())),
+            Some(SyntaxElement::Node(separator.into_syntax())),
+            Some(SyntaxElement::Node(rows.into_syntax())),
+        ],
+    ))
+}
+pub fn md_table_row(content: MdInlineItemList) -> MdTableRow {
+    MdTableRow::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_TABLE_ROW,
+        [Some(SyntaxElement::Node(content.into_syntax()))],
     ))
 }
 pub fn md_textual(value_token: SyntaxToken) -> MdTextual {
@@ -438,6 +485,18 @@ where
 {
     MdOrderList::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_ORDER_LIST,
+        items
+            .into_iter()
+            .map(|item| Some(item.into_syntax().into())),
+    ))
+}
+pub fn md_table_row_list<I>(items: I) -> MdTableRowList
+where
+    I: IntoIterator<Item = MdTableRow>,
+    I::IntoIter: ExactSizeIterator,
+{
+    MdTableRowList::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_TABLE_ROW_LIST,
         items
             .into_iter()
             .map(|item| Some(item.into_syntax().into())),

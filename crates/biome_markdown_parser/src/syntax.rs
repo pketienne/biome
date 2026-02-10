@@ -49,6 +49,11 @@ pub(crate) fn parse_any_block(p: &mut MarkdownParser) {
             let para = parse_paragraph(p);
             maybe_wrap_setext_header(p, para);
         }
+    } else if at_table_start(p) {
+        if !try_parse_table(p) {
+            let para = parse_paragraph(p);
+            maybe_wrap_setext_header(p, para);
+        }
     } else {
         let para = parse_paragraph(p);
         // Check if this paragraph is followed by a setext underline (=== or ---)
@@ -377,6 +382,12 @@ fn parse_inline_list(p: &mut MarkdownParser) {
                 p.bump_any();
                 textual.complete(p, MD_TEXTUAL);
             }
+        } else if at_inline_strikethrough_start(p) {
+            if !try_parse_inline_strikethrough(p) {
+                let textual = p.start();
+                p.bump_any();
+                textual.complete(p, MD_TEXTUAL);
+            }
         } else if at_inline_emphasis_start(p) {
             if !try_parse_inline_emphasis_or_italic(p) {
                 let textual = p.start();
@@ -698,6 +709,167 @@ fn try_parse_inline_italic(p: &mut MarkdownParser) -> bool {
         Ok(())
     })
     .is_ok()
+}
+
+// === Inline Strikethrough ===
+
+/// Check if the current token starts a strikethrough (`~~`).
+fn at_inline_strikethrough_start(p: &mut MarkdownParser) -> bool {
+    p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "~~"
+}
+
+/// Try to parse strikethrough: `~~text~~`.
+/// MdInlineStrikethrough has 3 slots: l_fence (DOUBLE_TILDE), content (MdInlineItemList), r_fence (DOUBLE_TILDE).
+fn try_parse_inline_strikethrough(p: &mut MarkdownParser) -> bool {
+    try_parse(p, |p| {
+        let m = p.start();
+
+        // Slot 0: opening ~~
+        p.bump_remap(DOUBLE_TILDE);
+
+        // Slot 1: content (MdInlineItemList)
+        let content = p.start();
+        let mut found_close = false;
+        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "~~" {
+                found_close = true;
+                break;
+            }
+            let textual = p.start();
+            p.bump_any();
+            textual.complete(p, MD_TEXTUAL);
+        }
+        content.complete(p, MD_INLINE_ITEM_LIST);
+
+        if !found_close {
+            m.abandon(p);
+            return Err(());
+        }
+
+        // Slot 2: closing ~~
+        p.bump_remap(DOUBLE_TILDE);
+
+        m.complete(p, MD_INLINE_STRIKETHROUGH);
+        Ok(())
+    })
+    .is_ok()
+}
+
+// === GFM Tables ===
+
+/// Quick check: the first token on the current line is a pipe `|`.
+/// This is a cheap pre-check before attempting full table parsing.
+fn at_table_start(p: &mut MarkdownParser) -> bool {
+    p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "|"
+}
+
+/// Try to parse a GFM table. Returns true if a table was successfully parsed.
+/// A table requires: header row, separator row (pipes + hyphens), then zero or more data rows.
+/// Uses try_parse to rewind if the second line isn't a valid separator.
+fn try_parse_table(p: &mut MarkdownParser) -> bool {
+    try_parse(p, |p| {
+        let m = p.start();
+
+        // Slot 0: header row (MdTableRow)
+        parse_table_row(p);
+
+        // After header row, we must be at a new line
+        if p.at(T![EOF]) || !p.has_preceding_line_break() {
+            m.abandon(p);
+            return Err(());
+        }
+
+        // Check if the next line is a separator row (pipes, hyphens, colons).
+        // is_separator_line always rewinds so the separator line is still available for parsing.
+        if !is_separator_line(p) {
+            m.abandon(p);
+            return Err(());
+        }
+
+        // Slot 1: separator row (MdTableRow) — parse it as a regular row
+        parse_table_row(p);
+
+        // Slot 2: data rows (MdTableRowList)
+        let rows = p.start();
+        while !p.at(T![EOF]) && p.has_preceding_line_break() && !p.has_preceding_blank_line() {
+            // Stop if this line doesn't look like a table row (must contain a pipe)
+            if !line_has_pipe(p) {
+                break;
+            }
+            parse_table_row(p);
+        }
+        rows.complete(p, MD_TABLE_ROW_LIST);
+
+        m.complete(p, MD_TABLE);
+        Ok(())
+    })
+    .is_ok()
+}
+
+/// Check if the current line is a table separator row (non-destructive, always rewinds).
+/// A separator line consists only of pipes `|`, hyphens `-`, colons `:`, and whitespace (trivia).
+/// Must have at least one pipe and at least one hyphen.
+fn is_separator_line(p: &mut MarkdownParser) -> bool {
+    let mut is_valid = false;
+    let _ = try_parse(p, |p| {
+        let mut has_pipe = false;
+        let mut has_hyphen = false;
+        let mut first = true;
+
+        while !p.at(T![EOF]) && (first || !p.has_preceding_line_break()) {
+            first = false;
+            if p.cur() == MD_TEXTUAL_LITERAL {
+                match p.cur_text() {
+                    "|" => has_pipe = true,
+                    "-" => has_hyphen = true,
+                    ":" => {}
+                    _ => return Err::<(), ()>(()),
+                }
+            }
+            p.bump_any();
+        }
+
+        is_valid = has_pipe && has_hyphen;
+        Err::<(), ()>(()) // Always rewind — this is a lookahead check
+    });
+    is_valid
+}
+
+/// Check (non-destructively, always rewinds) if the current line contains a pipe character.
+fn line_has_pipe(p: &mut MarkdownParser) -> bool {
+    let mut found = false;
+    let _ = try_parse(p, |p| {
+        let mut first = true;
+        while !p.at(T![EOF]) && (first || !p.has_preceding_line_break()) {
+            first = false;
+            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "|" {
+                found = true;
+                return Err::<(), ()>(());
+            }
+            p.bump_any();
+        }
+        Err::<(), ()>(())
+    });
+    found
+}
+
+/// Parse a single table row as a flat inline content list.
+/// MdTableRow has 1 slot: content (MdInlineItemList).
+/// All tokens (pipes, text, etc.) become MdTextual items in the list.
+fn parse_table_row(p: &mut MarkdownParser) {
+    let row = p.start();
+    let content = p.start();
+    let mut first = true;
+
+    while !p.at(T![EOF]) && (first || !p.has_preceding_line_break()) {
+        first = false;
+        let textual = p.start();
+        p.bump_any();
+        textual.complete(p, MD_TEXTUAL);
+    }
+
+    content.complete(p, MD_INLINE_ITEM_LIST);
+    row.complete(p, MD_TABLE_ROW);
 }
 
 // === Setext Headers ===
