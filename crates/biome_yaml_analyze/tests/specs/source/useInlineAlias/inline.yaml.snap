@@ -1,0 +1,96 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: inline.yaml
+---
+# Input
+```yaml
+# Plain scalar alias
+base: &default hello
+ref: *default
+
+# Quoted scalar alias
+quoted: &quoted_val "some string"
+use_quoted: *quoted_val
+
+# Single-quoted scalar alias
+single: &single_val 'another string'
+use_single: *single_val
+
+```
+
+# Diagnostics
+```
+inline.yaml:3:6 assist/source/useInlineAlias  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This alias can be replaced with the value of anchor default.
+  
+    1 │ # Plain scalar alias
+    2 │ base: &default hello
+  > 3 │ ref: *default
+      │      ^^^^^^^^
+    4 │ 
+    5 │ # Quoted scalar alias
+  
+  i Inlining removes the indirection and makes the value explicit.
+  
+  i Unsafe fix: Inline the alias value.
+  
+     1  1 │   # Plain scalar alias
+     2  2 │   base: &default hello
+     3    │ - ref:·*default
+        3 │ + ref:·hello
+     4  4 │   
+     5  5 │   # Quoted scalar alias
+  
+
+```
+
+```
+inline.yaml:7:13 assist/source/useInlineAlias  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This alias can be replaced with the value of anchor quoted_val.
+  
+    5 │ # Quoted scalar alias
+    6 │ quoted: &quoted_val "some string"
+  > 7 │ use_quoted: *quoted_val
+      │             ^^^^^^^^^^^
+    8 │ 
+    9 │ # Single-quoted scalar alias
+  
+  i Inlining removes the indirection and makes the value explicit.
+  
+  i Unsafe fix: Inline the alias value.
+  
+     5  5 │   # Quoted scalar alias
+     6  6 │   quoted: &quoted_val "some string"
+     7    │ - use_quoted:·*quoted_val
+        7 │ + use_quoted:·"some·string"
+     8  8 │   
+     9  9 │   # Single-quoted scalar alias
+  
+
+```
+
+```
+inline.yaml:11:13 assist/source/useInlineAlias  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i This alias can be replaced with the value of anchor single_val.
+  
+     9 │ # Single-quoted scalar alias
+    10 │ single: &single_val 'another string'
+  > 11 │ use_single: *single_val
+       │             ^^^^^^^^^^^
+    12 │ 
+  
+  i Inlining removes the indirection and makes the value explicit.
+  
+  i Unsafe fix: Inline the alias value.
+  
+     9  9 │   # Single-quoted scalar alias
+    10 10 │   single: &single_val 'another string'
+    11    │ - use_single:·*single_val
+       11 │ + use_single:·'another·string'
+    12 12 │   
+  
+
+```

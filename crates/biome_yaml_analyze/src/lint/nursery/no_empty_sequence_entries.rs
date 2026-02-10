@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, AstSeparatedList};
-use biome_yaml_syntax::YamlFlowSequence;
+use biome_rowan::{AstNode, AstSeparatedList, BatchMutationExt};
+use biome_yaml_syntax::{YamlFlowSequence, YamlLanguage};
 
 declare_lint_rule! {
     /// Disallow empty entries in flow sequences.
@@ -29,6 +31,7 @@ declare_lint_rule! {
         language: "yaml",
         recommended: true,
         severity: Severity::Error,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -65,5 +68,53 @@ impl Rule for NoEmptySequenceEntries {
                 "Remove the extra comma or provide a value for the entry."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleAction<YamlLanguage>> {
+        let sequence = ctx.query();
+        let entries = sequence.entries();
+
+        // Collect text of non-empty entries
+        let non_empty: Vec<String> = entries
+            .elements()
+            .filter_map(|element| {
+                let node = element.node().ok()?;
+                Some(node.syntax().text_trimmed().to_string())
+            })
+            .collect();
+
+        let new_text = format!("[{}]", non_empty.join(", "));
+
+        // Replace the opening bracket token with the full new text,
+        // and remove all other tokens in the sequence
+        let open_bracket = sequence.l_brack_token().ok()?;
+        let close_bracket = sequence.r_brack_token().ok()?;
+
+        let mut mutation = ctx.root().begin();
+
+        // Replace the open bracket with the full reconstructed sequence text
+        let new_open = biome_yaml_syntax::YamlSyntaxToken::new_detached(
+            open_bracket.kind(),
+            &new_text,
+            [],
+            [],
+        );
+        mutation.replace_token_transfer_trivia(open_bracket, new_open);
+
+        // Replace close bracket with empty string (content already included above)
+        let new_close = biome_yaml_syntax::YamlSyntaxToken::new_detached(
+            close_bracket.kind(),
+            "",
+            [],
+            [],
+        );
+        mutation.replace_token_transfer_trivia(close_bracket, new_close);
+
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Remove the empty entries." }.to_owned(),
+            mutation,
+        ))
     }
 }

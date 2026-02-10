@@ -1,0 +1,11 @@
+# Plain scalar alias
+base: &default hello
+ref: *default
+
+# Quoted scalar alias
+quoted: &quoted_val "some string"
+use_quoted: *quoted_val
+
+# Single-quoted scalar alias
+single: &single_val 'another string'
+use_single: *single_val

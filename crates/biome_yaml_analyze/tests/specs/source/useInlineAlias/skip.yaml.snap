@@ -1,0 +1,19 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: skip.yaml
+---
+# Input
+```yaml
+# should not generate diagnostics
+# Complex values should not be inlined
+mapping_anchor: &map_val
+  key1: value1
+  key2: value2
+use_map: *map_val
+
+sequence_anchor: &seq_val
+  - item1
+  - item2
+use_seq: *seq_val
+
+```
