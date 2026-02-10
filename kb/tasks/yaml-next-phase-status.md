@@ -47,4 +47,4 @@
 
 ### Cleanup
 
-- **Unused compact notation syntax kinds** — Four ghost syntax kinds (`YAML_COMPACT_MAPPING`, `YAML_COMPACT_MAPPING_INDENTED`, `YAML_COMPACT_SEQUENCE`, `YAML_COMPACT_SEQUENCE_INDENTED`) defined in `xtask/codegen/src/yaml_kinds_src.rs` and generated into `crates/biome_yaml_syntax/src/generated/kind.rs:72-75`. Never parsed, no AST structs, no formatters. Remnants of an earlier design superseded by the `align(2, ...)` approach. Can be safely deleted.
+- ~~**Unused compact notation syntax kinds**~~ — Removed. Four ghost syntax kinds deleted from codegen and generated kind.rs.
