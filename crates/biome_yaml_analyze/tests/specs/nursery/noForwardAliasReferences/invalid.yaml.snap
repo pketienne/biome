@@ -1,0 +1,35 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: invalid.yaml
+---
+# Input
+```yaml
+first: *anchor
+second: &anchor value
+
+```
+
+# Diagnostics
+```
+invalid.yaml:1:8 lint/nursery/noForwardAliasReferences ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The alias *anchor is used before its anchor is declared.
+  
+  > 1 │ first: *anchor
+      │        ^^^^^^^
+    2 │ second: &anchor value
+    3 │ 
+  
+  i The anchor &anchor is declared here.
+  
+    1 │ first: *anchor
+  > 2 │ second: &anchor value
+      │         ^^^^^^^
+    3 │ 
+  
+  i Declare anchors before referencing them with aliases for better readability and tool compatibility.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

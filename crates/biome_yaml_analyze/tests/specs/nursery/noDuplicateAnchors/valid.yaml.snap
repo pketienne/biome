@@ -5,7 +5,13 @@ expression: valid.yaml
 # Input
 ```yaml
 # should not generate diagnostics
-first: value1
-second: value2
+# Unique anchors
+first: &anchor1 value1
+second: &anchor2 value2
+
+# Nested mappings with unique anchors
+parent:
+  child1: &nested1 val1
+  child2: &nested2 val2
 
 ```

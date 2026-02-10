@@ -1,2 +1,8 @@
+# Single unused anchor
 first: &unused value1
 second: value2
+
+# Multiple unused anchors
+a: &orphan1 val1
+b: &orphan2 val2
+c: regular_value

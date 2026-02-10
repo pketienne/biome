@@ -1,0 +1,9 @@
+---
+first: document
+key: value
+---
+second: document
+another: key
+...
+---
+third: document

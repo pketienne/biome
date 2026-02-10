@@ -1,0 +1,10 @@
+# should not generate diagnostics
+# yaml-language-server: $schema=nested-schema.json
+server:
+  host: localhost
+  port: 8080
+endpoints:
+  - path: /api/health
+    method: GET
+  - path: /api/data
+    method: POST

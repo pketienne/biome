@@ -1,3 +1,16 @@
 # should not generate diagnostics
-first: value1
-second: value2
+# Basic anchor with alias
+first: &anchor value1
+second: *anchor
+
+# Multiple aliases to same anchor
+base: &shared common
+ref1: *shared
+ref2: *shared
+
+# Merge key usage
+defaults: &defaults
+  timeout: 30
+production:
+  <<: *defaults
+  host: prod

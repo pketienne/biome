@@ -4,28 +4,72 @@ expression: invalid.yaml
 ---
 # Input
 ```yaml
+# Simple duplicate
 first: &anchor value1
 second: &anchor value2
+
+# Triple duplicate
+a: &dup one
+b: &dup two
+c: &dup three
 
 ```
 
 # Diagnostics
 ```
-invalid.yaml:1:8 lint/nursery/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:2:8 lint/nursery/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × The anchor anchor is defined multiple times.
   
-  > 1 │ first: &anchor value1
+    1 │ # Simple duplicate
+  > 2 │ first: &anchor value1
       │        ^^^^^^^
-    2 │ second: &anchor value2
-    3 │ 
+    3 │ second: &anchor value2
+    4 │ 
   
   i This is where a duplicated anchor was declared again.
   
-    1 │ first: &anchor value1
-  > 2 │ second: &anchor value2
+    1 │ # Simple duplicate
+    2 │ first: &anchor value1
+  > 3 │ second: &anchor value2
       │         ^^^^^^^
-    3 │ 
+    4 │ 
+    5 │ # Triple duplicate
+  
+  i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:6:4 lint/nursery/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The anchor dup is defined multiple times.
+  
+    5 │ # Triple duplicate
+  > 6 │ a: &dup one
+      │    ^^^^
+    7 │ b: &dup two
+    8 │ c: &dup three
+  
+  i This is where a duplicated anchor was declared again.
+  
+    5 │ # Triple duplicate
+    6 │ a: &dup one
+  > 7 │ b: &dup two
+      │    ^^^^
+    8 │ c: &dup three
+    9 │ 
+  
+  i This is where a duplicated anchor was declared again.
+  
+    6 │ a: &dup one
+    7 │ b: &dup two
+  > 8 │ c: &dup three
+      │    ^^^^
+    9 │ 
   
   i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
   

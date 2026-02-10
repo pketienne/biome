@@ -1,0 +1,6 @@
+# should not generate diagnostics
+defaults: &defaults
+  timeout: 30
+production:
+  <<: *defaults
+  host: prod.example.com

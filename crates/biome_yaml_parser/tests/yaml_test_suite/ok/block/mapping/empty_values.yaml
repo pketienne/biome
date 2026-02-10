@@ -1,0 +1,7 @@
+empty_string:
+null_value: null
+tilde_null: ~
+empty_explicit:
+nested:
+  also_empty:
+  with_value: present

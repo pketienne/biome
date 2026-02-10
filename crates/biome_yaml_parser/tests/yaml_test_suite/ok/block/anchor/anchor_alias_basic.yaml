@@ -1,0 +1,9 @@
+default: &default_settings
+  timeout: 30
+  retries: 3
+production:
+  <<: *default_settings
+  host: prod.example.com
+staging:
+  <<: *default_settings
+  host: staging.example.com

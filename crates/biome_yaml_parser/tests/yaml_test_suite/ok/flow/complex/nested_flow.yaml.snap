@@ -1,0 +1,542 @@
+---
+source: crates/biome_yaml_parser/tests/spec_test.rs
+expression: snapshot
+---
+## Input
+```yaml
+deep: {a: {b: {c: {d: value}}}}
+mixed: {list: [1, 2, {nested: true}], key: val}
+array_of_maps: [{a: 1, b: 2}, {c: 3, d: 4}]
+
+```
+
+## AST
+
+```
+YamlRoot {
+    documents: YamlDocumentList [
+        YamlDocument {
+            bom_token: missing (optional),
+            directives: YamlDirectiveList [],
+            dashdashdash_token: missing (optional),
+            node: YamlBlockMapping {
+                properties: missing (optional),
+                mapping_start_token: MAPPING_START@0..0 "" [] [],
+                entries: YamlBlockMapEntryList [
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@0..4 "deep" [] [],
+                            },
+                        },
+                        colon_token: COLON@4..6 ":" [] [Whitespace(" ")],
+                        value: YamlFlowInBlockNode {
+                            properties: missing (optional),
+                            flow_start_token: FLOW_START@6..6 "" [] [],
+                            flow: YamlFlowJsonNode {
+                                properties: missing (optional),
+                                content: YamlFlowMapping {
+                                    l_curly_token: L_CURLY@6..7 "{" [] [],
+                                    entries: YamlFlowMapEntryList [
+                                        YamlFlowMapImplicitEntry {
+                                            key: YamlFlowYamlNode {
+                                                properties: missing (optional),
+                                                content: YamlPlainScalar {
+                                                    value_token: PLAIN_LITERAL@7..8 "a" [] [],
+                                                },
+                                            },
+                                            colon_token: COLON@8..10 ":" [] [Whitespace(" ")],
+                                            value: YamlFlowJsonNode {
+                                                properties: missing (optional),
+                                                content: YamlFlowMapping {
+                                                    l_curly_token: L_CURLY@10..11 "{" [] [],
+                                                    entries: YamlFlowMapEntryList [
+                                                        YamlFlowMapImplicitEntry {
+                                                            key: YamlFlowYamlNode {
+                                                                properties: missing (optional),
+                                                                content: YamlPlainScalar {
+                                                                    value_token: PLAIN_LITERAL@11..12 "b" [] [],
+                                                                },
+                                                            },
+                                                            colon_token: COLON@12..14 ":" [] [Whitespace(" ")],
+                                                            value: YamlFlowJsonNode {
+                                                                properties: missing (optional),
+                                                                content: YamlFlowMapping {
+                                                                    l_curly_token: L_CURLY@14..15 "{" [] [],
+                                                                    entries: YamlFlowMapEntryList [
+                                                                        YamlFlowMapImplicitEntry {
+                                                                            key: YamlFlowYamlNode {
+                                                                                properties: missing (optional),
+                                                                                content: YamlPlainScalar {
+                                                                                    value_token: PLAIN_LITERAL@15..16 "c" [] [],
+                                                                                },
+                                                                            },
+                                                                            colon_token: COLON@16..18 ":" [] [Whitespace(" ")],
+                                                                            value: YamlFlowJsonNode {
+                                                                                properties: missing (optional),
+                                                                                content: YamlFlowMapping {
+                                                                                    l_curly_token: L_CURLY@18..19 "{" [] [],
+                                                                                    entries: YamlFlowMapEntryList [
+                                                                                        YamlFlowMapImplicitEntry {
+                                                                                            key: YamlFlowYamlNode {
+                                                                                                properties: missing (optional),
+                                                                                                content: YamlPlainScalar {
+                                                                                                    value_token: PLAIN_LITERAL@19..20 "d" [] [],
+                                                                                                },
+                                                                                            },
+                                                                                            colon_token: COLON@20..22 ":" [] [Whitespace(" ")],
+                                                                                            value: YamlFlowYamlNode {
+                                                                                                properties: missing (optional),
+                                                                                                content: YamlPlainScalar {
+                                                                                                    value_token: PLAIN_LITERAL@22..27 "value" [] [],
+                                                                                                },
+                                                                                            },
+                                                                                        },
+                                                                                    ],
+                                                                                    r_curly_token: R_CURLY@27..28 "}" [] [],
+                                                                                },
+                                                                            },
+                                                                        },
+                                                                    ],
+                                                                    r_curly_token: R_CURLY@28..29 "}" [] [],
+                                                                },
+                                                            },
+                                                        },
+                                                    ],
+                                                    r_curly_token: R_CURLY@29..30 "}" [] [],
+                                                },
+                                            },
+                                        },
+                                    ],
+                                    r_curly_token: R_CURLY@30..31 "}" [] [],
+                                },
+                            },
+                            flow_end_token: FLOW_END@31..31 "" [] [],
+                        },
+                    },
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@31..37 "mixed" [Newline("\n")] [],
+                            },
+                        },
+                        colon_token: COLON@37..39 ":" [] [Whitespace(" ")],
+                        value: YamlFlowInBlockNode {
+                            properties: missing (optional),
+                            flow_start_token: FLOW_START@39..39 "" [] [],
+                            flow: YamlFlowJsonNode {
+                                properties: missing (optional),
+                                content: YamlFlowMapping {
+                                    l_curly_token: L_CURLY@39..40 "{" [] [],
+                                    entries: YamlFlowMapEntryList [
+                                        YamlFlowMapImplicitEntry {
+                                            key: YamlFlowYamlNode {
+                                                properties: missing (optional),
+                                                content: YamlPlainScalar {
+                                                    value_token: PLAIN_LITERAL@40..44 "list" [] [],
+                                                },
+                                            },
+                                            colon_token: COLON@44..46 ":" [] [Whitespace(" ")],
+                                            value: YamlFlowJsonNode {
+                                                properties: missing (optional),
+                                                content: YamlFlowSequence {
+                                                    l_brack_token: L_BRACK@46..47 "[" [] [],
+                                                    entries: YamlFlowSequenceEntryList [
+                                                        YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@47..48 "1" [] [],
+                                                            },
+                                                        },
+                                                        COMMA@48..50 "," [] [Whitespace(" ")],
+                                                        YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@50..51 "2" [] [],
+                                                            },
+                                                        },
+                                                        COMMA@51..53 "," [] [Whitespace(" ")],
+                                                        YamlFlowJsonNode {
+                                                            properties: missing (optional),
+                                                            content: YamlFlowMapping {
+                                                                l_curly_token: L_CURLY@53..54 "{" [] [],
+                                                                entries: YamlFlowMapEntryList [
+                                                                    YamlFlowMapImplicitEntry {
+                                                                        key: YamlFlowYamlNode {
+                                                                            properties: missing (optional),
+                                                                            content: YamlPlainScalar {
+                                                                                value_token: PLAIN_LITERAL@54..60 "nested" [] [],
+                                                                            },
+                                                                        },
+                                                                        colon_token: COLON@60..62 ":" [] [Whitespace(" ")],
+                                                                        value: YamlFlowYamlNode {
+                                                                            properties: missing (optional),
+                                                                            content: YamlPlainScalar {
+                                                                                value_token: PLAIN_LITERAL@62..66 "true" [] [],
+                                                                            },
+                                                                        },
+                                                                    },
+                                                                ],
+                                                                r_curly_token: R_CURLY@66..67 "}" [] [],
+                                                            },
+                                                        },
+                                                    ],
+                                                    r_brack_token: R_BRACK@67..68 "]" [] [],
+                                                },
+                                            },
+                                        },
+                                        COMMA@68..70 "," [] [Whitespace(" ")],
+                                        YamlFlowMapImplicitEntry {
+                                            key: YamlFlowYamlNode {
+                                                properties: missing (optional),
+                                                content: YamlPlainScalar {
+                                                    value_token: PLAIN_LITERAL@70..73 "key" [] [],
+                                                },
+                                            },
+                                            colon_token: COLON@73..75 ":" [] [Whitespace(" ")],
+                                            value: YamlFlowYamlNode {
+                                                properties: missing (optional),
+                                                content: YamlPlainScalar {
+                                                    value_token: PLAIN_LITERAL@75..78 "val" [] [],
+                                                },
+                                            },
+                                        },
+                                    ],
+                                    r_curly_token: R_CURLY@78..79 "}" [] [],
+                                },
+                            },
+                            flow_end_token: FLOW_END@79..79 "" [] [],
+                        },
+                    },
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@79..93 "array_of_maps" [Newline("\n")] [],
+                            },
+                        },
+                        colon_token: COLON@93..95 ":" [] [Whitespace(" ")],
+                        value: YamlFlowInBlockNode {
+                            properties: missing (optional),
+                            flow_start_token: FLOW_START@95..95 "" [] [],
+                            flow: YamlFlowJsonNode {
+                                properties: missing (optional),
+                                content: YamlFlowSequence {
+                                    l_brack_token: L_BRACK@95..96 "[" [] [],
+                                    entries: YamlFlowSequenceEntryList [
+                                        YamlFlowJsonNode {
+                                            properties: missing (optional),
+                                            content: YamlFlowMapping {
+                                                l_curly_token: L_CURLY@96..97 "{" [] [],
+                                                entries: YamlFlowMapEntryList [
+                                                    YamlFlowMapImplicitEntry {
+                                                        key: YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@97..98 "a" [] [],
+                                                            },
+                                                        },
+                                                        colon_token: COLON@98..100 ":" [] [Whitespace(" ")],
+                                                        value: YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@100..101 "1" [] [],
+                                                            },
+                                                        },
+                                                    },
+                                                    COMMA@101..103 "," [] [Whitespace(" ")],
+                                                    YamlFlowMapImplicitEntry {
+                                                        key: YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@103..104 "b" [] [],
+                                                            },
+                                                        },
+                                                        colon_token: COLON@104..106 ":" [] [Whitespace(" ")],
+                                                        value: YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@106..107 "2" [] [],
+                                                            },
+                                                        },
+                                                    },
+                                                ],
+                                                r_curly_token: R_CURLY@107..108 "}" [] [],
+                                            },
+                                        },
+                                        COMMA@108..110 "," [] [Whitespace(" ")],
+                                        YamlFlowJsonNode {
+                                            properties: missing (optional),
+                                            content: YamlFlowMapping {
+                                                l_curly_token: L_CURLY@110..111 "{" [] [],
+                                                entries: YamlFlowMapEntryList [
+                                                    YamlFlowMapImplicitEntry {
+                                                        key: YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@111..112 "c" [] [],
+                                                            },
+                                                        },
+                                                        colon_token: COLON@112..114 ":" [] [Whitespace(" ")],
+                                                        value: YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@114..115 "3" [] [],
+                                                            },
+                                                        },
+                                                    },
+                                                    COMMA@115..117 "," [] [Whitespace(" ")],
+                                                    YamlFlowMapImplicitEntry {
+                                                        key: YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@117..118 "d" [] [],
+                                                            },
+                                                        },
+                                                        colon_token: COLON@118..120 ":" [] [Whitespace(" ")],
+                                                        value: YamlFlowYamlNode {
+                                                            properties: missing (optional),
+                                                            content: YamlPlainScalar {
+                                                                value_token: PLAIN_LITERAL@120..121 "4" [] [],
+                                                            },
+                                                        },
+                                                    },
+                                                ],
+                                                r_curly_token: R_CURLY@121..122 "}" [] [],
+                                            },
+                                        },
+                                    ],
+                                    r_brack_token: R_BRACK@122..123 "]" [] [],
+                                },
+                            },
+                            flow_end_token: FLOW_END@123..123 "" [] [],
+                        },
+                    },
+                ],
+                mapping_end_token: MAPPING_END@123..124 "" [Newline("\n")] [],
+            },
+            dotdotdot_token: missing (optional),
+        },
+    ],
+    eof_token: EOF@124..124 "" [] [],
+}
+```
+
+## CST
+
+```
+0: YAML_ROOT@0..124
+  0: YAML_DOCUMENT_LIST@0..124
+    0: YAML_DOCUMENT@0..124
+      0: (empty)
+      1: YAML_DIRECTIVE_LIST@0..0
+      2: (empty)
+      3: YAML_BLOCK_MAPPING@0..124
+        0: (empty)
+        1: MAPPING_START@0..0 "" [] []
+        2: YAML_BLOCK_MAP_ENTRY_LIST@0..123
+          0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@0..31
+            0: YAML_FLOW_YAML_NODE@0..4
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@0..4
+                0: PLAIN_LITERAL@0..4 "deep" [] []
+            1: COLON@4..6 ":" [] [Whitespace(" ")]
+            2: YAML_FLOW_IN_BLOCK_NODE@6..31
+              0: (empty)
+              1: FLOW_START@6..6 "" [] []
+              2: YAML_FLOW_JSON_NODE@6..31
+                0: (empty)
+                1: YAML_FLOW_MAPPING@6..31
+                  0: L_CURLY@6..7 "{" [] []
+                  1: YAML_FLOW_MAP_ENTRY_LIST@7..30
+                    0: YAML_FLOW_MAP_IMPLICIT_ENTRY@7..30
+                      0: YAML_FLOW_YAML_NODE@7..8
+                        0: (empty)
+                        1: YAML_PLAIN_SCALAR@7..8
+                          0: PLAIN_LITERAL@7..8 "a" [] []
+                      1: COLON@8..10 ":" [] [Whitespace(" ")]
+                      2: YAML_FLOW_JSON_NODE@10..30
+                        0: (empty)
+                        1: YAML_FLOW_MAPPING@10..30
+                          0: L_CURLY@10..11 "{" [] []
+                          1: YAML_FLOW_MAP_ENTRY_LIST@11..29
+                            0: YAML_FLOW_MAP_IMPLICIT_ENTRY@11..29
+                              0: YAML_FLOW_YAML_NODE@11..12
+                                0: (empty)
+                                1: YAML_PLAIN_SCALAR@11..12
+                                  0: PLAIN_LITERAL@11..12 "b" [] []
+                              1: COLON@12..14 ":" [] [Whitespace(" ")]
+                              2: YAML_FLOW_JSON_NODE@14..29
+                                0: (empty)
+                                1: YAML_FLOW_MAPPING@14..29
+                                  0: L_CURLY@14..15 "{" [] []
+                                  1: YAML_FLOW_MAP_ENTRY_LIST@15..28
+                                    0: YAML_FLOW_MAP_IMPLICIT_ENTRY@15..28
+                                      0: YAML_FLOW_YAML_NODE@15..16
+                                        0: (empty)
+                                        1: YAML_PLAIN_SCALAR@15..16
+                                          0: PLAIN_LITERAL@15..16 "c" [] []
+                                      1: COLON@16..18 ":" [] [Whitespace(" ")]
+                                      2: YAML_FLOW_JSON_NODE@18..28
+                                        0: (empty)
+                                        1: YAML_FLOW_MAPPING@18..28
+                                          0: L_CURLY@18..19 "{" [] []
+                                          1: YAML_FLOW_MAP_ENTRY_LIST@19..27
+                                            0: YAML_FLOW_MAP_IMPLICIT_ENTRY@19..27
+                                              0: YAML_FLOW_YAML_NODE@19..20
+                                                0: (empty)
+                                                1: YAML_PLAIN_SCALAR@19..20
+                                                  0: PLAIN_LITERAL@19..20 "d" [] []
+                                              1: COLON@20..22 ":" [] [Whitespace(" ")]
+                                              2: YAML_FLOW_YAML_NODE@22..27
+                                                0: (empty)
+                                                1: YAML_PLAIN_SCALAR@22..27
+                                                  0: PLAIN_LITERAL@22..27 "value" [] []
+                                          2: R_CURLY@27..28 "}" [] []
+                                  2: R_CURLY@28..29 "}" [] []
+                          2: R_CURLY@29..30 "}" [] []
+                  2: R_CURLY@30..31 "}" [] []
+              3: FLOW_END@31..31 "" [] []
+          1: YAML_BLOCK_MAP_IMPLICIT_ENTRY@31..79
+            0: YAML_FLOW_YAML_NODE@31..37
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@31..37
+                0: PLAIN_LITERAL@31..37 "mixed" [Newline("\n")] []
+            1: COLON@37..39 ":" [] [Whitespace(" ")]
+            2: YAML_FLOW_IN_BLOCK_NODE@39..79
+              0: (empty)
+              1: FLOW_START@39..39 "" [] []
+              2: YAML_FLOW_JSON_NODE@39..79
+                0: (empty)
+                1: YAML_FLOW_MAPPING@39..79
+                  0: L_CURLY@39..40 "{" [] []
+                  1: YAML_FLOW_MAP_ENTRY_LIST@40..78
+                    0: YAML_FLOW_MAP_IMPLICIT_ENTRY@40..68
+                      0: YAML_FLOW_YAML_NODE@40..44
+                        0: (empty)
+                        1: YAML_PLAIN_SCALAR@40..44
+                          0: PLAIN_LITERAL@40..44 "list" [] []
+                      1: COLON@44..46 ":" [] [Whitespace(" ")]
+                      2: YAML_FLOW_JSON_NODE@46..68
+                        0: (empty)
+                        1: YAML_FLOW_SEQUENCE@46..68
+                          0: L_BRACK@46..47 "[" [] []
+                          1: YAML_FLOW_SEQUENCE_ENTRY_LIST@47..67
+                            0: YAML_FLOW_YAML_NODE@47..48
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@47..48
+                                0: PLAIN_LITERAL@47..48 "1" [] []
+                            1: COMMA@48..50 "," [] [Whitespace(" ")]
+                            2: YAML_FLOW_YAML_NODE@50..51
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@50..51
+                                0: PLAIN_LITERAL@50..51 "2" [] []
+                            3: COMMA@51..53 "," [] [Whitespace(" ")]
+                            4: YAML_FLOW_JSON_NODE@53..67
+                              0: (empty)
+                              1: YAML_FLOW_MAPPING@53..67
+                                0: L_CURLY@53..54 "{" [] []
+                                1: YAML_FLOW_MAP_ENTRY_LIST@54..66
+                                  0: YAML_FLOW_MAP_IMPLICIT_ENTRY@54..66
+                                    0: YAML_FLOW_YAML_NODE@54..60
+                                      0: (empty)
+                                      1: YAML_PLAIN_SCALAR@54..60
+                                        0: PLAIN_LITERAL@54..60 "nested" [] []
+                                    1: COLON@60..62 ":" [] [Whitespace(" ")]
+                                    2: YAML_FLOW_YAML_NODE@62..66
+                                      0: (empty)
+                                      1: YAML_PLAIN_SCALAR@62..66
+                                        0: PLAIN_LITERAL@62..66 "true" [] []
+                                2: R_CURLY@66..67 "}" [] []
+                          2: R_BRACK@67..68 "]" [] []
+                    1: COMMA@68..70 "," [] [Whitespace(" ")]
+                    2: YAML_FLOW_MAP_IMPLICIT_ENTRY@70..78
+                      0: YAML_FLOW_YAML_NODE@70..73
+                        0: (empty)
+                        1: YAML_PLAIN_SCALAR@70..73
+                          0: PLAIN_LITERAL@70..73 "key" [] []
+                      1: COLON@73..75 ":" [] [Whitespace(" ")]
+                      2: YAML_FLOW_YAML_NODE@75..78
+                        0: (empty)
+                        1: YAML_PLAIN_SCALAR@75..78
+                          0: PLAIN_LITERAL@75..78 "val" [] []
+                  2: R_CURLY@78..79 "}" [] []
+              3: FLOW_END@79..79 "" [] []
+          2: YAML_BLOCK_MAP_IMPLICIT_ENTRY@79..123
+            0: YAML_FLOW_YAML_NODE@79..93
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@79..93
+                0: PLAIN_LITERAL@79..93 "array_of_maps" [Newline("\n")] []
+            1: COLON@93..95 ":" [] [Whitespace(" ")]
+            2: YAML_FLOW_IN_BLOCK_NODE@95..123
+              0: (empty)
+              1: FLOW_START@95..95 "" [] []
+              2: YAML_FLOW_JSON_NODE@95..123
+                0: (empty)
+                1: YAML_FLOW_SEQUENCE@95..123
+                  0: L_BRACK@95..96 "[" [] []
+                  1: YAML_FLOW_SEQUENCE_ENTRY_LIST@96..122
+                    0: YAML_FLOW_JSON_NODE@96..108
+                      0: (empty)
+                      1: YAML_FLOW_MAPPING@96..108
+                        0: L_CURLY@96..97 "{" [] []
+                        1: YAML_FLOW_MAP_ENTRY_LIST@97..107
+                          0: YAML_FLOW_MAP_IMPLICIT_ENTRY@97..101
+                            0: YAML_FLOW_YAML_NODE@97..98
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@97..98
+                                0: PLAIN_LITERAL@97..98 "a" [] []
+                            1: COLON@98..100 ":" [] [Whitespace(" ")]
+                            2: YAML_FLOW_YAML_NODE@100..101
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@100..101
+                                0: PLAIN_LITERAL@100..101 "1" [] []
+                          1: COMMA@101..103 "," [] [Whitespace(" ")]
+                          2: YAML_FLOW_MAP_IMPLICIT_ENTRY@103..107
+                            0: YAML_FLOW_YAML_NODE@103..104
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@103..104
+                                0: PLAIN_LITERAL@103..104 "b" [] []
+                            1: COLON@104..106 ":" [] [Whitespace(" ")]
+                            2: YAML_FLOW_YAML_NODE@106..107
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@106..107
+                                0: PLAIN_LITERAL@106..107 "2" [] []
+                        2: R_CURLY@107..108 "}" [] []
+                    1: COMMA@108..110 "," [] [Whitespace(" ")]
+                    2: YAML_FLOW_JSON_NODE@110..122
+                      0: (empty)
+                      1: YAML_FLOW_MAPPING@110..122
+                        0: L_CURLY@110..111 "{" [] []
+                        1: YAML_FLOW_MAP_ENTRY_LIST@111..121
+                          0: YAML_FLOW_MAP_IMPLICIT_ENTRY@111..115
+                            0: YAML_FLOW_YAML_NODE@111..112
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@111..112
+                                0: PLAIN_LITERAL@111..112 "c" [] []
+                            1: COLON@112..114 ":" [] [Whitespace(" ")]
+                            2: YAML_FLOW_YAML_NODE@114..115
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@114..115
+                                0: PLAIN_LITERAL@114..115 "3" [] []
+                          1: COMMA@115..117 "," [] [Whitespace(" ")]
+                          2: YAML_FLOW_MAP_IMPLICIT_ENTRY@117..121
+                            0: YAML_FLOW_YAML_NODE@117..118
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@117..118
+                                0: PLAIN_LITERAL@117..118 "d" [] []
+                            1: COLON@118..120 ":" [] [Whitespace(" ")]
+                            2: YAML_FLOW_YAML_NODE@120..121
+                              0: (empty)
+                              1: YAML_PLAIN_SCALAR@120..121
+                                0: PLAIN_LITERAL@120..121 "4" [] []
+                        2: R_CURLY@121..122 "}" [] []
+                  2: R_BRACK@122..123 "]" [] []
+              3: FLOW_END@123..123 "" [] []
+        3: MAPPING_END@123..124 "" [Newline("\n")] []
+      4: (empty)
+  1: EOF@124..124 "" [] []
+
+```

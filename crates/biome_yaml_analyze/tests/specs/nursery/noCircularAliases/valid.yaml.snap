@@ -5,20 +5,10 @@ expression: valid.yaml
 # Input
 ```yaml
 # should not generate diagnostics
-# Basic anchor with alias
-first: &anchor value1
-second: *anchor
-
-# Multiple aliases to same anchor
-base: &shared common
-ref1: *shared
-ref2: *shared
-
-# Merge key usage
 defaults: &defaults
   timeout: 30
 production:
   <<: *defaults
-  host: prod
+  host: prod.example.com
 
 ```

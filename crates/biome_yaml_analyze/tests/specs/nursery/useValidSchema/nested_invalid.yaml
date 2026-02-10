@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=nested-schema.json
+server:
+  host: localhost
+  port: 99999
+endpoints:
+  - method: GET
+  - path: /api/data
+    method: PATCH

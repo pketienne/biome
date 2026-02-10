@@ -1,0 +1,342 @@
+---
+source: crates/biome_yaml_parser/tests/spec_test.rs
+expression: snapshot
+---
+## Input
+```yaml
+default: &default_settings
+  timeout: 30
+  retries: 3
+production:
+  <<: *default_settings
+  host: prod.example.com
+staging:
+  <<: *default_settings
+  host: staging.example.com
+
+```
+
+## AST
+
+```
+YamlRoot {
+    documents: YamlDocumentList [
+        YamlDocument {
+            bom_token: missing (optional),
+            directives: YamlDirectiveList [],
+            dashdashdash_token: missing (optional),
+            node: YamlBlockMapping {
+                properties: missing (optional),
+                mapping_start_token: MAPPING_START@0..0 "" [] [],
+                entries: YamlBlockMapEntryList [
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@0..7 "default" [] [],
+                            },
+                        },
+                        colon_token: COLON@7..9 ":" [] [Whitespace(" ")],
+                        value: YamlBlockMapping {
+                            properties: YamlPropertiesAnchorFirst {
+                                anchor: YamlAnchorProperty {
+                                    value_token: ANCHOR_PROPERTY_LITERAL@9..26 "&default_settings" [] [],
+                                },
+                                tag: missing (optional),
+                            },
+                            mapping_start_token: MAPPING_START@26..29 "" [Newline("\n"), Whitespace("  ")] [],
+                            entries: YamlBlockMapEntryList [
+                                YamlBlockMapImplicitEntry {
+                                    key: YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@29..36 "timeout" [] [],
+                                        },
+                                    },
+                                    colon_token: COLON@36..38 ":" [] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@38..38 "" [] [],
+                                        flow: YamlFlowYamlNode {
+                                            properties: missing (optional),
+                                            content: YamlPlainScalar {
+                                                value_token: PLAIN_LITERAL@38..40 "30" [] [],
+                                            },
+                                        },
+                                        flow_end_token: FLOW_END@40..40 "" [] [],
+                                    },
+                                },
+                                YamlBlockMapImplicitEntry {
+                                    key: YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@40..50 "retries" [Newline("\n"), Whitespace("  ")] [],
+                                        },
+                                    },
+                                    colon_token: COLON@50..52 ":" [] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@52..52 "" [] [],
+                                        flow: YamlFlowYamlNode {
+                                            properties: missing (optional),
+                                            content: YamlPlainScalar {
+                                                value_token: PLAIN_LITERAL@52..53 "3" [] [],
+                                            },
+                                        },
+                                        flow_end_token: FLOW_END@53..53 "" [] [],
+                                    },
+                                },
+                            ],
+                            mapping_end_token: MAPPING_END@53..53 "" [] [],
+                        },
+                    },
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@53..64 "production" [Newline("\n")] [],
+                            },
+                        },
+                        colon_token: COLON@64..65 ":" [] [],
+                        value: YamlBlockMapping {
+                            properties: missing (optional),
+                            mapping_start_token: MAPPING_START@65..68 "" [Newline("\n"), Whitespace("  ")] [],
+                            entries: YamlBlockMapEntryList [
+                                YamlBlockMapImplicitEntry {
+                                    key: YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@68..70 "<<" [] [],
+                                        },
+                                    },
+                                    colon_token: COLON@70..72 ":" [] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@72..72 "" [] [],
+                                        flow: YamlAliasNode {
+                                            value_token: ALIAS_LITERAL@72..89 "*default_settings" [] [],
+                                        },
+                                        flow_end_token: FLOW_END@89..89 "" [] [],
+                                    },
+                                },
+                                YamlBlockMapImplicitEntry {
+                                    key: YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@89..96 "host" [Newline("\n"), Whitespace("  ")] [],
+                                        },
+                                    },
+                                    colon_token: COLON@96..98 ":" [] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@98..98 "" [] [],
+                                        flow: YamlFlowYamlNode {
+                                            properties: missing (optional),
+                                            content: YamlPlainScalar {
+                                                value_token: PLAIN_LITERAL@98..114 "prod.example.com" [] [],
+                                            },
+                                        },
+                                        flow_end_token: FLOW_END@114..114 "" [] [],
+                                    },
+                                },
+                            ],
+                            mapping_end_token: MAPPING_END@114..114 "" [] [],
+                        },
+                    },
+                    YamlBlockMapImplicitEntry {
+                        key: YamlFlowYamlNode {
+                            properties: missing (optional),
+                            content: YamlPlainScalar {
+                                value_token: PLAIN_LITERAL@114..122 "staging" [Newline("\n")] [],
+                            },
+                        },
+                        colon_token: COLON@122..123 ":" [] [],
+                        value: YamlBlockMapping {
+                            properties: missing (optional),
+                            mapping_start_token: MAPPING_START@123..126 "" [Newline("\n"), Whitespace("  ")] [],
+                            entries: YamlBlockMapEntryList [
+                                YamlBlockMapImplicitEntry {
+                                    key: YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@126..128 "<<" [] [],
+                                        },
+                                    },
+                                    colon_token: COLON@128..130 ":" [] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@130..130 "" [] [],
+                                        flow: YamlAliasNode {
+                                            value_token: ALIAS_LITERAL@130..147 "*default_settings" [] [],
+                                        },
+                                        flow_end_token: FLOW_END@147..147 "" [] [],
+                                    },
+                                },
+                                YamlBlockMapImplicitEntry {
+                                    key: YamlFlowYamlNode {
+                                        properties: missing (optional),
+                                        content: YamlPlainScalar {
+                                            value_token: PLAIN_LITERAL@147..154 "host" [Newline("\n"), Whitespace("  ")] [],
+                                        },
+                                    },
+                                    colon_token: COLON@154..156 ":" [] [Whitespace(" ")],
+                                    value: YamlFlowInBlockNode {
+                                        properties: missing (optional),
+                                        flow_start_token: FLOW_START@156..156 "" [] [],
+                                        flow: YamlFlowYamlNode {
+                                            properties: missing (optional),
+                                            content: YamlPlainScalar {
+                                                value_token: PLAIN_LITERAL@156..175 "staging.example.com" [] [],
+                                            },
+                                        },
+                                        flow_end_token: FLOW_END@175..175 "" [] [],
+                                    },
+                                },
+                            ],
+                            mapping_end_token: MAPPING_END@175..175 "" [] [],
+                        },
+                    },
+                ],
+                mapping_end_token: MAPPING_END@175..176 "" [Newline("\n")] [],
+            },
+            dotdotdot_token: missing (optional),
+        },
+    ],
+    eof_token: EOF@176..176 "" [] [],
+}
+```
+
+## CST
+
+```
+0: YAML_ROOT@0..176
+  0: YAML_DOCUMENT_LIST@0..176
+    0: YAML_DOCUMENT@0..176
+      0: (empty)
+      1: YAML_DIRECTIVE_LIST@0..0
+      2: (empty)
+      3: YAML_BLOCK_MAPPING@0..176
+        0: (empty)
+        1: MAPPING_START@0..0 "" [] []
+        2: YAML_BLOCK_MAP_ENTRY_LIST@0..175
+          0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@0..53
+            0: YAML_FLOW_YAML_NODE@0..7
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@0..7
+                0: PLAIN_LITERAL@0..7 "default" [] []
+            1: COLON@7..9 ":" [] [Whitespace(" ")]
+            2: YAML_BLOCK_MAPPING@9..53
+              0: YAML_PROPERTIES_ANCHOR_FIRST@9..26
+                0: YAML_ANCHOR_PROPERTY@9..26
+                  0: ANCHOR_PROPERTY_LITERAL@9..26 "&default_settings" [] []
+                1: (empty)
+              1: MAPPING_START@26..29 "" [Newline("\n"), Whitespace("  ")] []
+              2: YAML_BLOCK_MAP_ENTRY_LIST@29..53
+                0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@29..40
+                  0: YAML_FLOW_YAML_NODE@29..36
+                    0: (empty)
+                    1: YAML_PLAIN_SCALAR@29..36
+                      0: PLAIN_LITERAL@29..36 "timeout" [] []
+                  1: COLON@36..38 ":" [] [Whitespace(" ")]
+                  2: YAML_FLOW_IN_BLOCK_NODE@38..40
+                    0: (empty)
+                    1: FLOW_START@38..38 "" [] []
+                    2: YAML_FLOW_YAML_NODE@38..40
+                      0: (empty)
+                      1: YAML_PLAIN_SCALAR@38..40
+                        0: PLAIN_LITERAL@38..40 "30" [] []
+                    3: FLOW_END@40..40 "" [] []
+                1: YAML_BLOCK_MAP_IMPLICIT_ENTRY@40..53
+                  0: YAML_FLOW_YAML_NODE@40..50
+                    0: (empty)
+                    1: YAML_PLAIN_SCALAR@40..50
+                      0: PLAIN_LITERAL@40..50 "retries" [Newline("\n"), Whitespace("  ")] []
+                  1: COLON@50..52 ":" [] [Whitespace(" ")]
+                  2: YAML_FLOW_IN_BLOCK_NODE@52..53
+                    0: (empty)
+                    1: FLOW_START@52..52 "" [] []
+                    2: YAML_FLOW_YAML_NODE@52..53
+                      0: (empty)
+                      1: YAML_PLAIN_SCALAR@52..53
+                        0: PLAIN_LITERAL@52..53 "3" [] []
+                    3: FLOW_END@53..53 "" [] []
+              3: MAPPING_END@53..53 "" [] []
+          1: YAML_BLOCK_MAP_IMPLICIT_ENTRY@53..114
+            0: YAML_FLOW_YAML_NODE@53..64
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@53..64
+                0: PLAIN_LITERAL@53..64 "production" [Newline("\n")] []
+            1: COLON@64..65 ":" [] []
+            2: YAML_BLOCK_MAPPING@65..114
+              0: (empty)
+              1: MAPPING_START@65..68 "" [Newline("\n"), Whitespace("  ")] []
+              2: YAML_BLOCK_MAP_ENTRY_LIST@68..114
+                0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@68..89
+                  0: YAML_FLOW_YAML_NODE@68..70
+                    0: (empty)
+                    1: YAML_PLAIN_SCALAR@68..70
+                      0: PLAIN_LITERAL@68..70 "<<" [] []
+                  1: COLON@70..72 ":" [] [Whitespace(" ")]
+                  2: YAML_FLOW_IN_BLOCK_NODE@72..89
+                    0: (empty)
+                    1: FLOW_START@72..72 "" [] []
+                    2: YAML_ALIAS_NODE@72..89
+                      0: ALIAS_LITERAL@72..89 "*default_settings" [] []
+                    3: FLOW_END@89..89 "" [] []
+                1: YAML_BLOCK_MAP_IMPLICIT_ENTRY@89..114
+                  0: YAML_FLOW_YAML_NODE@89..96
+                    0: (empty)
+                    1: YAML_PLAIN_SCALAR@89..96
+                      0: PLAIN_LITERAL@89..96 "host" [Newline("\n"), Whitespace("  ")] []
+                  1: COLON@96..98 ":" [] [Whitespace(" ")]
+                  2: YAML_FLOW_IN_BLOCK_NODE@98..114
+                    0: (empty)
+                    1: FLOW_START@98..98 "" [] []
+                    2: YAML_FLOW_YAML_NODE@98..114
+                      0: (empty)
+                      1: YAML_PLAIN_SCALAR@98..114
+                        0: PLAIN_LITERAL@98..114 "prod.example.com" [] []
+                    3: FLOW_END@114..114 "" [] []
+              3: MAPPING_END@114..114 "" [] []
+          2: YAML_BLOCK_MAP_IMPLICIT_ENTRY@114..175
+            0: YAML_FLOW_YAML_NODE@114..122
+              0: (empty)
+              1: YAML_PLAIN_SCALAR@114..122
+                0: PLAIN_LITERAL@114..122 "staging" [Newline("\n")] []
+            1: COLON@122..123 ":" [] []
+            2: YAML_BLOCK_MAPPING@123..175
+              0: (empty)
+              1: MAPPING_START@123..126 "" [Newline("\n"), Whitespace("  ")] []
+              2: YAML_BLOCK_MAP_ENTRY_LIST@126..175
+                0: YAML_BLOCK_MAP_IMPLICIT_ENTRY@126..147
+                  0: YAML_FLOW_YAML_NODE@126..128
+                    0: (empty)
+                    1: YAML_PLAIN_SCALAR@126..128
+                      0: PLAIN_LITERAL@126..128 "<<" [] []
+                  1: COLON@128..130 ":" [] [Whitespace(" ")]
+                  2: YAML_FLOW_IN_BLOCK_NODE@130..147
+                    0: (empty)
+                    1: FLOW_START@130..130 "" [] []
+                    2: YAML_ALIAS_NODE@130..147
+                      0: ALIAS_LITERAL@130..147 "*default_settings" [] []
+                    3: FLOW_END@147..147 "" [] []
+                1: YAML_BLOCK_MAP_IMPLICIT_ENTRY@147..175
+                  0: YAML_FLOW_YAML_NODE@147..154
+                    0: (empty)
+                    1: YAML_PLAIN_SCALAR@147..154
+                      0: PLAIN_LITERAL@147..154 "host" [Newline("\n"), Whitespace("  ")] []
+                  1: COLON@154..156 ":" [] [Whitespace(" ")]
+                  2: YAML_FLOW_IN_BLOCK_NODE@156..175
+                    0: (empty)
+                    1: FLOW_START@156..156 "" [] []
+                    2: YAML_FLOW_YAML_NODE@156..175
+                      0: (empty)
+                      1: YAML_PLAIN_SCALAR@156..175
+                        0: PLAIN_LITERAL@156..175 "staging.example.com" [] []
+                    3: FLOW_END@175..175 "" [] []
+              3: MAPPING_END@175..175 "" [] []
+        3: MAPPING_END@175..176 "" [Newline("\n")] []
+      4: (empty)
+  1: EOF@176..176 "" [] []
+
+```

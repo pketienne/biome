@@ -1,2 +1,8 @@
+# Single undeclared
 first: value1
 second: *missing
+
+# Multiple undeclared aliases
+a: *ghost1
+b: *ghost2
+c: value

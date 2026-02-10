@@ -1,2 +1,8 @@
+# Simple duplicate
 first: &anchor value1
 second: &anchor value2
+
+# Triple duplicate
+a: &dup one
+b: &dup two
+c: &dup three

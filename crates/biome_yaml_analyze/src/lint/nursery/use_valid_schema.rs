@@ -1,9 +1,9 @@
 use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange};
+use biome_rowan::{AstNode, AstNodeList, TextRange};
 use biome_rule_options::use_valid_schema::UseValidSchemaOptions;
-use biome_yaml_syntax::YamlDocument;
+use biome_yaml_syntax::{AnyYamlBlockInBlockNode, AnyYamlBlockMapEntry, AnyYamlBlockNode, AnyYamlMappingImplicitKey, YamlDocument};
 use std::path::PathBuf;
 
 use crate::utils::yaml_to_json::{resolve_path_range, yaml_node_to_json};
@@ -107,15 +107,24 @@ impl Rule for UseValidSchema {
         };
 
         let doc_range = document.syntax().text_trimmed_range();
+        // Pre-compute the root mapping range for root-level errors
+        let root_mapping_range = root_mapping_entries_range(&root_node);
 
         validator
             .iter_errors(&json_value)
             .map(|error| {
                 let instance_path = error.instance_path.to_string();
-                let range =
-                    resolve_path_range(&root_node, &instance_path).unwrap_or(doc_range);
+                let error_message = error.to_string();
+                let range = if !instance_path.is_empty() && instance_path != "/" {
+                    resolve_path_range(&root_node, &instance_path).unwrap_or(doc_range)
+                } else {
+                    // Root-level error: try to find specific entry from error message
+                    find_entry_range_from_error(&root_node, &error_message)
+                        .or(root_mapping_range)
+                        .unwrap_or(doc_range)
+                };
                 SchemaError {
-                    message: error.to_string(),
+                    message: error_message,
                     range,
                 }
             })
@@ -154,6 +163,7 @@ fn resolve_schema_path(schema_path: &str, file_path: &str) -> PathBuf {
 
 /// Look for a `# yaml-language-server: $schema=<path>` comment in the YAML
 /// document text and return the schema path if found.
+/// Returns `None` for URL schemas (http/https) since those require network access.
 fn find_schema_comment(document: &YamlDocument) -> Option<String> {
     let text = document.syntax().to_string();
     for line in text.lines() {
@@ -165,6 +175,10 @@ fn find_schema_comment(document: &YamlDocument) -> Option<String> {
                 if let Some(path) = schema_part.strip_prefix("$schema=") {
                     let path = path.trim();
                     if !path.is_empty() {
+                        // Skip URL schemas — they require network access
+                        if path.starts_with("http://") || path.starts_with("https://") {
+                            return None;
+                        }
                         return Some(path.to_string());
                     }
                 }
@@ -172,4 +186,79 @@ fn find_schema_comment(document: &YamlDocument) -> Option<String> {
         }
     }
     None
+}
+
+/// Get the combined range of all entries in the root mapping.
+fn root_mapping_entries_range(root: &AnyYamlBlockNode) -> Option<TextRange> {
+    let mapping = match root {
+        AnyYamlBlockNode::AnyYamlBlockInBlockNode(AnyYamlBlockInBlockNode::YamlBlockMapping(
+            m,
+        )) => m,
+        _ => return None,
+    };
+
+    let entries = mapping.entries();
+    if entries.is_empty() {
+        return None;
+    }
+
+    let first = entries.iter().next()?;
+    let last = entries.iter().last()?;
+    Some(TextRange::new(
+        first.syntax().text_trimmed_range().start(),
+        last.syntax().text_trimmed_range().end(),
+    ))
+}
+
+/// Try to extract a property name from a schema error message and find its
+/// entry range in the root mapping.
+fn find_entry_range_from_error(
+    root: &AnyYamlBlockNode,
+    error_message: &str,
+) -> Option<TextRange> {
+    let property_name = extract_property_from_error(error_message)?;
+
+    let mapping = match root {
+        AnyYamlBlockNode::AnyYamlBlockInBlockNode(AnyYamlBlockInBlockNode::YamlBlockMapping(
+            m,
+        )) => m,
+        _ => return None,
+    };
+
+    for entry in mapping.entries().iter() {
+        let key_text = match &entry {
+            AnyYamlBlockMapEntry::YamlBlockMapImplicitEntry(e) => {
+                e.key().map(|k| implicit_key_text(&k))
+            }
+            AnyYamlBlockMapEntry::YamlBlockMapExplicitEntry(e) => e
+                .key()
+                .map(|k| k.syntax().text_trimmed().to_string().trim().to_string()),
+            AnyYamlBlockMapEntry::YamlBogusBlockMapEntry(_) => None,
+        };
+        if key_text.as_deref() == Some(property_name) {
+            return Some(entry.syntax().text_trimmed_range());
+        }
+    }
+    None
+}
+
+/// Extract a property name from common JSON Schema error patterns.
+fn extract_property_from_error(message: &str) -> Option<&str> {
+    // Pattern: "'extra' was unexpected" (additionalProperties)
+    if let Some(rest) = message.strip_prefix('\'') {
+        if let Some(name_end) = rest.find("' was unexpected") {
+            return Some(&rest[..name_end]);
+        }
+    }
+    // Pattern: "\"name\" is a required property" (required)
+    if let Some(rest) = message.strip_prefix('"') {
+        if let Some(name_end) = rest.find("\" is a required property") {
+            return Some(&rest[..name_end]);
+        }
+    }
+    None
+}
+
+fn implicit_key_text(key: &AnyYamlMappingImplicitKey) -> String {
+    key.syntax().text_trimmed().to_string().trim().to_string()
 }

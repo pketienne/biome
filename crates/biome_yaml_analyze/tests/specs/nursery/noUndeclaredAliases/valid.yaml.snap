@@ -5,7 +5,17 @@ expression: valid.yaml
 # Input
 ```yaml
 # should not generate diagnostics
-first: value1
-second: value2
+# Basic anchor/alias
+first: &anchor value1
+second: *anchor
+
+# Flow context
+flow_anchor: &flow_ref {key: value}
+flow_alias: *flow_ref
+
+# Multiple aliases to same anchor
+base: &shared common
+ref1: *shared
+ref2: *shared
 
 ```

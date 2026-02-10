@@ -1,0 +1,71 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: yaml/properties/complex_anchors.yaml
+---
+
+# Input
+
+```yaml
+# Anchors on different node types
+scalar_anchor: &scalar_val hello world
+mapping_anchor: &map_val
+  key1: value1
+  key2: value2
+sequence_anchor: &seq_val
+  - item1
+  - item2
+  - item3
+
+# Multiple aliases
+ref1: *scalar_val
+ref2: *map_val
+ref3: *seq_val
+
+# Flow anchor
+flow_ref: &flow_anchor {a: 1, b: 2}
+flow_use: *flow_anchor
+
+# Anchor with tag
+tagged: !custom &tagged_anchor value
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Space
+Indent width: 2
+Line ending: LF
+Line width: 80
+Quote style: Double Quotes
+Expand: Auto
+-----
+
+```yaml
+# Anchors on different node types
+scalar_anchor: &scalar_val hello world
+mapping_anchor: &map_val
+  key1: value1
+  key2: value2
+sequence_anchor: &seq_val
+  - item1
+  - item2
+  - item3
+
+# Multiple aliases
+ref1: *scalar_val
+ref2: *map_val
+ref3: *seq_val
+
+# Flow anchor
+flow_ref: &flow_anchor { a: 1, b: 2 }
+flow_use: *flow_anchor
+
+# Anchor with tag
+tagged: !custom &tagged_anchor value
+```
