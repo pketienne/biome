@@ -6,9 +6,9 @@
 		"source=/home/pke/.bash_aliases,target=/home/vscode/.bash_aliases,type=bind,readonly",
 		"source=/home/pke/.claude,target=/home/vscode/.claude,type=bind",
 		"source=/home/pke/.config/claude,target=/home/vscode/.config/claude,type=bind",
-		"source=/home/pke/Projects/pke/master/.claude/hooks,target=/home/pke/Projects/pke/master/.claude/hooks,type=bind,readonly",
-		"source=/home/pke/Projects/pke/master/.claude/skills,target=/home/pke/Projects/pke/master/.claude/skills,type=bind,readonly",
-		"source=/home/pke/Projects/pke/master/.claude/settings.json,target=/home/pke/Projects/pke/master/.claude/settings.json,type=bind,readonly"
+		"source=/home/pke/Projects/pke/master/.claude/hooks,target=/home/vscode/.claude/hooks,type=bind,readonly",
+		"source=/home/pke/Projects/pke/master/.claude/skills,target=/home/vscode/.claude/skills,type=bind,readonly",
+		"source=/home/pke/Projects/pke/master/.claude/settings.json,target=/home/vscode/.claude/settings.json,type=bind,readonly"
 	],
 	"postCreateCommand": "curl -fsSL https://claude.ai/install.sh | bash && rustup show && cargo install cargo-binstall && cargo binstall -y cargo-insta",
 	"customizations": {
