@@ -11,7 +11,7 @@ other: data
 
 # Diagnostics
 ```
-invalid.yaml:1:11 lint/nursery/noTrailingSpaces ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:1:11 lint/nursery/noTrailingSpaces  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × Trailing whitespace is not allowed.
   
@@ -23,6 +23,9 @@ invalid.yaml:1:11 lint/nursery/noTrailingSpaces ━━━━━━━━━━�
   i Remove the trailing whitespace at the end of the line.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+  i Safe fix: Remove trailing whitespace.
+  
   
 
 ```

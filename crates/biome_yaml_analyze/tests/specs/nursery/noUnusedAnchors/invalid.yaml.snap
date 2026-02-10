@@ -13,11 +13,15 @@ a: &orphan1 val1
 b: &orphan2 val2
 c: regular_value
 
+# Flow context unused
+flow: &flow_orphan {key: value}
+other: plain_value
+
 ```
 
 # Diagnostics
 ```
-invalid.yaml:2:8 lint/nursery/noUnusedAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:2:8 lint/nursery/noUnusedAnchors  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! The anchor unused is defined but never referenced.
   
@@ -31,11 +35,15 @@ invalid.yaml:2:8 lint/nursery/noUnusedAnchors ━━━━━━━━━━━�
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
+  i Safe fix: Remove unused anchor.
+  
+    2 │ first:·&unused·value1
+      │        --------      
 
 ```
 
 ```
-invalid.yaml:6:4 lint/nursery/noUnusedAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:6:4 lint/nursery/noUnusedAnchors  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! The anchor orphan1 is defined but never referenced.
   
@@ -49,11 +57,15 @@ invalid.yaml:6:4 lint/nursery/noUnusedAnchors ━━━━━━━━━━━�
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
+  i Safe fix: Remove unused anchor.
+  
+    6 │ a:·&orphan1·val1
+      │    ---------    
 
 ```
 
 ```
-invalid.yaml:7:4 lint/nursery/noUnusedAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:7:4 lint/nursery/noUnusedAnchors  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! The anchor orphan2 is defined but never referenced.
   
@@ -68,5 +80,31 @@ invalid.yaml:7:4 lint/nursery/noUnusedAnchors ━━━━━━━━━━━�
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
+  i Safe fix: Remove unused anchor.
+  
+    7 │ b:·&orphan2·val2
+      │    ---------    
+
+```
+
+```
+invalid.yaml:11:7 lint/nursery/noUnusedAnchors  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The anchor flow_orphan is defined but never referenced.
+  
+    10 │ # Flow context unused
+  > 11 │ flow: &flow_orphan {key: value}
+       │       ^^^^^^^^^^^^
+    12 │ other: plain_value
+    13 │ 
+  
+  i Remove the unused anchor or add an alias that references it.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+  i Safe fix: Remove unused anchor.
+  
+    11 │ flow:·&flow_orphan·{key:·value}
+       │       -------------            
 
 ```

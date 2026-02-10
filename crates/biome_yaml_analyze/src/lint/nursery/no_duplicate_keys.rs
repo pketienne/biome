@@ -1,8 +1,12 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, AstNodeList, TextRange};
-use biome_yaml_syntax::{AnyYamlBlockMapEntry, AnyYamlMappingImplicitKey, YamlBlockMapping};
+use biome_rowan::{AstNode, AstNodeList, BatchMutationExt, TextRange};
+use biome_yaml_syntax::{
+    AnyYamlBlockMapEntry, AnyYamlMappingImplicitKey, YamlBlockMapping, YamlLanguage,
+};
 use rustc_hash::FxHashMap;
 
 declare_lint_rule! {
@@ -34,6 +38,7 @@ declare_lint_rule! {
         language: "yaml",
         recommended: true,
         severity: Severity::Error,
+        fix_kind: FixKind::Unsafe,
     }
 }
 
@@ -150,5 +155,36 @@ impl Rule for NoDuplicateKeys {
         Some(diagnostic.note(markup! {
             "If a key is defined multiple times, only the last definition takes effect. Previous definitions are ignored."
         }))
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleAction<YamlLanguage>> {
+        let mapping = ctx.query();
+        let mut mutation = ctx.root().begin();
+
+        // Remove all duplicate entries (keep only the first occurrence)
+        for entry in mapping.entries().iter() {
+            let entry_range = match &entry {
+                AnyYamlBlockMapEntry::YamlBlockMapImplicitEntry(implicit) => {
+                    implicit.key().map(|k| k.syntax().text_trimmed_range())
+                }
+                AnyYamlBlockMapEntry::YamlBlockMapExplicitEntry(explicit) => {
+                    explicit.key().map(|k| k.syntax().text_trimmed_range())
+                }
+                AnyYamlBlockMapEntry::YamlBogusBlockMapEntry(_) => None,
+            };
+
+            if let Some(range) = entry_range {
+                if state.duplicate_ranges.contains(&range) {
+                    mutation.remove_node(entry);
+                }
+            }
+        }
+
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Remove duplicate keys." }.to_owned(),
+            mutation,
+        ))
     }
 }

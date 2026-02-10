@@ -6,3 +6,7 @@ second: value2
 a: &orphan1 val1
 b: &orphan2 val2
 c: regular_value
+
+# Flow context unused
+flow: &flow_orphan {key: value}
+other: plain_value

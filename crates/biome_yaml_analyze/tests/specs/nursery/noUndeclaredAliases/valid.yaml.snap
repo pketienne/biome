@@ -18,4 +18,15 @@ base: &shared common
 ref1: *shared
 ref2: *shared
 
+# Alias in sequence
+defaults: &seq_anchor
+  - item1
+  - item2
+items: *seq_anchor
+
+# Nested anchor/alias
+outer:
+  inner: &nested_val deep_value
+  ref: *nested_val
+
 ```

@@ -1,0 +1,32 @@
+# should not generate diagnostics
+# 1 level deep
+simple:
+  key: value
+
+# 2 levels deep
+two:
+  levels:
+    key: value
+
+# 3 levels deep
+three:
+  levels:
+    deep:
+      key: value
+
+# 4 levels deep (max allowed)
+four:
+  levels:
+    deep:
+      nesting:
+        key: value
+
+# flat document
+name: John
+age: 30
+active: true
+
+# sequences at reasonable depth
+items:
+  - name: first
+  - name: second

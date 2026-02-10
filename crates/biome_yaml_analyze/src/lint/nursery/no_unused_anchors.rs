@@ -1,9 +1,11 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::TextRange;
+use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 use biome_yaml_semantic::semantic_model;
-use biome_yaml_syntax::YamlRoot;
+use biome_yaml_syntax::{YamlAnchorProperty, YamlLanguage, YamlRoot, YamlSyntaxKind};
 
 declare_lint_rule! {
     /// Disallow unused anchors in YAML documents.
@@ -32,6 +34,7 @@ declare_lint_rule! {
         language: "yaml",
         recommended: true,
         severity: Severity::Warning,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -74,5 +77,32 @@ impl Rule for NoUnusedAnchors {
                 "Remove the unused anchor or add an alias that references it."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleAction<YamlLanguage>> {
+        let root = ctx.query();
+        let mut mutation = ctx.root().begin();
+
+        // Find the YamlAnchorProperty node that contains the token at state.range
+        for node in root.syntax().descendants() {
+            if node.kind() == YamlSyntaxKind::YAML_ANCHOR_PROPERTY {
+                if let Some(anchor_prop) = YamlAnchorProperty::cast(node) {
+                    if let Ok(token) = anchor_prop.value_token() {
+                        if token.text_trimmed_range() == state.range {
+                            mutation.remove_node(anchor_prop);
+                            return Some(RuleAction::new(
+                                ctx.metadata().action_category(ctx.category(), ctx.group()),
+                                ctx.metadata().applicability(),
+                                markup! { "Remove unused anchor." }
+                                    .to_owned(),
+                                mutation,
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+
+        None
     }
 }

@@ -13,6 +13,14 @@ a: *ghost1
 b: *ghost2
 c: value
 
+# Alias in sequence
+items:
+  - *seq_missing
+  - regular_item
+
+# Alias in flow context
+flow: {key: *flow_missing}
+
 ```
 
 # Diagnostics
@@ -64,6 +72,42 @@ invalid.yaml:7:4 lint/nursery/noUndeclaredAliases ━━━━━━━━━━
       │    ^^^^^^^
     8 │ c: value
     9 │ 
+  
+  i Declare the anchor before referencing it with an alias.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:12:5 lint/nursery/noUndeclaredAliases ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The alias references an undeclared anchor seq_missing.
+  
+    10 │ # Alias in sequence
+    11 │ items:
+  > 12 │   - *seq_missing
+       │     ^^^^^^^^^^^^
+    13 │   - regular_item
+    14 │ 
+  
+  i Declare the anchor before referencing it with an alias.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:16:13 lint/nursery/noUndeclaredAliases ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The alias references an undeclared anchor flow_missing.
+  
+    15 │ # Alias in flow context
+  > 16 │ flow: {key: *flow_missing}
+       │             ^^^^^^^^^^^^^
+    17 │ 
   
   i Declare the anchor before referencing it with an alias.
   

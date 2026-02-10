@@ -1,0 +1,23 @@
+# 6 levels deep - exceeds max of 4
+a:
+  b:
+    c:
+      d:
+        e:
+          f: too deep
+
+# 7 levels deep
+deep:
+  level1:
+    level2:
+      level3:
+        level4:
+          level5:
+            level6: very deep
+
+# sequence nesting exceeds depth
+items:
+  - nested:
+      deep:
+        list:
+          - too: deep

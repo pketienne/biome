@@ -1,5 +1,6 @@
 #![deny(clippy::use_self)]
 
+mod assist;
 mod lint;
 pub mod options;
 mod registry;

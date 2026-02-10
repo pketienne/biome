@@ -12,7 +12,7 @@ name: Jane
 
 # Diagnostics
 ```
-invalid.yaml:1:1 lint/nursery/noDuplicateKeys ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:1:1 lint/nursery/noDuplicateKeys  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × The key name was already declared.
   
@@ -32,6 +32,13 @@ invalid.yaml:1:1 lint/nursery/noDuplicateKeys ━━━━━━━━━━━�
   i If a key is defined multiple times, only the last definition takes effect. Previous definitions are ignored.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+  i Unsafe fix: Remove duplicate keys.
+  
+    1 1 │   name: John
+    2 2 │   age: 30
+    3   │ - name:·Jane
+    4 3 │   
   
 
 ```

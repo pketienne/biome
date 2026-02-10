@@ -6,3 +6,12 @@ second: &anchor value2
 a: &dup one
 b: &dup two
 c: &dup three
+
+# Nested duplicate anchors
+outer:
+  inner1: &nested val1
+  inner2: &nested val2
+
+# Flow context duplicate
+flow1: &flow_dup {key: 1}
+flow2: &flow_dup [a, b]

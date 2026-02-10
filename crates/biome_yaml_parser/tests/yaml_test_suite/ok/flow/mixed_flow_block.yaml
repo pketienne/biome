@@ -1,0 +1,5 @@
+block_with_flow:
+  mapping: {key1: val1, key2: val2}
+  sequence: [a, b, c]
+  nested: {inner: [1, 2, 3]}
+plain: simple_value

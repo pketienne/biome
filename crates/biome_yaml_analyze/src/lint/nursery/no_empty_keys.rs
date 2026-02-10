@@ -1,7 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_yaml_syntax::YamlBlockMapImplicitEntry;
+use biome_rowan::BatchMutationExt;
+use biome_yaml_syntax::{YamlBlockMapImplicitEntry, YamlLanguage};
 
 declare_lint_rule! {
     /// Disallow empty mapping keys in YAML.
@@ -29,6 +32,7 @@ declare_lint_rule! {
         language: "yaml",
         recommended: true,
         severity: Severity::Error,
+        fix_kind: FixKind::Unsafe,
     }
 }
 
@@ -64,5 +68,19 @@ impl Rule for NoEmptyKeys {
                 "Provide a key name or use "<Emphasis>"null"</Emphasis>" explicitly if a null key is intended."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleAction<YamlLanguage>> {
+        let entry = ctx.query();
+        let mut mutation = ctx.root().begin();
+
+        mutation.remove_node(entry.clone());
+
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Remove the entry with the empty key." }.to_owned(),
+            mutation,
+        ))
     }
 }

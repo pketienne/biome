@@ -14,14 +14,14 @@ MyKey: value
 ```
 invalid.yaml:1:1 lint/nursery/useKeyNamingConvention ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  ! The key my_key does not match the expected camelCase naming convention.
+  ! The key my_key does not match the expected naming convention.
   
   > 1 │ my_key: value
       │ ^^^^^^
     2 │ my-key: value
     3 │ MyKey: value
   
-  i Consider renaming the key to use camelCase.
+  i Consider renaming the key to match the configured naming convention.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
@@ -31,7 +31,7 @@ invalid.yaml:1:1 lint/nursery/useKeyNamingConvention ━━━━━━━━━
 ```
 invalid.yaml:2:1 lint/nursery/useKeyNamingConvention ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  ! The key my-key does not match the expected camelCase naming convention.
+  ! The key my-key does not match the expected naming convention.
   
     1 │ my_key: value
   > 2 │ my-key: value
@@ -39,7 +39,7 @@ invalid.yaml:2:1 lint/nursery/useKeyNamingConvention ━━━━━━━━━
     3 │ MyKey: value
     4 │ 
   
-  i Consider renaming the key to use camelCase.
+  i Consider renaming the key to match the configured naming convention.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
@@ -49,7 +49,7 @@ invalid.yaml:2:1 lint/nursery/useKeyNamingConvention ━━━━━━━━━
 ```
 invalid.yaml:3:1 lint/nursery/useKeyNamingConvention ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  ! The key MyKey does not match the expected camelCase naming convention.
+  ! The key MyKey does not match the expected naming convention.
   
     1 │ my_key: value
     2 │ my-key: value
@@ -57,7 +57,7 @@ invalid.yaml:3:1 lint/nursery/useKeyNamingConvention ━━━━━━━━━
       │ ^^^^^
     4 │ 
   
-  i Consider renaming the key to use camelCase.
+  i Consider renaming the key to match the configured naming convention.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   

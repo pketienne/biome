@@ -14,4 +14,14 @@ parent:
   child1: &nested1 val1
   child2: &nested2 val2
 
+# Flow context unique anchors
+flow_map: &flow1 {a: 1}
+flow_seq: &flow2 [1, 2, 3]
+
+# Deep nesting unique anchors
+level1:
+  level2:
+    level3: &deep1 value
+    other: &deep2 other_value
+
 ```

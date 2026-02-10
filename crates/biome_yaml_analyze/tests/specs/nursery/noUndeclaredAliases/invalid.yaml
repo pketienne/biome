@@ -6,3 +6,11 @@ second: *missing
 a: *ghost1
 b: *ghost2
 c: value
+
+# Alias in sequence
+items:
+  - *seq_missing
+  - regular_item
+
+# Alias in flow context
+flow: {key: *flow_missing}

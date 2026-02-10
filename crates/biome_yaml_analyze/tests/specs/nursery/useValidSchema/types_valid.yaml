@@ -1,0 +1,10 @@
+# should not generate diagnostics
+# yaml-language-server: $schema=types-schema.json
+count: 42
+ratio: 3.14
+enabled: true
+label: hello
+nothing: null
+tags:
+  - alpha
+  - beta

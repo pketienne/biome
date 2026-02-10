@@ -1,0 +1,12 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: valid.yaml
+---
+# Input
+```yaml
+# should not generate diagnostics
+name: John
+age: 30
+null_key: explicit null key
+
+```

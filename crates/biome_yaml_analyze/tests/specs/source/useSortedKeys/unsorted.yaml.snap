@@ -1,0 +1,42 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: unsorted.yaml
+---
+# Input
+```yaml
+zebra: 1
+apple: 2
+mango: 3
+banana: 4
+
+```
+
+# Diagnostics
+```
+unsorted.yaml:1:1 assist/source/useSortedKeys  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i The keys of this mapping are not sorted alphabetically.
+  
+  > 1 │ zebra: 1
+      │ ^^^^^^^^
+  > 2 │ apple: 2
+  > 3 │ mango: 3
+  > 4 │ banana: 4
+      │ ^^^^^^^^^
+    5 │ 
+  
+  i Sorting keys makes the file more predictable and easier to navigate.
+  
+  i Safe fix: Sort the keys alphabetically.
+  
+    1   │ - zebra:·1
+    2   │ - apple:·2
+      1 │ + apple:·2
+      2 │ + banana:·4
+    3 3 │   mango: 3
+    4   │ - banana:·4
+      4 │ + zebra:·1
+    5 5 │   
+  
+
+```

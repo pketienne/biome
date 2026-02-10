@@ -1,0 +1,19 @@
+# snake_case anchor
+defaults: &my_defaults
+  timeout: 30
+ref1: *my_defaults
+
+# kebab-case anchor
+config: &my-config
+  host: localhost
+ref2: *my-config
+
+# SCREAMING_CASE anchor
+constants: &MAX_VALUE
+  limit: 100
+ref3: *MAX_VALUE
+
+# PascalCase anchor
+template: &MyTemplate
+  format: html
+ref4: *MyTemplate

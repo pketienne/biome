@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=types-schema.json
+count: not_a_number
+enabled: maybe
+tags: not_an_array

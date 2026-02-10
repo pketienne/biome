@@ -4,4 +4,5 @@ use biome_analyze::RegistryVisitor;
 use biome_yaml_syntax::YamlLanguage;
 pub fn visit_registry<V: RegistryVisitor<YamlLanguage>>(registry: &mut V) {
     registry.record_category::<crate::lint::Lint>();
+    registry.record_category::<crate::assist::Assist>();
 }

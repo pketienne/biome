@@ -2,6 +2,8 @@ use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lin
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_rowan::AstNode;
+use biome_rule_options::use_consistent_anchor_naming::NamingConvention;
+use biome_rule_options::use_key_naming_convention::UseKeyNamingConventionOptions;
 use biome_yaml_syntax::{AnyYamlMappingImplicitKey, YamlBlockMapImplicitEntry};
 
 declare_lint_rule! {
@@ -37,17 +39,28 @@ declare_lint_rule! {
     }
 }
 
-fn is_camel_case(s: &str) -> bool {
+fn matches_convention(s: &str, convention: &NamingConvention) -> bool {
     if s.is_empty() {
         return true;
     }
-
-    let first = s.chars().next().unwrap();
-    if !first.is_ascii_lowercase() && !first.is_ascii_digit() {
-        return false;
+    match convention {
+        NamingConvention::CamelCase => {
+            let first = s.chars().next().unwrap();
+            (first.is_ascii_lowercase() || first.is_ascii_digit())
+                && !s.contains('_')
+                && !s.contains('-')
+        }
+        NamingConvention::SnakeCase => {
+            s.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
+        }
+        NamingConvention::KebabCase => {
+            s.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+        }
+        NamingConvention::PascalCase => {
+            let first = s.chars().next().unwrap();
+            first.is_ascii_uppercase() && !s.contains('_') && !s.contains('-')
+        }
     }
-
-    !s.contains('_') && !s.contains('-')
 }
 
 fn get_key_text_for_naming(key: &AnyYamlMappingImplicitKey) -> Option<String> {
@@ -68,10 +81,11 @@ impl Rule for UseKeyNamingConvention {
     type Query = Ast<YamlBlockMapImplicitEntry>;
     type State = String;
     type Signals = Option<Self::State>;
-    type Options = ();
+    type Options = UseKeyNamingConventionOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let entry = ctx.query();
+        let convention = ctx.options().convention();
         let key = entry.key()?;
         let key_text = get_key_text_for_naming(&key)?;
 
@@ -80,7 +94,7 @@ impl Rule for UseKeyNamingConvention {
             return None;
         }
 
-        if !is_camel_case(&key_text) {
+        if !matches_convention(&key_text, convention) {
             return Some(key_text);
         }
         None
@@ -94,11 +108,11 @@ impl Rule for UseKeyNamingConvention {
                 rule_category!(),
                 key.syntax().text_trimmed_range(),
                 markup! {
-                    "The key "<Emphasis>{state}</Emphasis>" does not match the expected camelCase naming convention."
+                    "The key "<Emphasis>{state}</Emphasis>" does not match the expected naming convention."
                 },
             )
             .note(markup! {
-                "Consider renaming the key to use camelCase."
+                "Consider renaming the key to match the configured naming convention."
             }),
         )
     }

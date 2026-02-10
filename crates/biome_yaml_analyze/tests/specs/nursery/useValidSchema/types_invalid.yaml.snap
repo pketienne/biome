@@ -1,0 +1,62 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: types_invalid.yaml
+---
+# Input
+```yaml
+# yaml-language-server: $schema=types-schema.json
+count: not_a_number
+enabled: maybe
+tags: not_an_array
+
+```
+
+# Diagnostics
+```
+types_invalid.yaml:2:1 lint/nursery/useValidSchema ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Schema validation error: "not_a_number" is not of type "integer"
+  
+    1 │ # yaml-language-server: $schema=types-schema.json
+  > 2 │ count: not_a_number
+      │ ^^^^^^^^^^^^^^^^^^^
+    3 │ enabled: maybe
+    4 │ tags: not_an_array
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+types_invalid.yaml:3:1 lint/nursery/useValidSchema ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Schema validation error: "maybe" is not of type "boolean"
+  
+    1 │ # yaml-language-server: $schema=types-schema.json
+    2 │ count: not_a_number
+  > 3 │ enabled: maybe
+      │ ^^^^^^^^^^^^^^
+    4 │ tags: not_an_array
+    5 │ 
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+types_invalid.yaml:4:1 lint/nursery/useValidSchema ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Schema validation error: "not_an_array" is not of type "array"
+  
+    2 │ count: not_a_number
+    3 │ enabled: maybe
+  > 4 │ tags: not_an_array
+      │ ^^^^^^^^^^^^^^^^^^
+    5 │ 
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```

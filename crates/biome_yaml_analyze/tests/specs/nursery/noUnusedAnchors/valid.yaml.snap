@@ -21,4 +21,13 @@ production:
   <<: *defaults
   host: prod
 
+# Flow context anchor used
+flow_data: &flow_used {a: 1}
+flow_ref: *flow_used
+
+# Sequence anchor used
+seq: &seq_used
+  - item1
+items: *seq_used
+
 ```

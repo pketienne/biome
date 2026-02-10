@@ -4,7 +4,7 @@ use biome_diagnostics::Severity;
 use biome_rowan::{AstNode, AstNodeList, TextRange};
 use biome_rule_options::use_valid_schema::UseValidSchemaOptions;
 use biome_yaml_syntax::{AnyYamlBlockInBlockNode, AnyYamlBlockMapEntry, AnyYamlBlockNode, AnyYamlMappingImplicitKey, YamlDocument};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use crate::utils::yaml_to_json::{resolve_path_range, yaml_node_to_json};
 
@@ -66,16 +66,34 @@ impl Rule for UseValidSchema {
         let document = ctx.query();
         let options = ctx.options();
 
+        let file_path_str = ctx.file_path().as_str();
+
         let schema_path = match &options.schema_path {
             Some(path) => path.clone(),
             None => {
-                // Try to find a schema comment in the document
-                match find_schema_comment(document) {
-                    Some(path) => path,
-                    None => return Box::new([]),
+                // Try schema associations first (glob pattern matching)
+                if let Some(path) = find_schema_by_association(file_path_str, options) {
+                    path
+                } else {
+                    // Then try to find a schema comment in the document
+                    match find_schema_comment(document) {
+                        Some(path) => path,
+                        None => return Box::new([]),
+                    }
                 }
             }
         };
+
+        // Detect URL schemas and report a helpful diagnostic
+        if schema_path.starts_with("http://") || schema_path.starts_with("https://") {
+            return Box::new([SchemaError {
+                message: format!(
+                    "URL-based schemas are not yet supported. Provide a local file path instead: {}",
+                    schema_path
+                ),
+                range: document.syntax().text_trimmed_range(),
+            }]);
+        }
 
         // Resolve relative paths against the directory of the file being analyzed
         let resolved_path = resolve_schema_path(&schema_path, ctx.file_path().as_str());
@@ -261,4 +279,92 @@ fn extract_property_from_error(message: &str) -> Option<&str> {
 
 fn implicit_key_text(key: &AnyYamlMappingImplicitKey) -> String {
     key.syntax().text_trimmed().to_string().trim().to_string()
+}
+
+/// Match a file path against the configured schema associations and return
+/// the first matching schema path.
+fn find_schema_by_association(
+    file_path: &str,
+    options: &UseValidSchemaOptions,
+) -> Option<String> {
+    let associations = options.schema_associations.as_ref()?;
+    let file = Path::new(file_path);
+
+    for (pattern, schema_path) in associations {
+        if glob_matches(pattern, file) {
+            return Some(schema_path.clone());
+        }
+    }
+    None
+}
+
+/// Simple glob matching that supports `*` (any chars except `/`) and `**`
+/// (any chars including `/`).
+fn glob_matches(pattern: &str, path: &Path) -> bool {
+    let path_str = path.to_string_lossy();
+    let path_str = path_str.as_ref();
+    glob_match_str(pattern, path_str)
+}
+
+fn glob_match_str(pattern: &str, text: &str) -> bool {
+    // Split pattern into segments by "**"
+    if let Some((before, after)) = pattern.split_once("**") {
+        let before = before.strip_suffix('/').unwrap_or(before);
+        let after = after.strip_prefix('/').unwrap_or(after);
+
+        // Before must match a prefix, after must match a suffix
+        if !before.is_empty() {
+            // Find a prefix that matches `before`
+            for (i, _) in text.char_indices() {
+                let prefix = &text[..i];
+                if simple_glob_match(before, prefix) {
+                    let rest = text[i..].strip_prefix('/').unwrap_or(&text[i..]);
+                    if after.is_empty() || glob_match_str(after, rest) {
+                        return true;
+                    }
+                }
+            }
+            // Also try the full text as prefix
+            if simple_glob_match(before, text) && after.is_empty() {
+                return true;
+            }
+            return false;
+        }
+        // No before part, so ** matches any prefix
+        if after.is_empty() {
+            return true;
+        }
+        // Try matching `after` against any suffix
+        for (i, _) in text.char_indices() {
+            if glob_match_str(after, &text[i..]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    simple_glob_match(pattern, text)
+}
+
+/// Match a simple glob pattern with `*` (matches any chars except `/`).
+fn simple_glob_match(pattern: &str, text: &str) -> bool {
+    if let Some((before, after)) = pattern.split_once('*') {
+        if let Some(rest) = text.strip_prefix(before) {
+            // `*` matches everything up to the next `/` (or end)
+            for (i, ch) in rest.char_indices() {
+                if ch == '/' {
+                    break;
+                }
+                if simple_glob_match(after, &rest[i + ch.len_utf8()..]) {
+                    return true;
+                }
+            }
+            // Try matching with `*` consuming nothing or everything up to end
+            return simple_glob_match(after, rest)
+                || (!rest.contains('/') && simple_glob_match(after, ""));
+        }
+        return false;
+    }
+
+    pattern == text
 }

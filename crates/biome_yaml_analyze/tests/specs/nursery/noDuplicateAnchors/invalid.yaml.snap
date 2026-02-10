@@ -13,6 +13,15 @@ a: &dup one
 b: &dup two
 c: &dup three
 
+# Nested duplicate anchors
+outer:
+  inner1: &nested val1
+  inner2: &nested val2
+
+# Flow context duplicate
+flow1: &flow_dup {key: 1}
+flow2: &flow_dup [a, b]
+
 ```
 
 # Diagnostics
@@ -65,11 +74,66 @@ invalid.yaml:6:4 lint/nursery/noDuplicateAnchors ━━━━━━━━━━�
   
   i This is where a duplicated anchor was declared again.
   
-    6 │ a: &dup one
-    7 │ b: &dup two
-  > 8 │ c: &dup three
-      │    ^^^^
-    9 │ 
+     6 │ a: &dup one
+     7 │ b: &dup two
+   > 8 │ c: &dup three
+       │    ^^^^
+     9 │ 
+    10 │ # Nested duplicate anchors
+  
+  i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:12:11 lint/nursery/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The anchor nested is defined multiple times.
+  
+    10 │ # Nested duplicate anchors
+    11 │ outer:
+  > 12 │   inner1: &nested val1
+       │           ^^^^^^^
+    13 │   inner2: &nested val2
+    14 │ 
+  
+  i This is where a duplicated anchor was declared again.
+  
+    11 │ outer:
+    12 │   inner1: &nested val1
+  > 13 │   inner2: &nested val2
+       │           ^^^^^^^
+    14 │ 
+    15 │ # Flow context duplicate
+  
+  i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
+  
+  i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+
+```
+
+```
+invalid.yaml:16:8 lint/nursery/noDuplicateAnchors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × The anchor flow_dup is defined multiple times.
+  
+    15 │ # Flow context duplicate
+  > 16 │ flow1: &flow_dup {key: 1}
+       │        ^^^^^^^^^
+    17 │ flow2: &flow_dup [a, b]
+    18 │ 
+  
+  i This is where a duplicated anchor was declared again.
+  
+    15 │ # Flow context duplicate
+    16 │ flow1: &flow_dup {key: 1}
+  > 17 │ flow2: &flow_dup [a, b]
+       │        ^^^^^^^^^
+    18 │ 
   
   i Anchor names must be unique within a document. Duplicate anchors may cause aliases to resolve to unexpected values.
   

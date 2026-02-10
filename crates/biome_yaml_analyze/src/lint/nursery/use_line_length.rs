@@ -2,6 +2,7 @@ use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lin
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_rowan::{AstNode, TextRange, TextSize};
+use biome_rule_options::use_line_length::UseLineLengthOptions;
 use biome_yaml_syntax::YamlRoot;
 
 declare_lint_rule! {
@@ -32,23 +33,22 @@ declare_lint_rule! {
     }
 }
 
-const MAX_LINE_LENGTH: usize = 120;
-
 impl Rule for UseLineLength {
     type Query = Ast<YamlRoot>;
     type State = TextRange;
     type Signals = Box<[Self::State]>;
-    type Options = ();
+    type Options = UseLineLengthOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let root = ctx.query();
+        let max_length = ctx.options().max_length() as usize;
         let text = root.syntax().to_string();
         let mut violations = Vec::new();
         let mut offset = 0u32;
 
         for line in text.split('\n') {
             let line_len = line.len();
-            if line_len > MAX_LINE_LENGTH {
+            if line_len > max_length {
                 let start = TextSize::from(offset);
                 let end = TextSize::from(offset + line_len as u32);
                 violations.push(TextRange::new(start, end));
@@ -65,7 +65,7 @@ impl Rule for UseLineLength {
                 rule_category!(),
                 state,
                 markup! {
-                    "Line exceeds the maximum length of 120 characters."
+                    "Line exceeds the maximum allowed length."
                 },
             )
             .note(markup! {

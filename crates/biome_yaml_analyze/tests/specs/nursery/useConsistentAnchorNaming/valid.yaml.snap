@@ -1,0 +1,24 @@
+---
+source: crates/biome_yaml_analyze/tests/spec_tests.rs
+expression: valid.yaml
+---
+# Input
+```yaml
+# should not generate diagnostics
+# camelCase anchors
+defaults: &myDefaults
+  timeout: 30
+production:
+  <<: *myDefaults
+
+# single word
+base: &config
+  host: localhost
+ref: *config
+
+# camelCase with numbers
+v2: &apiV2Settings
+  version: 2
+use: *apiV2Settings
+
+```

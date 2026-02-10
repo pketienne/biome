@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::AstNode;
-
+use biome_rowan::{AstNode, BatchMutationExt};
+use biome_yaml_syntax::YamlLanguage;
 
 declare_lint_rule! {
     /// Enforce the consistent use of double quotes for strings.
@@ -33,6 +35,7 @@ declare_lint_rule! {
         language: "yaml",
         recommended: false,
         severity: Severity::Warning,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -83,5 +86,46 @@ impl Rule for UseConsistentQuoteStyle {
                 "Double quotes are preferred for consistency and support escape sequences."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleAction<YamlLanguage>> {
+        let root = ctx.query();
+        let mut mutation = ctx.root().begin();
+
+        for node in root.syntax().descendants() {
+            if biome_yaml_syntax::YamlSingleQuotedScalar::can_cast(node.kind())
+                && node.text_trimmed_range() == *state
+            {
+                let scalar = biome_yaml_syntax::YamlSingleQuotedScalar::cast(node)?;
+                let token = scalar.value_token().ok()?;
+                let text = token.text_trimmed();
+
+                // Convert 'content' to "content"
+                // Strip surrounding single quotes
+                let inner = &text[1..text.len() - 1];
+                // In single-quoted YAML, '' is an escaped single quote
+                let inner = inner.replace("''", "'");
+                // Escape any double quotes that exist in the content
+                let inner = inner.replace('"', "\\\"");
+                let new_text = format!("\"{inner}\"");
+
+                let new_token = biome_yaml_syntax::YamlSyntaxToken::new_detached(
+                    token.kind(),
+                    &new_text,
+                    [],
+                    [],
+                );
+                mutation.replace_token_transfer_trivia(token, new_token);
+
+                return Some(RuleAction::new(
+                    ctx.metadata().action_category(ctx.category(), ctx.group()),
+                    ctx.metadata().applicability(),
+                    markup! { "Convert to double quotes." }.to_owned(),
+                    mutation,
+                ));
+            }
+        }
+
+        None
     }
 }
