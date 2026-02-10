@@ -3,6 +3,8 @@ use biome_formatter::{CstFormatContext, LINE_TERMINATORS, normalize_newlines, wr
 use biome_markdown_syntax::MdOrderListItem;
 use biome_rowan::{AstNode, Direction, SyntaxElement};
 
+use super::paragraph::collapse_inline_whitespace;
+
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatMdOrderListItem;
 
@@ -19,9 +21,10 @@ impl FormatNodeRule<MdOrderListItem> for FormatMdOrderListItem {
 
         let node_text = node.syntax().text_trimmed().to_string();
         let normalized = normalize_newlines(&node_text, LINE_TERMINATORS);
+        let collapsed = collapse_inline_whitespace(&normalized);
         write!(
             f,
-            [text(&normalized, node.syntax().text_trimmed_range().start())]
+            [text(&collapsed, node.syntax().text_trimmed_range().start())]
         )
     }
 }

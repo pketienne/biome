@@ -1,0 +1,51 @@
+---
+source: crates/biome_formatter_test/src/snapshot_builder.rs
+info: md/paragraphs/inline_whitespace.md
+---
+
+# Input
+
+```md
+Hello   world   here.
+
+**bold**   and   *italic*   text.
+
+`code   preserved`   outside   collapsed.
+
+- list   item   spaces
+- another   item
+
+> quote   with   spaces
+
+1. ordered   item   spaces
+
+```
+
+
+=============================
+
+# Outputs
+
+## Output 1
+
+-----
+Indent style: Tab
+Indent width: 2
+Line ending: LF
+Line width: 80
+-----
+
+```md
+Hello world here.
+
+**bold** and *italic* text.
+
+`code   preserved` outside collapsed.
+
+- list item spaces
+- another item
+
+> quote with spaces
+
+1. ordered item spaces
+```

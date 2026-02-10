@@ -20,7 +20,8 @@ impl FormatNodeRule<MdParagraph> for FormatMdParagraph {
 
         let node_text = node.syntax().text_trimmed().to_string();
         let normalized = normalize_newlines(&node_text, LINE_TERMINATORS);
-        let cleaned = strip_trailing_whitespace(&normalized);
+        let collapsed = collapse_inline_whitespace(&normalized);
+        let cleaned = strip_trailing_whitespace(&collapsed);
 
         write!(
             f,
@@ -29,6 +30,76 @@ impl FormatNodeRule<MdParagraph> for FormatMdParagraph {
 
         Ok(())
     }
+}
+
+/// Collapse runs of spaces/tabs to a single space within each line,
+/// while preserving whitespace inside backtick-delimited code spans.
+///
+/// Handles both single-backtick (`` `code` ``) and multi-backtick
+/// (``` ``code`` ```) code spans. Newlines are not affected.
+pub(crate) fn collapse_inline_whitespace(input: &str) -> String {
+    let mut result = String::with_capacity(input.len());
+    let chars: Vec<char> = input.chars().collect();
+    let len = chars.len();
+    let mut i = 0;
+
+    while i < len {
+        if chars[i] == '`' {
+            // Count the opening backtick run length
+            let mut backtick_count = 0;
+            while i < len && chars[i] == '`' {
+                backtick_count += 1;
+                i += 1;
+            }
+            // Push opening backticks
+            for _ in 0..backtick_count {
+                result.push('`');
+            }
+            // Find matching closing backtick run of the same length
+            let mut found_close = false;
+            while i < len {
+                if chars[i] == '`' {
+                    let mut close_count = 0;
+                    while i < len && chars[i] == '`' {
+                        close_count += 1;
+                        i += 1;
+                    }
+                    // Push the backticks we consumed
+                    for _ in 0..close_count {
+                        result.push('`');
+                    }
+                    if close_count == backtick_count {
+                        found_close = true;
+                        break;
+                    }
+                    // Not a match — content backticks, keep scanning
+                } else {
+                    result.push(chars[i]);
+                    i += 1;
+                }
+            }
+            if !found_close {
+                // No closing backticks found — the opening backticks were literal.
+                // Content already pushed, nothing to undo.
+            }
+        } else if chars[i] == '\n' {
+            // Preserve newlines as-is
+            result.push('\n');
+            i += 1;
+        } else if chars[i] == ' ' || chars[i] == '\t' {
+            // Collapse runs of spaces/tabs to a single space
+            result.push(' ');
+            i += 1;
+            while i < len && (chars[i] == ' ' || chars[i] == '\t') {
+                i += 1;
+            }
+        } else {
+            result.push(chars[i]);
+            i += 1;
+        }
+    }
+
+    result
 }
 
 /// Strip trailing whitespace from each line in the text.
@@ -67,7 +138,99 @@ fn strip_trailing_whitespace(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::strip_trailing_whitespace;
+    use super::{collapse_inline_whitespace, strip_trailing_whitespace};
+
+    // --- collapse_inline_whitespace tests ---
+
+    #[test]
+    fn collapse_no_extra_spaces() {
+        assert_eq!(collapse_inline_whitespace("hello world"), "hello world");
+    }
+
+    #[test]
+    fn collapse_multiple_spaces() {
+        assert_eq!(
+            collapse_inline_whitespace("hello   world   here"),
+            "hello world here"
+        );
+    }
+
+    #[test]
+    fn collapse_tabs_to_space() {
+        assert_eq!(
+            collapse_inline_whitespace("hello\t\tworld"),
+            "hello world"
+        );
+    }
+
+    #[test]
+    fn collapse_mixed_spaces_tabs() {
+        assert_eq!(
+            collapse_inline_whitespace("hello \t world"),
+            "hello world"
+        );
+    }
+
+    #[test]
+    fn collapse_preserves_newlines() {
+        assert_eq!(
+            collapse_inline_whitespace("hello   world\nsecond   line"),
+            "hello world\nsecond line"
+        );
+    }
+
+    #[test]
+    fn collapse_preserves_code_span_single_backtick() {
+        assert_eq!(
+            collapse_inline_whitespace("`code   here`   outside"),
+            "`code   here` outside"
+        );
+    }
+
+    #[test]
+    fn collapse_preserves_code_span_double_backtick() {
+        assert_eq!(
+            collapse_inline_whitespace("``code   `x`   here``   outside"),
+            "``code   `x`   here`` outside"
+        );
+    }
+
+    #[test]
+    fn collapse_with_emphasis_markers() {
+        assert_eq!(
+            collapse_inline_whitespace("**bold**   and   *italic*"),
+            "**bold** and *italic*"
+        );
+    }
+
+    #[test]
+    fn collapse_empty_string() {
+        assert_eq!(collapse_inline_whitespace(""), "");
+    }
+
+    #[test]
+    fn collapse_only_spaces() {
+        assert_eq!(collapse_inline_whitespace("     "), " ");
+    }
+
+    #[test]
+    fn collapse_unmatched_backticks() {
+        // Unmatched backticks are treated as literal — spaces after are collapsed
+        assert_eq!(
+            collapse_inline_whitespace("`not   closed   here"),
+            "`not   closed   here"
+        );
+    }
+
+    #[test]
+    fn collapse_link_syntax() {
+        assert_eq!(
+            collapse_inline_whitespace("[link   text](url)   after"),
+            "[link text](url) after"
+        );
+    }
+
+    // --- strip_trailing_whitespace tests ---
 
     #[test]
     fn no_trailing_whitespace() {
