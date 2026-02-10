@@ -27,16 +27,13 @@
 | 15 | Additional formatter polish (flow collection spacing, test expansion) | COMPLETE |
 | 16 | Lint rule expansion (5 new rules: noEmptyKeys, noEmptySequenceEntries, useConsistentIndentation, noAnchorReferences, useQuotedStrings) | COMPLETE |
 | 17 | Multi-document support hardening (directive lexing, edge case tests) | COMPLETE |
+| 18 | `useConsistentSequenceIndentation` lint rule (yamllint `indent-sequences: consistent`) | COMPLETE |
 
 ## Remaining Work
 
 ### Major Feature
 
 - **JSON Schema validation (Plan 14)** — Validate YAML against JSON schemas (e.g., Kubernetes manifests, CI configs). Requires new `jsonschema` crate dependency, YAML-to-JSON converter, and error range mapping. Estimated 8-15 days.
-
-### New Lint Rules
-
-- **useConsistentSequenceIndentation** — Enforce that all block sequences in a file use the same indentation style (compact `- key: value` vs non-compact with extra indent), similar to yamllint's `indent-sequences: consistent`. The formatter already handles compact layout via `align(2, ...)` on regular block nodes; no new AST nodes needed.
 
 ### Infrastructure Gaps
 
