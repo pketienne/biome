@@ -184,6 +184,7 @@ impl<'src> MarkdownLexer<'src> {
             _ => match current {
                 b'`' | b'~' => self.consume_fence_or_textual(),
                 b'=' => self.consume_equals_or_textual(),
+                b':' => self.consume_colon_or_textual(),
                 _ => self.consume_textual(),
             },
         }
@@ -398,6 +399,21 @@ impl<'src> MarkdownLexer<'src> {
     }
 
     #[inline]
+    /// Combine up to 3 consecutive `:` characters into a single textual token.
+    /// This enables the parser to detect directive markers (`:`, `::`, `:::`).
+    fn consume_colon_or_textual(&mut self) -> MarkdownSyntaxKind {
+        self.assert_at_char_boundary();
+        self.advance(1); // first `:`
+        for _ in 0..2 {
+            if matches!(self.current_byte(), Some(b':')) {
+                self.advance(1);
+            } else {
+                break;
+            }
+        }
+        MD_TEXTUAL_LITERAL
+    }
+
     fn consume_textual(&mut self) -> MarkdownSyntaxKind {
         self.assert_at_char_boundary();
 

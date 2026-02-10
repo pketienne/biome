@@ -3,12 +3,12 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::MdParagraph;
+use biome_rowan::{AstNode, TextRange, TextSize};
 
 use crate::MarkdownRuleAction;
 
-use crate::utils::fence_utils::FenceTracker;
+use crate::utils::fix_utils::make_text_replacement;
 use crate::utils::inline_utils::find_code_spans;
 
 declare_lint_rule! {
@@ -47,31 +47,23 @@ pub struct SpaceInCode {
 }
 
 impl Rule for NoSpaceInCode {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdParagraph>;
     type State = SpaceInCode;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
+        let paragraph = ctx.query();
+        let text = paragraph.syntax().text_trimmed().to_string();
+        let base = paragraph.syntax().text_trimmed_range().start();
         let mut signals = Vec::new();
-        let mut tracker = FenceTracker::new();
         let mut offset = 0usize;
 
-        for (line_idx, line) in text.lines().enumerate() {
-            tracker.process_line(line_idx, line);
-            if tracker.is_inside_fence() {
-                offset += line.len() + 1;
-                continue;
-            }
-
+        for line in text.lines() {
             let code_spans = find_code_spans(line);
             let bytes = line.as_bytes();
 
             for span in &code_spans {
-                // Content is between the backtick delimiters
                 let content_start = span.open + span.backtick_count;
                 let content_end = span.close - span.backtick_count;
 
@@ -80,7 +72,6 @@ impl Rule for NoSpaceInCode {
                 }
 
                 let content = &line[content_start..content_end];
-                // Allow spaces if content is only spaces (`` ` `` pattern)
                 if content.trim().is_empty() {
                     continue;
                 }
@@ -109,46 +100,7 @@ impl Rule for NoSpaceInCode {
     }
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
-        let root = ctx.root();
-
-        // Collect all tokens overlapping the range
-        let mut token = root
-            .syntax()
-            .token_at_offset(state.range.start())
-            .right_biased()?;
-        let mut tokens = vec![token.clone()];
-        while token.text_range().end() < state.range.end() {
-            token = token.next_token()?;
-            tokens.push(token.clone());
-        }
-
-        // Build replacement: prefix from first token + corrected span + suffix from last token
-        let first = &tokens[0];
-        let last = tokens.last()?;
-        let prefix_len = u32::from(state.range.start() - first.text_range().start()) as usize;
-        let suffix_start = u32::from(state.range.end() - last.text_range().start()) as usize;
-        let prefix = &first.text()[..prefix_len];
-        let suffix = &last.text()[suffix_start..];
-        let new_text = format!("{}{}{}", prefix, state.corrected_span, suffix);
-
-        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-            first.kind(),
-            &new_text,
-            [],
-            [],
-        );
-        let mut mutation = ctx.root().begin();
-        mutation.replace_element_discard_trivia(first.clone().into(), new_token.into());
-        for t in &tokens[1..] {
-            let empty = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-                t.kind(),
-                "",
-                [],
-                [],
-            );
-            mutation.replace_element_discard_trivia(t.clone().into(), empty.into());
-        }
-
+        let mutation = make_text_replacement(&ctx.root(), state.range, &state.corrected_span)?;
         Some(RuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

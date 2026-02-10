@@ -2,6 +2,10 @@
 
 pub(crate) mod bullet;
 pub(crate) mod bullet_list_item;
+pub(crate) mod checkbox;
+pub(crate) mod directive;
+pub(crate) mod directive_attribute;
+pub(crate) mod directive_attribute_value;
 pub(crate) mod document;
 pub(crate) mod fenced_code_block;
 pub(crate) mod hard_line;
@@ -21,6 +25,9 @@ pub(crate) mod inline_italic;
 pub(crate) mod inline_link;
 pub(crate) mod inline_strikethrough;
 pub(crate) mod link_block;
+pub(crate) mod mdx_jsx_attribute;
+pub(crate) mod mdx_jsx_attribute_value;
+pub(crate) mod mdx_jsx_element;
 pub(crate) mod order_bullet;
 pub(crate) mod order_list_item;
 pub(crate) mod paragraph;

@@ -81,6 +81,297 @@ impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdBulletListIt
         )
     }
 }
+impl FormatRule<biome_markdown_syntax::MdCheckbox>
+    for crate::md::auxiliary::checkbox::FormatMdCheckbox
+{
+    type Context = MarkdownFormatContext;
+    #[inline(always)]
+    fn fmt(
+        &self,
+        node: &biome_markdown_syntax::MdCheckbox,
+        f: &mut MarkdownFormatter,
+    ) -> FormatResult<()> {
+        FormatNodeRule::<biome_markdown_syntax::MdCheckbox>::fmt(self, node, f)
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdCheckbox {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdCheckbox,
+        crate::md::auxiliary::checkbox::FormatMdCheckbox,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::auxiliary::checkbox::FormatMdCheckbox::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdCheckbox {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdCheckbox,
+        crate::md::auxiliary::checkbox::FormatMdCheckbox,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::auxiliary::checkbox::FormatMdCheckbox::default(),
+        )
+    }
+}
+impl FormatRule<biome_markdown_syntax::MdDirective>
+    for crate::md::auxiliary::directive::FormatMdDirective
+{
+    type Context = MarkdownFormatContext;
+    #[inline(always)]
+    fn fmt(
+        &self,
+        node: &biome_markdown_syntax::MdDirective,
+        f: &mut MarkdownFormatter,
+    ) -> FormatResult<()> {
+        FormatNodeRule::<biome_markdown_syntax::MdDirective>::fmt(self, node, f)
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdDirective {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdDirective,
+        crate::md::auxiliary::directive::FormatMdDirective,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::auxiliary::directive::FormatMdDirective::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdDirective {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdDirective,
+        crate::md::auxiliary::directive::FormatMdDirective,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::auxiliary::directive::FormatMdDirective::default(),
+        )
+    }
+}
+impl FormatRule<biome_markdown_syntax::MdDirectiveAttribute>
+    for crate::md::auxiliary::directive_attribute::FormatMdDirectiveAttribute
+{
+    type Context = MarkdownFormatContext;
+    #[inline(always)]
+    fn fmt(
+        &self,
+        node: &biome_markdown_syntax::MdDirectiveAttribute,
+        f: &mut MarkdownFormatter,
+    ) -> FormatResult<()> {
+        FormatNodeRule::<biome_markdown_syntax::MdDirectiveAttribute>::fmt(self, node, f)
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdDirectiveAttribute {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdDirectiveAttribute,
+        crate::md::auxiliary::directive_attribute::FormatMdDirectiveAttribute,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::auxiliary::directive_attribute::FormatMdDirectiveAttribute::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdDirectiveAttribute {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdDirectiveAttribute,
+        crate::md::auxiliary::directive_attribute::FormatMdDirectiveAttribute,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::auxiliary::directive_attribute::FormatMdDirectiveAttribute::default(),
+        )
+    }
+}
+impl FormatRule<biome_markdown_syntax::MdDirectiveAttributeValue>
+    for crate::md::auxiliary::directive_attribute_value::FormatMdDirectiveAttributeValue
+{
+    type Context = MarkdownFormatContext;
+    #[inline(always)]
+    fn fmt(
+        &self,
+        node: &biome_markdown_syntax::MdDirectiveAttributeValue,
+        f: &mut MarkdownFormatter,
+    ) -> FormatResult<()> {
+        FormatNodeRule::<biome_markdown_syntax::MdDirectiveAttributeValue>::fmt(self, node, f)
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdDirectiveAttributeValue {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdDirectiveAttributeValue,
+        crate::md::auxiliary::directive_attribute_value::FormatMdDirectiveAttributeValue,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::auxiliary::directive_attribute_value::FormatMdDirectiveAttributeValue::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdDirectiveAttributeValue {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdDirectiveAttributeValue,
+        crate::md::auxiliary::directive_attribute_value::FormatMdDirectiveAttributeValue,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::auxiliary::directive_attribute_value::FormatMdDirectiveAttributeValue::default(),
+        )
+    }
+}
+impl FormatRule<biome_markdown_syntax::MdMdxJsxElement>
+    for crate::md::auxiliary::mdx_jsx_element::FormatMdMdxJsxElement
+{
+    type Context = MarkdownFormatContext;
+    #[inline(always)]
+    fn fmt(
+        &self,
+        node: &biome_markdown_syntax::MdMdxJsxElement,
+        f: &mut MarkdownFormatter,
+    ) -> FormatResult<()> {
+        FormatNodeRule::<biome_markdown_syntax::MdMdxJsxElement>::fmt(self, node, f)
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdMdxJsxElement {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdMdxJsxElement,
+        crate::md::auxiliary::mdx_jsx_element::FormatMdMdxJsxElement,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::auxiliary::mdx_jsx_element::FormatMdMdxJsxElement::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdMdxJsxElement {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdMdxJsxElement,
+        crate::md::auxiliary::mdx_jsx_element::FormatMdMdxJsxElement,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::auxiliary::mdx_jsx_element::FormatMdMdxJsxElement::default(),
+        )
+    }
+}
+impl FormatRule<biome_markdown_syntax::MdMdxJsxAttribute>
+    for crate::md::auxiliary::mdx_jsx_attribute::FormatMdMdxJsxAttribute
+{
+    type Context = MarkdownFormatContext;
+    #[inline(always)]
+    fn fmt(
+        &self,
+        node: &biome_markdown_syntax::MdMdxJsxAttribute,
+        f: &mut MarkdownFormatter,
+    ) -> FormatResult<()> {
+        FormatNodeRule::<biome_markdown_syntax::MdMdxJsxAttribute>::fmt(self, node, f)
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdMdxJsxAttribute {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdMdxJsxAttribute,
+        crate::md::auxiliary::mdx_jsx_attribute::FormatMdMdxJsxAttribute,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::auxiliary::mdx_jsx_attribute::FormatMdMdxJsxAttribute::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdMdxJsxAttribute {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdMdxJsxAttribute,
+        crate::md::auxiliary::mdx_jsx_attribute::FormatMdMdxJsxAttribute,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::auxiliary::mdx_jsx_attribute::FormatMdMdxJsxAttribute::default(),
+        )
+    }
+}
+impl FormatRule<biome_markdown_syntax::MdMdxJsxAttributeValue>
+    for crate::md::auxiliary::mdx_jsx_attribute_value::FormatMdMdxJsxAttributeValue
+{
+    type Context = MarkdownFormatContext;
+    #[inline(always)]
+    fn fmt(
+        &self,
+        node: &biome_markdown_syntax::MdMdxJsxAttributeValue,
+        f: &mut MarkdownFormatter,
+    ) -> FormatResult<()> {
+        FormatNodeRule::<biome_markdown_syntax::MdMdxJsxAttributeValue>::fmt(self, node, f)
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdMdxJsxAttributeValue {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdMdxJsxAttributeValue,
+        crate::md::auxiliary::mdx_jsx_attribute_value::FormatMdMdxJsxAttributeValue,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::auxiliary::mdx_jsx_attribute_value::FormatMdMdxJsxAttributeValue::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdMdxJsxAttributeValue {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdMdxJsxAttributeValue,
+        crate::md::auxiliary::mdx_jsx_attribute_value::FormatMdMdxJsxAttributeValue,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::auxiliary::mdx_jsx_attribute_value::FormatMdMdxJsxAttributeValue::default(),
+        )
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdMdxJsxAttributeList {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdMdxJsxAttributeList,
+        crate::md::lists::mdx_jsx_attribute_list::FormatMdMdxJsxAttributeList,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::lists::mdx_jsx_attribute_list::FormatMdMdxJsxAttributeList::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdMdxJsxAttributeList {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdMdxJsxAttributeList,
+        crate::md::lists::mdx_jsx_attribute_list::FormatMdMdxJsxAttributeList,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::lists::mdx_jsx_attribute_list::FormatMdMdxJsxAttributeList::default(),
+        )
+    }
+}
 impl FormatRule<biome_markdown_syntax::MdDocument>
     for crate::md::auxiliary::document::FormatMdDocument
 {
@@ -1227,6 +1518,31 @@ impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdCodeNameList
         FormatOwnedWithRule::new(
             self,
             crate::md::lists::code_name_list::FormatMdCodeNameList::default(),
+        )
+    }
+}
+impl AsFormat<MarkdownFormatContext> for biome_markdown_syntax::MdDirectiveAttributeList {
+    type Format<'a> = FormatRefWithRule<
+        'a,
+        biome_markdown_syntax::MdDirectiveAttributeList,
+        crate::md::lists::directive_attribute_list::FormatMdDirectiveAttributeList,
+    >;
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(
+            self,
+            crate::md::lists::directive_attribute_list::FormatMdDirectiveAttributeList::default(),
+        )
+    }
+}
+impl IntoFormat<MarkdownFormatContext> for biome_markdown_syntax::MdDirectiveAttributeList {
+    type Format = FormatOwnedWithRule<
+        biome_markdown_syntax::MdDirectiveAttributeList,
+        crate::md::lists::directive_attribute_list::FormatMdDirectiveAttributeList,
+    >;
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(
+            self,
+            crate::md::lists::directive_attribute_list::FormatMdDirectiveAttributeList::default(),
         )
     }
 }

@@ -4,10 +4,8 @@ use biome_analyze::{
 use crate::MarkdownRuleAction;
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
-
-use crate::utils::definition_utils::collect_definitions;
+use biome_markdown_syntax::{MdLinkBlock, MarkdownSyntaxKind};
+use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 
 declare_lint_rule! {
     /// Enforce lowercase labels in link reference definitions.
@@ -42,91 +40,58 @@ declare_lint_rule! {
 pub struct UppercaseLabel {
     range: TextRange,
     label: String,
-    corrected: String,
 }
 
 impl Rule for UseLowercaseDefinitionLabels {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdLinkBlock>;
     type State = UppercaseLabel;
-    type Signals = Vec<Self::State>;
+    type Signals = Option<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
-        let definitions = collect_definitions(&text);
+        let link_block = ctx.query();
+        let label_text = link_block.label().syntax().text_trimmed().to_string();
 
-        let mut signals = Vec::new();
+        if label_text != label_text.to_lowercase() {
+            Some(UppercaseLabel {
+                range: link_block.syntax().text_trimmed_range(),
+                label: label_text,
+            })
+        } else {
+            None
+        }
+    }
 
-        for def in &definitions {
-            if def.raw_label != def.raw_label.to_lowercase() {
-                // Compute corrected line by replacing label with lowercase
-                let line_text = &text[def.byte_offset..def.byte_offset + def.byte_len];
-                let corrected = if let Some(start) = line_text.find('[') {
-                    if let Some(end) = line_text.find("]:") {
-                        let label_part = &line_text[start + 1..end];
-                        format!(
-                            "{}[{}]{}",
-                            &line_text[..start],
-                            label_part.to_lowercase(),
-                            &line_text[end + 1..]
-                        )
-                    } else {
-                        line_text.to_string()
+    fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<MarkdownRuleAction> {
+        let link_block = ctx.query();
+        let mut mutation = ctx.root().begin();
+
+        // Replace each label token with its lowercase equivalent
+        for token in link_block
+            .label()
+            .syntax()
+            .descendants_with_tokens(biome_rowan::Direction::Next)
+        {
+            if let biome_rowan::SyntaxElement::Token(token) = token {
+                if token.kind() == MarkdownSyntaxKind::MD_TEXTUAL_LITERAL {
+                    let lower = token.text_trimmed().to_lowercase();
+                    if lower != token.text_trimmed() {
+                        let new_token =
+                            biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
+                                token.kind(),
+                                &lower,
+                                [],
+                                [],
+                            );
+                        mutation.replace_element_discard_trivia(
+                            token.into(),
+                            new_token.into(),
+                        );
                     }
-                } else {
-                    line_text.to_string()
-                };
-                signals.push(UppercaseLabel {
-                    range: TextRange::new(
-                        base + TextSize::from(def.byte_offset as u32),
-                        base + TextSize::from((def.byte_offset + def.byte_len) as u32),
-                    ),
-                    label: def.raw_label.clone(),
-                    corrected,
-                });
+                }
             }
         }
 
-        signals
-    }
-
-    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
-        let root = ctx.root();
-        let mut token = root
-            .syntax()
-            .token_at_offset(state.range.start())
-            .right_biased()?;
-        let mut tokens = vec![token.clone()];
-        while token.text_range().end() < state.range.end() {
-            token = token.next_token()?;
-            tokens.push(token.clone());
-        }
-        let first = &tokens[0];
-        let last = tokens.last()?;
-        let prefix_len = u32::from(state.range.start() - first.text_range().start()) as usize;
-        let suffix_start = u32::from(state.range.end() - last.text_range().start()) as usize;
-        let prefix = &first.text()[..prefix_len];
-        let suffix = &last.text()[suffix_start..];
-        let new_text = format!("{}{}{}", prefix, state.corrected, suffix);
-        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-            first.kind(),
-            &new_text,
-            [],
-            [],
-        );
-        let mut mutation = ctx.root().begin();
-        mutation.replace_element_discard_trivia(first.clone().into(), new_token.into());
-        for t in &tokens[1..] {
-            let empty = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-                t.kind(),
-                "",
-                [],
-                [],
-            );
-            mutation.replace_element_discard_trivia(t.clone().into(), empty.into());
-        }
         Some(RuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

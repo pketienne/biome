@@ -456,7 +456,7 @@ fn parse_link_destination(raw: &str) -> (String, Option<String>, Option<char>) {
 /// Check if a bare URL pattern exists at the given position in a line.
 ///
 /// Returns `Some((start, end))` for the URL extent if found.
-pub fn find_bare_url(line: &str, start: usize) -> Option<(usize, usize)> {
+fn find_bare_url(line: &str, start: usize) -> Option<(usize, usize)> {
     let rest = &line[start..];
     // Check for common URL schemes
     for scheme in &["https://", "http://", "ftp://", "mailto:"] {

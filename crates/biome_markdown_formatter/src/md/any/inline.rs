@@ -8,6 +8,7 @@ impl FormatRule<AnyMdInline> for FormatAnyMdInline {
     type Context = MarkdownFormatContext;
     fn fmt(&self, node: &AnyMdInline, f: &mut MarkdownFormatter) -> FormatResult<()> {
         match node {
+            AnyMdInline::MdDirective(node) => node.format().fmt(f),
             AnyMdInline::MdHardLine(node) => node.format().fmt(f),
             AnyMdInline::MdHtmlBlock(node) => node.format().fmt(f),
             AnyMdInline::MdInlineCode(node) => node.format().fmt(f),
@@ -15,6 +16,7 @@ impl FormatRule<AnyMdInline> for FormatAnyMdInline {
             AnyMdInline::MdInlineImage(node) => node.format().fmt(f),
             AnyMdInline::MdInlineItalic(node) => node.format().fmt(f),
             AnyMdInline::MdInlineLink(node) => node.format().fmt(f),
+            AnyMdInline::MdMdxJsxElement(node) => node.format().fmt(f),
             AnyMdInline::MdInlineStrikethrough(node) => node.format().fmt(f),
             AnyMdInline::MdSoftBreak(node) => node.format().fmt(f),
             AnyMdInline::MdTextual(node) => node.format().fmt(f),

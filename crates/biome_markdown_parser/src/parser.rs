@@ -27,6 +27,14 @@ impl<'source> MarkdownParser<'source> {
         }
     }
 
+    pub fn has_preceding_whitespace(&self) -> bool {
+        self.source.has_preceding_whitespace()
+    }
+
+    pub fn peek_next_byte(&self) -> Option<u8> {
+        self.source.peek_next_byte()
+    }
+
     pub fn before_whitespace_count(&self) -> usize {
         self.source.before_whitespace_count()
     }

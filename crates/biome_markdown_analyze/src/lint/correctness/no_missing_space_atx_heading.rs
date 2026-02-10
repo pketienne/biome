@@ -3,8 +3,8 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::{MdDocument, MdHeader};
-use biome_rowan::{AstNode, AstNodeList, BatchMutationExt, TextRange};
+use biome_markdown_syntax::MdHeader;
+use biome_rowan::{AstNode, AstNodeList, BatchMutationExt};
 
 use crate::MarkdownRuleAction;
 
@@ -37,81 +37,55 @@ declare_lint_rule! {
     }
 }
 
-pub struct MissingSpaceAtxHeading {
-    range: TextRange,
-}
-
 impl Rule for NoMissingSpaceAtxHeading {
-    type Query = Ast<MdDocument>;
-    type State = MissingSpaceAtxHeading;
-    type Signals = Vec<Self::State>;
+    type Query = Ast<MdHeader>;
+    type State = ();
+    type Signals = Option<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let mut signals = Vec::new();
-
-        for node in document.syntax().descendants() {
-            if let Some(header) = MdHeader::cast_ref(&node) {
-                let level = header.before().len();
-                if level == 0 {
-                    continue;
-                }
-                // Get the full text of the header node
-                let text = header.syntax().text_trimmed().to_string();
-                // After the '#' characters, there should be a space
-                if text.len() > level {
-                    let after_hashes = &text[level..];
-                    if !after_hashes.starts_with(' ') && !after_hashes.trim().is_empty() {
-                        signals.push(MissingSpaceAtxHeading {
-                            range: header.syntax().text_trimmed_range(),
-                        });
-                    }
-                }
-            }
+        let header = ctx.query();
+        let level = header.before().len();
+        if level == 0 {
+            return None;
         }
-
-        signals
-    }
-
-    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
-        // Find the MdHeader node that corresponds to this state
-        let document = ctx.query();
-        for node in document.syntax().descendants() {
-            if let Some(header) = MdHeader::cast_ref(&node) {
-                if header.syntax().text_trimmed_range() != state.range {
-                    continue;
-                }
-                // Find the content paragraph's first token and add a leading space
-                let content = header.content()?;
-                let first_token = content.syntax().first_token()?;
-                let token_text = first_token.text().to_string();
-                // Prepend a space to the full token text
-                let new_text = format!(" {}", token_text);
-                let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-                    first_token.kind(),
-                    &new_text,
-                    [],
-                    [],
-                );
-                let mut mutation = ctx.root().begin();
-                mutation.replace_element_discard_trivia(first_token.into(), new_token.into());
-                return Some(RuleAction::new(
-                    ctx.metadata().action_category(ctx.category(), ctx.group()),
-                    ctx.metadata().applicability(),
-                    markup! { "Add a space after the hash characters." }.to_owned(),
-                    mutation,
-                ));
+        let text = header.syntax().text_trimmed().to_string();
+        if text.len() > level {
+            let after_hashes = &text[level..];
+            if !after_hashes.starts_with(' ') && !after_hashes.trim().is_empty() {
+                return Some(());
             }
         }
         None
     }
 
-    fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+    fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<MarkdownRuleAction> {
+        let header = ctx.query();
+        let content = header.content()?;
+        let first_token = content.syntax().first_token()?;
+        let token_text = first_token.text().to_string();
+        let new_text = format!(" {}", token_text);
+        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
+            first_token.kind(),
+            &new_text,
+            [],
+            [],
+        );
+        let mut mutation = ctx.root().begin();
+        mutation.replace_element_discard_trivia(first_token.into(), new_token.into());
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Add a space after the hash characters." }.to_owned(),
+            mutation,
+        ))
+    }
+
+    fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
-                state.range,
+                ctx.query().syntax().text_trimmed_range(),
                 markup! {
                     "Missing space after hash characters in atx heading."
                 },

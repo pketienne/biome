@@ -3,12 +3,12 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::MdParagraph;
+use biome_rowan::{AstNode, TextRange, TextSize};
 
 use crate::MarkdownRuleAction;
 
-use crate::utils::fence_utils::FenceTracker;
+use crate::utils::fix_utils::make_text_replacement;
 use crate::utils::inline_utils::{find_code_spans, is_in_code_span};
 
 declare_lint_rule! {
@@ -47,26 +47,19 @@ pub struct SpaceInEmphasis {
 }
 
 impl Rule for NoSpaceInEmphasis {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdParagraph>;
     type State = SpaceInEmphasis;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
+        let paragraph = ctx.query();
+        let text = paragraph.syntax().text_trimmed().to_string();
+        let base = paragraph.syntax().text_trimmed_range().start();
         let mut signals = Vec::new();
-        let mut tracker = FenceTracker::new();
         let mut offset = 0usize;
 
-        for (line_idx, line) in text.lines().enumerate() {
-            tracker.process_line(line_idx, line);
-            if tracker.is_inside_fence() {
-                offset += line.len() + 1;
-                continue;
-            }
-
+        for line in text.lines() {
             let bytes = line.as_bytes();
             let code_spans = find_code_spans(line);
 
@@ -159,31 +152,8 @@ impl Rule for NoSpaceInEmphasis {
     }
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
-        let root = ctx.root();
-        // Find the token containing the space character
-        let token = root
-            .syntax()
-            .token_at_offset(state.space_pos)
-            .right_biased()?;
-        let token_text = token.text().to_string();
-        let token_start = token.text_range().start();
-        let rel = u32::from(state.space_pos - token_start) as usize;
-
-        if rel >= token_text.len() {
-            return None;
-        }
-
-        // Remove the space character at the relative position
-        let new_text = format!("{}{}", &token_text[..rel], &token_text[rel + 1..]);
-
-        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-            token.kind(),
-            &new_text,
-            [],
-            [],
-        );
-        let mut mutation = ctx.root().begin();
-        mutation.replace_element_discard_trivia(token.into(), new_token.into());
+        let space_range = TextRange::new(state.space_pos, state.space_pos + TextSize::from(1));
+        let mutation = make_text_replacement(&ctx.root(), space_range, "")?;
         Some(RuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

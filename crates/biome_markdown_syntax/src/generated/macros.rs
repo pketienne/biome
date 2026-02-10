@@ -24,6 +24,23 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::MdBulletListItem::new_unchecked(node) };
                     $body
                 }
+                $crate::MarkdownSyntaxKind::MD_CHECKBOX => {
+                    let $pattern = unsafe { $crate::MdCheckbox::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_DIRECTIVE => {
+                    let $pattern = unsafe { $crate::MdDirective::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_DIRECTIVE_ATTRIBUTE => {
+                    let $pattern = unsafe { $crate::MdDirectiveAttribute::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_DIRECTIVE_ATTRIBUTE_VALUE => {
+                    let $pattern =
+                        unsafe { $crate::MdDirectiveAttributeValue::new_unchecked(node) };
+                    $body
+                }
                 $crate::MarkdownSyntaxKind::MD_DOCUMENT => {
                     let $pattern = unsafe { $crate::MdDocument::new_unchecked(node) };
                     $body
@@ -100,6 +117,18 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::MdLinkBlock::new_unchecked(node) };
                     $body
                 }
+                $crate::MarkdownSyntaxKind::MD_MDX_JSX_ATTRIBUTE => {
+                    let $pattern = unsafe { $crate::MdMdxJsxAttribute::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_MDX_JSX_ATTRIBUTE_VALUE => {
+                    let $pattern = unsafe { $crate::MdMdxJsxAttributeValue::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_MDX_JSX_ELEMENT => {
+                    let $pattern = unsafe { $crate::MdMdxJsxElement::new_unchecked(node) };
+                    $body
+                }
                 $crate::MarkdownSyntaxKind::MD_ORDER_BULLET => {
                     let $pattern = unsafe { $crate::MdOrderBullet::new_unchecked(node) };
                     $body
@@ -156,6 +185,10 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::MdCodeNameList::new_unchecked(node) };
                     $body
                 }
+                $crate::MarkdownSyntaxKind::MD_DIRECTIVE_ATTRIBUTE_LIST => {
+                    let $pattern = unsafe { $crate::MdDirectiveAttributeList::new_unchecked(node) };
+                    $body
+                }
                 $crate::MarkdownSyntaxKind::MD_HASH_LIST => {
                     let $pattern = unsafe { $crate::MdHashList::new_unchecked(node) };
                     $body
@@ -166,6 +199,10 @@ macro_rules! map_syntax_node {
                 }
                 $crate::MarkdownSyntaxKind::MD_INLINE_ITEM_LIST => {
                     let $pattern = unsafe { $crate::MdInlineItemList::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_MDX_JSX_ATTRIBUTE_LIST => {
+                    let $pattern = unsafe { $crate::MdMdxJsxAttributeList::new_unchecked(node) };
                     $body
                 }
                 $crate::MarkdownSyntaxKind::MD_ORDER_LIST => {

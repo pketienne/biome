@@ -24,6 +24,9 @@ pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
         ("+", "PLUS"),
         ("#", "HASH"),
         (",", "COMMA"),
+        (":", "COLON"),
+        ("{", "L_CURLY"),
+        ("}", "R_CURLY"),
     ],
     keywords: &["null"],
     literals: &[
@@ -63,6 +66,7 @@ pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
         "MD_INLINE_CODE",
         "MD_BULLET",
         "MD_ORDER_BULLET",
+        "MD_CHECKBOX",
         "MD_INLINE_LINK",
         "MD_INLINE_IMAGE",
         "MD_INLINE_IMAGE_ALT",
@@ -83,5 +87,15 @@ pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
         "MD_TABLE_CELL",
         "MD_TABLE_CELL_LIST",
         "MD_THEMATIC_BREAK_BLOCK",
+        // Directive nodes
+        "MD_DIRECTIVE",
+        "MD_DIRECTIVE_ATTRIBUTE_LIST",
+        "MD_DIRECTIVE_ATTRIBUTE",
+        "MD_DIRECTIVE_ATTRIBUTE_VALUE",
+        // MDX JSX nodes
+        "MD_MDX_JSX_ELEMENT",
+        "MD_MDX_JSX_ATTRIBUTE_LIST",
+        "MD_MDX_JSX_ATTRIBUTE",
+        "MD_MDX_JSX_ATTRIBUTE_VALUE",
     ],
 };

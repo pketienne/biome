@@ -3,11 +3,10 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::{MdDocument, MdLinkBlock};
+use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 
 use crate::MarkdownRuleAction;
-use crate::utils::definition_utils::collect_definitions;
 
 declare_lint_rule! {
     /// Disallow multiple definitions that resolve to the same URL.
@@ -53,21 +52,21 @@ impl Rule for NoDuplicateDefinedUrls {
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
-        let definitions = collect_definitions(&text);
 
         let mut seen_urls = std::collections::HashSet::new();
         let mut signals = Vec::new();
 
-        for def in &definitions {
-            if !def.url.is_empty() && !seen_urls.insert(def.url.clone()) {
+        for link_block in document
+            .syntax()
+            .descendants()
+            .filter_map(MdLinkBlock::cast)
+        {
+            let url_text = link_block.url().syntax().text_trimmed().to_string();
+            let url_text = url_text.trim().to_string();
+            if !url_text.is_empty() && !seen_urls.insert(url_text.clone()) {
                 signals.push(DuplicateDefinedUrl {
-                    range: TextRange::new(
-                        base + TextSize::from(def.byte_offset as u32),
-                        base + TextSize::from((def.byte_offset + def.byte_len) as u32),
-                    ),
-                    url: def.url.clone(),
+                    range: link_block.syntax().text_trimmed_range(),
+                    url: url_text,
                 });
             }
         }
@@ -77,39 +76,13 @@ impl Rule for NoDuplicateDefinedUrls {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
         let root = ctx.root();
-        let mut token = root
+        let node = root
             .syntax()
-            .token_at_offset(state.range.start())
-            .right_biased()?;
-        let mut tokens = vec![token.clone()];
-        while token.text_range().end() < state.range.end() {
-            token = token.next_token()?;
-            tokens.push(token.clone());
-        }
-        let first = &tokens[0];
-        let last = tokens.last()?;
-        let prefix_len = u32::from(state.range.start() - first.text_range().start()) as usize;
-        let suffix_start = u32::from(state.range.end() - last.text_range().start()) as usize;
-        let prefix = &first.text()[..prefix_len];
-        let suffix = &last.text()[suffix_start..];
-        let new_text = format!("{}{}", prefix, suffix);
-        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-            first.kind(),
-            &new_text,
-            [],
-            [],
-        );
-        let mut mutation = ctx.root().begin();
-        mutation.replace_element_discard_trivia(first.clone().into(), new_token.into());
-        for t in &tokens[1..] {
-            let empty = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-                t.kind(),
-                "",
-                [],
-                [],
-            );
-            mutation.replace_element_discard_trivia(t.clone().into(), empty.into());
-        }
+            .descendants()
+            .filter_map(MdLinkBlock::cast)
+            .find(|n| n.syntax().text_trimmed_range() == state.range)?;
+        let mut mutation = root.begin();
+        mutation.remove_node(node);
         Some(RuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

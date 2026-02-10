@@ -3,11 +3,11 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::{MdDocument, MdParagraph};
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::MdInlineLink;
+use biome_rowan::{AstNode, AstNodeList};
 
 use crate::MarkdownRuleAction;
-use crate::utils::inline_utils::find_matching_bracket;
+use crate::utils::fix_utils::make_text_replacement;
 
 declare_lint_rule! {
     /// Disallow links with empty URLs.
@@ -38,105 +38,32 @@ declare_lint_rule! {
     }
 }
 
-pub struct EmptyLink {
-    range: TextRange,
-    corrected: String,
-}
-
 impl Rule for NoEmptyLinks {
-    type Query = Ast<MdDocument>;
-    type State = EmptyLink;
-    type Signals = Vec<Self::State>;
+    type Query = Ast<MdInlineLink>;
+    type State = ();
+    type Signals = Option<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let mut signals = Vec::new();
-
-        for node in document.syntax().descendants() {
-            if let Some(paragraph) = MdParagraph::cast_ref(&node) {
-                let text = paragraph.syntax().text_trimmed().to_string();
-                let start = paragraph.syntax().text_trimmed_range().start();
-                let bytes = text.as_bytes();
-                let mut i = 0;
-
-                while i < bytes.len() {
-                    // Look for [text]()
-                    if bytes[i] == b'[' {
-                        if let Some(close_bracket) =
-                            find_matching_bracket(bytes, i, b'[', b']')
-                        {
-                            // Check for empty parens immediately after
-                            if close_bracket + 1 < bytes.len()
-                                && bytes[close_bracket + 1] == b'('
-                            {
-                                if let Some(close_paren) =
-                                    find_matching_bracket(bytes, close_bracket + 1, b'(', b')')
-                                {
-                                    let paren_content =
-                                        &text[close_bracket + 2..close_paren];
-                                    if paren_content.trim().is_empty() {
-                                        let link_text = &text[i + 1..close_bracket];
-                                        let offset = TextSize::from(i as u32);
-                                        let len =
-                                            TextSize::from((close_paren - i + 1) as u32);
-                                        signals.push(EmptyLink {
-                                            range: TextRange::new(
-                                                start + offset,
-                                                start + offset + len,
-                                            ),
-                                            corrected: link_text.to_string(),
-                                        });
-                                    }
-                                    i = close_paren + 1;
-                                    continue;
-                                }
-                            }
-                        }
-                    }
-                    i += 1;
-                }
-            }
+        let link = ctx.query();
+        // Check if the source (URL) is empty or whitespace-only
+        let source = link.source();
+        if source.is_empty() {
+            return Some(());
         }
-
-        signals
+        let source_text = source.syntax().text_trimmed().to_string();
+        if source_text.trim().is_empty() {
+            Some(())
+        } else {
+            None
+        }
     }
 
-    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
-        let root = ctx.root();
-        let mut token = root
-            .syntax()
-            .token_at_offset(state.range.start())
-            .right_biased()?;
-        let mut tokens = vec![token.clone()];
-        while token.text_range().end() < state.range.end() {
-            token = token.next_token()?;
-            tokens.push(token.clone());
-        }
-        let first = &tokens[0];
-        let last = tokens.last()?;
-        let prefix_len = u32::from(state.range.start() - first.text_range().start()) as usize;
-        let suffix_start = u32::from(state.range.end() - last.text_range().start()) as usize;
-        let prefix = &first.text()[..prefix_len];
-        let suffix = &last.text()[suffix_start..];
-        let new_text = format!("{}{}{}", prefix, state.corrected, suffix);
-        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-            first.kind(),
-            &new_text,
-            [],
-            [],
-        );
-        let mut mutation = ctx.root().begin();
-        mutation.replace_element_discard_trivia(first.clone().into(), new_token.into());
-        for t in &tokens[1..] {
-            let empty = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-                t.kind(),
-                "",
-                [],
-                [],
-            );
-            mutation.replace_element_discard_trivia(t.clone().into(), empty.into());
-        }
+    fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<MarkdownRuleAction> {
+        let link = ctx.query();
+        let link_text = link.text().syntax().text_trimmed().to_string();
+        let range = link.syntax().text_trimmed_range();
+        let mutation = make_text_replacement(&ctx.root(), range, &link_text)?;
         Some(RuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -145,11 +72,11 @@ impl Rule for NoEmptyLinks {
         ))
     }
 
-    fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+    fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
-                state.range,
+                ctx.query().syntax().text_trimmed_range(),
                 markup! {
                     "Link has an empty URL."
                 },

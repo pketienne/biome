@@ -10,21 +10,6 @@ use biome_formatter::{
 use biome_markdown_syntax::MarkdownSyntaxNode;
 use biome_rowan::{Direction, SyntaxElement, TextRange};
 
-/// Alias used by generated formatter code.
-pub fn format_verbatim_node(node: &MarkdownSyntaxNode) -> FormatMarkdownVerbatimNode<'_> {
-    format_markdown_verbatim_node(node)
-}
-
-pub fn format_markdown_verbatim_node(node: &MarkdownSyntaxNode) -> FormatMarkdownVerbatimNode<'_> {
-    FormatMarkdownVerbatimNode {
-        node,
-        kind: VerbatimKind::Verbatim {
-            length: node.text_trimmed_range().len(),
-        },
-        format_comments: true,
-    }
-}
-
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct FormatMarkdownVerbatimNode<'node> {
     node: &'node MarkdownSyntaxNode,

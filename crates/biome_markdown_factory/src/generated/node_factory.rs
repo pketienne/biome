@@ -6,19 +6,156 @@ use biome_markdown_syntax::{
     MarkdownSyntaxToken as SyntaxToken, *,
 };
 use biome_rowan::AstNode;
-pub fn md_bullet(bullet_token: SyntaxToken, content: MdInlineItemList) -> MdBullet {
-    MdBullet::unwrap_cast(SyntaxNode::new_detached(
-        MarkdownSyntaxKind::MD_BULLET,
-        [
-            Some(SyntaxElement::Token(bullet_token)),
-            Some(SyntaxElement::Node(content.into_syntax())),
-        ],
-    ))
+pub fn md_bullet(bullet_token: SyntaxToken, content: MdBlockList) -> MdBulletBuilder {
+    MdBulletBuilder {
+        bullet_token,
+        content,
+        checkbox: None,
+    }
+}
+pub struct MdBulletBuilder {
+    bullet_token: SyntaxToken,
+    content: MdBlockList,
+    checkbox: Option<MdCheckbox>,
+}
+impl MdBulletBuilder {
+    pub fn with_checkbox(mut self, checkbox: MdCheckbox) -> Self {
+        self.checkbox = Some(checkbox);
+        self
+    }
+    pub fn build(self) -> MdBullet {
+        MdBullet::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_BULLET,
+            [
+                Some(SyntaxElement::Token(self.bullet_token)),
+                self.checkbox
+                    .map(|token| SyntaxElement::Node(token.into_syntax())),
+                Some(SyntaxElement::Node(self.content.into_syntax())),
+            ],
+        ))
+    }
 }
 pub fn md_bullet_list_item(md_bullet_list: MdBulletList) -> MdBulletListItem {
     MdBulletListItem::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_BULLET_LIST_ITEM,
         [Some(SyntaxElement::Node(md_bullet_list.into_syntax()))],
+    ))
+}
+pub fn md_checkbox(l_brack_token: SyntaxToken, r_brack_token: SyntaxToken) -> MdCheckboxBuilder {
+    MdCheckboxBuilder {
+        l_brack_token,
+        r_brack_token,
+        value_token: None,
+    }
+}
+pub struct MdCheckboxBuilder {
+    l_brack_token: SyntaxToken,
+    r_brack_token: SyntaxToken,
+    value_token: Option<SyntaxToken>,
+}
+impl MdCheckboxBuilder {
+    pub fn with_value_token(mut self, value_token: SyntaxToken) -> Self {
+        self.value_token = Some(value_token);
+        self
+    }
+    pub fn build(self) -> MdCheckbox {
+        MdCheckbox::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_CHECKBOX,
+            [
+                Some(SyntaxElement::Token(self.l_brack_token)),
+                self.value_token.map(|token| SyntaxElement::Token(token)),
+                Some(SyntaxElement::Token(self.r_brack_token)),
+            ],
+        ))
+    }
+}
+pub fn md_directive(
+    marker_token: SyntaxToken,
+    name: MdInlineItemList,
+    attributes: MdDirectiveAttributeList,
+) -> MdDirectiveBuilder {
+    MdDirectiveBuilder {
+        marker_token,
+        name,
+        attributes,
+        l_curly_token: None,
+        r_curly_token: None,
+    }
+}
+pub struct MdDirectiveBuilder {
+    marker_token: SyntaxToken,
+    name: MdInlineItemList,
+    attributes: MdDirectiveAttributeList,
+    l_curly_token: Option<SyntaxToken>,
+    r_curly_token: Option<SyntaxToken>,
+}
+impl MdDirectiveBuilder {
+    pub fn with_l_curly_token(mut self, l_curly_token: SyntaxToken) -> Self {
+        self.l_curly_token = Some(l_curly_token);
+        self
+    }
+    pub fn with_r_curly_token(mut self, r_curly_token: SyntaxToken) -> Self {
+        self.r_curly_token = Some(r_curly_token);
+        self
+    }
+    pub fn build(self) -> MdDirective {
+        MdDirective::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_DIRECTIVE,
+            [
+                Some(SyntaxElement::Token(self.marker_token)),
+                Some(SyntaxElement::Node(self.name.into_syntax())),
+                self.l_curly_token.map(|token| SyntaxElement::Token(token)),
+                Some(SyntaxElement::Node(self.attributes.into_syntax())),
+                self.r_curly_token.map(|token| SyntaxElement::Token(token)),
+            ],
+        ))
+    }
+}
+pub fn md_directive_attribute(name: MdInlineItemList) -> MdDirectiveAttributeBuilder {
+    MdDirectiveAttributeBuilder {
+        name,
+        eq_token: None,
+        value: None,
+    }
+}
+pub struct MdDirectiveAttributeBuilder {
+    name: MdInlineItemList,
+    eq_token: Option<SyntaxToken>,
+    value: Option<MdDirectiveAttributeValue>,
+}
+impl MdDirectiveAttributeBuilder {
+    pub fn with_eq_token(mut self, eq_token: SyntaxToken) -> Self {
+        self.eq_token = Some(eq_token);
+        self
+    }
+    pub fn with_value(mut self, value: MdDirectiveAttributeValue) -> Self {
+        self.value = Some(value);
+        self
+    }
+    pub fn build(self) -> MdDirectiveAttribute {
+        MdDirectiveAttribute::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_DIRECTIVE_ATTRIBUTE,
+            [
+                Some(SyntaxElement::Node(self.name.into_syntax())),
+                self.eq_token.map(|token| SyntaxElement::Token(token)),
+                self.value
+                    .map(|token| SyntaxElement::Node(token.into_syntax())),
+            ],
+        ))
+    }
+}
+pub fn md_directive_attribute_value(
+    delimiter_token: SyntaxToken,
+    content: MdInlineItemList,
+    closing_delimiter_token: SyntaxToken,
+) -> MdDirectiveAttributeValue {
+    MdDirectiveAttributeValue::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_DIRECTIVE_ATTRIBUTE_VALUE,
+        [
+            Some(SyntaxElement::Token(delimiter_token)),
+            Some(SyntaxElement::Node(content.into_syntax())),
+            Some(SyntaxElement::Token(closing_delimiter_token)),
+        ],
     ))
 }
 pub fn md_document(value: MdBlockList, eof_token: SyntaxToken) -> MdDocumentBuilder {
@@ -287,20 +424,138 @@ pub fn md_inline_strikethrough(
         ],
     ))
 }
-pub fn md_link_block(content: MdInlineItemList) -> MdLinkBlock {
+pub fn md_link_block(
+    l_brack_token: SyntaxToken,
+    label: MdInlineItemList,
+    r_brack_token: SyntaxToken,
+    colon_token: SyntaxToken,
+    url: MdInlineItemList,
+) -> MdLinkBlock {
     MdLinkBlock::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_LINK_BLOCK,
-        [Some(SyntaxElement::Node(content.into_syntax()))],
-    ))
-}
-pub fn md_order_bullet(marker_token: SyntaxToken, content: MdInlineItemList) -> MdOrderBullet {
-    MdOrderBullet::unwrap_cast(SyntaxNode::new_detached(
-        MarkdownSyntaxKind::MD_ORDER_BULLET,
         [
-            Some(SyntaxElement::Token(marker_token)),
-            Some(SyntaxElement::Node(content.into_syntax())),
+            Some(SyntaxElement::Token(l_brack_token)),
+            Some(SyntaxElement::Node(label.into_syntax())),
+            Some(SyntaxElement::Token(r_brack_token)),
+            Some(SyntaxElement::Token(colon_token)),
+            Some(SyntaxElement::Node(url.into_syntax())),
         ],
     ))
+}
+pub fn md_mdx_jsx_attribute(name: MdInlineItemList) -> MdMdxJsxAttributeBuilder {
+    MdMdxJsxAttributeBuilder {
+        name,
+        eq_token: None,
+        value: None,
+    }
+}
+pub struct MdMdxJsxAttributeBuilder {
+    name: MdInlineItemList,
+    eq_token: Option<SyntaxToken>,
+    value: Option<MdMdxJsxAttributeValue>,
+}
+impl MdMdxJsxAttributeBuilder {
+    pub fn with_eq_token(mut self, eq_token: SyntaxToken) -> Self {
+        self.eq_token = Some(eq_token);
+        self
+    }
+    pub fn with_value(mut self, value: MdMdxJsxAttributeValue) -> Self {
+        self.value = Some(value);
+        self
+    }
+    pub fn build(self) -> MdMdxJsxAttribute {
+        MdMdxJsxAttribute::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_MDX_JSX_ATTRIBUTE,
+            [
+                Some(SyntaxElement::Node(self.name.into_syntax())),
+                self.eq_token.map(|token| SyntaxElement::Token(token)),
+                self.value
+                    .map(|token| SyntaxElement::Node(token.into_syntax())),
+            ],
+        ))
+    }
+}
+pub fn md_mdx_jsx_attribute_value(
+    delimiter_token: SyntaxToken,
+    content: MdInlineItemList,
+    closing_delimiter_token: SyntaxToken,
+) -> MdMdxJsxAttributeValue {
+    MdMdxJsxAttributeValue::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_MDX_JSX_ATTRIBUTE_VALUE,
+        [
+            Some(SyntaxElement::Token(delimiter_token)),
+            Some(SyntaxElement::Node(content.into_syntax())),
+            Some(SyntaxElement::Token(closing_delimiter_token)),
+        ],
+    ))
+}
+pub fn md_mdx_jsx_element(
+    l_angle_token: SyntaxToken,
+    name: MdInlineItemList,
+    attributes: MdMdxJsxAttributeList,
+    r_angle_token: SyntaxToken,
+) -> MdMdxJsxElementBuilder {
+    MdMdxJsxElementBuilder {
+        l_angle_token,
+        name,
+        attributes,
+        r_angle_token,
+        slash_token: None,
+    }
+}
+pub struct MdMdxJsxElementBuilder {
+    l_angle_token: SyntaxToken,
+    name: MdInlineItemList,
+    attributes: MdMdxJsxAttributeList,
+    r_angle_token: SyntaxToken,
+    slash_token: Option<SyntaxToken>,
+}
+impl MdMdxJsxElementBuilder {
+    pub fn with_slash_token(mut self, slash_token: SyntaxToken) -> Self {
+        self.slash_token = Some(slash_token);
+        self
+    }
+    pub fn build(self) -> MdMdxJsxElement {
+        MdMdxJsxElement::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_MDX_JSX_ELEMENT,
+            [
+                Some(SyntaxElement::Token(self.l_angle_token)),
+                Some(SyntaxElement::Node(self.name.into_syntax())),
+                Some(SyntaxElement::Node(self.attributes.into_syntax())),
+                self.slash_token.map(|token| SyntaxElement::Token(token)),
+                Some(SyntaxElement::Token(self.r_angle_token)),
+            ],
+        ))
+    }
+}
+pub fn md_order_bullet(marker_token: SyntaxToken, content: MdBlockList) -> MdOrderBulletBuilder {
+    MdOrderBulletBuilder {
+        marker_token,
+        content,
+        checkbox: None,
+    }
+}
+pub struct MdOrderBulletBuilder {
+    marker_token: SyntaxToken,
+    content: MdBlockList,
+    checkbox: Option<MdCheckbox>,
+}
+impl MdOrderBulletBuilder {
+    pub fn with_checkbox(mut self, checkbox: MdCheckbox) -> Self {
+        self.checkbox = Some(checkbox);
+        self
+    }
+    pub fn build(self) -> MdOrderBullet {
+        MdOrderBullet::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_ORDER_BULLET,
+            [
+                Some(SyntaxElement::Token(self.marker_token)),
+                self.checkbox
+                    .map(|token| SyntaxElement::Node(token.into_syntax())),
+                Some(SyntaxElement::Node(self.content.into_syntax())),
+            ],
+        ))
+    }
 }
 pub fn md_order_list_item(md_order_list: MdOrderList) -> MdOrderListItem {
     MdOrderListItem::unwrap_cast(SyntaxNode::new_detached(
@@ -334,10 +589,13 @@ impl MdParagraphBuilder {
         ))
     }
 }
-pub fn md_quote(any_md_block: AnyMdBlock) -> MdQuote {
+pub fn md_quote(r_angle_token: SyntaxToken, content: MdBlockList) -> MdQuote {
     MdQuote::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_QUOTE,
-        [Some(SyntaxElement::Node(any_md_block.into_syntax()))],
+        [
+            Some(SyntaxElement::Token(r_angle_token)),
+            Some(SyntaxElement::Node(content.into_syntax())),
+        ],
     ))
 }
 pub fn md_setext_header(content: MdParagraph, underline: MdTextual) -> MdSetextHeader {
@@ -419,6 +677,18 @@ where
             .map(|item| Some(item.into_syntax().into())),
     ))
 }
+pub fn md_directive_attribute_list<I>(items: I) -> MdDirectiveAttributeList
+where
+    I: IntoIterator<Item = MdDirectiveAttribute>,
+    I::IntoIter: ExactSizeIterator,
+{
+    MdDirectiveAttributeList::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_DIRECTIVE_ATTRIBUTE_LIST,
+        items
+            .into_iter()
+            .map(|item| Some(item.into_syntax().into())),
+    ))
+}
 pub fn md_hash_list<I>(items: I) -> MdHashList
 where
     I: IntoIterator<Item = MdHash>,
@@ -450,6 +720,18 @@ where
 {
     MdInlineItemList::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_INLINE_ITEM_LIST,
+        items
+            .into_iter()
+            .map(|item| Some(item.into_syntax().into())),
+    ))
+}
+pub fn md_mdx_jsx_attribute_list<I>(items: I) -> MdMdxJsxAttributeList
+where
+    I: IntoIterator<Item = MdMdxJsxAttribute>,
+    I::IntoIter: ExactSizeIterator,
+{
+    MdMdxJsxAttributeList::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_MDX_JSX_ATTRIBUTE_LIST,
         items
             .into_iter()
             .map(|item| Some(item.into_syntax().into())),

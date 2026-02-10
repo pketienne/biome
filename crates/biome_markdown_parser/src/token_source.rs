@@ -60,6 +60,26 @@ impl<'source> MarkdownTokenSource<'source> {
         }
     }
 
+    /// Returns true if there is inline whitespace (space or tab) immediately
+    /// before the current token in the source text.
+    pub fn has_preceding_whitespace(&self) -> bool {
+        let start = u32::from(self.current_range().start()) as usize;
+        if start == 0 {
+            return false;
+        }
+        let source = self.lexer.source();
+        let byte = source.as_bytes()[start - 1];
+        byte == b' ' || byte == b'\t'
+    }
+
+    /// Returns the byte immediately after the current token in the source text,
+    /// or `None` if at the end of the source.
+    pub fn peek_next_byte(&self) -> Option<u8> {
+        let end = u32::from(self.current_range().end()) as usize;
+        let source = self.lexer.source();
+        source.as_bytes().get(end).copied()
+    }
+
     /// Returns the number of whitespace characters before the current token until the first new line.
     /// tab will be counted as 4 spaces https://spec.commonmark.org/0.31.2/#tabs
     /// whitespace will be counted as 1 space

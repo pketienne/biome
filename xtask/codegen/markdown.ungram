@@ -121,9 +121,18 @@ MdCodeNameList = MdTextual*
 // html block
 MdHtmlBlock = content: MdInlineItemList
 
-MdLinkBlock = content: MdInlineItemList
+MdLinkBlock =
+    '['
+    label: MdInlineItemList
+    ']'
+    ':'
+    url: MdInlineItemList
 
-MdQuote = AnyMdBlock
+// > Block quote content
+// ^^^^^^^^^^^^^^^^^^^^
+MdQuote =
+	'>'
+	content: MdBlockList
 
 MdBulletListItem = MdBulletList
 MdOrderListItem = MdOrderList
@@ -134,7 +143,8 @@ MdBulletList = MdBullet*
 // ^^^^^^
 MdBullet =
 	bullet: ('-' | '*' | '+')
-	content: MdInlineItemList
+	checkbox: MdCheckbox?
+	content: MdBlockList
 
 MdOrderList = MdOrderBullet*
 
@@ -142,7 +152,15 @@ MdOrderList = MdOrderBullet*
 // ^^^^^^^
 MdOrderBullet =
 	marker: 'md_textual_literal'
-	content: MdInlineItemList
+	checkbox: MdCheckbox?
+	content: MdBlockList
+
+// [ ] or [x] or [X] in task lists
+// value is absent for unchecked [ ], present for [x]/[X]
+MdCheckbox =
+	'['
+	value: 'md_textual_literal'?
+	']'
 
 // Any block paragraph
 //
@@ -161,6 +179,8 @@ AnyMdInline =
 	| MdInlineStrikethrough
 	| MdInlineLink
 	| MdInlineImage
+	| MdDirective
+	| MdMdxJsxElement
 	| MdHtmlBlock
 	| MdHardLine
 	| MdSoftBreak
@@ -260,5 +280,51 @@ MdSoftBreak = value: 'md_soft_break_literal'
 MdTextual = value: 'md_textual_literal'
 MdIndent = value: 'md_indent_chunk_literal'
 
+
+// Directives (Generic Directive Extension)
+// :name{attr="val"}       — text directive
+// ::name{attr="val"}      — leaf directive
+// :::name{attr="val"}     — container directive
+MdDirective =
+	marker: 'md_textual_literal'
+	name: MdInlineItemList
+	'{'?
+	attributes: MdDirectiveAttributeList
+	'}'?
+
+MdDirectiveAttributeList = MdDirectiveAttribute*
+
+MdDirectiveAttribute =
+	name: MdInlineItemList
+	'='?
+	value: MdDirectiveAttributeValue?
+
+MdDirectiveAttributeValue =
+	delimiter: 'md_textual_literal'
+	content: MdInlineItemList
+	closing_delimiter: 'md_textual_literal'
+
+
+// MDX JSX elements
+// <Component prop="value" />     — self-closing
+// <Component prop="value">       — opening tag
+MdMdxJsxElement =
+	'<'
+	name: MdInlineItemList
+	attributes: MdMdxJsxAttributeList
+	'/'?
+	'>'
+
+MdMdxJsxAttributeList = MdMdxJsxAttribute*
+
+MdMdxJsxAttribute =
+	name: MdInlineItemList
+	'='?
+	value: MdMdxJsxAttributeValue?
+
+MdMdxJsxAttributeValue =
+	delimiter: 'md_textual_literal'
+	content: MdInlineItemList
+	closing_delimiter: 'md_textual_literal'
 
 

@@ -25,8 +25,11 @@ invalid.md:1:1 lint/correctness/noMissingSpaceClosedAtxHeading  FIXABLE  ━━�
   
   i Safe fix: Add a space before the closing hashes.
   
-    1 │ ##·Heading·##
-      │           +  
+    1   │ - ##·Heading##
+      1 │ + ##·Heading·##
+    2 2 │   
+    3 3 │   ### Another heading###
+  
 
 ```
 
@@ -45,7 +48,11 @@ invalid.md:3:1 lint/correctness/noMissingSpaceClosedAtxHeading  FIXABLE  ━━�
   
   i Safe fix: Add a space before the closing hashes.
   
-    3 │ ###·Another·heading·###
-      │                    +   
+    1 1 │   ## Heading##
+    2 2 │   
+    3   │ - ###·Another·heading###
+      3 │ + ###·Another·heading·###
+    4 4 │   
+  
 
 ```

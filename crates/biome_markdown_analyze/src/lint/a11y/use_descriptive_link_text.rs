@@ -1,12 +1,11 @@
 use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
+use biome_markdown_syntax::MdParagraph;
 use biome_rowan::{AstNode, TextRange, TextSize};
 
 use biome_rule_options::use_descriptive_link_text::UseDescriptiveLinkTextOptions;
 
-use crate::utils::fence_utils::FenceTracker;
 use crate::utils::inline_utils::{find_code_spans, find_inline_links, find_reference_links};
 
 declare_lint_rule! {
@@ -59,26 +58,20 @@ pub struct BadLinkText {
 }
 
 impl Rule for UseDescriptiveLinkText {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdParagraph>;
     type State = BadLinkText;
     type Signals = Vec<Self::State>;
     type Options = UseDescriptiveLinkTextOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
+        let paragraph = ctx.query();
+        let text = paragraph.syntax().text_trimmed().to_string();
+        let base = paragraph.syntax().text_trimmed_range().start();
         let min_length = ctx.options().minimum_length();
         let mut signals = Vec::new();
-        let mut tracker = FenceTracker::new();
+        let mut offset = 0usize;
 
-        for (line_idx, line) in text.lines().enumerate() {
-            tracker.process_line(line_idx, line);
-            if tracker.is_inside_fence() {
-                continue;
-            }
-
-            let line_offset: usize = text.lines().take(line_idx).map(|l| l.len() + 1).sum();
+        for line in text.lines() {
             let code_spans = find_code_spans(line);
 
             for link in find_inline_links(line, &code_spans) {
@@ -91,8 +84,8 @@ impl Rule for UseDescriptiveLinkText {
                 {
                     signals.push(BadLinkText {
                         range: TextRange::new(
-                            base + TextSize::from((line_offset + link.start) as u32),
-                            base + TextSize::from((line_offset + link.end) as u32),
+                            base + TextSize::from((offset + link.start) as u32),
+                            base + TextSize::from((offset + link.end) as u32),
                         ),
                         text: link.text.clone(),
                     });
@@ -109,13 +102,15 @@ impl Rule for UseDescriptiveLinkText {
                 {
                     signals.push(BadLinkText {
                         range: TextRange::new(
-                            base + TextSize::from((line_offset + link.start) as u32),
-                            base + TextSize::from((line_offset + link.end) as u32),
+                            base + TextSize::from((offset + link.start) as u32),
+                            base + TextSize::from((offset + link.end) as u32),
                         ),
                         text: link.text.clone(),
                     });
                 }
             }
+
+            offset += line.len() + 1;
         }
 
         signals

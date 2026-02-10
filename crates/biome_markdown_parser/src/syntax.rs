@@ -192,27 +192,73 @@ fn at_blockquote(p: &mut MarkdownParser) -> bool {
 }
 
 /// Parse a blockquote into an MdQuote node.
-/// MdQuote expects exactly 1 child: AnyMdBlock (we use MdParagraph).
+/// MdQuote has 2 slots: `>` token (R_ANGLE) and content (MdBlockList).
+/// Supports nested blockquotes (`> > text`) and lazy continuation (lines without `>`).
 fn parse_blockquote(p: &mut MarkdownParser) {
     let m = p.start();
 
-    // Consume the `>` marker (becomes part of the paragraph content)
-    // Build a paragraph containing the `>` and everything on this line
-    let para = p.start();
-    let list = p.start();
+    // Slot 0: `>` marker — remap to R_ANGLE
+    p.bump_remap(R_ANGLE);
 
-    let textual = p.start();
-    p.bump_any();
-    textual.complete(p, MD_TEXTUAL);
+    // Slot 1: content as MdBlockList
+    let block_list = p.start();
 
-    while !p.at(T![EOF]) && !p.has_preceding_line_break() {
-        let textual = p.start();
-        p.bump_any();
-        textual.complete(p, MD_TEXTUAL);
+    // Check for nested blockquote (another `>` on the same line)
+    if !p.at(T![EOF])
+        && !p.has_preceding_line_break()
+        && p.cur() == MD_TEXTUAL_LITERAL
+        && p.cur_text() == ">"
+    {
+        // Nested blockquote: `> > content` — recursively parse inner blockquote
+        parse_blockquote(p);
+    } else {
+        // Regular content — parse as paragraph with continuation
+        let para = p.start();
+        let list = p.start();
+
+        // First line content (after `>`)
+        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+            let textual = p.start();
+            p.bump_any();
+            textual.complete(p, MD_TEXTUAL);
+        }
+
+        // Continuation lines: `>` followed by content, or lazy continuation
+        while !p.at(T![EOF])
+            && p.has_preceding_line_break()
+            && !p.has_preceding_blank_line()
+        {
+            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == ">" {
+                // Standard continuation with `>` marker
+                let textual = p.start();
+                p.bump_any();
+                textual.complete(p, MD_TEXTUAL);
+                while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+                    let textual = p.start();
+                    p.bump_any();
+                    textual.complete(p, MD_TEXTUAL);
+                }
+            } else if !at_continuation_stop(p) {
+                // Lazy continuation — line without `>` but not a new block start.
+                // The first token has a preceding line break, so consume it unconditionally.
+                let textual = p.start();
+                p.bump_any();
+                textual.complete(p, MD_TEXTUAL);
+                while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+                    let textual = p.start();
+                    p.bump_any();
+                    textual.complete(p, MD_TEXTUAL);
+                }
+            } else {
+                break;
+            }
+        }
+
+        list.complete(p, MD_INLINE_ITEM_LIST);
+        para.complete(p, MD_PARAGRAPH);
     }
 
-    list.complete(p, MD_INLINE_ITEM_LIST);
-    para.complete(p, MD_PARAGRAPH);
+    block_list.complete(p, MD_BLOCK_LIST);
 
     m.complete(p, MD_QUOTE);
 }
@@ -230,22 +276,25 @@ fn at_unordered_list(p: &mut MarkdownParser) -> bool {
 }
 
 /// Parse an unordered list item into MdBulletListItem > MdBulletList > MdBullet* nodes.
+/// Only collects sibling bullets at the same indentation level.
 fn parse_unordered_list_item(p: &mut MarkdownParser) {
+    let list_indent = p.before_whitespace_count();
     let m = p.start();
     let list = p.start();
 
-    // Parse consecutive bullet items
-    parse_bullet(p);
-    while !p.at(T![EOF]) && at_bullet_start(p) {
-        parse_bullet(p);
+    // Parse consecutive bullet items at the same indent level
+    parse_bullet(p, list_indent);
+    while !p.at(T![EOF]) && at_bullet_start_at_indent(p, list_indent) {
+        parse_bullet(p, list_indent);
     }
 
     list.complete(p, MD_BULLET_LIST);
     m.complete(p, MD_BULLET_LIST_ITEM);
 }
 
-/// Check if the current token is a bullet marker at the start of a new line.
-fn at_bullet_start(p: &mut MarkdownParser) -> bool {
+/// Check if the current token is a bullet marker at the start of a new line,
+/// at the expected indentation level.
+fn at_bullet_start_at_indent(p: &mut MarkdownParser, expected_indent: usize) -> bool {
     if !p.has_preceding_line_break() {
         return false;
     }
@@ -253,12 +302,14 @@ fn at_bullet_start(p: &mut MarkdownParser) -> bool {
         return false;
     }
     let text = p.cur_text();
-    (text == "-" || text == "*" || text == "+") && p.before_whitespace_count() < 4
+    (text == "-" || text == "*" || text == "+")
+        && p.before_whitespace_count() == expected_indent
 }
 
-/// Parse a single bullet: marker + content on the same line.
-/// MdBullet has 2 slots: bullet token (MINUS/STAR/PLUS) and content (MdInlineItemList).
-fn parse_bullet(p: &mut MarkdownParser) {
+/// Parse a single bullet: marker + optional checkbox + content block list.
+/// MdBullet has 3 slots: bullet token (MINUS/STAR/PLUS), optional MdCheckbox,
+/// and content (MdBlockList containing a MdParagraph and optional nested blocks).
+fn parse_bullet(p: &mut MarkdownParser, list_indent: usize) {
     let m = p.start();
 
     // Slot 0: bullet marker — remap to the proper token kind
@@ -270,8 +321,32 @@ fn parse_bullet(p: &mut MarkdownParser) {
         _ => p.bump_any(),
     }
 
-    // Slot 1: content — everything on the line after the marker
-    parse_inline_list(p);
+    // Slot 1: optional checkbox — [ ] or [x] or [X]
+    try_parse_checkbox(p);
+
+    // Slot 2: content — wrapped in MdBlockList > MdParagraph + optional nested blocks
+    let content_indent = list_indent + 2;
+    let block_list = p.start();
+    let para = p.start();
+    parse_multiline_inline_list(p, content_indent);
+    para.complete(p, MD_PARAGRAPH);
+
+    // Check for nested list items at deeper indent
+    while !p.at(T![EOF]) && p.has_preceding_line_break() && !p.has_preceding_blank_line() {
+        let indent = p.before_whitespace_count();
+        if indent < content_indent {
+            break;
+        }
+        if at_unordered_list(p) {
+            parse_unordered_list_item(p);
+        } else if at_ordered_list(p) {
+            parse_ordered_list_item(p);
+        } else {
+            break;
+        }
+    }
+
+    block_list.complete(p, MD_BLOCK_LIST);
 
     m.complete(p, MD_BULLET);
 }
@@ -305,43 +380,119 @@ fn is_ordered_marker(text: &str) -> bool {
 }
 
 /// Parse an ordered list item into MdOrderListItem > MdOrderList > MdOrderBullet* nodes.
+/// Only collects sibling bullets at the same indentation level.
 fn parse_ordered_list_item(p: &mut MarkdownParser) {
+    let list_indent = p.before_whitespace_count();
     let m = p.start();
     let list = p.start();
 
-    // Parse consecutive ordered items
-    parse_order_bullet(p);
-    while !p.at(T![EOF]) && at_order_bullet_start(p) {
-        parse_order_bullet(p);
+    // Parse consecutive ordered items at the same indent level
+    parse_order_bullet(p, list_indent);
+    while !p.at(T![EOF]) && at_order_bullet_start_at_indent(p, list_indent) {
+        parse_order_bullet(p, list_indent);
     }
 
     list.complete(p, MD_ORDER_LIST);
     m.complete(p, MD_ORDER_LIST_ITEM);
 }
 
-/// Check if the current token is an ordered list marker at the start of a new line.
-fn at_order_bullet_start(p: &mut MarkdownParser) -> bool {
+/// Check if the current token is an ordered list marker at the start of a new line,
+/// at the expected indentation level.
+fn at_order_bullet_start_at_indent(p: &mut MarkdownParser, expected_indent: usize) -> bool {
     if !p.has_preceding_line_break() {
         return false;
     }
     if p.cur() != MD_TEXTUAL_LITERAL {
         return false;
     }
-    is_ordered_marker(p.cur_text()) && p.before_whitespace_count() < 4
+    is_ordered_marker(p.cur_text()) && p.before_whitespace_count() == expected_indent
 }
 
-/// Parse a single ordered bullet: marker + content on the same line.
-/// MdOrderBullet has 2 slots: marker (MD_TEXTUAL_LITERAL) and content (MdInlineItemList).
-fn parse_order_bullet(p: &mut MarkdownParser) {
+/// Parse a single ordered bullet: marker + optional checkbox + content block list.
+/// MdOrderBullet has 3 slots: marker (MD_TEXTUAL_LITERAL), optional MdCheckbox,
+/// and content (MdBlockList containing a MdParagraph and optional nested blocks).
+fn parse_order_bullet(p: &mut MarkdownParser, list_indent: usize) {
     let m = p.start();
 
     // Slot 0: marker (e.g. "1.", "2)") — keep as MD_TEXTUAL_LITERAL
+    let marker_width = p.cur_text().len();
     p.bump_any();
 
-    // Slot 1: content — everything on the line after the marker
-    parse_inline_list(p);
+    // Slot 1: optional checkbox — [ ] or [x] or [X]
+    try_parse_checkbox(p);
+
+    // Slot 2: content — wrapped in MdBlockList > MdParagraph + optional nested blocks
+    // Continuation indent is list indent + marker width + 1 space (e.g. "1. " = 3)
+    let content_indent = list_indent + marker_width + 1;
+    let block_list = p.start();
+    let para = p.start();
+    parse_multiline_inline_list(p, content_indent);
+    para.complete(p, MD_PARAGRAPH);
+
+    // Check for nested list items at deeper indent
+    while !p.at(T![EOF]) && p.has_preceding_line_break() && !p.has_preceding_blank_line() {
+        let indent = p.before_whitespace_count();
+        if indent < content_indent {
+            break;
+        }
+        if at_unordered_list(p) {
+            parse_unordered_list_item(p);
+        } else if at_ordered_list(p) {
+            parse_ordered_list_item(p);
+        } else {
+            break;
+        }
+    }
+
+    block_list.complete(p, MD_BLOCK_LIST);
 
     m.complete(p, MD_ORDER_BULLET);
+}
+
+// === Task List Checkbox ===
+
+/// Try to parse a task list checkbox: `[ ]`, `[x]`, or `[X]`.
+/// MdCheckbox has 3 slots: `[` (L_BRACK), optional value (MD_TEXTUAL_LITERAL), `]` (R_BRACK).
+/// For `[ ]`, value is absent (space is trivia). For `[x]`/`[X]`, value is present.
+/// If the current position doesn't look like a checkbox, does nothing (slot remains absent).
+fn try_parse_checkbox(p: &mut MarkdownParser) {
+    // Must be `[` on the same line as the bullet marker
+    if p.at(T![EOF]) || p.has_preceding_line_break() {
+        return;
+    }
+    if p.cur() != MD_TEXTUAL_LITERAL || p.cur_text() != "[" {
+        return;
+    }
+
+    // Use try_parse to rewind if this isn't a valid checkbox
+    let _ = try_parse(p, |p| {
+        let m = p.start();
+
+        // Slot 0: [
+        p.bump_remap(L_BRACK);
+
+        // Slot 1: optional value — "x" or "X" (for `[ ]`, space is trivia so value is absent)
+        if !p.at(T![EOF]) && !p.has_preceding_line_break() && p.cur() == MD_TEXTUAL_LITERAL {
+            let value = p.cur_text();
+            if value == "x" || value == "X" {
+                p.bump_any(); // keep as MD_TEXTUAL_LITERAL
+            }
+        }
+
+        // Slot 2: ]
+        if p.at(T![EOF])
+            || p.has_preceding_line_break()
+            || p.cur() != MD_TEXTUAL_LITERAL
+            || p.cur_text() != "]"
+        {
+            m.abandon(p);
+            return Err(());
+        }
+        p.bump_remap(R_BRACK);
+
+        m.complete(p, MD_CHECKBOX);
+        Ok(())
+    });
 }
 
 pub(crate) fn at_indent_code_block(p: &mut MarkdownParser) -> bool {
@@ -427,6 +578,12 @@ fn try_parse_one_inline(p: &mut MarkdownParser) -> bool {
     if at_inline_emphasis_start(p) {
         return try_parse_inline_emphasis_or_italic(p);
     }
+    if at_inline_directive_start(p) {
+        return try_parse_inline_directive(p);
+    }
+    if at_inline_mdx_jsx_start(p) {
+        return try_parse_inline_mdx_jsx(p);
+    }
     false
 }
 
@@ -452,6 +609,68 @@ fn parse_inline_content_until_delimiter(
         }
     }
     found
+}
+
+/// Parse inline content that may span multiple lines.
+/// The first line is always consumed (like `parse_inline_list`).
+/// Subsequent lines are consumed as continuation if:
+///   - No blank line precedes them
+///   - They have at least `min_indent` spaces of indentation
+///   - They don't start a new list marker
+fn parse_multiline_inline_list(p: &mut MarkdownParser, min_indent: usize) {
+    let list = p.start();
+    let mut first = true;
+
+    while !p.at(T![EOF]) {
+        if !first && p.has_preceding_line_break() {
+            // At a line boundary — check if we should continue
+            if p.has_preceding_blank_line() {
+                break;
+            }
+            if p.before_whitespace_count() < min_indent {
+                break;
+            }
+            // Don't continue into new list markers or block-level starts
+            if at_continuation_stop(p) {
+                break;
+            }
+        }
+        first = false;
+        if !try_parse_one_inline(p) {
+            let textual = p.start();
+            p.bump_any();
+            textual.complete(p, MD_TEXTUAL);
+        }
+    }
+
+    list.complete(p, MD_INLINE_ITEM_LIST);
+}
+
+/// Check if the current position is a block-level element that should stop
+/// list item continuation. Checks for list markers, headers, fenced code,
+/// blockquotes, and HTML blocks.
+fn at_continuation_stop(p: &mut MarkdownParser) -> bool {
+    if p.cur() != MD_TEXTUAL_LITERAL {
+        return false;
+    }
+    let text = p.cur_text();
+    // Unordered list marker
+    if (text == "-" || text == "*" || text == "+") && p.before_whitespace_count() < 4 {
+        return true;
+    }
+    // Ordered list marker
+    if is_ordered_marker(text) && p.before_whitespace_count() < 4 {
+        return true;
+    }
+    // ATX heading
+    if text == "#" {
+        return true;
+    }
+    // Blockquote
+    if text == ">" {
+        return true;
+    }
+    false
 }
 
 /// Check if the current token starts an inline code span (backtick delimiter).
@@ -764,6 +983,405 @@ fn try_parse_inline_strikethrough(p: &mut MarkdownParser) -> bool {
     .is_ok()
 }
 
+// === Directives ===
+
+/// Check if the current position starts a directive (`:name`, `::name`, `:::name`).
+/// The lexer combines consecutive `:` into a single token (up to 3).
+fn at_inline_directive_start(p: &mut MarkdownParser) -> bool {
+    if p.cur() != MD_TEXTUAL_LITERAL {
+        return false;
+    }
+    let text = p.cur_text();
+    text == ":" || text == "::" || text == ":::"
+}
+
+/// Try to parse a directive: `:name{attrs}`, `::name{attrs}`, `:::name{attrs}`.
+/// MdDirective has 5 slots: marker(0), name(1), l_curly(2)?, attributes(3), r_curly(4)?
+fn try_parse_inline_directive(p: &mut MarkdownParser) -> bool {
+    try_parse(p, |p| {
+        let m = p.start();
+
+        // Slot 0: marker (`:`, `::`, or `:::`)
+        p.bump_any(); // MD_TEXTUAL_LITERAL stays as-is
+
+        // The next token must be a name character (letter or underscore).
+        if p.at(T![EOF])
+            || p.has_preceding_line_break()
+            || p.cur() != MD_TEXTUAL_LITERAL
+        {
+            m.abandon(p);
+            return Err(());
+        }
+        let first_char = p.cur_text().as_bytes()[0];
+        if !(first_char.is_ascii_alphabetic() || first_char == b'_') {
+            m.abandon(p);
+            return Err(());
+        }
+
+        // Slot 1: name (MdInlineItemList) — consume name characters (alphanumeric, -, _)
+        let name = p.start();
+        while !p.at(T![EOF]) && !p.has_preceding_line_break() && p.cur() == MD_TEXTUAL_LITERAL {
+            let ch = p.cur_text().as_bytes()[0];
+            if ch.is_ascii_alphanumeric() || ch == b'-' || ch == b'_' {
+                let textual = p.start();
+                p.bump_any();
+                textual.complete(p, MD_TEXTUAL);
+            } else {
+                break;
+            }
+        }
+        name.complete(p, MD_INLINE_ITEM_LIST);
+
+        // Slots 2-4: optional `{attrs}` block
+        if !p.at(T![EOF])
+            && !p.has_preceding_line_break()
+            && p.cur() == MD_TEXTUAL_LITERAL
+            && p.cur_text() == "{"
+        {
+            // Slot 2: `{` (L_CURLY)
+            p.bump_remap(L_CURLY);
+
+            // Slot 3: attributes (MdDirectiveAttributeList)
+            let attr_list = p.start();
+            parse_directive_attributes(p);
+            attr_list.complete(p, MD_DIRECTIVE_ATTRIBUTE_LIST);
+
+            // Slot 4: `}` (R_CURLY)
+            if !p.at(T![EOF])
+                && !p.has_preceding_line_break()
+                && p.cur() == MD_TEXTUAL_LITERAL
+                && p.cur_text() == "}"
+            {
+                p.bump_remap(R_CURLY);
+            }
+        } else {
+            // No braces: emit empty attribute list (slot 3)
+            let attr_list = p.start();
+            attr_list.complete(p, MD_DIRECTIVE_ATTRIBUTE_LIST);
+        }
+
+        m.complete(p, MD_DIRECTIVE);
+        Ok(())
+    })
+    .is_ok()
+}
+
+/// Parse the attributes inside a directive's `{...}` block.
+/// Produces MdDirectiveAttribute nodes in the current list context.
+fn parse_directive_attributes(p: &mut MarkdownParser) {
+    while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+        if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "}" {
+            break;
+        }
+
+        // Skip whitespace tokens between attributes
+        if p.cur() == WHITESPACE || p.cur() == TAB {
+            p.bump_any();
+            continue;
+        }
+
+        let ch = if p.cur() == MD_TEXTUAL_LITERAL {
+            p.cur_text().as_bytes()[0]
+        } else {
+            p.bump_any();
+            continue;
+        };
+
+        if ch == b'.' || ch == b'#' {
+            // Shorthand: .class or #id
+            let attr = p.start();
+            let attr_name = p.start();
+            let t = p.start();
+            p.bump_any(); // `.` or `#`
+            t.complete(p, MD_TEXTUAL);
+            // Consume the value chars
+            while !p.at(T![EOF])
+                && !p.has_preceding_line_break()
+                && p.cur() == MD_TEXTUAL_LITERAL
+            {
+                let b = p.cur_text().as_bytes()[0];
+                if b.is_ascii_alphanumeric() || b == b'-' || b == b'_' {
+                    let t = p.start();
+                    p.bump_any();
+                    t.complete(p, MD_TEXTUAL);
+                } else {
+                    break;
+                }
+            }
+            attr_name.complete(p, MD_INLINE_ITEM_LIST);
+            // No `=` or value for shorthands
+            attr.complete(p, MD_DIRECTIVE_ATTRIBUTE);
+        } else if ch.is_ascii_alphabetic() || ch == b'_' {
+            // Regular attribute: name, name=value, name="value"
+            let attr = p.start();
+            let attr_name = p.start();
+            while !p.at(T![EOF])
+                && !p.has_preceding_line_break()
+                && p.cur() == MD_TEXTUAL_LITERAL
+            {
+                let b = p.cur_text().as_bytes()[0];
+                if b.is_ascii_alphanumeric() || b == b'-' || b == b'_' {
+                    let t = p.start();
+                    p.bump_any();
+                    t.complete(p, MD_TEXTUAL);
+                } else {
+                    break;
+                }
+            }
+            attr_name.complete(p, MD_INLINE_ITEM_LIST);
+
+            // Check for `=`
+            if !p.at(T![EOF])
+                && !p.has_preceding_line_break()
+                && p.cur() == MD_TEXTUAL_LITERAL
+                && p.cur_text() == "="
+            {
+                p.bump_remap(EQ); // consume `=` as EQ token
+
+                // Check for quoted value
+                if !p.at(T![EOF])
+                    && !p.has_preceding_line_break()
+                    && p.cur() == MD_TEXTUAL_LITERAL
+                    && (p.cur_text() == "\"" || p.cur_text() == "'")
+                {
+                    let quote = p.cur_text().to_string();
+                    let val = p.start();
+                    p.bump_any(); // opening quote (delimiter)
+                    let val_content = p.start();
+                    while !p.at(T![EOF])
+                        && !p.has_preceding_line_break()
+                        && !(p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == quote)
+                    {
+                        let t = p.start();
+                        p.bump_any();
+                        t.complete(p, MD_TEXTUAL);
+                    }
+                    val_content.complete(p, MD_INLINE_ITEM_LIST);
+                    if !p.at(T![EOF])
+                        && !p.has_preceding_line_break()
+                        && p.cur() == MD_TEXTUAL_LITERAL
+                        && p.cur_text() == quote
+                    {
+                        p.bump_any(); // closing quote (closing_delimiter)
+                    }
+                    val.complete(p, MD_DIRECTIVE_ATTRIBUTE_VALUE);
+                } else {
+                    // Unquoted value — no delimiters, just content
+                    let val = p.start();
+                    let val_content = p.start();
+                    while !p.at(T![EOF])
+                        && !p.has_preceding_line_break()
+                        && p.cur() == MD_TEXTUAL_LITERAL
+                    {
+                        let b = p.cur_text().as_bytes()[0];
+                        if b.is_ascii_whitespace() || b == b'}' {
+                            break;
+                        }
+                        let t = p.start();
+                        p.bump_any();
+                        t.complete(p, MD_TEXTUAL);
+                    }
+                    val_content.complete(p, MD_INLINE_ITEM_LIST);
+                    val.complete(p, MD_DIRECTIVE_ATTRIBUTE_VALUE);
+                }
+            }
+
+            attr.complete(p, MD_DIRECTIVE_ATTRIBUTE);
+        } else {
+            // Unknown char inside braces, skip it
+            p.bump_any();
+        }
+    }
+}
+
+// === MDX JSX Elements ===
+
+/// Check if the current position might start an MDX JSX element: `<`.
+/// Full validation happens in `try_parse_inline_mdx_jsx` with backtracking.
+fn at_inline_mdx_jsx_start(p: &mut MarkdownParser) -> bool {
+    p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "<"
+}
+
+/// Try to parse an MDX JSX element: `<Component prop="value" />`
+/// Uses try_parse for backtracking.
+fn try_parse_inline_mdx_jsx(p: &mut MarkdownParser) -> bool {
+    try_parse(p, |p| {
+        let m = p.start();
+
+        // Slot 0: `<`
+        p.bump_remap(L_ANGLE);
+
+        // Slot 1: name (MdInlineItemList)
+        // Name stops at whitespace, >, /, or non-name characters.
+        let name = p.start();
+        let mut has_name = false;
+        while !p.at(T![EOF]) && !p.has_preceding_line_break() && p.cur() == MD_TEXTUAL_LITERAL {
+            // Stop at whitespace boundary (space between name and attributes)
+            if has_name && p.has_preceding_whitespace() {
+                break;
+            }
+            let b = p.cur_text().as_bytes()[0];
+            if b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b'_' {
+                let t = p.start();
+                p.bump_any();
+                t.complete(p, MD_TEXTUAL);
+                has_name = true;
+            } else {
+                break;
+            }
+        }
+        name.complete(p, MD_INLINE_ITEM_LIST);
+
+        if !has_name {
+            m.abandon(p);
+            return Err(());
+        }
+
+        // Slot 2: attributes (MdMdxJsxAttributeList)
+        let attr_list = p.start();
+        parse_mdx_jsx_attributes(p);
+        attr_list.complete(p, MD_MDX_JSX_ATTRIBUTE_LIST);
+
+        // Slot 3: optional `/` (self-closing)
+        if !p.at(T![EOF])
+            && !p.has_preceding_line_break()
+            && p.cur() == MD_TEXTUAL_LITERAL
+            && p.cur_text() == "/"
+        {
+            p.bump_remap(SLASH);
+        }
+
+        // Slot 4: `>`
+        if p.at(T![EOF])
+            || p.has_preceding_line_break()
+            || p.cur() != MD_TEXTUAL_LITERAL
+            || p.cur_text() != ">"
+        {
+            m.abandon(p);
+            return Err(());
+        }
+        p.bump_remap(R_ANGLE);
+
+        m.complete(p, MD_MDX_JSX_ELEMENT);
+        Ok(())
+    })
+    .is_ok()
+}
+
+/// Parse attributes inside an MDX JSX element (between the tag name and `/>` or `>`).
+fn parse_mdx_jsx_attributes(p: &mut MarkdownParser) {
+    while !p.at(T![EOF]) && !p.has_preceding_line_break() && p.cur() == MD_TEXTUAL_LITERAL {
+        let text = p.cur_text();
+        if text == ">" || text == "/" {
+            break;
+        }
+
+        let ch = text.as_bytes()[0];
+
+        if ch.is_ascii_alphabetic() || ch == b'_' {
+            // Attribute: name, name=value, name="value", name={expr}
+            let attr = p.start();
+            let attr_name = p.start();
+            let mut has_attr_name = false;
+            while !p.at(T![EOF])
+                && !p.has_preceding_line_break()
+                && p.cur() == MD_TEXTUAL_LITERAL
+            {
+                // Stop at whitespace boundary within attribute name
+                if has_attr_name && p.has_preceding_whitespace() {
+                    break;
+                }
+                let b = p.cur_text().as_bytes()[0];
+                if b.is_ascii_alphanumeric() || b == b'-' || b == b'_' || b == b':' {
+                    let t = p.start();
+                    p.bump_any();
+                    t.complete(p, MD_TEXTUAL);
+                    has_attr_name = true;
+                } else {
+                    break;
+                }
+            }
+            attr_name.complete(p, MD_INLINE_ITEM_LIST);
+
+            // Check for `=`
+            if !p.at(T![EOF])
+                && !p.has_preceding_line_break()
+                && p.cur() == MD_TEXTUAL_LITERAL
+                && p.cur_text() == "="
+            {
+                p.bump_remap(EQ);
+
+                // Quoted value or expression value
+                if !p.at(T![EOF])
+                    && !p.has_preceding_line_break()
+                    && p.cur() == MD_TEXTUAL_LITERAL
+                {
+                    let val_text = p.cur_text().to_string();
+                    if val_text == "\"" || val_text == "'" {
+                        // Quoted value
+                        let val = p.start();
+                        p.bump_any(); // opening quote (delimiter)
+                        let val_content = p.start();
+                        while !p.at(T![EOF])
+                            && !p.has_preceding_line_break()
+                            && p.cur() == MD_TEXTUAL_LITERAL
+                            && p.cur_text() != val_text
+                        {
+                            let t = p.start();
+                            p.bump_any();
+                            t.complete(p, MD_TEXTUAL);
+                        }
+                        val_content.complete(p, MD_INLINE_ITEM_LIST);
+                        if !p.at(T![EOF])
+                            && !p.has_preceding_line_break()
+                            && p.cur() == MD_TEXTUAL_LITERAL
+                            && p.cur_text() == val_text
+                        {
+                            p.bump_any(); // closing quote
+                        }
+                        val.complete(p, MD_MDX_JSX_ATTRIBUTE_VALUE);
+                    } else if val_text == "{" {
+                        // Expression value: {expr}
+                        let val = p.start();
+                        p.bump_any(); // opening {
+                        let val_content = p.start();
+                        let mut depth = 1;
+                        while !p.at(T![EOF]) && !p.has_preceding_line_break() && depth > 0 {
+                            if p.cur() == MD_TEXTUAL_LITERAL {
+                                if p.cur_text() == "{" {
+                                    depth += 1;
+                                } else if p.cur_text() == "}" {
+                                    depth -= 1;
+                                    if depth == 0 {
+                                        break;
+                                    }
+                                }
+                            }
+                            let t = p.start();
+                            p.bump_any();
+                            t.complete(p, MD_TEXTUAL);
+                        }
+                        val_content.complete(p, MD_INLINE_ITEM_LIST);
+                        if !p.at(T![EOF])
+                            && !p.has_preceding_line_break()
+                            && p.cur() == MD_TEXTUAL_LITERAL
+                            && p.cur_text() == "}"
+                        {
+                            p.bump_any(); // closing }
+                        }
+                        val.complete(p, MD_MDX_JSX_ATTRIBUTE_VALUE);
+                    }
+                }
+            }
+
+            attr.complete(p, MD_MDX_JSX_ATTRIBUTE);
+        } else {
+            // Unknown char, skip
+            p.bump_any();
+        }
+    }
+}
+
 // === GFM Tables ===
 
 /// Quick check: the first token on the current line is a pipe `|`.
@@ -922,21 +1540,52 @@ fn is_link_definition_line(p: &mut MarkdownParser) -> bool {
 
 /// Try to parse a link reference definition: `[label]: url "title"`.
 /// Returns true if successfully parsed into an MdLinkBlock node.
+/// MdLinkBlock has 5 slots: `[` label `]` `:` url
 fn try_parse_link_definition(p: &mut MarkdownParser) -> bool {
     try_parse(p, |p| {
         if !is_link_definition_line(p) {
             return Err(());
         }
         let m = p.start();
-        let content = p.start();
-        let mut first = true;
-        while !p.at(T![EOF]) && (first || !p.has_preceding_line_break()) {
-            first = false;
+
+        // Slot 0: [
+        p.bump_remap(L_BRACK);
+
+        // Slot 1: label (MdInlineItemList) — tokens until ]
+        let label = p.start();
+        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "]" {
+                break;
+            }
             let textual = p.start();
             p.bump_any();
             textual.complete(p, MD_TEXTUAL);
         }
-        content.complete(p, MD_INLINE_ITEM_LIST);
+        label.complete(p, MD_INLINE_ITEM_LIST);
+
+        // Slot 2: ]
+        if p.at(T![EOF]) || p.has_preceding_line_break() || p.cur_text() != "]" {
+            m.abandon(p);
+            return Err(());
+        }
+        p.bump_remap(R_BRACK);
+
+        // Slot 3: :
+        if p.at(T![EOF]) || p.has_preceding_line_break() || p.cur_text() != ":" {
+            m.abandon(p);
+            return Err(());
+        }
+        p.bump_remap(COLON);
+
+        // Slot 4: url (MdInlineItemList) — rest of line
+        let url = p.start();
+        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+            let textual = p.start();
+            p.bump_any();
+            textual.complete(p, MD_TEXTUAL);
+        }
+        url.complete(p, MD_INLINE_ITEM_LIST);
+
         m.complete(p, MD_LINK_BLOCK);
         Ok(())
     })
@@ -993,10 +1642,20 @@ fn maybe_wrap_setext_header(p: &mut MarkdownParser, para: biome_parser::Complete
 
 /// Check if the current position starts an HTML block.
 /// Detects `<` at line start (with ≤3 spaces indent) as the beginning of an HTML block.
+/// Excludes JSX-style tags (uppercase first letter after `<`) so they fall through to
+/// paragraph parsing where the inline MDX JSX parser produces proper AST nodes.
 fn at_html_block(p: &mut MarkdownParser) -> bool {
-    p.cur() == MD_TEXTUAL_LITERAL
-        && p.cur_text() == "<"
-        && p.before_whitespace_count() <= 3
+    if p.cur() != MD_TEXTUAL_LITERAL || p.cur_text() != "<" || p.before_whitespace_count() > 3 {
+        return false;
+    }
+    // Check the character immediately after `<` in the source text.
+    // If it's uppercase, this is likely a JSX component tag — let paragraph parser handle it.
+    if let Some(next_byte) = p.peek_next_byte() {
+        if next_byte.is_ascii_uppercase() {
+            return false;
+        }
+    }
+    true
 }
 
 /// Parse an HTML block: content starting with `<` until a blank line or EOF.

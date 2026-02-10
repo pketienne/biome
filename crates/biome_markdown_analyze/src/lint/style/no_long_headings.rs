@@ -1,8 +1,8 @@
 use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::{MdDocument, MdHeader};
-use biome_rowan::{AstNode, AstNodeList};
+use biome_markdown_syntax::MdHeader;
+use biome_rowan::AstNode;
 
 use biome_rule_options::no_long_headings::NoLongHeadingsOptions;
 
@@ -47,41 +47,28 @@ pub struct LongHeading {
 }
 
 impl Rule for NoLongHeadings {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdHeader>;
     type State = LongHeading;
-    type Signals = Vec<Self::State>;
+    type Signals = Option<Self::State>;
     type Options = NoLongHeadingsOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
+        let header = ctx.query();
         let max_length = ctx.options().max_length();
-        let mut signals = Vec::new();
-
-        for node in document.syntax().descendants() {
-            if let Some(header) = MdHeader::cast_ref(&node) {
-                let level = header.before().len();
-                let text = header
-                    .before()
-                    .syntax()
-                    .parent()
-                    .map(|p| {
-                        let full_text = p.text_trimmed().to_string();
-                        full_text.get(level..).unwrap_or("").trim().to_string()
-                    })
-                    .unwrap_or_default();
-
-                let length = text.len();
-                if length as u32 > max_length {
-                    signals.push(LongHeading {
-                        range: header.syntax().text_trimmed_range(),
-                        length,
-                        max: max_length,
-                    });
-                }
-            }
+        let content_text = header
+            .content()
+            .map(|p| p.syntax().text_trimmed().to_string())
+            .unwrap_or_default();
+        let length = content_text.trim().len();
+        if length as u32 > max_length {
+            Some(LongHeading {
+                range: header.syntax().text_trimmed_range(),
+                length,
+                max: max_length,
+            })
+        } else {
+            None
         }
-
-        signals
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {

@@ -38,27 +38,3 @@ invalid.md:3:5 lint/style/noShortcutReferenceLink  FIXABLE  ━━━━━━�
   
 
 ```
-
-```
-invalid.md:5:1 lint/style/noShortcutReferenceLink  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  ! Shortcut reference links should use collapsed or full form.
-  
-    3 │ See [shortcut] for details.
-    4 │ 
-  > 5 │ [shortcut]: https://example.com
-      │ ^^^^^^^^^^
-    6 │ 
-  
-  i Use [text][] or [text][label] instead.
-  
-  i Safe fix: Expand to collapsed reference link.
-  
-    3 3 │   See [shortcut] for details.
-    4 4 │   
-    5   │ - [shortcut]:·https://example.com
-      5 │ + [shortcut][]:·https://example.com
-    6 6 │   
-  
-
-```

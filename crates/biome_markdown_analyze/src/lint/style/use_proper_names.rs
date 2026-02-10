@@ -4,12 +4,12 @@ use biome_analyze::{
 use crate::MarkdownRuleAction;
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::MdParagraph;
+use biome_rowan::{AstNode, TextRange, TextSize};
 
 use biome_rule_options::use_proper_names::UseProperNamesOptions;
 
-use crate::utils::fence_utils::FenceTracker;
+use crate::utils::fix_utils::make_text_replacement;
 
 declare_lint_rule! {
     /// Enforce correct capitalization of proper names.
@@ -59,7 +59,7 @@ pub struct ImproperName {
 }
 
 impl Rule for UseProperNames {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdParagraph>;
     type State = ImproperName;
     type Signals = Vec<Self::State>;
     type Options = UseProperNamesOptions;
@@ -70,99 +70,56 @@ impl Rule for UseProperNames {
             return Vec::new();
         }
 
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
+        let paragraph = ctx.query();
+        let text = paragraph.syntax().text_trimmed().to_string();
+        let base = paragraph.syntax().text_trimmed_range().start();
         let mut signals = Vec::new();
-        let mut tracker = FenceTracker::new();
-        let lines: Vec<&str> = text.lines().collect();
+        let mut offset = 0usize;
 
-        for (line_idx, line) in lines.iter().enumerate() {
-            tracker.process_line(line_idx, line);
-            if tracker.is_inside_fence() {
-                continue;
-            }
-
-            let line_offset: usize = lines[..line_idx].iter().map(|l| l.len() + 1).sum();
+        for line in text.lines() {
+            let line_lower = line.to_lowercase();
 
             for name in names {
                 let name_lower = name.to_lowercase();
-                let line_lower = line.to_lowercase();
 
                 let mut search_start = 0;
                 while let Some(pos) = line_lower[search_start..].find(&name_lower) {
                     let abs_pos = search_start + pos;
                     let found = &line[abs_pos..abs_pos + name.len()];
 
-                    // Only flag if the casing doesn't match
                     if found != name.as_str() {
-                        // Check word boundaries
                         let before_ok = abs_pos == 0
                             || !line.as_bytes()[abs_pos - 1].is_ascii_alphanumeric();
                         let after_pos = abs_pos + name.len();
                         let after_ok = after_pos >= line.len()
                             || !line.as_bytes()[after_pos].is_ascii_alphanumeric();
 
-                        if before_ok && after_ok {
-                            // Skip matches inside code spans
-                            if !is_inside_code_span(line, abs_pos) {
-                                signals.push(ImproperName {
-                                    range: TextRange::new(
-                                        base + TextSize::from((line_offset + abs_pos) as u32),
-                                        base + TextSize::from(
-                                            (line_offset + abs_pos + name.len()) as u32,
-                                        ),
+                        if before_ok && after_ok && !is_inside_code_span(line, abs_pos) {
+                            signals.push(ImproperName {
+                                range: TextRange::new(
+                                    base + TextSize::from((offset + abs_pos) as u32),
+                                    base + TextSize::from(
+                                        (offset + abs_pos + name.len()) as u32,
                                     ),
-                                    found: found.to_string(),
-                                    expected: name.clone(),
-                                });
-                            }
+                                ),
+                                found: found.to_string(),
+                                expected: name.clone(),
+                            });
                         }
                     }
 
                     search_start = abs_pos + name.len();
                 }
             }
+
+            offset += line.len() + 1;
         }
 
         signals
     }
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
-        let root = ctx.root();
-        let mut token = root
-            .syntax()
-            .token_at_offset(state.range.start())
-            .right_biased()?;
-        let mut tokens = vec![token.clone()];
-        while token.text_range().end() < state.range.end() {
-            token = token.next_token()?;
-            tokens.push(token.clone());
-        }
-        let first = &tokens[0];
-        let last = tokens.last()?;
-        let prefix_len = u32::from(state.range.start() - first.text_range().start()) as usize;
-        let suffix_start = u32::from(state.range.end() - last.text_range().start()) as usize;
-        let prefix = &first.text()[..prefix_len];
-        let suffix = &last.text()[suffix_start..];
-        let new_text = format!("{}{}{}", prefix, state.expected, suffix);
-        let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-            first.kind(),
-            &new_text,
-            [],
-            [],
-        );
-        let mut mutation = ctx.root().begin();
-        mutation.replace_element_discard_trivia(first.clone().into(), new_token.into());
-        for t in &tokens[1..] {
-            let empty = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
-                t.kind(),
-                "",
-                [],
-                [],
-            );
-            mutation.replace_element_discard_trivia(t.clone().into(), empty.into());
-        }
+        let mutation = make_text_replacement(&ctx.root(), state.range, &state.expected)?;
         Some(RuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

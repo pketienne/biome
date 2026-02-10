@@ -37,3 +37,26 @@ invalid.md:3:34 lint/style/noTrailingHardBreakSpaces  FIXABLE  ━━━━━�
   
 
 ```
+
+```
+invalid.md:4:36 lint/style/noTrailingHardBreakSpaces  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Trailing spaces used for hard line breaks.
+  
+    3 │ This line has two trailing spaces··
+  > 4 │ This line has three trailing spaces···
+      │                                    ^^^
+    5 │ 
+  
+  i Use a trailing backslash instead of spaces for hard breaks.
+  
+  i Safe fix: Replace trailing spaces with a backslash.
+  
+    2 2 │   
+    3 3 │   This line has two trailing spaces··
+    4   │ - This·line·has·three·trailing·spaces···
+      4 │ + This·line·has·three·trailing·spaces\
+    5 5 │   
+  
+
+```

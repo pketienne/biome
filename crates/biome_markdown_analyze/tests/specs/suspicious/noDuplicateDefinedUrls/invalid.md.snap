@@ -26,7 +26,10 @@ invalid.md:4:1 lint/suspicious/noDuplicateDefinedUrls  FIXABLE  ━━━━━�
   
   i Unsafe fix: Remove the duplicate URL definition.
   
-    4 │ [bar]:·https://example.com
-      │ --------------------------
+    2 2 │   
+    3 3 │   [foo]: https://example.com
+    4   │ - [bar]:·https://example.com
+    5 4 │   
+  
 
 ```

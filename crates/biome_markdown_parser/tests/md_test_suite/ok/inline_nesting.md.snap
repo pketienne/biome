@@ -88,57 +88,63 @@ MdDocument {
             md_bullet_list: MdBulletList [
                 MdBullet {
                     bullet: STAR@22..25 "*" [Newline("\n"), Newline("\n")] [],
-                    content: MdInlineItemList [
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@25..26 "i" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@26..27 "t" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@27..28 "a" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@28..29 "l" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@29..30 "i" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@30..32 "c" [] [Whitespace(" ")],
-                        },
-                        MdInlineCode {
-                            l_tick_token: BACKTICK@32..33 "`" [] [],
-                            content: MdInlineItemList [
+                    checkbox: missing (optional),
+                    content: MdBlockList [
+                        MdParagraph {
+                            list: MdInlineItemList [
                                 MdTextual {
-                                    value_token: MD_TEXTUAL_LITERAL@33..34 "c" [] [],
+                                    value_token: MD_TEXTUAL_LITERAL@25..26 "i" [] [],
                                 },
                                 MdTextual {
-                                    value_token: MD_TEXTUAL_LITERAL@34..35 "o" [] [],
+                                    value_token: MD_TEXTUAL_LITERAL@26..27 "t" [] [],
                                 },
                                 MdTextual {
-                                    value_token: MD_TEXTUAL_LITERAL@35..36 "d" [] [],
+                                    value_token: MD_TEXTUAL_LITERAL@27..28 "a" [] [],
                                 },
                                 MdTextual {
-                                    value_token: MD_TEXTUAL_LITERAL@36..37 "e" [] [],
+                                    value_token: MD_TEXTUAL_LITERAL@28..29 "l" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@29..30 "i" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@30..32 "c" [] [Whitespace(" ")],
+                                },
+                                MdInlineCode {
+                                    l_tick_token: BACKTICK@32..33 "`" [] [],
+                                    content: MdInlineItemList [
+                                        MdTextual {
+                                            value_token: MD_TEXTUAL_LITERAL@33..34 "c" [] [],
+                                        },
+                                        MdTextual {
+                                            value_token: MD_TEXTUAL_LITERAL@34..35 "o" [] [],
+                                        },
+                                        MdTextual {
+                                            value_token: MD_TEXTUAL_LITERAL@35..36 "d" [] [],
+                                        },
+                                        MdTextual {
+                                            value_token: MD_TEXTUAL_LITERAL@36..37 "e" [] [],
+                                        },
+                                    ],
+                                    r_tick_token: BACKTICK@37..39 "`" [] [Whitespace(" ")],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@39..40 "m" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@40..41 "o" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@41..42 "r" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@42..43 "e" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@43..44 "*" [] [],
                                 },
                             ],
-                            r_tick_token: BACKTICK@37..39 "`" [] [Whitespace(" ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@39..40 "m" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@40..41 "o" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@41..42 "r" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@42..43 "e" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@43..44 "*" [] [],
+                            hard_line: missing (optional),
                         },
                     ],
                 },
@@ -377,41 +383,45 @@ MdDocument {
       0: MD_BULLET_LIST@22..44
         0: MD_BULLET@22..44
           0: STAR@22..25 "*" [Newline("\n"), Newline("\n")] []
-          1: MD_INLINE_ITEM_LIST@25..44
-            0: MD_TEXTUAL@25..26
-              0: MD_TEXTUAL_LITERAL@25..26 "i" [] []
-            1: MD_TEXTUAL@26..27
-              0: MD_TEXTUAL_LITERAL@26..27 "t" [] []
-            2: MD_TEXTUAL@27..28
-              0: MD_TEXTUAL_LITERAL@27..28 "a" [] []
-            3: MD_TEXTUAL@28..29
-              0: MD_TEXTUAL_LITERAL@28..29 "l" [] []
-            4: MD_TEXTUAL@29..30
-              0: MD_TEXTUAL_LITERAL@29..30 "i" [] []
-            5: MD_TEXTUAL@30..32
-              0: MD_TEXTUAL_LITERAL@30..32 "c" [] [Whitespace(" ")]
-            6: MD_INLINE_CODE@32..39
-              0: BACKTICK@32..33 "`" [] []
-              1: MD_INLINE_ITEM_LIST@33..37
-                0: MD_TEXTUAL@33..34
-                  0: MD_TEXTUAL_LITERAL@33..34 "c" [] []
-                1: MD_TEXTUAL@34..35
-                  0: MD_TEXTUAL_LITERAL@34..35 "o" [] []
-                2: MD_TEXTUAL@35..36
-                  0: MD_TEXTUAL_LITERAL@35..36 "d" [] []
-                3: MD_TEXTUAL@36..37
-                  0: MD_TEXTUAL_LITERAL@36..37 "e" [] []
-              2: BACKTICK@37..39 "`" [] [Whitespace(" ")]
-            7: MD_TEXTUAL@39..40
-              0: MD_TEXTUAL_LITERAL@39..40 "m" [] []
-            8: MD_TEXTUAL@40..41
-              0: MD_TEXTUAL_LITERAL@40..41 "o" [] []
-            9: MD_TEXTUAL@41..42
-              0: MD_TEXTUAL_LITERAL@41..42 "r" [] []
-            10: MD_TEXTUAL@42..43
-              0: MD_TEXTUAL_LITERAL@42..43 "e" [] []
-            11: MD_TEXTUAL@43..44
-              0: MD_TEXTUAL_LITERAL@43..44 "*" [] []
+          1: (empty)
+          2: MD_BLOCK_LIST@25..44
+            0: MD_PARAGRAPH@25..44
+              0: MD_INLINE_ITEM_LIST@25..44
+                0: MD_TEXTUAL@25..26
+                  0: MD_TEXTUAL_LITERAL@25..26 "i" [] []
+                1: MD_TEXTUAL@26..27
+                  0: MD_TEXTUAL_LITERAL@26..27 "t" [] []
+                2: MD_TEXTUAL@27..28
+                  0: MD_TEXTUAL_LITERAL@27..28 "a" [] []
+                3: MD_TEXTUAL@28..29
+                  0: MD_TEXTUAL_LITERAL@28..29 "l" [] []
+                4: MD_TEXTUAL@29..30
+                  0: MD_TEXTUAL_LITERAL@29..30 "i" [] []
+                5: MD_TEXTUAL@30..32
+                  0: MD_TEXTUAL_LITERAL@30..32 "c" [] [Whitespace(" ")]
+                6: MD_INLINE_CODE@32..39
+                  0: BACKTICK@32..33 "`" [] []
+                  1: MD_INLINE_ITEM_LIST@33..37
+                    0: MD_TEXTUAL@33..34
+                      0: MD_TEXTUAL_LITERAL@33..34 "c" [] []
+                    1: MD_TEXTUAL@34..35
+                      0: MD_TEXTUAL_LITERAL@34..35 "o" [] []
+                    2: MD_TEXTUAL@35..36
+                      0: MD_TEXTUAL_LITERAL@35..36 "d" [] []
+                    3: MD_TEXTUAL@36..37
+                      0: MD_TEXTUAL_LITERAL@36..37 "e" [] []
+                  2: BACKTICK@37..39 "`" [] [Whitespace(" ")]
+                7: MD_TEXTUAL@39..40
+                  0: MD_TEXTUAL_LITERAL@39..40 "m" [] []
+                8: MD_TEXTUAL@40..41
+                  0: MD_TEXTUAL_LITERAL@40..41 "o" [] []
+                9: MD_TEXTUAL@41..42
+                  0: MD_TEXTUAL_LITERAL@41..42 "r" [] []
+                10: MD_TEXTUAL@42..43
+                  0: MD_TEXTUAL_LITERAL@42..43 "e" [] []
+                11: MD_TEXTUAL@43..44
+                  0: MD_TEXTUAL_LITERAL@43..44 "*" [] []
+              1: (empty)
     2: MD_PARAGRAPH@44..70
       0: MD_INLINE_ITEM_LIST@44..70
         0: MD_INLINE_STRIKETHROUGH@44..70
