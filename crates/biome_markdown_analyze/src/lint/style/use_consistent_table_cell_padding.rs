@@ -3,13 +3,12 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::MdTable;
+use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 
 use biome_rule_options::use_consistent_table_cell_padding::UseConsistentTableCellPaddingOptions;
 
 use crate::MarkdownRuleAction;
-use crate::utils::table_utils::collect_tables;
 
 declare_lint_rule! {
     /// Enforce consistent table cell padding.
@@ -60,80 +59,52 @@ pub struct InconsistentCellPadding {
 }
 
 impl Rule for UseConsistentTableCellPadding {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdTable>;
     type State = InconsistentCellPadding;
     type Signals = Vec<Self::State>;
     type Options = UseConsistentTableCellPaddingOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
+        let table = ctx.query();
         let style = ctx.options().style();
-        let tables = collect_tables(&text);
-        let lines: Vec<&str> = text.lines().collect();
-
         let mut signals = Vec::new();
-        let mut offsets = Vec::with_capacity(lines.len());
-        let mut offset = 0usize;
-        for line in &lines {
-            offsets.push(offset);
-            offset += line.len() + 1;
-        }
 
-        for table in &tables {
-            let check_lines: Vec<usize> = std::iter::once(table.header_line)
-                .chain(table.data_lines.iter().copied())
-                .collect();
+        let header = match table.header() {
+            Ok(h) => h,
+            Err(_) => return Vec::new(),
+        };
 
-            // For consistent mode, check first header cell
-            let effective_style = if style == "consistent" {
-                let header = lines[table.header_line].trim();
-                if header.contains("| ") || header.contains(" |") {
-                    "padded"
-                } else {
-                    "compact"
-                }
+        let header_text = header.syntax().text_trimmed().to_string();
+
+        // For consistent mode, determine style from header
+        let effective_style = if style == "consistent" {
+            let trimmed = header_text.trim();
+            if trimmed.contains("| ") || trimmed.contains(" |") {
+                "padded"
             } else {
-                style
-            };
-
-            for &line_idx in &check_lines {
-                let line = lines[line_idx];
-                let trimmed = line.trim();
-
-                let is_padded = self::has_cell_padding(trimmed);
-
-                match effective_style {
-                    "padded" => {
-                        if !is_padded {
-                            let corrected = add_cell_padding(trimmed);
-                            signals.push(InconsistentCellPadding {
-                                range: TextRange::new(
-                                    base + TextSize::from(offsets[line_idx] as u32),
-                                    base + TextSize::from((offsets[line_idx] + line.len()) as u32),
-                                ),
-                                expected: "padded",
-                                corrected,
-                            });
-                        }
-                    }
-                    "compact" => {
-                        if is_padded {
-                            let corrected = remove_cell_padding(trimmed);
-                            signals.push(InconsistentCellPadding {
-                                range: TextRange::new(
-                                    base + TextSize::from(offsets[line_idx] as u32),
-                                    base + TextSize::from((offsets[line_idx] + line.len()) as u32),
-                                ),
-                                expected: "compact",
-                                corrected,
-                            });
-                        }
-                    }
-                    _ => {}
-                }
+                "compact"
             }
+        } else {
+            style
+        };
+
+        // Check header row
+        check_row_padding(
+            &header_text,
+            header.syntax().text_trimmed_range(),
+            effective_style,
+            &mut signals,
+        );
+
+        // Check data rows
+        for row in table.rows() {
+            let row_text = row.syntax().text_trimmed().to_string();
+            check_row_padding(
+                &row_text,
+                row.syntax().text_trimmed_range(),
+                effective_style,
+                &mut signals,
+            );
         }
 
         signals
@@ -194,13 +165,40 @@ impl Rule for UseConsistentTableCellPadding {
     }
 }
 
-/// Check if a table row has padded cells (spaces around pipe delimiters).
+fn check_row_padding(
+    row_text: &str,
+    range: TextRange,
+    style: &str,
+    signals: &mut Vec<InconsistentCellPadding>,
+) {
+    let trimmed = row_text.trim();
+    let is_padded = has_cell_padding(trimmed);
+    match style {
+        "padded" => {
+            if !is_padded {
+                signals.push(InconsistentCellPadding {
+                    range,
+                    expected: "padded",
+                    corrected: add_cell_padding(trimmed),
+                });
+            }
+        }
+        "compact" => {
+            if is_padded {
+                signals.push(InconsistentCellPadding {
+                    range,
+                    expected: "compact",
+                    corrected: remove_cell_padding(trimmed),
+                });
+            }
+        }
+        _ => {}
+    }
+}
+
 fn has_cell_padding(row: &str) -> bool {
-    // Strip leading/trailing pipes
     let s = row.strip_prefix('|').unwrap_or(row);
     let s = s.strip_suffix('|').unwrap_or(s);
-
-    // Check if any cell has leading or trailing spaces
     for cell in s.split('|') {
         if !cell.is_empty() && (cell.starts_with(' ') || cell.ends_with(' ')) {
             return true;
@@ -209,7 +207,6 @@ fn has_cell_padding(row: &str) -> bool {
     false
 }
 
-/// Add padding spaces around each cell in a table row.
 fn add_cell_padding(row: &str) -> String {
     let has_leading = row.starts_with('|');
     let has_trailing = row.ends_with('|');
@@ -241,7 +238,6 @@ fn add_cell_padding(row: &str) -> String {
     result
 }
 
-/// Remove padding spaces from each cell in a table row.
 fn remove_cell_padding(row: &str) -> String {
     let has_leading = row.starts_with('|');
     let has_trailing = row.ends_with('|');

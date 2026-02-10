@@ -3,13 +3,12 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
+use biome_markdown_syntax::MdTable;
 use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
 
 use crate::MarkdownRuleAction;
 
 use crate::utils::line_utils::leading_indent;
-use crate::utils::table_utils::collect_tables;
 
 declare_lint_rule! {
     /// Disallow indentation in table rows.
@@ -48,19 +47,19 @@ pub struct IndentedTableRow {
 }
 
 impl Rule for NoTableIndentation {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdTable>;
     type State = IndentedTableRow;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
-        let tables = collect_tables(&text);
-        let lines: Vec<&str> = text.lines().collect();
-
+        let table = ctx.query();
         let mut signals = Vec::new();
+
+        let root = ctx.root();
+        let full_text = root.syntax().text_with_trivia().to_string();
+        let base = root.syntax().text_range_with_trivia().start();
+        let lines: Vec<&str> = full_text.lines().collect();
         let mut offsets = Vec::with_capacity(lines.len());
         let mut offset = 0usize;
         for line in &lines {
@@ -68,21 +67,33 @@ impl Rule for NoTableIndentation {
             offset += line.len() + 1;
         }
 
-        for table in &tables {
-            let all_lines: Vec<usize> = std::iter::once(table.header_line)
-                .chain(std::iter::once(table.separator_line))
-                .chain(table.data_lines.iter().copied())
-                .collect();
+        // Collect trimmed ranges of all rows
+        let mut row_ranges = Vec::new();
+        if let Ok(header) = table.header() {
+            row_ranges.push(header.syntax().text_trimmed_range());
+        }
+        if let Ok(separator) = table.separator() {
+            row_ranges.push(separator.syntax().text_trimmed_range());
+        }
+        for row in table.rows() {
+            row_ranges.push(row.syntax().text_trimmed_range());
+        }
 
-            for &line_idx in &all_lines {
-                if leading_indent(lines[line_idx]) > 0 {
-                    signals.push(IndentedTableRow {
-                        range: TextRange::new(
-                            base + TextSize::from(offsets[line_idx] as u32),
-                            base + TextSize::from((offsets[line_idx] + lines[line_idx].len()) as u32),
+        for range in row_ranges {
+            let start_offset = u32::from(range.start() - base) as usize;
+            let line_idx = match offsets.iter().rposition(|&o| o <= start_offset) {
+                Some(idx) => idx,
+                None => continue,
+            };
+            if leading_indent(lines[line_idx]) > 0 {
+                signals.push(IndentedTableRow {
+                    range: TextRange::new(
+                        base + TextSize::from(offsets[line_idx] as u32),
+                        base + TextSize::from(
+                            (offsets[line_idx] + lines[line_idx].len()) as u32,
                         ),
-                    });
-                }
+                    ),
+                });
             }
         }
 

@@ -3,11 +3,10 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::MdTable;
+use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 
 use crate::MarkdownRuleAction;
-use crate::utils::table_utils::{collect_tables, split_table_cells};
 
 declare_lint_rule! {
     /// Disallow hidden table cells.
@@ -45,83 +44,79 @@ declare_lint_rule! {
 pub struct HiddenTableCell {
     range: TextRange,
     extra_count: usize,
-    expected_columns: usize,
+    corrected: String,
+}
+
+fn split_cells(row_text: &str) -> Vec<String> {
+    let trimmed = row_text.trim();
+    if trimmed.is_empty() {
+        return Vec::new();
+    }
+    let s = if trimmed.starts_with('|') {
+        &trimmed[1..]
+    } else {
+        trimmed
+    };
+    let s = if s.ends_with('|') {
+        &s[..s.len() - 1]
+    } else {
+        s
+    };
+    s.split('|').map(|c| c.trim().to_string()).collect()
+}
+
+fn build_corrected_row(row_text: &str, expected_columns: usize) -> String {
+    let trimmed = row_text.trim();
+    let has_leading_pipe = trimmed.starts_with('|');
+    let has_trailing_pipe = trimmed.ends_with('|');
+    let all_cells = split_cells(trimmed);
+    let kept_cells: Vec<&str> = all_cells
+        .iter()
+        .take(expected_columns)
+        .map(|s| s.as_str())
+        .collect();
+    let mut corrected = String::new();
+    if has_leading_pipe {
+        corrected.push_str("| ");
+    }
+    corrected.push_str(&kept_cells.join(" | "));
+    if has_trailing_pipe {
+        corrected.push_str(" |");
+    }
+    corrected
 }
 
 impl Rule for NoHiddenTableCell {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdTable>;
     type State = HiddenTableCell;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
-        let tables = collect_tables(&text);
-        let lines: Vec<&str> = text.lines().collect();
+        let table = ctx.query();
+        let separator = match table.separator() {
+            Ok(sep) => sep,
+            Err(_) => return Vec::new(),
+        };
+        let expected = split_cells(&separator.syntax().text_trimmed().to_string()).len();
 
         let mut signals = Vec::new();
-        let mut offsets = Vec::with_capacity(lines.len());
-        let mut offset = 0usize;
-        for line in &lines {
-            offsets.push(offset);
-            offset += line.len() + 1;
-        }
-
-        for table in &tables {
-            let expected = table.column_count;
-
-            for &data_line in &table.data_lines {
-                let data_cells = split_table_cells(lines[data_line]);
-                if data_cells.len() > expected {
-                    signals.push(HiddenTableCell {
-                        range: TextRange::new(
-                            base + TextSize::from(offsets[data_line] as u32),
-                            base + TextSize::from((offsets[data_line] + lines[data_line].len()) as u32),
-                        ),
-                        extra_count: data_cells.len() - expected,
-                        expected_columns: expected,
-                    });
-                }
+        for row in table.rows() {
+            let row_text = row.syntax().text_trimmed().to_string();
+            let actual = split_cells(&row_text).len();
+            if actual > expected {
+                signals.push(HiddenTableCell {
+                    range: row.syntax().text_trimmed_range(),
+                    extra_count: actual - expected,
+                    corrected: build_corrected_row(&row_text, expected),
+                });
             }
         }
-
         signals
     }
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<MarkdownRuleAction> {
         let root = ctx.root();
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
-        let line_start = u32::from(state.range.start() - base) as usize;
-        let line_end = u32::from(state.range.end() - base) as usize;
-        let line_text = &text[line_start..line_end];
-
-        let trimmed = line_text.trim();
-        let has_leading_pipe = trimmed.starts_with('|');
-        let has_trailing_pipe = trimmed.ends_with('|');
-
-        // Split the row into cells and keep only the expected number
-        let all_cells = split_table_cells(trimmed);
-        let kept_cells: Vec<&str> = all_cells
-            .iter()
-            .take(state.expected_columns)
-            .map(|s| s.as_str())
-            .collect();
-
-        // Reconstruct the row preserving the original pipe style
-        let mut corrected = String::new();
-        if has_leading_pipe {
-            corrected.push_str("| ");
-        }
-        corrected.push_str(&kept_cells.join(" | "));
-        if has_trailing_pipe {
-            corrected.push_str(" |");
-        }
-
-        // Replace the line content in the token
         let mut token = root
             .syntax()
             .token_at_offset(state.range.start())
@@ -137,7 +132,7 @@ impl Rule for NoHiddenTableCell {
         let suffix_start = u32::from(state.range.end() - last.text_range().start()) as usize;
         let prefix = &first.text()[..prefix_len];
         let suffix = &last.text()[suffix_start..];
-        let new_text = format!("{}{}{}", prefix, corrected, suffix);
+        let new_text = format!("{}{}{}", prefix, state.corrected, suffix);
         let new_token = biome_markdown_syntax::MarkdownSyntaxToken::new_detached(
             first.kind(),
             &new_text,

@@ -55,7 +55,7 @@ impl Rule for NoInvalidLinkFragments {
         let document = ctx.query();
         let text = document.syntax().text_with_trivia().to_string();
         let base = document.syntax().text_range_with_trivia().start();
-        let heading_slugs = collect_heading_slugs(&text);
+        let heading_slugs = collect_heading_slugs(document);
 
         let mut signals = Vec::new();
         let mut tracker = FenceTracker::new();

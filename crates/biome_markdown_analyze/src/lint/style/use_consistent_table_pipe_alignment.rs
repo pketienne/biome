@@ -3,11 +3,10 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::MdTable;
+use biome_rowan::{AstNode, AstNodeList, BatchMutationExt, TextRange};
 
 use crate::MarkdownRuleAction;
-use crate::utils::table_utils::collect_tables;
 
 declare_lint_rule! {
     /// Enforce aligned table pipe characters.
@@ -47,72 +46,81 @@ pub struct MisalignedPipes {
 }
 
 impl Rule for UseConsistentTablePipeAlignment {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdTable>;
     type State = MisalignedPipes;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
-        let tables = collect_tables(&text);
-        let lines: Vec<&str> = text.lines().collect();
-
+        let table = ctx.query();
         let mut signals = Vec::new();
-        let mut offsets = Vec::with_capacity(lines.len());
-        let mut offset = 0usize;
-        for line in &lines {
-            offsets.push(offset);
-            offset += line.len() + 1;
+
+        let header = match table.header() {
+            Ok(h) => h,
+            Err(_) => return Vec::new(),
+        };
+        let separator = match table.separator() {
+            Ok(s) => s,
+            Err(_) => return Vec::new(),
+        };
+
+        // Collect all row texts
+        let header_text = header.syntax().text_trimmed().to_string();
+        let separator_text = separator.syntax().text_trimmed().to_string();
+        let data_rows: Vec<_> = table.rows().iter().collect();
+        let data_texts: Vec<String> = data_rows
+            .iter()
+            .map(|r| r.syntax().text_trimmed().to_string())
+            .collect();
+
+        let all_texts: Vec<&str> = std::iter::once(header_text.as_str())
+            .chain(std::iter::once(separator_text.as_str()))
+            .chain(data_texts.iter().map(|s| s.as_str()))
+            .collect();
+
+        if all_texts.len() < 2 {
+            return Vec::new();
         }
 
-        for table in &tables {
-            let all_lines: Vec<usize> = std::iter::once(table.header_line)
-                .chain(std::iter::once(table.separator_line))
-                .chain(table.data_lines.iter().copied())
+        // Check if all rows have the same trimmed length
+        let first_len = all_texts[0].trim().len();
+        let all_same_len = all_texts.iter().all(|t| t.trim().len() == first_len);
+        if all_same_len {
+            return Vec::new();
+        }
+
+        // Find pipe positions in the first row (header)
+        let first_pipes: Vec<usize> = all_texts[0]
+            .char_indices()
+            .filter(|(_, c)| *c == '|')
+            .map(|(i, _)| i)
+            .collect();
+
+        // Check separator
+        let sep_pipes: Vec<usize> = separator_text
+            .char_indices()
+            .filter(|(_, c)| *c == '|')
+            .map(|(i, _)| i)
+            .collect();
+        if sep_pipes != first_pipes {
+            signals.push(MisalignedPipes {
+                range: separator.syntax().text_trimmed_range(),
+                corrected: align_row_to_reference(&header_text, &separator_text),
+            });
+        }
+
+        // Check data rows
+        for (i, row) in data_rows.iter().enumerate() {
+            let this_pipes: Vec<usize> = data_texts[i]
+                .char_indices()
+                .filter(|(_, c)| *c == '|')
+                .map(|(i, _)| i)
                 .collect();
-
-            if all_lines.len() < 2 {
-                continue;
-            }
-
-            // Check if all rows have the same length (a simple alignment check)
-            let first_len = lines[all_lines[0]].trim().len();
-            let all_same_len = all_lines.iter().all(|&l| lines[l].trim().len() == first_len);
-
-            if !all_same_len {
-                // Find pipe positions in the first row
-                let first_pipes: Vec<usize> = lines[all_lines[0]]
-                    .char_indices()
-                    .filter(|(_, c)| *c == '|')
-                    .map(|(i, _)| i)
-                    .collect();
-
-                // Check subsequent rows for pipe alignment
-                for &line_idx in all_lines.iter().skip(1) {
-                    let this_pipes: Vec<usize> = lines[line_idx]
-                        .char_indices()
-                        .filter(|(_, c)| *c == '|')
-                        .map(|(i, _)| i)
-                        .collect();
-
-                    if this_pipes != first_pipes {
-                        // Compute corrected row: pad cells to match the widths from the first row
-                        let corrected =
-                            align_row_to_reference(lines[all_lines[0]], lines[line_idx]);
-
-                        signals.push(MisalignedPipes {
-                            range: TextRange::new(
-                                base + TextSize::from(offsets[line_idx] as u32),
-                                base + TextSize::from(
-                                    (offsets[line_idx] + lines[line_idx].len()) as u32,
-                                ),
-                            ),
-                            corrected,
-                        });
-                    }
-                }
+            if this_pipes != first_pipes {
+                signals.push(MisalignedPipes {
+                    range: row.syntax().text_trimmed_range(),
+                    corrected: align_row_to_reference(&header_text, &data_texts[i]),
+                });
             }
         }
 
@@ -174,11 +182,6 @@ impl Rule for UseConsistentTablePipeAlignment {
     }
 }
 
-/// Align a table row's cells to match the column widths of a reference row.
-///
-/// Both rows are expected to be pipe-delimited table rows. The function
-/// parses cells from each row, then pads the target row's cells to match
-/// the widths observed in the reference row.
 fn align_row_to_reference(reference: &str, target: &str) -> String {
     let ref_trimmed = reference.trim();
     let tgt_trimmed = target.trim();
@@ -186,26 +189,21 @@ fn align_row_to_reference(reference: &str, target: &str) -> String {
     let ref_has_leading = ref_trimmed.starts_with('|');
     let ref_has_trailing = ref_trimmed.ends_with('|');
 
-    // Extract cell segments (including whitespace) from the reference row
     let ref_inner = strip_pipes(ref_trimmed);
     let tgt_inner = strip_pipes(tgt_trimmed);
 
     let ref_segments: Vec<&str> = ref_inner.split('|').collect();
     let tgt_segments: Vec<&str> = tgt_inner.split('|').collect();
 
-    // Build the aligned row by padding each target cell to the width of the
-    // corresponding reference cell segment (preserving the ` content ` pattern)
     let mut parts = Vec::new();
     for (i, tgt_seg) in tgt_segments.iter().enumerate() {
         if let Some(&ref_seg) = ref_segments.get(i) {
             let ref_width = ref_seg.len();
             let tgt_content = tgt_seg.trim();
-            // Pad with space before and after, then fill to ref_width
             if ref_width >= tgt_content.len() + 2 {
-                let pad = ref_width - tgt_content.len() - 1; // 1 for leading space
+                let pad = ref_width - tgt_content.len() - 1;
                 parts.push(format!(" {}{}", tgt_content, " ".repeat(pad)));
             } else {
-                // Can't shrink, just use space-padded content
                 parts.push(format!(" {} ", tgt_content));
             }
         } else {

@@ -6,4 +6,3 @@ pub mod heading_utils;
 pub mod inline_utils;
 pub mod line_utils;
 pub mod list_utils;
-pub mod table_utils;

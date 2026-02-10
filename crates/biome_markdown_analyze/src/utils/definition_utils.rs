@@ -33,6 +33,7 @@ pub fn normalize_label(raw: &str) -> String {
 /// or `[label]: destination (title)`.
 ///
 /// Returns `None` if the line is not a valid definition.
+#[cfg(test)]
 pub fn parse_definition(
     line: &str,
     line_index: usize,
@@ -134,6 +135,7 @@ pub fn parse_definition(
     }
 }
 
+#[cfg(test)]
 fn parse_definition_title(
     trimmed: &str,
     mut i: usize,
@@ -210,6 +212,7 @@ fn parse_definition_title(
 /// Collect all link reference definitions from a document's text.
 ///
 /// Skips definitions inside fenced code blocks.
+#[cfg(test)]
 pub fn collect_definitions(text: &str) -> Vec<LinkDefinition> {
     use crate::utils::fence_utils::FenceTracker;
 

@@ -85,7 +85,7 @@ pub struct ListBlock {
 /// Try to parse a line as a list item.
 ///
 /// Returns `None` if the line is not a list item.
-pub fn parse_list_item(line: &str, line_index: usize, byte_offset: usize) -> Option<ListItem> {
+pub(crate) fn parse_list_item(line: &str, line_index: usize, byte_offset: usize) -> Option<ListItem> {
     let bytes = line.as_bytes();
 
     // Count leading whitespace

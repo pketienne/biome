@@ -3,12 +3,11 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::MdTable;
+use biome_rowan::{AstNode, AstNodeList, BatchMutationExt, TextRange, TextSize};
 
 use crate::MarkdownRuleAction;
 use crate::utils::line_utils::is_blank_line;
-use crate::utils::table_utils::collect_tables;
 
 declare_lint_rule! {
     /// Require blank lines around tables.
@@ -55,19 +54,24 @@ pub struct MissingBlankAroundTable {
 }
 
 impl Rule for UseBlanksAroundTables {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdTable>;
     type State = MissingBlankAroundTable;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
-        let tables = collect_tables(&text);
-        let lines: Vec<&str> = text.lines().collect();
-
+        let table = ctx.query();
         let mut signals = Vec::new();
+
+        let header = match table.header() {
+            Ok(h) => h,
+            Err(_) => return Vec::new(),
+        };
+
+        let root = ctx.root();
+        let full_text = root.syntax().text_with_trivia().to_string();
+        let base = root.syntax().text_range_with_trivia().start();
+        let lines: Vec<&str> = full_text.lines().collect();
         let mut offsets = Vec::with_capacity(lines.len());
         let mut offset = 0usize;
         for line in &lines {
@@ -75,38 +79,54 @@ impl Rule for UseBlanksAroundTables {
             offset += line.len() + 1;
         }
 
-        for table in &tables {
-            // Check line before header
-            if table.header_line > 0 && !is_blank_line(lines[table.header_line - 1]) {
-                let line = lines[table.header_line];
-                signals.push(MissingBlankAroundTable {
-                    range: TextRange::new(
-                        base + TextSize::from(offsets[table.header_line] as u32),
-                        base + TextSize::from((offsets[table.header_line] + line.len()) as u32),
-                    ),
-                    position: "before",
-                    corrected: format!("\n{}", line),
-                });
-            }
+        // Find the header line index
+        let header_start =
+            u32::from(header.syntax().text_trimmed_range().start() - base) as usize;
+        let header_line_idx = match offsets.iter().rposition(|&o| o <= header_start) {
+            Some(idx) => idx,
+            None => return Vec::new(),
+        };
 
-            // Check line after last row
-            let last_line = if table.data_lines.is_empty() {
-                table.separator_line
-            } else {
-                *table.data_lines.last().unwrap()
-            };
+        // Check line before header
+        if header_line_idx > 0 && !is_blank_line(lines[header_line_idx - 1]) {
+            let line = lines[header_line_idx];
+            signals.push(MissingBlankAroundTable {
+                range: TextRange::new(
+                    base + TextSize::from(offsets[header_line_idx] as u32),
+                    base + TextSize::from((offsets[header_line_idx] + line.len()) as u32),
+                ),
+                position: "before",
+                corrected: format!("\n{}", line),
+            });
+        }
 
-            if last_line + 1 < lines.len() && !is_blank_line(lines[last_line + 1]) {
-                let line = lines[last_line];
-                signals.push(MissingBlankAroundTable {
-                    range: TextRange::new(
-                        base + TextSize::from(offsets[last_line] as u32),
-                        base + TextSize::from((offsets[last_line] + line.len()) as u32),
-                    ),
-                    position: "after",
-                    corrected: format!("{}\n", line),
-                });
-            }
+        // Find the last row line index
+        let last_row = table.rows().iter().last();
+        let last_row_range = if let Some(ref lr) = last_row {
+            lr.syntax().text_trimmed_range()
+        } else if let Ok(ref sep) = table.separator() {
+            sep.syntax().text_trimmed_range()
+        } else {
+            header.syntax().text_trimmed_range()
+        };
+
+        let last_start = u32::from(last_row_range.start() - base) as usize;
+        let last_line_idx = match offsets.iter().rposition(|&o| o <= last_start) {
+            Some(idx) => idx,
+            None => return signals,
+        };
+
+        // Check line after last row
+        if last_line_idx + 1 < lines.len() && !is_blank_line(lines[last_line_idx + 1]) {
+            let line = lines[last_line_idx];
+            signals.push(MissingBlankAroundTable {
+                range: TextRange::new(
+                    base + TextSize::from(offsets[last_line_idx] as u32),
+                    base + TextSize::from((offsets[last_line_idx] + line.len()) as u32),
+                ),
+                position: "after",
+                corrected: format!("{}\n", line),
+            });
         }
 
         signals

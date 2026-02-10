@@ -3,13 +3,12 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
-use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_markdown_syntax::{MdTable, MdTableRow};
+use biome_rowan::{AstNode, AstNodeList, BatchMutationExt, TextRange};
 
 use biome_rule_options::use_consistent_table_pipe_style::UseConsistentTablePipeStyleOptions;
 
 use crate::MarkdownRuleAction;
-use crate::utils::table_utils::{collect_tables, parse_table_row};
 
 declare_lint_rule! {
     /// Enforce consistent table pipe style.
@@ -59,101 +58,97 @@ pub struct InconsistentPipeStyle {
     corrected: String,
 }
 
+fn row_pipe_style(row: &MdTableRow) -> (bool, bool) {
+    let text = row.syntax().text_trimmed().to_string();
+    let trimmed = text.trim();
+    (trimmed.starts_with('|'), trimmed.ends_with('|'))
+}
+
 impl Rule for UseConsistentTablePipeStyle {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdTable>;
     type State = InconsistentPipeStyle;
     type Signals = Vec<Self::State>;
     type Options = UseConsistentTablePipeStyleOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
+        let table = ctx.query();
         let style = ctx.options().style();
-        let tables = collect_tables(&text);
-        let lines: Vec<&str> = text.lines().collect();
-
         let mut signals = Vec::new();
-        let mut offsets = Vec::with_capacity(lines.len());
-        let mut offset = 0usize;
-        for line in &lines {
-            offsets.push(offset);
-            offset += line.len() + 1;
-        }
 
-        for table in &tables {
-            let all_lines: Vec<usize> = std::iter::once(table.header_line)
-                .chain(std::iter::once(table.separator_line))
-                .chain(table.data_lines.iter().copied())
-                .collect();
+        let header = match table.header() {
+            Ok(h) => h,
+            Err(_) => return Vec::new(),
+        };
+        let separator = match table.separator() {
+            Ok(s) => s,
+            Err(_) => return Vec::new(),
+        };
 
-            // For "consistent" mode, determine from first row
-            let effective_style = if style == "consistent" {
-                let first_row = parse_table_row(lines[table.header_line]);
-                if first_row.has_leading_pipe && first_row.has_trailing_pipe {
-                    "both"
-                } else if first_row.has_leading_pipe {
-                    "leading"
-                } else if first_row.has_trailing_pipe {
-                    "trailing"
-                } else {
-                    "both"
-                }
+        // For "consistent" mode, determine from header row
+        let effective_style = if style == "consistent" {
+            let (has_leading, has_trailing) = row_pipe_style(&header);
+            if has_leading && has_trailing {
+                "both"
+            } else if has_leading {
+                "leading"
+            } else if has_trailing {
+                "trailing"
             } else {
-                style
+                "both"
+            }
+        } else {
+            style
+        };
+
+        // Check all rows: header, separator, data
+        let data_rows: Vec<_> = table.rows().iter().collect();
+        let all_rows: Vec<&MdTableRow> = std::iter::once(&header)
+            .chain(std::iter::once(&separator))
+            .chain(data_rows.iter())
+            .collect();
+
+        for row in all_rows {
+            let (has_leading, has_trailing) = row_pipe_style(row);
+            let issue = match effective_style {
+                "both" => {
+                    if !has_leading || !has_trailing {
+                        Some("Missing leading or trailing pipe".to_string())
+                    } else {
+                        None
+                    }
+                }
+                "leading" => {
+                    if !has_leading {
+                        Some("Missing leading pipe".to_string())
+                    } else {
+                        None
+                    }
+                }
+                "trailing" => {
+                    if !has_trailing {
+                        Some("Missing trailing pipe".to_string())
+                    } else {
+                        None
+                    }
+                }
+                _ => None,
             };
 
-            for &line_idx in &all_lines {
-                let row = parse_table_row(lines[line_idx]);
-                let issue = match effective_style {
-                    "both" => {
-                        if !row.has_leading_pipe || !row.has_trailing_pipe {
-                            Some("Missing leading or trailing pipe".to_string())
-                        } else {
-                            None
-                        }
-                    }
-                    "leading" => {
-                        if !row.has_leading_pipe {
-                            Some("Missing leading pipe".to_string())
-                        } else {
-                            None
-                        }
-                    }
-                    "trailing" => {
-                        if !row.has_trailing_pipe {
-                            Some("Missing trailing pipe".to_string())
-                        } else {
-                            None
-                        }
-                    }
-                    _ => None,
-                };
-
-                if let Some(issue) = issue {
-                    let trimmed = lines[line_idx].trim();
-                    let mut corrected = trimmed.to_string();
-                    // Add missing leading pipe
-                    if (effective_style == "both" || effective_style == "leading")
-                        && !row.has_leading_pipe
-                    {
-                        corrected = format!("| {}", corrected);
-                    }
-                    // Add missing trailing pipe
-                    if (effective_style == "both" || effective_style == "trailing")
-                        && !row.has_trailing_pipe
-                    {
-                        corrected = format!("{} |", corrected);
-                    }
-                    signals.push(InconsistentPipeStyle {
-                        range: TextRange::new(
-                            base + TextSize::from(offsets[line_idx] as u32),
-                            base + TextSize::from((offsets[line_idx] + lines[line_idx].len()) as u32),
-                        ),
-                        issue,
-                        corrected,
-                    });
+            if let Some(issue) = issue {
+                let row_text = row.syntax().text_trimmed().to_string();
+                let trimmed = row_text.trim();
+                let mut corrected = trimmed.to_string();
+                if (effective_style == "both" || effective_style == "leading") && !has_leading {
+                    corrected = format!("| {}", corrected);
                 }
+                if (effective_style == "both" || effective_style == "trailing") && !has_trailing {
+                    corrected = format!("{} |", corrected);
+                }
+                signals.push(InconsistentPipeStyle {
+                    range: row.syntax().text_trimmed_range(),
+                    issue,
+                    corrected,
+                });
             }
         }
 

@@ -1,3 +1,6 @@
+use biome_markdown_syntax::{MdDocument, MdHeader, MdSetextHeader};
+use biome_rowan::AstNode;
+
 /// Generate a GitHub-style slug from heading text.
 ///
 /// Rules:
@@ -5,7 +8,7 @@
 /// - Remove anything that is not alphanumeric, space, or hyphen
 /// - Replace spaces with hyphens
 /// - Collapse consecutive hyphens
-pub fn heading_slug(text: &str) -> String {
+pub(crate) fn heading_slug(text: &str) -> String {
     let lower = text.to_lowercase();
     let mut slug = String::with_capacity(lower.len());
 
@@ -38,7 +41,8 @@ pub fn heading_slug(text: &str) -> String {
 }
 
 /// Extract heading text from an ATX heading line (strip # prefix and optional closing #s).
-pub fn extract_atx_heading_text(line: &str) -> Option<String> {
+#[cfg(test)]
+pub(crate) fn extract_atx_heading_text(line: &str) -> Option<String> {
     let trimmed = line.trim_start();
     if !trimmed.starts_with('#') {
         return None;
@@ -62,19 +66,27 @@ pub fn extract_atx_heading_text(line: &str) -> Option<String> {
     Some(content.to_string())
 }
 
-/// Collect all heading slugs from a document's text (skipping fenced code blocks).
-pub fn collect_heading_slugs(text: &str) -> Vec<String> {
-    use crate::utils::fence_utils::FenceTracker;
-
+/// Collect all heading slugs from a document by walking the AST.
+pub fn collect_heading_slugs(document: &MdDocument) -> Vec<String> {
     let mut slugs = Vec::new();
-    let mut tracker = FenceTracker::new();
 
-    for (line_idx, line) in text.lines().enumerate() {
-        tracker.process_line(line_idx, line);
-
-        if !tracker.is_inside_fence() {
-            if let Some(heading_text) = extract_atx_heading_text(line) {
-                slugs.push(heading_slug(&heading_text));
+    for node in document.syntax().descendants() {
+        if let Some(header) = MdHeader::cast_ref(&node) {
+            let content_text = header
+                .content()
+                .map(|p| p.syntax().text_trimmed().to_string())
+                .unwrap_or_default();
+            let trimmed = content_text.trim();
+            if !trimmed.is_empty() {
+                slugs.push(heading_slug(trimmed));
+            }
+        } else if let Some(setext) = MdSetextHeader::cast_ref(&node) {
+            if let Ok(content) = setext.content() {
+                let content_text = content.syntax().text_trimmed().to_string();
+                let trimmed = content_text.trim();
+                if !trimmed.is_empty() {
+                    slugs.push(heading_slug(trimmed));
+                }
             }
         }
     }
@@ -127,12 +139,5 @@ mod tests {
     #[test]
     fn extract_not_a_heading() {
         assert_eq!(extract_atx_heading_text("Not a heading"), None);
-    }
-
-    #[test]
-    fn collect_slugs() {
-        let text = "# Hello\n\nSome text\n\n## World\n\n```\n# Not a heading\n```\n";
-        let slugs = collect_heading_slugs(text);
-        assert_eq!(slugs, vec!["hello", "world"]);
     }
 }
