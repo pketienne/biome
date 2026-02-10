@@ -1,0 +1,161 @@
+---
+source: crates/biome_markdown_parser/tests/spec_test.rs
+expression: snapshot
+---
+
+## Input
+
+```
+This has `inline code` in it.
+
+```
+
+
+## AST
+
+```
+MdDocument {
+    bom_token: missing (optional),
+    value: MdBlockList [
+        MdParagraph {
+            list: MdInlineItemList [
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@0..1 "T" [] [],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@1..2 "h" [] [],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@2..3 "i" [] [],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@3..5 "s" [] [Whitespace(" ")],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@5..6 "h" [] [],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@6..7 "a" [] [],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@7..9 "s" [] [Whitespace(" ")],
+                },
+                MdInlineCode {
+                    l_tick_token: BACKTICK@9..10 "`" [] [],
+                    content: MdInlineItemList [
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@10..11 "i" [] [],
+                        },
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@11..12 "n" [] [],
+                        },
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@12..13 "l" [] [],
+                        },
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@13..14 "i" [] [],
+                        },
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@14..15 "n" [] [],
+                        },
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@15..17 "e" [] [Whitespace(" ")],
+                        },
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@17..18 "c" [] [],
+                        },
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@18..19 "o" [] [],
+                        },
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@19..20 "d" [] [],
+                        },
+                        MdTextual {
+                            value_token: MD_TEXTUAL_LITERAL@20..21 "e" [] [],
+                        },
+                    ],
+                    r_tick_token: BACKTICK@21..23 "`" [] [Whitespace(" ")],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@23..24 "i" [] [],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@24..26 "n" [] [Whitespace(" ")],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@26..27 "i" [] [],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@27..28 "t" [] [],
+                },
+                MdTextual {
+                    value_token: MD_TEXTUAL_LITERAL@28..29 "." [] [],
+                },
+            ],
+            hard_line: missing (optional),
+        },
+    ],
+    eof_token: EOF@29..30 "" [Newline("\n")] [],
+}
+```
+
+## CST
+
+```
+0: MD_DOCUMENT@0..30
+  0: (empty)
+  1: MD_BLOCK_LIST@0..29
+    0: MD_PARAGRAPH@0..29
+      0: MD_INLINE_ITEM_LIST@0..29
+        0: MD_TEXTUAL@0..1
+          0: MD_TEXTUAL_LITERAL@0..1 "T" [] []
+        1: MD_TEXTUAL@1..2
+          0: MD_TEXTUAL_LITERAL@1..2 "h" [] []
+        2: MD_TEXTUAL@2..3
+          0: MD_TEXTUAL_LITERAL@2..3 "i" [] []
+        3: MD_TEXTUAL@3..5
+          0: MD_TEXTUAL_LITERAL@3..5 "s" [] [Whitespace(" ")]
+        4: MD_TEXTUAL@5..6
+          0: MD_TEXTUAL_LITERAL@5..6 "h" [] []
+        5: MD_TEXTUAL@6..7
+          0: MD_TEXTUAL_LITERAL@6..7 "a" [] []
+        6: MD_TEXTUAL@7..9
+          0: MD_TEXTUAL_LITERAL@7..9 "s" [] [Whitespace(" ")]
+        7: MD_INLINE_CODE@9..23
+          0: BACKTICK@9..10 "`" [] []
+          1: MD_INLINE_ITEM_LIST@10..21
+            0: MD_TEXTUAL@10..11
+              0: MD_TEXTUAL_LITERAL@10..11 "i" [] []
+            1: MD_TEXTUAL@11..12
+              0: MD_TEXTUAL_LITERAL@11..12 "n" [] []
+            2: MD_TEXTUAL@12..13
+              0: MD_TEXTUAL_LITERAL@12..13 "l" [] []
+            3: MD_TEXTUAL@13..14
+              0: MD_TEXTUAL_LITERAL@13..14 "i" [] []
+            4: MD_TEXTUAL@14..15
+              0: MD_TEXTUAL_LITERAL@14..15 "n" [] []
+            5: MD_TEXTUAL@15..17
+              0: MD_TEXTUAL_LITERAL@15..17 "e" [] [Whitespace(" ")]
+            6: MD_TEXTUAL@17..18
+              0: MD_TEXTUAL_LITERAL@17..18 "c" [] []
+            7: MD_TEXTUAL@18..19
+              0: MD_TEXTUAL_LITERAL@18..19 "o" [] []
+            8: MD_TEXTUAL@19..20
+              0: MD_TEXTUAL_LITERAL@19..20 "d" [] []
+            9: MD_TEXTUAL@20..21
+              0: MD_TEXTUAL_LITERAL@20..21 "e" [] []
+          2: BACKTICK@21..23 "`" [] [Whitespace(" ")]
+        8: MD_TEXTUAL@23..24
+          0: MD_TEXTUAL_LITERAL@23..24 "i" [] []
+        9: MD_TEXTUAL@24..26
+          0: MD_TEXTUAL_LITERAL@24..26 "n" [] [Whitespace(" ")]
+        10: MD_TEXTUAL@26..27
+          0: MD_TEXTUAL_LITERAL@26..27 "i" [] []
+        11: MD_TEXTUAL@27..28
+          0: MD_TEXTUAL_LITERAL@27..28 "t" [] []
+        12: MD_TEXTUAL@28..29
+          0: MD_TEXTUAL_LITERAL@28..29 "." [] []
+      1: (empty)
+  2: EOF@29..30 "" [Newline("\n")] []
+
+```

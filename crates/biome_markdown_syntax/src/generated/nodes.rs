@@ -321,11 +321,11 @@ impl MdHtmlBlock {
     }
     pub fn as_fields(&self) -> MdHtmlBlockFields {
         MdHtmlBlockFields {
-            md_textual: self.md_textual(),
+            content: self.content(),
         }
     }
-    pub fn md_textual(&self) -> SyntaxResult<MdTextual> {
-        support::required_node(&self.syntax, 0usize)
+    pub fn content(&self) -> MdInlineItemList {
+        support::list(&self.syntax, 0usize)
     }
 }
 impl Serialize for MdHtmlBlock {
@@ -338,7 +338,7 @@ impl Serialize for MdHtmlBlock {
 }
 #[derive(Serialize)]
 pub struct MdHtmlBlockFields {
-    pub md_textual: SyntaxResult<MdTextual>,
+    pub content: MdInlineItemList,
 }
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct MdIndent {
@@ -1862,7 +1862,7 @@ impl std::fmt::Debug for MdHtmlBlock {
         let result = if current_depth < 16 {
             DEPTH.set(current_depth + 1);
             f.debug_struct("MdHtmlBlock")
-                .field("md_textual", &support::DebugSyntaxResult(self.md_textual()))
+                .field("content", &self.content())
                 .finish()
         } else {
             f.debug_struct("MdHtmlBlock").finish()

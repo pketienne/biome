@@ -59,6 +59,8 @@ pub(crate) fn parse_any_block(p: &mut MarkdownParser) {
             let para = parse_paragraph(p);
             maybe_wrap_setext_header(p, para);
         }
+    } else if at_html_block(p) {
+        parse_html_block(p);
     } else {
         let para = parse_paragraph(p);
         // Check if this paragraph is followed by a setext underline (=== or ---)
@@ -395,33 +397,7 @@ fn parse_inline_list(p: &mut MarkdownParser) {
 
     while !p.at(T![EOF]) && (first || !p.has_preceding_line_break()) {
         first = false;
-        if at_inline_code(p) {
-            parse_inline_code(p);
-        } else if at_inline_image_start(p) {
-            if !try_parse_inline_image(p) {
-                let textual = p.start();
-                p.bump_any();
-                textual.complete(p, MD_TEXTUAL);
-            }
-        } else if at_inline_link_start(p) {
-            if !try_parse_inline_link(p) {
-                let textual = p.start();
-                p.bump_any();
-                textual.complete(p, MD_TEXTUAL);
-            }
-        } else if at_inline_strikethrough_start(p) {
-            if !try_parse_inline_strikethrough(p) {
-                let textual = p.start();
-                p.bump_any();
-                textual.complete(p, MD_TEXTUAL);
-            }
-        } else if at_inline_emphasis_start(p) {
-            if !try_parse_inline_emphasis_or_italic(p) {
-                let textual = p.start();
-                p.bump_any();
-                textual.complete(p, MD_TEXTUAL);
-            }
-        } else {
+        if !try_parse_one_inline(p) {
             let textual = p.start();
             p.bump_any();
             textual.complete(p, MD_TEXTUAL);
@@ -429,6 +405,53 @@ fn parse_inline_list(p: &mut MarkdownParser) {
     }
 
     list.complete(p, MD_INLINE_ITEM_LIST);
+}
+
+/// Try to parse a single inline element at the current position.
+/// Returns `true` if an inline element was parsed, `false` if the current
+/// token should be treated as textual content.
+fn try_parse_one_inline(p: &mut MarkdownParser) -> bool {
+    if at_inline_code(p) {
+        parse_inline_code(p);
+        return true;
+    }
+    if at_inline_image_start(p) {
+        return try_parse_inline_image(p);
+    }
+    if at_inline_link_start(p) {
+        return try_parse_inline_link(p);
+    }
+    if at_inline_strikethrough_start(p) {
+        return try_parse_inline_strikethrough(p);
+    }
+    if at_inline_emphasis_start(p) {
+        return try_parse_inline_emphasis_or_italic(p);
+    }
+    false
+}
+
+/// Parse inline content with nesting until the given delimiter text is found.
+/// Returns `true` if the delimiter was found, `false` if EOF or line break
+/// was reached first. The delimiter token is NOT consumed.
+fn parse_inline_content_until_delimiter(
+    p: &mut MarkdownParser,
+    delimiter_text: &str,
+) -> bool {
+    let mut found = false;
+    while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+        // Check stop condition BEFORE inline dispatch — this prevents
+        // same-type nesting (e.g. `**` inside `**...**` stops the loop).
+        if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == delimiter_text {
+            found = true;
+            break;
+        }
+        if !try_parse_one_inline(p) {
+            let textual = p.start();
+            p.bump_any();
+            textual.complete(p, MD_TEXTUAL);
+        }
+    }
+    found
 }
 
 /// Check if the current token starts an inline code span (backtick delimiter).
@@ -494,20 +517,13 @@ fn try_parse_inline_link(p: &mut MarkdownParser) -> bool {
         // Slot 0: [
         p.bump_remap(L_BRACK);
 
-        // Slot 1: text content (MdInlineItemList)
+        // Slot 1: text content (MdInlineItemList) — with nested inline parsing
         let text = p.start();
-        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
-            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "]" {
-                break;
-            }
-            let textual = p.start();
-            p.bump_any();
-            textual.complete(p, MD_TEXTUAL);
-        }
+        let found_bracket = parse_inline_content_until_delimiter(p, "]");
         text.complete(p, MD_INLINE_ITEM_LIST);
 
         // Slot 2: ]
-        if p.cur() != MD_TEXTUAL_LITERAL || p.cur_text() != "]" {
+        if !found_bracket {
             m.abandon(p);
             return Err(());
         }
@@ -574,16 +590,9 @@ fn try_parse_inline_image(p: &mut MarkdownParser) -> bool {
         let alt = p.start();
         p.bump_remap(L_BRACK);
         let alt_content = p.start();
-        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
-            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "]" {
-                break;
-            }
-            let textual = p.start();
-            p.bump_any();
-            textual.complete(p, MD_TEXTUAL);
-        }
+        let found_bracket = parse_inline_content_until_delimiter(p, "]");
         alt_content.complete(p, MD_INLINE_ITEM_LIST);
-        if p.cur() != MD_TEXTUAL_LITERAL || p.cur_text() != "]" {
+        if !found_bracket {
             alt.abandon(p);
             m.abandon(p);
             return Err(());
@@ -666,18 +675,9 @@ fn try_parse_inline_emphasis(p: &mut MarkdownParser) -> bool {
         // Slot 0: opening delimiter (** or __)
         p.bump_remap(remap_kind);
 
-        // Slot 1: content (MdInlineItemList)
+        // Slot 1: content (MdInlineItemList) — with nested inline parsing
         let content = p.start();
-        let mut found_close = false;
-        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
-            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == delimiter {
-                found_close = true;
-                break;
-            }
-            let textual = p.start();
-            p.bump_any();
-            textual.complete(p, MD_TEXTUAL);
-        }
+        let found_close = parse_inline_content_until_delimiter(p, &delimiter);
         content.complete(p, MD_INLINE_ITEM_LIST);
 
         if !found_close {
@@ -710,18 +710,9 @@ fn try_parse_inline_italic(p: &mut MarkdownParser) -> bool {
         // Slot 0: opening delimiter (* or _)
         p.bump_remap(remap_kind);
 
-        // Slot 1: content (MdInlineItemList)
+        // Slot 1: content (MdInlineItemList) — with nested inline parsing
         let content = p.start();
-        let mut found_close = false;
-        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
-            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == delimiter {
-                found_close = true;
-                break;
-            }
-            let textual = p.start();
-            p.bump_any();
-            textual.complete(p, MD_TEXTUAL);
-        }
+        let found_close = parse_inline_content_until_delimiter(p, &delimiter);
         content.complete(p, MD_INLINE_ITEM_LIST);
 
         if !found_close {
@@ -754,18 +745,9 @@ fn try_parse_inline_strikethrough(p: &mut MarkdownParser) -> bool {
         // Slot 0: opening ~~
         p.bump_remap(DOUBLE_TILDE);
 
-        // Slot 1: content (MdInlineItemList)
+        // Slot 1: content (MdInlineItemList) — with nested inline parsing
         let content = p.start();
-        let mut found_close = false;
-        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
-            if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "~~" {
-                found_close = true;
-                break;
-            }
-            let textual = p.start();
-            p.bump_any();
-            textual.complete(p, MD_TEXTUAL);
-        }
+        let found_close = parse_inline_content_until_delimiter(p, "~~");
         content.complete(p, MD_INLINE_ITEM_LIST);
 
         if !found_close {
@@ -1005,6 +987,40 @@ fn maybe_wrap_setext_header(p: &mut MarkdownParser, para: biome_parser::Complete
         p.bump_any();
     }
     m.complete(p, MD_SETEXT_HEADER);
+}
+
+// === HTML Blocks ===
+
+/// Check if the current position starts an HTML block.
+/// Detects `<` at line start (with ≤3 spaces indent) as the beginning of an HTML block.
+fn at_html_block(p: &mut MarkdownParser) -> bool {
+    p.cur() == MD_TEXTUAL_LITERAL
+        && p.cur_text() == "<"
+        && p.before_whitespace_count() <= 3
+}
+
+/// Parse an HTML block: content starting with `<` until a blank line or EOF.
+/// HTML blocks are preserved verbatim — no inline parsing of content.
+fn parse_html_block(p: &mut MarkdownParser) {
+    let m = p.start();
+    let content = p.start();
+    let mut first = true;
+
+    while !p.at(T![EOF]) {
+        if !first && p.has_preceding_line_break() {
+            // Stop at blank lines (two consecutive line breaks)
+            if p.has_preceding_blank_line() {
+                break;
+            }
+        }
+        first = false;
+        let textual = p.start();
+        p.bump_any();
+        textual.complete(p, MD_TEXTUAL);
+    }
+
+    content.complete(p, MD_INLINE_ITEM_LIST);
+    m.complete(p, MD_HTML_BLOCK);
 }
 
 /// Attempt to parse some input with the given parsing function. If parsing

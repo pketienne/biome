@@ -106,10 +106,10 @@ impl MdHeaderBuilder {
         ))
     }
 }
-pub fn md_html_block(md_textual: MdTextual) -> MdHtmlBlock {
+pub fn md_html_block(content: MdInlineItemList) -> MdHtmlBlock {
     MdHtmlBlock::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_HTML_BLOCK,
-        [Some(SyntaxElement::Node(md_textual.into_syntax()))],
+        [Some(SyntaxElement::Node(content.into_syntax()))],
     ))
 }
 pub fn md_indent(value_token: SyntaxToken) -> MdIndent {

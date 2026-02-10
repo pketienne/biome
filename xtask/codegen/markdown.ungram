@@ -119,7 +119,7 @@ MdFencedCodeBlock =
 MdCodeNameList = MdTextual*
 
 // html block
-MdHtmlBlock = MdTextual
+MdHtmlBlock = content: MdInlineItemList
 
 MdLinkBlock = content: MdInlineItemList
 

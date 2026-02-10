@@ -108,7 +108,7 @@ impl MdHeader {
     }
 }
 impl MdHtmlBlock {
-    pub fn with_md_textual(self, element: MdTextual) -> Self {
+    pub fn with_content(self, element: MdInlineItemList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),

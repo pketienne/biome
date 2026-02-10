@@ -83,17 +83,33 @@ impl<'source> MarkdownTokenSource<'source> {
         })
     }
 
-    /// Returns true if there are 2+ newlines in the leading trivia of the current token,
-    /// indicating a blank line separates the current token from the previous one.
+    /// Returns true if there is a blank line between the previous token and the
+    /// current token. Works by examining the source text directly to avoid
+    /// trivia list boundary issues when tokens are directly adjacent.
     pub fn has_preceding_blank_line(&self) -> bool {
-        let newline_count = self
-            .trivia_list
-            .iter()
-            .rev()
-            .take_while(|item| !item.trailing())
-            .filter(|item| item.kind().is_newline())
-            .count();
-        newline_count >= 2
+        let source = self.lexer.source();
+        let start = u32::from(self.current_range().start()) as usize;
+        if start == 0 {
+            return false;
+        }
+
+        // Look backwards from the current token through the source text.
+        // A blank line means two newlines with only whitespace between them.
+        let before = source[..start].as_bytes();
+        let mut newline_count = 0;
+        for &b in before.iter().rev() {
+            match b {
+                b'\n' => {
+                    newline_count += 1;
+                    if newline_count >= 2 {
+                        return true;
+                    }
+                }
+                b' ' | b'\t' | b'\r' => {}
+                _ => break,
+            }
+        }
+        false
     }
 
     #[expect(dead_code)]

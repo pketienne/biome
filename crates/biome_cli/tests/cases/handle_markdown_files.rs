@@ -259,3 +259,167 @@ fn should_format_markdown_with_disabled_formatter() {
         result,
     ));
 }
+
+// === Stdin Tests ===
+
+#[test]
+fn lint_stdin_markdown_successfully() {
+    let fs = MemoryFileSystem::default();
+    let mut console = BufferConsole::default();
+
+    console.in_buffer.push(
+        "# Heading\n\nSome text here.\n".to_string(),
+    );
+
+    let (fs, result) = run_cli(
+        fs,
+        &mut console,
+        Args::from(["lint", "--stdin-file-path", "test.md"].as_slice()),
+    );
+
+    assert_cli_snapshot(SnapshotPayload::new(
+        module_path!(),
+        "lint_stdin_markdown_successfully",
+        fs,
+        console,
+        result,
+    ));
+}
+
+#[test]
+fn format_stdin_markdown_successfully() {
+    let fs = MemoryFileSystem::default();
+    let mut console = BufferConsole::default();
+
+    console.in_buffer.push(
+        "##  Heading with extra spaces\n\nSome text.\n".to_string(),
+    );
+
+    let (fs, result) = run_cli(
+        fs,
+        &mut console,
+        Args::from(["format", "--stdin-file-path", "test.md"].as_slice()),
+    );
+
+    assert!(result.is_ok(), "run_cli returned {result:?}");
+
+    assert_cli_snapshot(SnapshotPayload::new(
+        module_path!(),
+        "format_stdin_markdown_successfully",
+        fs,
+        console,
+        result,
+    ));
+}
+
+// === Edge Cases ===
+
+#[test]
+fn should_handle_empty_markdown_file() {
+    let fs = MemoryFileSystem::default();
+    let mut console = BufferConsole::default();
+
+    let md_file = Utf8Path::new("empty.md");
+    fs.insert(md_file.into(), b"");
+
+    let (fs, result) = run_cli(
+        fs,
+        &mut console,
+        Args::from(["lint", md_file.as_str()].as_slice()),
+    );
+
+    assert!(result.is_ok(), "run_cli returned {result:?}");
+
+    assert_cli_snapshot(SnapshotPayload::new(
+        module_path!(),
+        "should_handle_empty_markdown_file",
+        fs,
+        console,
+        result,
+    ));
+}
+
+#[test]
+fn should_handle_markdown_with_crlf() {
+    let fs = MemoryFileSystem::default();
+    let mut console = BufferConsole::default();
+
+    let md_file = Utf8Path::new("crlf.md");
+    fs.insert(
+        md_file.into(),
+        b"# Heading\r\n\r\nSome text.\r\n",
+    );
+
+    let (fs, result) = run_cli(
+        fs,
+        &mut console,
+        Args::from(["lint", md_file.as_str()].as_slice()),
+    );
+
+    assert!(result.is_ok(), "run_cli returned {result:?}");
+
+    assert_cli_snapshot(SnapshotPayload::new(
+        module_path!(),
+        "should_handle_markdown_with_crlf",
+        fs,
+        console,
+        result,
+    ));
+}
+
+#[test]
+fn should_lint_multiple_markdown_files() {
+    let fs = MemoryFileSystem::default();
+    let mut console = BufferConsole::default();
+
+    let file1 = Utf8Path::new("one.md");
+    let file2 = Utf8Path::new("two.md");
+
+    fs.insert(
+        file1.into(),
+        b"# First\n\nContent.\n",
+    );
+    fs.insert(
+        file2.into(),
+        b"# Second\n\nMore content.\n",
+    );
+
+    let (fs, result) = run_cli(
+        fs,
+        &mut console,
+        Args::from(["lint", file1.as_str(), file2.as_str()].as_slice()),
+    );
+
+    assert!(result.is_ok(), "run_cli returned {result:?}");
+
+    assert_cli_snapshot(SnapshotPayload::new(
+        module_path!(),
+        "should_lint_multiple_markdown_files",
+        fs,
+        console,
+        result,
+    ));
+}
+
+#[test]
+fn should_format_empty_markdown_file() {
+    let fs = MemoryFileSystem::default();
+    let mut console = BufferConsole::default();
+
+    let md_file = Utf8Path::new("empty.md");
+    fs.insert(md_file.into(), b"");
+
+    let (fs, result) = run_cli(
+        fs,
+        &mut console,
+        Args::from(["format", md_file.as_str()].as_slice()),
+    );
+
+    assert_cli_snapshot(SnapshotPayload::new(
+        module_path!(),
+        "should_format_empty_markdown_file",
+        fs,
+        console,
+        result,
+    ));
+}

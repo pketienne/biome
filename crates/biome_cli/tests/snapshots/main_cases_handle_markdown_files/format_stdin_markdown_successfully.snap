@@ -1,0 +1,21 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: redactor(content)
+---
+# Input messages
+
+```block
+##  Heading with extra spaces
+
+Some text.
+
+```
+
+# Emitted Messages
+
+```block
+## Heading with extra spaces
+
+Some text.
+
+```
