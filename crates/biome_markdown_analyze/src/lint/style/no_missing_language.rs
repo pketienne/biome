@@ -50,7 +50,7 @@ impl Rule for NoMissingLanguage {
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let code_block = ctx.query();
-        if code_block.code_list().is_empty() {
+        if code_block.language().is_empty() {
             Some(())
         } else {
             None

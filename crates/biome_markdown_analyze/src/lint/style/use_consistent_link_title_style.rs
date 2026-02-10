@@ -9,7 +9,7 @@ use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
 use biome_rule_options::use_consistent_link_title_style::UseConsistentLinkTitleStyleOptions;
 
 use crate::MarkdownRuleAction;
-use crate::utils::definition_utils::collect_definitions;
+use crate::utils::definition_utils::collect_definitions_from_ast;
 use crate::utils::fence_utils::FenceTracker;
 use crate::utils::inline_utils::{find_code_spans, find_inline_links};
 
@@ -115,7 +115,7 @@ impl Rule for UseConsistentLinkTitleStyle {
         }
 
         // Check definitions
-        let definitions = collect_definitions(&text);
+        let definitions = collect_definitions_from_ast(document);
         for def in definitions {
             if let Some(delim) = def.title_delimiter {
                 if delim != expected_char {

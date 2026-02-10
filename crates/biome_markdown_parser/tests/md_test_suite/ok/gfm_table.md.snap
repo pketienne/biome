@@ -22,205 +22,225 @@ MdDocument {
     value: MdBlockList [
         MdTable {
             header: MdTableRow {
-                content: MdInlineItemList [
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@0..2 "|" [] [Whitespace(" ")],
+                cells: MdTableCellList [
+                    MdTableCell {
+                        bitwise_or_token: PIPE@0..2 "|" [] [Whitespace(" ")],
+                        content: MdInlineItemList [
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@2..3 "H" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@3..4 "e" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@4..5 "a" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@5..6 "d" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@6..7 "e" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@7..9 "r" [] [Whitespace(" ")],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@9..11 "1" [] [Whitespace(" ")],
+                            },
+                        ],
                     },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@2..3 "H" [] [],
+                    MdTableCell {
+                        bitwise_or_token: PIPE@11..13 "|" [] [Whitespace(" ")],
+                        content: MdInlineItemList [
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@13..14 "H" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@14..15 "e" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@15..16 "a" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@16..17 "d" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@17..18 "e" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@18..20 "r" [] [Whitespace(" ")],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@20..22 "2" [] [Whitespace(" ")],
+                            },
+                        ],
                     },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@3..4 "e" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@4..5 "a" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@5..6 "d" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@6..7 "e" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@7..9 "r" [] [Whitespace(" ")],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@9..11 "1" [] [Whitespace(" ")],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@11..13 "|" [] [Whitespace(" ")],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@13..14 "H" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@14..15 "e" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@15..16 "a" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@16..17 "d" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@17..18 "e" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@18..20 "r" [] [Whitespace(" ")],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@20..22 "2" [] [Whitespace(" ")],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@22..23 "|" [] [],
+                    MdTableCell {
+                        bitwise_or_token: PIPE@22..23 "|" [] [],
+                        content: MdInlineItemList [],
                     },
                 ],
             },
             separator: MdTableRow {
-                content: MdInlineItemList [
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@23..26 "|" [Newline("\n")] [Whitespace(" ")],
+                cells: MdTableCellList [
+                    MdTableCell {
+                        bitwise_or_token: PIPE@23..26 "|" [Newline("\n")] [Whitespace(" ")],
+                        content: MdInlineItemList [
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@26..27 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@27..28 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@28..29 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@29..30 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@30..31 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@31..32 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@32..33 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@33..35 "-" [] [Whitespace(" ")],
+                            },
+                        ],
                     },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@26..27 "-" [] [],
+                    MdTableCell {
+                        bitwise_or_token: PIPE@35..37 "|" [] [Whitespace(" ")],
+                        content: MdInlineItemList [
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@37..38 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@38..39 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@39..40 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@40..41 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@41..42 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@42..43 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@43..44 "-" [] [],
+                            },
+                            MdTextual {
+                                value_token: MD_TEXTUAL_LITERAL@44..46 "-" [] [Whitespace(" ")],
+                            },
+                        ],
                     },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@27..28 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@28..29 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@29..30 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@30..31 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@31..32 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@32..33 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@33..35 "-" [] [Whitespace(" ")],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@35..37 "|" [] [Whitespace(" ")],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@37..38 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@38..39 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@39..40 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@40..41 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@41..42 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@42..43 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@43..44 "-" [] [],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@44..46 "-" [] [Whitespace(" ")],
-                    },
-                    MdTextual {
-                        value_token: MD_TEXTUAL_LITERAL@46..47 "|" [] [],
+                    MdTableCell {
+                        bitwise_or_token: PIPE@46..47 "|" [] [],
+                        content: MdInlineItemList [],
                     },
                 ],
             },
             rows: MdTableRowList [
                 MdTableRow {
-                    content: MdInlineItemList [
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@47..50 "|" [Newline("\n")] [Whitespace(" ")],
+                    cells: MdTableCellList [
+                        MdTableCell {
+                            bitwise_or_token: PIPE@47..50 "|" [Newline("\n")] [Whitespace(" ")],
+                            content: MdInlineItemList [
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@50..51 "C" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@51..52 "e" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@52..53 "l" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@53..55 "l" [] [Whitespace(" ")],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@55..59 "A" [] [Whitespace("   ")],
+                                },
+                            ],
                         },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@50..51 "C" [] [],
+                        MdTableCell {
+                            bitwise_or_token: PIPE@59..61 "|" [] [Whitespace(" ")],
+                            content: MdInlineItemList [
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@61..62 "C" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@62..63 "e" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@63..64 "l" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@64..66 "l" [] [Whitespace(" ")],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@66..70 "B" [] [Whitespace("   ")],
+                                },
+                            ],
                         },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@51..52 "e" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@52..53 "l" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@53..55 "l" [] [Whitespace(" ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@55..59 "A" [] [Whitespace("   ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@59..61 "|" [] [Whitespace(" ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@61..62 "C" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@62..63 "e" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@63..64 "l" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@64..66 "l" [] [Whitespace(" ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@66..70 "B" [] [Whitespace("   ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@70..71 "|" [] [],
+                        MdTableCell {
+                            bitwise_or_token: PIPE@70..71 "|" [] [],
+                            content: MdInlineItemList [],
                         },
                     ],
                 },
                 MdTableRow {
-                    content: MdInlineItemList [
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@71..74 "|" [Newline("\n")] [Whitespace(" ")],
+                    cells: MdTableCellList [
+                        MdTableCell {
+                            bitwise_or_token: PIPE@71..74 "|" [Newline("\n")] [Whitespace(" ")],
+                            content: MdInlineItemList [
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@74..75 "C" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@75..76 "e" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@76..77 "l" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@77..79 "l" [] [Whitespace(" ")],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@79..83 "C" [] [Whitespace("   ")],
+                                },
+                            ],
                         },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@74..75 "C" [] [],
+                        MdTableCell {
+                            bitwise_or_token: PIPE@83..85 "|" [] [Whitespace(" ")],
+                            content: MdInlineItemList [
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@85..86 "C" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@86..87 "e" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@87..88 "l" [] [],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@88..90 "l" [] [Whitespace(" ")],
+                                },
+                                MdTextual {
+                                    value_token: MD_TEXTUAL_LITERAL@90..94 "D" [] [Whitespace("   ")],
+                                },
+                            ],
                         },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@75..76 "e" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@76..77 "l" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@77..79 "l" [] [Whitespace(" ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@79..83 "C" [] [Whitespace("   ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@83..85 "|" [] [Whitespace(" ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@85..86 "C" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@86..87 "e" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@87..88 "l" [] [],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@88..90 "l" [] [Whitespace(" ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@90..94 "D" [] [Whitespace("   ")],
-                        },
-                        MdTextual {
-                            value_token: MD_TEXTUAL_LITERAL@94..95 "|" [] [],
+                        MdTableCell {
+                            bitwise_or_token: PIPE@94..95 "|" [] [],
+                            content: MdInlineItemList [],
                         },
                     ],
                 },
@@ -239,138 +259,150 @@ MdDocument {
   1: MD_BLOCK_LIST@0..95
     0: MD_TABLE@0..95
       0: MD_TABLE_ROW@0..23
-        0: MD_INLINE_ITEM_LIST@0..23
-          0: MD_TEXTUAL@0..2
-            0: MD_TEXTUAL_LITERAL@0..2 "|" [] [Whitespace(" ")]
-          1: MD_TEXTUAL@2..3
-            0: MD_TEXTUAL_LITERAL@2..3 "H" [] []
-          2: MD_TEXTUAL@3..4
-            0: MD_TEXTUAL_LITERAL@3..4 "e" [] []
-          3: MD_TEXTUAL@4..5
-            0: MD_TEXTUAL_LITERAL@4..5 "a" [] []
-          4: MD_TEXTUAL@5..6
-            0: MD_TEXTUAL_LITERAL@5..6 "d" [] []
-          5: MD_TEXTUAL@6..7
-            0: MD_TEXTUAL_LITERAL@6..7 "e" [] []
-          6: MD_TEXTUAL@7..9
-            0: MD_TEXTUAL_LITERAL@7..9 "r" [] [Whitespace(" ")]
-          7: MD_TEXTUAL@9..11
-            0: MD_TEXTUAL_LITERAL@9..11 "1" [] [Whitespace(" ")]
-          8: MD_TEXTUAL@11..13
-            0: MD_TEXTUAL_LITERAL@11..13 "|" [] [Whitespace(" ")]
-          9: MD_TEXTUAL@13..14
-            0: MD_TEXTUAL_LITERAL@13..14 "H" [] []
-          10: MD_TEXTUAL@14..15
-            0: MD_TEXTUAL_LITERAL@14..15 "e" [] []
-          11: MD_TEXTUAL@15..16
-            0: MD_TEXTUAL_LITERAL@15..16 "a" [] []
-          12: MD_TEXTUAL@16..17
-            0: MD_TEXTUAL_LITERAL@16..17 "d" [] []
-          13: MD_TEXTUAL@17..18
-            0: MD_TEXTUAL_LITERAL@17..18 "e" [] []
-          14: MD_TEXTUAL@18..20
-            0: MD_TEXTUAL_LITERAL@18..20 "r" [] [Whitespace(" ")]
-          15: MD_TEXTUAL@20..22
-            0: MD_TEXTUAL_LITERAL@20..22 "2" [] [Whitespace(" ")]
-          16: MD_TEXTUAL@22..23
-            0: MD_TEXTUAL_LITERAL@22..23 "|" [] []
+        0: MD_TABLE_CELL_LIST@0..23
+          0: MD_TABLE_CELL@0..11
+            0: PIPE@0..2 "|" [] [Whitespace(" ")]
+            1: MD_INLINE_ITEM_LIST@2..11
+              0: MD_TEXTUAL@2..3
+                0: MD_TEXTUAL_LITERAL@2..3 "H" [] []
+              1: MD_TEXTUAL@3..4
+                0: MD_TEXTUAL_LITERAL@3..4 "e" [] []
+              2: MD_TEXTUAL@4..5
+                0: MD_TEXTUAL_LITERAL@4..5 "a" [] []
+              3: MD_TEXTUAL@5..6
+                0: MD_TEXTUAL_LITERAL@5..6 "d" [] []
+              4: MD_TEXTUAL@6..7
+                0: MD_TEXTUAL_LITERAL@6..7 "e" [] []
+              5: MD_TEXTUAL@7..9
+                0: MD_TEXTUAL_LITERAL@7..9 "r" [] [Whitespace(" ")]
+              6: MD_TEXTUAL@9..11
+                0: MD_TEXTUAL_LITERAL@9..11 "1" [] [Whitespace(" ")]
+          1: MD_TABLE_CELL@11..22
+            0: PIPE@11..13 "|" [] [Whitespace(" ")]
+            1: MD_INLINE_ITEM_LIST@13..22
+              0: MD_TEXTUAL@13..14
+                0: MD_TEXTUAL_LITERAL@13..14 "H" [] []
+              1: MD_TEXTUAL@14..15
+                0: MD_TEXTUAL_LITERAL@14..15 "e" [] []
+              2: MD_TEXTUAL@15..16
+                0: MD_TEXTUAL_LITERAL@15..16 "a" [] []
+              3: MD_TEXTUAL@16..17
+                0: MD_TEXTUAL_LITERAL@16..17 "d" [] []
+              4: MD_TEXTUAL@17..18
+                0: MD_TEXTUAL_LITERAL@17..18 "e" [] []
+              5: MD_TEXTUAL@18..20
+                0: MD_TEXTUAL_LITERAL@18..20 "r" [] [Whitespace(" ")]
+              6: MD_TEXTUAL@20..22
+                0: MD_TEXTUAL_LITERAL@20..22 "2" [] [Whitespace(" ")]
+          2: MD_TABLE_CELL@22..23
+            0: PIPE@22..23 "|" [] []
+            1: MD_INLINE_ITEM_LIST@23..23
       1: MD_TABLE_ROW@23..47
-        0: MD_INLINE_ITEM_LIST@23..47
-          0: MD_TEXTUAL@23..26
-            0: MD_TEXTUAL_LITERAL@23..26 "|" [Newline("\n")] [Whitespace(" ")]
-          1: MD_TEXTUAL@26..27
-            0: MD_TEXTUAL_LITERAL@26..27 "-" [] []
-          2: MD_TEXTUAL@27..28
-            0: MD_TEXTUAL_LITERAL@27..28 "-" [] []
-          3: MD_TEXTUAL@28..29
-            0: MD_TEXTUAL_LITERAL@28..29 "-" [] []
-          4: MD_TEXTUAL@29..30
-            0: MD_TEXTUAL_LITERAL@29..30 "-" [] []
-          5: MD_TEXTUAL@30..31
-            0: MD_TEXTUAL_LITERAL@30..31 "-" [] []
-          6: MD_TEXTUAL@31..32
-            0: MD_TEXTUAL_LITERAL@31..32 "-" [] []
-          7: MD_TEXTUAL@32..33
-            0: MD_TEXTUAL_LITERAL@32..33 "-" [] []
-          8: MD_TEXTUAL@33..35
-            0: MD_TEXTUAL_LITERAL@33..35 "-" [] [Whitespace(" ")]
-          9: MD_TEXTUAL@35..37
-            0: MD_TEXTUAL_LITERAL@35..37 "|" [] [Whitespace(" ")]
-          10: MD_TEXTUAL@37..38
-            0: MD_TEXTUAL_LITERAL@37..38 "-" [] []
-          11: MD_TEXTUAL@38..39
-            0: MD_TEXTUAL_LITERAL@38..39 "-" [] []
-          12: MD_TEXTUAL@39..40
-            0: MD_TEXTUAL_LITERAL@39..40 "-" [] []
-          13: MD_TEXTUAL@40..41
-            0: MD_TEXTUAL_LITERAL@40..41 "-" [] []
-          14: MD_TEXTUAL@41..42
-            0: MD_TEXTUAL_LITERAL@41..42 "-" [] []
-          15: MD_TEXTUAL@42..43
-            0: MD_TEXTUAL_LITERAL@42..43 "-" [] []
-          16: MD_TEXTUAL@43..44
-            0: MD_TEXTUAL_LITERAL@43..44 "-" [] []
-          17: MD_TEXTUAL@44..46
-            0: MD_TEXTUAL_LITERAL@44..46 "-" [] [Whitespace(" ")]
-          18: MD_TEXTUAL@46..47
-            0: MD_TEXTUAL_LITERAL@46..47 "|" [] []
+        0: MD_TABLE_CELL_LIST@23..47
+          0: MD_TABLE_CELL@23..35
+            0: PIPE@23..26 "|" [Newline("\n")] [Whitespace(" ")]
+            1: MD_INLINE_ITEM_LIST@26..35
+              0: MD_TEXTUAL@26..27
+                0: MD_TEXTUAL_LITERAL@26..27 "-" [] []
+              1: MD_TEXTUAL@27..28
+                0: MD_TEXTUAL_LITERAL@27..28 "-" [] []
+              2: MD_TEXTUAL@28..29
+                0: MD_TEXTUAL_LITERAL@28..29 "-" [] []
+              3: MD_TEXTUAL@29..30
+                0: MD_TEXTUAL_LITERAL@29..30 "-" [] []
+              4: MD_TEXTUAL@30..31
+                0: MD_TEXTUAL_LITERAL@30..31 "-" [] []
+              5: MD_TEXTUAL@31..32
+                0: MD_TEXTUAL_LITERAL@31..32 "-" [] []
+              6: MD_TEXTUAL@32..33
+                0: MD_TEXTUAL_LITERAL@32..33 "-" [] []
+              7: MD_TEXTUAL@33..35
+                0: MD_TEXTUAL_LITERAL@33..35 "-" [] [Whitespace(" ")]
+          1: MD_TABLE_CELL@35..46
+            0: PIPE@35..37 "|" [] [Whitespace(" ")]
+            1: MD_INLINE_ITEM_LIST@37..46
+              0: MD_TEXTUAL@37..38
+                0: MD_TEXTUAL_LITERAL@37..38 "-" [] []
+              1: MD_TEXTUAL@38..39
+                0: MD_TEXTUAL_LITERAL@38..39 "-" [] []
+              2: MD_TEXTUAL@39..40
+                0: MD_TEXTUAL_LITERAL@39..40 "-" [] []
+              3: MD_TEXTUAL@40..41
+                0: MD_TEXTUAL_LITERAL@40..41 "-" [] []
+              4: MD_TEXTUAL@41..42
+                0: MD_TEXTUAL_LITERAL@41..42 "-" [] []
+              5: MD_TEXTUAL@42..43
+                0: MD_TEXTUAL_LITERAL@42..43 "-" [] []
+              6: MD_TEXTUAL@43..44
+                0: MD_TEXTUAL_LITERAL@43..44 "-" [] []
+              7: MD_TEXTUAL@44..46
+                0: MD_TEXTUAL_LITERAL@44..46 "-" [] [Whitespace(" ")]
+          2: MD_TABLE_CELL@46..47
+            0: PIPE@46..47 "|" [] []
+            1: MD_INLINE_ITEM_LIST@47..47
       2: MD_TABLE_ROW_LIST@47..95
         0: MD_TABLE_ROW@47..71
-          0: MD_INLINE_ITEM_LIST@47..71
-            0: MD_TEXTUAL@47..50
-              0: MD_TEXTUAL_LITERAL@47..50 "|" [Newline("\n")] [Whitespace(" ")]
-            1: MD_TEXTUAL@50..51
-              0: MD_TEXTUAL_LITERAL@50..51 "C" [] []
-            2: MD_TEXTUAL@51..52
-              0: MD_TEXTUAL_LITERAL@51..52 "e" [] []
-            3: MD_TEXTUAL@52..53
-              0: MD_TEXTUAL_LITERAL@52..53 "l" [] []
-            4: MD_TEXTUAL@53..55
-              0: MD_TEXTUAL_LITERAL@53..55 "l" [] [Whitespace(" ")]
-            5: MD_TEXTUAL@55..59
-              0: MD_TEXTUAL_LITERAL@55..59 "A" [] [Whitespace("   ")]
-            6: MD_TEXTUAL@59..61
-              0: MD_TEXTUAL_LITERAL@59..61 "|" [] [Whitespace(" ")]
-            7: MD_TEXTUAL@61..62
-              0: MD_TEXTUAL_LITERAL@61..62 "C" [] []
-            8: MD_TEXTUAL@62..63
-              0: MD_TEXTUAL_LITERAL@62..63 "e" [] []
-            9: MD_TEXTUAL@63..64
-              0: MD_TEXTUAL_LITERAL@63..64 "l" [] []
-            10: MD_TEXTUAL@64..66
-              0: MD_TEXTUAL_LITERAL@64..66 "l" [] [Whitespace(" ")]
-            11: MD_TEXTUAL@66..70
-              0: MD_TEXTUAL_LITERAL@66..70 "B" [] [Whitespace("   ")]
-            12: MD_TEXTUAL@70..71
-              0: MD_TEXTUAL_LITERAL@70..71 "|" [] []
+          0: MD_TABLE_CELL_LIST@47..71
+            0: MD_TABLE_CELL@47..59
+              0: PIPE@47..50 "|" [Newline("\n")] [Whitespace(" ")]
+              1: MD_INLINE_ITEM_LIST@50..59
+                0: MD_TEXTUAL@50..51
+                  0: MD_TEXTUAL_LITERAL@50..51 "C" [] []
+                1: MD_TEXTUAL@51..52
+                  0: MD_TEXTUAL_LITERAL@51..52 "e" [] []
+                2: MD_TEXTUAL@52..53
+                  0: MD_TEXTUAL_LITERAL@52..53 "l" [] []
+                3: MD_TEXTUAL@53..55
+                  0: MD_TEXTUAL_LITERAL@53..55 "l" [] [Whitespace(" ")]
+                4: MD_TEXTUAL@55..59
+                  0: MD_TEXTUAL_LITERAL@55..59 "A" [] [Whitespace("   ")]
+            1: MD_TABLE_CELL@59..70
+              0: PIPE@59..61 "|" [] [Whitespace(" ")]
+              1: MD_INLINE_ITEM_LIST@61..70
+                0: MD_TEXTUAL@61..62
+                  0: MD_TEXTUAL_LITERAL@61..62 "C" [] []
+                1: MD_TEXTUAL@62..63
+                  0: MD_TEXTUAL_LITERAL@62..63 "e" [] []
+                2: MD_TEXTUAL@63..64
+                  0: MD_TEXTUAL_LITERAL@63..64 "l" [] []
+                3: MD_TEXTUAL@64..66
+                  0: MD_TEXTUAL_LITERAL@64..66 "l" [] [Whitespace(" ")]
+                4: MD_TEXTUAL@66..70
+                  0: MD_TEXTUAL_LITERAL@66..70 "B" [] [Whitespace("   ")]
+            2: MD_TABLE_CELL@70..71
+              0: PIPE@70..71 "|" [] []
+              1: MD_INLINE_ITEM_LIST@71..71
         1: MD_TABLE_ROW@71..95
-          0: MD_INLINE_ITEM_LIST@71..95
-            0: MD_TEXTUAL@71..74
-              0: MD_TEXTUAL_LITERAL@71..74 "|" [Newline("\n")] [Whitespace(" ")]
-            1: MD_TEXTUAL@74..75
-              0: MD_TEXTUAL_LITERAL@74..75 "C" [] []
-            2: MD_TEXTUAL@75..76
-              0: MD_TEXTUAL_LITERAL@75..76 "e" [] []
-            3: MD_TEXTUAL@76..77
-              0: MD_TEXTUAL_LITERAL@76..77 "l" [] []
-            4: MD_TEXTUAL@77..79
-              0: MD_TEXTUAL_LITERAL@77..79 "l" [] [Whitespace(" ")]
-            5: MD_TEXTUAL@79..83
-              0: MD_TEXTUAL_LITERAL@79..83 "C" [] [Whitespace("   ")]
-            6: MD_TEXTUAL@83..85
-              0: MD_TEXTUAL_LITERAL@83..85 "|" [] [Whitespace(" ")]
-            7: MD_TEXTUAL@85..86
-              0: MD_TEXTUAL_LITERAL@85..86 "C" [] []
-            8: MD_TEXTUAL@86..87
-              0: MD_TEXTUAL_LITERAL@86..87 "e" [] []
-            9: MD_TEXTUAL@87..88
-              0: MD_TEXTUAL_LITERAL@87..88 "l" [] []
-            10: MD_TEXTUAL@88..90
-              0: MD_TEXTUAL_LITERAL@88..90 "l" [] [Whitespace(" ")]
-            11: MD_TEXTUAL@90..94
-              0: MD_TEXTUAL_LITERAL@90..94 "D" [] [Whitespace("   ")]
-            12: MD_TEXTUAL@94..95
-              0: MD_TEXTUAL_LITERAL@94..95 "|" [] []
+          0: MD_TABLE_CELL_LIST@71..95
+            0: MD_TABLE_CELL@71..83
+              0: PIPE@71..74 "|" [Newline("\n")] [Whitespace(" ")]
+              1: MD_INLINE_ITEM_LIST@74..83
+                0: MD_TEXTUAL@74..75
+                  0: MD_TEXTUAL_LITERAL@74..75 "C" [] []
+                1: MD_TEXTUAL@75..76
+                  0: MD_TEXTUAL_LITERAL@75..76 "e" [] []
+                2: MD_TEXTUAL@76..77
+                  0: MD_TEXTUAL_LITERAL@76..77 "l" [] []
+                3: MD_TEXTUAL@77..79
+                  0: MD_TEXTUAL_LITERAL@77..79 "l" [] [Whitespace(" ")]
+                4: MD_TEXTUAL@79..83
+                  0: MD_TEXTUAL_LITERAL@79..83 "C" [] [Whitespace("   ")]
+            1: MD_TABLE_CELL@83..94
+              0: PIPE@83..85 "|" [] [Whitespace(" ")]
+              1: MD_INLINE_ITEM_LIST@85..94
+                0: MD_TEXTUAL@85..86
+                  0: MD_TEXTUAL_LITERAL@85..86 "C" [] []
+                1: MD_TEXTUAL@86..87
+                  0: MD_TEXTUAL_LITERAL@86..87 "e" [] []
+                2: MD_TEXTUAL@87..88
+                  0: MD_TEXTUAL_LITERAL@87..88 "l" [] []
+                3: MD_TEXTUAL@88..90
+                  0: MD_TEXTUAL_LITERAL@88..90 "l" [] [Whitespace(" ")]
+                4: MD_TEXTUAL@90..94
+                  0: MD_TEXTUAL_LITERAL@90..94 "D" [] [Whitespace("   ")]
+            2: MD_TABLE_CELL@94..95
+              0: PIPE@94..95 "|" [] []
+              1: MD_INLINE_ITEM_LIST@95..95
   2: EOF@95..96 "" [Newline("\n")] []
 
 ```

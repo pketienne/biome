@@ -117,6 +117,10 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::MdLinkBlock::new_unchecked(node) };
                     $body
                 }
+                $crate::MarkdownSyntaxKind::MD_LINK_BLOCK_TITLE => {
+                    let $pattern = unsafe { $crate::MdLinkBlockTitle::new_unchecked(node) };
+                    $body
+                }
                 $crate::MarkdownSyntaxKind::MD_MDX_JSX_ATTRIBUTE => {
                     let $pattern = unsafe { $crate::MdMdxJsxAttribute::new_unchecked(node) };
                     $body
@@ -157,6 +161,10 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::MdTable::new_unchecked(node) };
                     $body
                 }
+                $crate::MarkdownSyntaxKind::MD_TABLE_CELL => {
+                    let $pattern = unsafe { $crate::MdTableCell::new_unchecked(node) };
+                    $body
+                }
                 $crate::MarkdownSyntaxKind::MD_TABLE_ROW => {
                     let $pattern = unsafe { $crate::MdTableRow::new_unchecked(node) };
                     $body
@@ -181,10 +189,6 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::MdBulletList::new_unchecked(node) };
                     $body
                 }
-                $crate::MarkdownSyntaxKind::MD_CODE_NAME_LIST => {
-                    let $pattern = unsafe { $crate::MdCodeNameList::new_unchecked(node) };
-                    $body
-                }
                 $crate::MarkdownSyntaxKind::MD_DIRECTIVE_ATTRIBUTE_LIST => {
                     let $pattern = unsafe { $crate::MdDirectiveAttributeList::new_unchecked(node) };
                     $body
@@ -207,6 +211,10 @@ macro_rules! map_syntax_node {
                 }
                 $crate::MarkdownSyntaxKind::MD_ORDER_LIST => {
                     let $pattern = unsafe { $crate::MdOrderList::new_unchecked(node) };
+                    $body
+                }
+                $crate::MarkdownSyntaxKind::MD_TABLE_CELL_LIST => {
+                    let $pattern = unsafe { $crate::MdTableCellList::new_unchecked(node) };
                     $body
                 }
                 $crate::MarkdownSyntaxKind::MD_TABLE_ROW_LIST => {

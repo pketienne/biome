@@ -4,7 +4,7 @@ use biome_diagnostics::Severity;
 use biome_markdown_syntax::MdDocument;
 use biome_rowan::{AstNode, TextRange, TextSize};
 
-use crate::utils::definition_utils::{collect_definitions, normalize_label};
+use crate::utils::definition_utils::{collect_definitions_from_ast, normalize_label};
 use crate::utils::fence_utils::FenceTracker;
 use crate::utils::inline_utils::{find_code_spans, find_reference_links};
 
@@ -53,7 +53,7 @@ impl Rule for NoUndefinedReferences {
         let document = ctx.query();
         let text = document.syntax().text_with_trivia().to_string();
         let base = document.syntax().text_range_with_trivia().start();
-        let definitions = collect_definitions(&text);
+        let definitions = collect_definitions_from_ast(document);
         let defined_labels: std::collections::HashSet<String> =
             definitions.iter().map(|d| d.label.clone()).collect();
 

@@ -92,6 +92,7 @@ MdDocument {
                     value_token: MD_TEXTUAL_LITERAL@25..26 "m" [] [],
                 },
             ],
+            title: missing (optional),
         },
         MdLinkBlock {
             l_brack_token: L_BRACK@26..28 "[" [Newline("\n")] [],
@@ -166,28 +167,28 @@ MdDocument {
                 MdTextual {
                     value_token: MD_TEXTUAL_LITERAL@52..54 "m" [] [Whitespace(" ")],
                 },
-                MdTextual {
-                    value_token: MD_TEXTUAL_LITERAL@54..55 "\"" [] [],
-                },
-                MdTextual {
-                    value_token: MD_TEXTUAL_LITERAL@55..56 "T" [] [],
-                },
-                MdTextual {
-                    value_token: MD_TEXTUAL_LITERAL@56..57 "i" [] [],
-                },
-                MdTextual {
-                    value_token: MD_TEXTUAL_LITERAL@57..58 "t" [] [],
-                },
-                MdTextual {
-                    value_token: MD_TEXTUAL_LITERAL@58..59 "l" [] [],
-                },
-                MdTextual {
-                    value_token: MD_TEXTUAL_LITERAL@59..60 "e" [] [],
-                },
-                MdTextual {
-                    value_token: MD_TEXTUAL_LITERAL@60..61 "\"" [] [],
-                },
             ],
+            title: MdLinkBlockTitle {
+                delimiter_token: MD_TEXTUAL_LITERAL@54..55 "\"" [] [],
+                content: MdInlineItemList [
+                    MdTextual {
+                        value_token: MD_TEXTUAL_LITERAL@55..56 "T" [] [],
+                    },
+                    MdTextual {
+                        value_token: MD_TEXTUAL_LITERAL@56..57 "i" [] [],
+                    },
+                    MdTextual {
+                        value_token: MD_TEXTUAL_LITERAL@57..58 "t" [] [],
+                    },
+                    MdTextual {
+                        value_token: MD_TEXTUAL_LITERAL@58..59 "l" [] [],
+                    },
+                    MdTextual {
+                        value_token: MD_TEXTUAL_LITERAL@59..60 "e" [] [],
+                    },
+                ],
+                closing_delimiter_token: MD_TEXTUAL_LITERAL@60..61 "\"" [] [],
+            },
         },
     ],
     eof_token: EOF@61..62 "" [Newline("\n")] [],
@@ -250,6 +251,7 @@ MdDocument {
           0: MD_TEXTUAL_LITERAL@24..25 "o" [] []
         18: MD_TEXTUAL@25..26
           0: MD_TEXTUAL_LITERAL@25..26 "m" [] []
+      5: (empty)
     1: MD_LINK_BLOCK@26..61
       0: L_BRACK@26..28 "[" [Newline("\n")] []
       1: MD_INLINE_ITEM_LIST@28..31
@@ -261,7 +263,7 @@ MdDocument {
           0: MD_TEXTUAL_LITERAL@30..31 "r" [] []
       2: R_BRACK@31..32 "]" [] []
       3: COLON@32..34 ":" [] [Whitespace(" ")]
-      4: MD_INLINE_ITEM_LIST@34..61
+      4: MD_INLINE_ITEM_LIST@34..54
         0: MD_TEXTUAL@34..35
           0: MD_TEXTUAL_LITERAL@34..35 "h" [] []
         1: MD_TEXTUAL@35..36
@@ -300,20 +302,20 @@ MdDocument {
           0: MD_TEXTUAL_LITERAL@51..52 "o" [] []
         18: MD_TEXTUAL@52..54
           0: MD_TEXTUAL_LITERAL@52..54 "m" [] [Whitespace(" ")]
-        19: MD_TEXTUAL@54..55
-          0: MD_TEXTUAL_LITERAL@54..55 "\"" [] []
-        20: MD_TEXTUAL@55..56
-          0: MD_TEXTUAL_LITERAL@55..56 "T" [] []
-        21: MD_TEXTUAL@56..57
-          0: MD_TEXTUAL_LITERAL@56..57 "i" [] []
-        22: MD_TEXTUAL@57..58
-          0: MD_TEXTUAL_LITERAL@57..58 "t" [] []
-        23: MD_TEXTUAL@58..59
-          0: MD_TEXTUAL_LITERAL@58..59 "l" [] []
-        24: MD_TEXTUAL@59..60
-          0: MD_TEXTUAL_LITERAL@59..60 "e" [] []
-        25: MD_TEXTUAL@60..61
-          0: MD_TEXTUAL_LITERAL@60..61 "\"" [] []
+      5: MD_LINK_BLOCK_TITLE@54..61
+        0: MD_TEXTUAL_LITERAL@54..55 "\"" [] []
+        1: MD_INLINE_ITEM_LIST@55..60
+          0: MD_TEXTUAL@55..56
+            0: MD_TEXTUAL_LITERAL@55..56 "T" [] []
+          1: MD_TEXTUAL@56..57
+            0: MD_TEXTUAL_LITERAL@56..57 "i" [] []
+          2: MD_TEXTUAL@57..58
+            0: MD_TEXTUAL_LITERAL@57..58 "t" [] []
+          3: MD_TEXTUAL@58..59
+            0: MD_TEXTUAL_LITERAL@58..59 "l" [] []
+          4: MD_TEXTUAL@59..60
+            0: MD_TEXTUAL_LITERAL@59..60 "e" [] []
+        2: MD_TEXTUAL_LITERAL@60..61 "\"" [] []
   2: EOF@61..62 "" [Newline("\n")] []
 
 ```

@@ -232,6 +232,68 @@ pub fn collect_definitions(text: &str) -> Vec<LinkDefinition> {
     defs
 }
 
+/// Collect all link reference definitions from the AST by walking `MdLinkBlock` descendants.
+///
+/// This is the preferred method over `collect_definitions()` — it uses the parser's AST
+/// rather than re-parsing the text.
+pub fn collect_definitions_from_ast(
+    document: &biome_markdown_syntax::MdDocument,
+) -> Vec<LinkDefinition> {
+    use biome_markdown_syntax::MdLinkBlock;
+    use biome_rowan::AstNode;
+
+    let full_text = document.syntax().text_with_trivia().to_string();
+    let doc_start = u32::from(document.syntax().text_range_with_trivia().start()) as usize;
+    let mut defs = Vec::new();
+
+    for node in document.syntax().descendants() {
+        let Some(link_block) = MdLinkBlock::cast(node) else {
+            continue;
+        };
+
+        let raw_label = link_block.label().syntax().text_trimmed().to_string();
+        if raw_label.trim().is_empty() {
+            continue;
+        }
+
+        let url = link_block.url().syntax().text_trimmed().to_string();
+
+        let (title, title_delimiter) = if let Some(title_node) = link_block.title() {
+            let delim = title_node
+                .delimiter_token()
+                .ok()
+                .and_then(|t| t.text_trimmed().chars().next());
+            let content = title_node.content().syntax().text_trimmed().to_string();
+            (Some(content), delim)
+        } else {
+            (None, None)
+        };
+
+        // Compute line-based fields matching the text-based collect_definitions() semantics
+        let node_start = u32::from(link_block.syntax().text_trimmed_range().start()) as usize;
+        let relative_start = node_start - doc_start;
+        let text_before = &full_text[..relative_start];
+        let line_index = text_before.bytes().filter(|&b| b == b'\n').count();
+        let line_start = text_before.rfind('\n').map_or(0, |p| p + 1);
+        let line_end = full_text[line_start..]
+            .find('\n')
+            .map_or(full_text.len(), |p| line_start + p);
+
+        defs.push(LinkDefinition {
+            label: normalize_label(&raw_label),
+            raw_label,
+            url,
+            title,
+            title_delimiter,
+            line_index,
+            byte_offset: doc_start + line_start,
+            byte_len: line_end - line_start,
+        });
+    }
+
+    defs
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

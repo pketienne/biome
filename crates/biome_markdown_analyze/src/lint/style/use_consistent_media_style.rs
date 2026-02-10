@@ -9,7 +9,7 @@ use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
 use biome_rule_options::use_consistent_media_style::UseConsistentMediaStyleOptions;
 
 use crate::MarkdownRuleAction;
-use crate::utils::definition_utils::{collect_definitions, normalize_label};
+use crate::utils::definition_utils::{collect_definitions_from_ast, normalize_label};
 use crate::utils::fence_utils::FenceTracker;
 use crate::utils::inline_utils::{find_code_spans, find_inline_links, find_reference_links};
 
@@ -76,7 +76,7 @@ impl Rule for UseConsistentMediaStyle {
         let mut offset = 0usize;
 
         // Collect definitions for reference->inline conversion
-        let definitions = collect_definitions(&text);
+        let definitions = collect_definitions_from_ast(document);
 
         for (line_idx, line) in text.lines().enumerate() {
             tracker.process_line(line_idx, line);

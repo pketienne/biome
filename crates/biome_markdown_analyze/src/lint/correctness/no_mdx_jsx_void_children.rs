@@ -4,8 +4,6 @@ use biome_diagnostics::Severity;
 use biome_markdown_syntax::MdHtmlBlock;
 use biome_rowan::{AstNode, TextRange, TextSize};
 
-use crate::utils::mdx_utils::{find_jsx_elements, is_void_element};
-
 declare_lint_rule! {
     /// Disallow children for void HTML elements in MDX.
     ///
@@ -34,6 +32,15 @@ declare_lint_rule! {
     }
 }
 
+const VOID_ELEMENTS: &[&str] = &[
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source",
+    "track", "wbr",
+];
+
+fn is_void_element(tag: &str) -> bool {
+    VOID_ELEMENTS.contains(&tag.to_lowercase().as_str())
+}
+
 pub struct VoidWithChildren {
     range: TextRange,
     tag: String,
@@ -53,19 +60,28 @@ impl Rule for NoMdxJsxVoidChildren {
         let mut byte_offset: usize = 0;
 
         for line in text.lines() {
-            let elements = find_jsx_elements(line, byte_offset);
-            for elem in &elements {
-                if is_void_element(&elem.tag)
-                    && !elem.self_closing
-                    && elem.has_closing_tag
-                {
-                    signals.push(VoidWithChildren {
-                        range: TextRange::new(
-                            base + TextSize::from(elem.start as u32),
-                            base + TextSize::from(elem.end as u32),
-                        ),
-                        tag: elem.tag.clone(),
-                    });
+            let trimmed = line.trim_start();
+
+            if let Some(tag) = extract_opening_tag(trimmed) {
+                if is_void_element(&tag) {
+                    let closing = format!("</{}>", tag);
+                    if line.contains(&closing) {
+                        // Find the range of the opening tag (from `<` to `>`)
+                        if let Some(lt_pos) = line.find('<') {
+                            let tag_region = &line[lt_pos..];
+                            let gt_pos = tag_region
+                                .find('>')
+                                .map(|p| lt_pos + p + 1)
+                                .unwrap_or(lt_pos + tag.len() + 2);
+                            signals.push(VoidWithChildren {
+                                range: TextRange::new(
+                                    base + TextSize::from((byte_offset + lt_pos) as u32),
+                                    base + TextSize::from((byte_offset + gt_pos) as u32),
+                                ),
+                                tag,
+                            });
+                        }
+                    }
                 }
             }
             byte_offset += line.len() + 1;
@@ -88,4 +104,17 @@ impl Rule for NoMdxJsxVoidChildren {
             }),
         )
     }
+}
+
+/// Extract the tag name from a line starting with `<tagname...>`.
+fn extract_opening_tag(trimmed: &str) -> Option<String> {
+    if !trimmed.starts_with('<') || trimmed.starts_with("</") || trimmed.starts_with("<!") {
+        return None;
+    }
+    let rest = &trimmed[1..];
+    let end = rest.find(|c: char| !c.is_ascii_alphanumeric() && c != '-' && c != '_')?;
+    if end == 0 {
+        return None;
+    }
+    Some(rest[..end].to_string())
 }

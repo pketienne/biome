@@ -185,6 +185,7 @@ impl<'src> MarkdownLexer<'src> {
                 b'`' | b'~' => self.consume_fence_or_textual(),
                 b'=' => self.consume_equals_or_textual(),
                 b':' => self.consume_colon_or_textual(),
+                b'0'..=b'9' => self.consume_digit_sequence(),
                 _ => self.consume_textual(),
             },
         }
@@ -410,6 +411,21 @@ impl<'src> MarkdownLexer<'src> {
             } else {
                 break;
             }
+        }
+        MD_TEXTUAL_LITERAL
+    }
+
+    /// Consume consecutive ASCII digits, optionally followed by `.` or `)`.
+    /// This produces a single token for ordered list markers like `1.`, `42)`, `123.`.
+    /// If the digits are not followed by `.` or `)`, just the digits are consumed.
+    fn consume_digit_sequence(&mut self) -> MarkdownSyntaxKind {
+        self.assert_at_char_boundary();
+        while matches!(self.current_byte(), Some(b'0'..=b'9')) {
+            self.advance(1);
+        }
+        // Include trailing `.` or `)` to form ordered list markers
+        if matches!(self.current_byte(), Some(b'.' | b')')) {
+            self.advance(1);
         }
         MD_TEXTUAL_LITERAL
     }

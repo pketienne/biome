@@ -188,7 +188,8 @@ impl MdDocumentBuilder {
 }
 pub fn md_fenced_code_block(
     l_fence_token: SyntaxToken,
-    code_list: MdCodeNameList,
+    language: MdInlineItemList,
+    meta: MdInlineItemList,
     content: MdInlineItemList,
     r_fence_token: SyntaxToken,
 ) -> MdFencedCodeBlock {
@@ -196,7 +197,8 @@ pub fn md_fenced_code_block(
         MarkdownSyntaxKind::MD_FENCED_CODE_BLOCK,
         [
             Some(SyntaxElement::Token(l_fence_token)),
-            Some(SyntaxElement::Node(code_list.into_syntax())),
+            Some(SyntaxElement::Node(language.into_syntax())),
+            Some(SyntaxElement::Node(meta.into_syntax())),
             Some(SyntaxElement::Node(content.into_syntax())),
             Some(SyntaxElement::Token(r_fence_token)),
         ],
@@ -430,15 +432,55 @@ pub fn md_link_block(
     r_brack_token: SyntaxToken,
     colon_token: SyntaxToken,
     url: MdInlineItemList,
-) -> MdLinkBlock {
-    MdLinkBlock::unwrap_cast(SyntaxNode::new_detached(
-        MarkdownSyntaxKind::MD_LINK_BLOCK,
+) -> MdLinkBlockBuilder {
+    MdLinkBlockBuilder {
+        l_brack_token,
+        label,
+        r_brack_token,
+        colon_token,
+        url,
+        title: None,
+    }
+}
+pub struct MdLinkBlockBuilder {
+    l_brack_token: SyntaxToken,
+    label: MdInlineItemList,
+    r_brack_token: SyntaxToken,
+    colon_token: SyntaxToken,
+    url: MdInlineItemList,
+    title: Option<MdLinkBlockTitle>,
+}
+impl MdLinkBlockBuilder {
+    pub fn with_title(mut self, title: MdLinkBlockTitle) -> Self {
+        self.title = Some(title);
+        self
+    }
+    pub fn build(self) -> MdLinkBlock {
+        MdLinkBlock::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_LINK_BLOCK,
+            [
+                Some(SyntaxElement::Token(self.l_brack_token)),
+                Some(SyntaxElement::Node(self.label.into_syntax())),
+                Some(SyntaxElement::Token(self.r_brack_token)),
+                Some(SyntaxElement::Token(self.colon_token)),
+                Some(SyntaxElement::Node(self.url.into_syntax())),
+                self.title
+                    .map(|token| SyntaxElement::Node(token.into_syntax())),
+            ],
+        ))
+    }
+}
+pub fn md_link_block_title(
+    delimiter_token: SyntaxToken,
+    content: MdInlineItemList,
+    closing_delimiter_token: SyntaxToken,
+) -> MdLinkBlockTitle {
+    MdLinkBlockTitle::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_LINK_BLOCK_TITLE,
         [
-            Some(SyntaxElement::Token(l_brack_token)),
-            Some(SyntaxElement::Node(label.into_syntax())),
-            Some(SyntaxElement::Token(r_brack_token)),
-            Some(SyntaxElement::Token(colon_token)),
-            Some(SyntaxElement::Node(url.into_syntax())),
+            Some(SyntaxElement::Token(delimiter_token)),
+            Some(SyntaxElement::Node(content.into_syntax())),
+            Some(SyntaxElement::Token(closing_delimiter_token)),
         ],
     ))
 }
@@ -623,10 +665,36 @@ pub fn md_table(header: MdTableRow, separator: MdTableRow, rows: MdTableRowList)
         ],
     ))
 }
-pub fn md_table_row(content: MdInlineItemList) -> MdTableRow {
+pub fn md_table_cell(content: MdInlineItemList) -> MdTableCellBuilder {
+    MdTableCellBuilder {
+        content,
+        bitwise_or_token: None,
+    }
+}
+pub struct MdTableCellBuilder {
+    content: MdInlineItemList,
+    bitwise_or_token: Option<SyntaxToken>,
+}
+impl MdTableCellBuilder {
+    pub fn with_bitwise_or_token(mut self, bitwise_or_token: SyntaxToken) -> Self {
+        self.bitwise_or_token = Some(bitwise_or_token);
+        self
+    }
+    pub fn build(self) -> MdTableCell {
+        MdTableCell::unwrap_cast(SyntaxNode::new_detached(
+            MarkdownSyntaxKind::MD_TABLE_CELL,
+            [
+                self.bitwise_or_token
+                    .map(|token| SyntaxElement::Token(token)),
+                Some(SyntaxElement::Node(self.content.into_syntax())),
+            ],
+        ))
+    }
+}
+pub fn md_table_row(cells: MdTableCellList) -> MdTableRow {
     MdTableRow::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_TABLE_ROW,
-        [Some(SyntaxElement::Node(content.into_syntax()))],
+        [Some(SyntaxElement::Node(cells.into_syntax()))],
     ))
 }
 pub fn md_textual(value_token: SyntaxToken) -> MdTextual {
@@ -660,18 +728,6 @@ where
 {
     MdBulletList::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_BULLET_LIST,
-        items
-            .into_iter()
-            .map(|item| Some(item.into_syntax().into())),
-    ))
-}
-pub fn md_code_name_list<I>(items: I) -> MdCodeNameList
-where
-    I: IntoIterator<Item = MdTextual>,
-    I::IntoIter: ExactSizeIterator,
-{
-    MdCodeNameList::unwrap_cast(SyntaxNode::new_detached(
-        MarkdownSyntaxKind::MD_CODE_NAME_LIST,
         items
             .into_iter()
             .map(|item| Some(item.into_syntax().into())),
@@ -744,6 +800,18 @@ where
 {
     MdOrderList::unwrap_cast(SyntaxNode::new_detached(
         MarkdownSyntaxKind::MD_ORDER_LIST,
+        items
+            .into_iter()
+            .map(|item| Some(item.into_syntax().into())),
+    ))
+}
+pub fn md_table_cell_list<I>(items: I) -> MdTableCellList
+where
+    I: IntoIterator<Item = MdTableCell>,
+    I::IntoIter: ExactSizeIterator,
+{
+    MdTableCellList::unwrap_cast(SyntaxNode::new_detached(
+        MarkdownSyntaxKind::MD_TABLE_CELL_LIST,
         items
             .into_iter()
             .map(|item| Some(item.into_syntax().into())),

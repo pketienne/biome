@@ -3,12 +3,10 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
+use biome_markdown_syntax::MdFencedCodeBlock;
 use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
 
 use crate::MarkdownRuleAction;
-use crate::utils::fence_utils::FenceTracker;
-use crate::utils::line_utils::is_blank_line;
 
 declare_lint_rule! {
     /// Require blank lines around fenced code blocks.
@@ -55,59 +53,80 @@ pub struct MissingBlankAroundFence {
 }
 
 impl Rule for UseBlanksAroundCodeFences {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdFencedCodeBlock>;
     type State = MissingBlankAroundFence;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
-        let lines: Vec<&str> = text.lines().collect();
+        let code_block = ctx.query();
+        let root = ctx.root();
+        let root_text = root.syntax().text_with_trivia().to_string();
+        let root_start = root.syntax().text_range_with_trivia().start();
+
+        let l_fence = match code_block.l_fence_token().ok() {
+            Some(t) => t,
+            None => return Vec::new(),
+        };
+
         let mut signals = Vec::new();
-        let mut tracker = FenceTracker::new();
-        let mut offset = 0usize;
-        let mut fence_open_line: Option<usize> = None;
 
-        for (line_idx, line) in lines.iter().enumerate() {
-            let was_inside = tracker.is_inside_fence();
-            let fence_result = tracker.process_line(line_idx, line);
+        // Find the opening fence byte offset in root text
+        let fence_offset =
+            u32::from(l_fence.text_trimmed_range().start() - root_start) as usize;
 
-            if fence_result.is_some() && !was_inside {
-                // Opening fence
-                fence_open_line = Some(line_idx);
-                // Check that previous line is blank (or this is the first line)
-                if line_idx > 0 && !is_blank_line(lines[line_idx - 1]) {
-                    signals.push(MissingBlankAroundFence {
-                        range: TextRange::new(
-                            base + TextSize::from(offset as u32),
-                            base + TextSize::from((offset + line.len()) as u32),
-                        ),
-                        position: "before",
-                        corrected: format!("\n{}", line),
-                    });
-                }
-            } else if was_inside && !tracker.is_inside_fence() {
-                // Closing fence
-                // Check that next line is blank (or this is the last line)
-                if line_idx + 1 < lines.len() && !is_blank_line(lines[line_idx + 1]) {
-                    signals.push(MissingBlankAroundFence {
-                        range: TextRange::new(
-                            base + TextSize::from(offset as u32),
-                            base + TextSize::from((offset + line.len()) as u32),
-                        ),
-                        position: "after",
-                        corrected: format!("{}\n", line),
-                    });
-                }
-                fence_open_line = None;
+        // Check if the line immediately before the opening fence is non-blank
+        let before = &root_text[..fence_offset];
+        if let Some(last_nl) = before.rfind('\n') {
+            // Find the line before the fence (between previous \n and last_nl)
+            let prev_content = &before[..last_nl];
+            let prev_line_start = prev_content.rfind('\n').map(|p| p + 1).unwrap_or(0);
+            let prev_line = &before[prev_line_start..last_nl];
+            if !prev_line.trim().is_empty() {
+                // Compute the opening fence line range and text
+                let line_end = root_text[fence_offset..]
+                    .find('\n')
+                    .map(|p| fence_offset + p)
+                    .unwrap_or(root_text.len());
+                let line_text = &root_text[fence_offset..line_end];
+                signals.push(MissingBlankAroundFence {
+                    range: TextRange::new(
+                        root_start + TextSize::from(fence_offset as u32),
+                        root_start + TextSize::from(line_end as u32),
+                    ),
+                    position: "before",
+                    corrected: format!("\n{}", line_text),
+                });
             }
-
-            offset += line.len() + 1;
         }
 
-        let _ = fence_open_line;
+        // Check if the line after the closing fence is non-blank
+        if let Some(r_fence) = code_block.r_fence_token().ok() {
+            let close_offset =
+                u32::from(r_fence.text_trimmed_range().start() - root_start) as usize;
+            let close_line_end = root_text[close_offset..]
+                .find('\n')
+                .map(|p| close_offset + p)
+                .unwrap_or(root_text.len());
+            let next_line_start = close_line_end + 1;
+            if next_line_start < root_text.len() {
+                let rest = &root_text[next_line_start..];
+                let next_line_end = rest.find('\n').unwrap_or(rest.len());
+                let next_line = &rest[..next_line_end];
+                if !next_line.trim().is_empty() {
+                    let line_text = &root_text[close_offset..close_line_end];
+                    signals.push(MissingBlankAroundFence {
+                        range: TextRange::new(
+                            root_start + TextSize::from(close_offset as u32),
+                            root_start + TextSize::from(close_line_end as u32),
+                        ),
+                        position: "after",
+                        corrected: format!("{}\n", line_text),
+                    });
+                }
+            }
+        }
+
         signals
     }
 

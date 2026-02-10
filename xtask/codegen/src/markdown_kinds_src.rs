@@ -25,6 +25,7 @@ pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
         ("#", "HASH"),
         (",", "COMMA"),
         (":", "COLON"),
+        ("|", "PIPE"),
         ("{", "L_CURLY"),
         ("}", "R_CURLY"),
     ],
@@ -51,7 +52,6 @@ pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
         "MD_HEADER",
         "MD_INDENT_CODE_BLOCK",
         "MD_FENCED_CODE_BLOCK",
-        "MD_CODE_NAME_LIST",
         "MD_HTML_BLOCK",
         "MD_LINK_BLOCK",
         "MD_QUOTE",
@@ -86,6 +86,7 @@ pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
         "MD_TABLE_ROW_LIST",
         "MD_TABLE_CELL",
         "MD_TABLE_CELL_LIST",
+        "MD_LINK_BLOCK_TITLE",
         "MD_THEMATIC_BREAK_BLOCK",
         // Directive nodes
         "MD_DIRECTIVE",

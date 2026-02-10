@@ -112,11 +112,10 @@ MdIndentedCodeLine =
 // ```
 MdFencedCodeBlock =
 	l_fence: '```'
-	code_list: MdCodeNameList
+	language: MdInlineItemList
+	meta: MdInlineItemList
 	content: MdInlineItemList
 	r_fence: '```'
-
-MdCodeNameList = MdTextual*
 
 // html block
 MdHtmlBlock = content: MdInlineItemList
@@ -127,6 +126,12 @@ MdLinkBlock =
     ']'
     ':'
     url: MdInlineItemList
+    title: MdLinkBlockTitle?
+
+MdLinkBlockTitle =
+    delimiter: 'md_textual_literal'
+    content: MdInlineItemList
+    closing_delimiter: 'md_textual_literal'
 
 // > Block quote content
 // ^^^^^^^^^^^^^^^^^^^^
@@ -267,6 +272,12 @@ MdTable =
 MdTableRowList = MdTableRow*
 
 MdTableRow =
+	cells: MdTableCellList
+
+MdTableCellList = MdTableCell*
+
+MdTableCell =
+	'|'?
 	content: MdInlineItemList
 
 // ***

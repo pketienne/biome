@@ -35,6 +35,7 @@ pub enum MarkdownSyntaxKind {
     HASH,
     COMMA,
     COLON,
+    PIPE,
     L_CURLY,
     R_CURLY,
     NULL_KW,
@@ -58,7 +59,6 @@ pub enum MarkdownSyntaxKind {
     MD_HEADER,
     MD_INDENT_CODE_BLOCK,
     MD_FENCED_CODE_BLOCK,
-    MD_CODE_NAME_LIST,
     MD_HTML_BLOCK,
     MD_LINK_BLOCK,
     MD_QUOTE,
@@ -93,6 +93,7 @@ pub enum MarkdownSyntaxKind {
     MD_TABLE_ROW_LIST,
     MD_TABLE_CELL,
     MD_TABLE_CELL_LIST,
+    MD_LINK_BLOCK_TITLE,
     MD_THEMATIC_BREAK_BLOCK,
     MD_DIRECTIVE,
     MD_DIRECTIVE_ATTRIBUTE_LIST,
@@ -133,6 +134,7 @@ impl MarkdownSyntaxKind {
                 | HASH
                 | COMMA
                 | COLON
+                | PIPE
                 | L_CURLY
                 | R_CURLY
         )
@@ -154,7 +156,6 @@ impl MarkdownSyntaxKind {
             self,
             MD_BLOCK_LIST
                 | MD_HASH_LIST
-                | MD_CODE_NAME_LIST
                 | MD_BULLET_LIST
                 | MD_ORDER_LIST
                 | MD_INLINE_ITEM_LIST
@@ -197,6 +198,7 @@ impl MarkdownSyntaxKind {
             HASH => "#",
             COMMA => ",",
             COLON => ":",
+            PIPE => "|",
             L_CURLY => "{",
             R_CURLY => "}",
             NULL_KW => "null",
@@ -208,4 +210,4 @@ impl MarkdownSyntaxKind {
 }
 #[doc = r" Utility macro for creating a SyntaxKind through simple macro syntax"]
 #[macro_export]
-macro_rules ! T { [<] => { $ crate :: MarkdownSyntaxKind :: L_ANGLE } ; [>] => { $ crate :: MarkdownSyntaxKind :: R_ANGLE } ; ['('] => { $ crate :: MarkdownSyntaxKind :: L_PAREN } ; [')'] => { $ crate :: MarkdownSyntaxKind :: R_PAREN } ; ['['] => { $ crate :: MarkdownSyntaxKind :: L_BRACK } ; [']'] => { $ crate :: MarkdownSyntaxKind :: R_BRACK } ; [/] => { $ crate :: MarkdownSyntaxKind :: SLASH } ; [=] => { $ crate :: MarkdownSyntaxKind :: EQ } ; [!] => { $ crate :: MarkdownSyntaxKind :: BANG } ; [-] => { $ crate :: MarkdownSyntaxKind :: MINUS } ; [*] => { $ crate :: MarkdownSyntaxKind :: STAR } ; [**] => { $ crate :: MarkdownSyntaxKind :: DOUBLE_STAR } ; ['`'] => { $ crate :: MarkdownSyntaxKind :: BACKTICK } ; ["```"] => { $ crate :: MarkdownSyntaxKind :: TRIPLE_BACKTICK } ; [~] => { $ crate :: MarkdownSyntaxKind :: TILDE } ; [~~] => { $ crate :: MarkdownSyntaxKind :: DOUBLE_TILDE } ; ["   "] => { $ crate :: MarkdownSyntaxKind :: WHITESPACE3 } ; ["_"] => { $ crate :: MarkdownSyntaxKind :: UNDERSCORE } ; ["__"] => { $ crate :: MarkdownSyntaxKind :: DOUBLE_UNDERSCORE } ; [+] => { $ crate :: MarkdownSyntaxKind :: PLUS } ; [#] => { $ crate :: MarkdownSyntaxKind :: HASH } ; [,] => { $ crate :: MarkdownSyntaxKind :: COMMA } ; [:] => { $ crate :: MarkdownSyntaxKind :: COLON } ; ['{'] => { $ crate :: MarkdownSyntaxKind :: L_CURLY } ; ['}'] => { $ crate :: MarkdownSyntaxKind :: R_CURLY } ; [null] => { $ crate :: MarkdownSyntaxKind :: NULL_KW } ; [ident] => { $ crate :: MarkdownSyntaxKind :: IDENT } ; [EOF] => { $ crate :: MarkdownSyntaxKind :: EOF } ; [UNICODE_BOM] => { $ crate :: MarkdownSyntaxKind :: UNICODE_BOM } ; [#] => { $ crate :: MarkdownSyntaxKind :: HASH } ; }
+macro_rules ! T { [<] => { $ crate :: MarkdownSyntaxKind :: L_ANGLE } ; [>] => { $ crate :: MarkdownSyntaxKind :: R_ANGLE } ; ['('] => { $ crate :: MarkdownSyntaxKind :: L_PAREN } ; [')'] => { $ crate :: MarkdownSyntaxKind :: R_PAREN } ; ['['] => { $ crate :: MarkdownSyntaxKind :: L_BRACK } ; [']'] => { $ crate :: MarkdownSyntaxKind :: R_BRACK } ; [/] => { $ crate :: MarkdownSyntaxKind :: SLASH } ; [=] => { $ crate :: MarkdownSyntaxKind :: EQ } ; [!] => { $ crate :: MarkdownSyntaxKind :: BANG } ; [-] => { $ crate :: MarkdownSyntaxKind :: MINUS } ; [*] => { $ crate :: MarkdownSyntaxKind :: STAR } ; [**] => { $ crate :: MarkdownSyntaxKind :: DOUBLE_STAR } ; ['`'] => { $ crate :: MarkdownSyntaxKind :: BACKTICK } ; ["```"] => { $ crate :: MarkdownSyntaxKind :: TRIPLE_BACKTICK } ; [~] => { $ crate :: MarkdownSyntaxKind :: TILDE } ; [~~] => { $ crate :: MarkdownSyntaxKind :: DOUBLE_TILDE } ; ["   "] => { $ crate :: MarkdownSyntaxKind :: WHITESPACE3 } ; ["_"] => { $ crate :: MarkdownSyntaxKind :: UNDERSCORE } ; ["__"] => { $ crate :: MarkdownSyntaxKind :: DOUBLE_UNDERSCORE } ; [+] => { $ crate :: MarkdownSyntaxKind :: PLUS } ; [#] => { $ crate :: MarkdownSyntaxKind :: HASH } ; [,] => { $ crate :: MarkdownSyntaxKind :: COMMA } ; [:] => { $ crate :: MarkdownSyntaxKind :: COLON } ; [|] => { $ crate :: MarkdownSyntaxKind :: PIPE } ; ['{'] => { $ crate :: MarkdownSyntaxKind :: L_CURLY } ; ['}'] => { $ crate :: MarkdownSyntaxKind :: R_CURLY } ; [null] => { $ crate :: MarkdownSyntaxKind :: NULL_KW } ; [ident] => { $ crate :: MarkdownSyntaxKind :: IDENT } ; [EOF] => { $ crate :: MarkdownSyntaxKind :: EOF } ; [UNICODE_BOM] => { $ crate :: MarkdownSyntaxKind :: UNICODE_BOM } ; [#] => { $ crate :: MarkdownSyntaxKind :: HASH } ; }

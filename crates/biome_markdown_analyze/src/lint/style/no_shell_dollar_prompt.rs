@@ -3,12 +3,10 @@ use biome_analyze::{
 };
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_markdown_syntax::MdDocument;
+use biome_markdown_syntax::MdFencedCodeBlock;
 use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
 
 use crate::MarkdownRuleAction;
-
-use crate::utils::fence_utils::FenceTracker;
 
 declare_lint_rule! {
     /// Disallow dollar signs in shell code fence content.
@@ -54,52 +52,48 @@ pub struct DollarPrompt {
 }
 
 impl Rule for NoShellDollarPrompt {
-    type Query = Ast<MdDocument>;
+    type Query = Ast<MdFencedCodeBlock>;
     type State = DollarPrompt;
     type Signals = Vec<Self::State>;
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let document = ctx.query();
-        let text = document.syntax().text_with_trivia().to_string();
-        let base = document.syntax().text_range_with_trivia().start();
+        let code_block = ctx.query();
         let mut signals = Vec::new();
-        let mut tracker = FenceTracker::new();
-        let mut in_shell_fence = false;
+
+        // Get the language from the info string (first word)
+        let info = code_block.language().syntax().text_trimmed().to_string();
+        let lang = info
+            .split_whitespace()
+            .next()
+            .unwrap_or("")
+            .to_lowercase();
+        if lang.is_empty() {
+            return signals;
+        }
+
+        if !SHELL_LANGUAGES.iter().any(|&s| lang == s) {
+            return signals;
+        }
+
+        // Scan content for dollar prompts
+        let content = code_block.content();
+        let content_text = content.syntax().text_with_trivia().to_string();
+        let base = content.syntax().text_range_with_trivia().start();
         let mut offset = 0usize;
 
-        for (line_idx, line) in text.lines().enumerate() {
-            let prev_inside = tracker.is_inside_fence();
-            let fence_result = tracker.process_line(line_idx, line);
-
-            let is_fence_open = if let Some(ref fence_open) = fence_result {
-                // Check if the language is a shell language
-                let lang = fence_open.info_string.to_lowercase();
-                in_shell_fence = SHELL_LANGUAGES.iter().any(|&s| lang == s);
-                true
-            } else {
-                if prev_inside && !tracker.is_inside_fence() {
-                    // Closing fence
-                    in_shell_fence = false;
-                }
-                false
-            };
-
-            // Check lines inside shell fences for dollar prompts
-            if tracker.is_inside_fence() && in_shell_fence && !is_fence_open {
-                let trimmed = line.trim_start();
-                if trimmed.starts_with("$ ") {
-                    let leading = line.len() - trimmed.len();
-                    let dollar_offset = offset + leading;
-                    signals.push(DollarPrompt {
-                        range: TextRange::new(
-                            base + TextSize::from(dollar_offset as u32),
-                            base + TextSize::from((dollar_offset + 2) as u32),
-                        ),
-                    });
-                }
+        for line in content_text.lines() {
+            let trimmed = line.trim_start();
+            if trimmed.starts_with("$ ") {
+                let leading = line.len() - trimmed.len();
+                let dollar_offset = offset + leading;
+                signals.push(DollarPrompt {
+                    range: TextRange::new(
+                        base + TextSize::from(dollar_offset as u32),
+                        base + TextSize::from((dollar_offset + 2) as u32),
+                    ),
+                });
             }
-
             offset += line.len() + 1;
         }
 

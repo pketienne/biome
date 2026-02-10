@@ -136,16 +136,20 @@ pub(crate) fn parse_fenced_code_block(p: &mut MarkdownParser) {
     // Slot 0: l_fence — remap to TRIPLE_BACKTICK
     p.bump_remap(TRIPLE_BACKTICK);
 
-    // Slot 1: code_list — language identifier tokens on same line
-    let code_list = p.start();
+    // Slot 1: language — all info string tokens on the same line as the fence
+    let lang = p.start();
     while !p.at(T![EOF]) && !p.has_preceding_line_break() {
         let textual = p.start();
         p.bump_any();
         textual.complete(p, MD_TEXTUAL);
     }
-    code_list.complete(p, MD_CODE_NAME_LIST);
+    lang.complete(p, MD_INLINE_ITEM_LIST);
 
-    // Slot 2: content — all tokens until closing fence
+    // Slot 2: meta — currently unused, always empty
+    let meta = p.start();
+    meta.complete(p, MD_INLINE_ITEM_LIST);
+
+    // Slot 3: content — all tokens until closing fence
     let content = p.start();
     while !p.at(T![EOF]) {
         if is_closing_fence(p, fence_char, fence_count) {
@@ -157,7 +161,7 @@ pub(crate) fn parse_fenced_code_block(p: &mut MarkdownParser) {
     }
     content.complete(p, MD_INLINE_ITEM_LIST);
 
-    // Slot 3: r_fence — closing fence (if present)
+    // Slot 4: r_fence — closing fence (if present)
     if !p.at(T![EOF]) {
         p.bump_remap(TRIPLE_BACKTICK);
         // Consume trailing tokens on closing fence line
@@ -1480,22 +1484,58 @@ fn line_has_pipe(p: &mut MarkdownParser) -> bool {
     found
 }
 
-/// Parse a single table row as a flat inline content list.
-/// MdTableRow has 1 slot: content (MdInlineItemList).
-/// All tokens (pipes, text, etc.) become MdTextual items in the list.
+/// Parse a single table row into cells separated by `|`.
+/// MdTableRow has 1 slot: cells (MdTableCellList).
+/// Each MdTableCell has 2 slots: optional `|` (PIPE) and content (MdInlineItemList).
 fn parse_table_row(p: &mut MarkdownParser) {
     let row = p.start();
-    let content = p.start();
-    let mut first = true;
+    let cell_list = p.start();
+    let mut first_cell = true;
 
-    while !p.at(T![EOF]) && (first || !p.has_preceding_line_break()) {
-        first = false;
-        let textual = p.start();
-        p.bump_any();
-        textual.complete(p, MD_TEXTUAL);
+    while !p.at(T![EOF]) && (first_cell || !p.has_preceding_line_break()) {
+        if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "|" {
+            // Start a new cell with the pipe
+            let cell = p.start();
+
+            // Slot 0: pipe token — bumping this advances past any newline trivia
+            p.bump_remap(PIPE);
+
+            // Slot 1: content until next pipe or line break
+            let content = p.start();
+            while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+                if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "|" {
+                    break;
+                }
+                let textual = p.start();
+                p.bump_any();
+                textual.complete(p, MD_TEXTUAL);
+            }
+            content.complete(p, MD_INLINE_ITEM_LIST);
+            cell.complete(p, MD_TABLE_CELL);
+        } else {
+            // Content without a leading pipe (first cell or pipe-less row).
+            // When this is the first cell of a row, the first token has Newline trivia
+            // (it's the start of a new line), so we must skip the line break check
+            // for the first token inside the content loop.
+            let cell = p.start();
+            let content = p.start();
+            let mut inner_first = first_cell;
+            while !p.at(T![EOF]) && (inner_first || !p.has_preceding_line_break()) {
+                inner_first = false;
+                if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == "|" {
+                    break;
+                }
+                let textual = p.start();
+                p.bump_any();
+                textual.complete(p, MD_TEXTUAL);
+            }
+            content.complete(p, MD_INLINE_ITEM_LIST);
+            cell.complete(p, MD_TABLE_CELL);
+        }
+        first_cell = false;
     }
 
-    content.complete(p, MD_INLINE_ITEM_LIST);
+    cell_list.complete(p, MD_TABLE_CELL_LIST);
     row.complete(p, MD_TABLE_ROW);
 }
 
@@ -1540,7 +1580,7 @@ fn is_link_definition_line(p: &mut MarkdownParser) -> bool {
 
 /// Try to parse a link reference definition: `[label]: url "title"`.
 /// Returns true if successfully parsed into an MdLinkBlock node.
-/// MdLinkBlock has 5 slots: `[` label `]` `:` url
+/// MdLinkBlock has 6 slots: `[` label `]` `:` url title?
 fn try_parse_link_definition(p: &mut MarkdownParser) -> bool {
     try_parse(p, |p| {
         if !is_link_definition_line(p) {
@@ -1577,14 +1617,71 @@ fn try_parse_link_definition(p: &mut MarkdownParser) -> bool {
         }
         p.bump_remap(COLON);
 
-        // Slot 4: url (MdInlineItemList) — rest of line
-        let url = p.start();
-        while !p.at(T![EOF]) && !p.has_preceding_line_break() {
-            let textual = p.start();
-            p.bump_any();
-            textual.complete(p, MD_TEXTUAL);
+        // Slots 4-5: url + optional title
+        // Try URL-then-title first; if title parse fails, fall back to URL-only.
+        let parsed_title = try_parse(p, |p| {
+            // Slot 4: url tokens up to a quote delimiter
+            let url = p.start();
+            let mut found_quote = false;
+            while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+                if p.cur() == MD_TEXTUAL_LITERAL {
+                    let t = p.cur_text();
+                    if t == "\"" || t == "'" {
+                        found_quote = true;
+                        break;
+                    }
+                }
+                let textual = p.start();
+                p.bump_any();
+                textual.complete(p, MD_TEXTUAL);
+            }
+            url.complete(p, MD_INLINE_ITEM_LIST);
+
+            if !found_quote {
+                return Err(());
+            }
+
+            // Slot 5: title (MdLinkBlockTitle)
+            let title_m = p.start();
+            let open = p.cur_text().to_string();
+            p.bump_any(); // opening delimiter
+
+            let content = p.start();
+            while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+                if p.cur() == MD_TEXTUAL_LITERAL && p.cur_text() == open {
+                    break;
+                }
+                let t = p.start();
+                p.bump_any();
+                t.complete(p, MD_TEXTUAL);
+            }
+            content.complete(p, MD_INLINE_ITEM_LIST);
+
+            // Must have matching closing delimiter
+            if p.at(T![EOF])
+                || p.has_preceding_line_break()
+                || p.cur() != MD_TEXTUAL_LITERAL
+                || p.cur_text() != open
+            {
+                return Err(());
+            }
+            p.bump_any(); // closing delimiter
+            title_m.complete(p, MD_LINK_BLOCK_TITLE);
+            Ok(())
+        })
+        .is_ok();
+
+        if !parsed_title {
+            // Fallback: entire rest of line is URL, no title
+            let url = p.start();
+            while !p.at(T![EOF]) && !p.has_preceding_line_break() {
+                let textual = p.start();
+                p.bump_any();
+                textual.complete(p, MD_TEXTUAL);
+            }
+            url.complete(p, MD_INLINE_ITEM_LIST);
+            // title slot is implicitly absent
         }
-        url.complete(p, MD_INLINE_ITEM_LIST);
 
         m.complete(p, MD_LINK_BLOCK);
         Ok(())
