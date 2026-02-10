@@ -199,6 +199,24 @@ where
         self.request("biome/rename", params)
     }
 
+    fn hover(&self, params: super::HoverParams) -> Result<super::HoverResult, WorkspaceError> {
+        self.request("biome/hover", params)
+    }
+
+    fn goto_definition(
+        &self,
+        params: super::GotoDefinitionParams,
+    ) -> Result<super::GotoDefinitionResult, WorkspaceError> {
+        self.request("biome/goto_definition", params)
+    }
+
+    fn get_completions(
+        &self,
+        params: super::GetCompletionsParams,
+    ) -> Result<super::GetCompletionsResult, WorkspaceError> {
+        self.request("biome/get_completions", params)
+    }
+
     fn close_file(&self, params: CloseFileParams) -> Result<(), WorkspaceError> {
         self.request("biome/close_file", params)
     }

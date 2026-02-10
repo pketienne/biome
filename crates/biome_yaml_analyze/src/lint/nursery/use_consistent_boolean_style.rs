@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::AstNode;
-use biome_yaml_syntax::YamlPlainScalar;
+use biome_rowan::{AstNode, BatchMutationExt};
+use biome_yaml_syntax::{YamlLanguage, YamlPlainScalar, YamlSyntaxToken};
 
 declare_lint_rule! {
     /// Enforce consistent boolean value style in YAML.
@@ -35,6 +37,7 @@ declare_lint_rule! {
         language: "yaml",
         recommended: true,
         severity: Severity::Warning,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -81,5 +84,22 @@ impl Rule for UseConsistentBooleanStyle {
                 "For consistency, always use lowercase "<Emphasis>"true"</Emphasis>" and "<Emphasis>"false"</Emphasis>" for boolean values."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleAction<YamlLanguage>> {
+        let scalar = ctx.query();
+        let mut mutation = ctx.root().begin();
+        let token = scalar.value_token().ok()?;
+        let (_variant, normalized) = state;
+
+        let new_token = YamlSyntaxToken::new_detached(token.kind(), normalized, [], []);
+        mutation.replace_token_transfer_trivia(token, new_token);
+
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Replace with lowercase "<Emphasis>{normalized}</Emphasis>"." }.to_owned(),
+            mutation,
+        ))
     }
 }

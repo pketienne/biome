@@ -54,6 +54,9 @@ declare_lint_rule! {
 pub struct SchemaError {
     message: String,
     range: TextRange,
+    instance_path: String,
+    #[allow(dead_code)]
+    schema_path: String,
 }
 
 impl Rule for UseValidSchema {
@@ -92,6 +95,8 @@ impl Rule for UseValidSchema {
                     schema_path
                 ),
                 range: document.syntax().text_trimmed_range(),
+                instance_path: String::new(),
+                schema_path: String::new(),
             }]);
         }
 
@@ -132,6 +137,7 @@ impl Rule for UseValidSchema {
             .iter_errors(&json_value)
             .map(|error| {
                 let instance_path = error.instance_path.to_string();
+                let schema_path = error.schema_path.to_string();
                 let error_message = error.to_string();
                 let range = if !instance_path.is_empty() && instance_path != "/" {
                     resolve_path_range(&root_node, &instance_path).unwrap_or(doc_range)
@@ -144,6 +150,8 @@ impl Rule for UseValidSchema {
                 SchemaError {
                     message: error_message,
                     range,
+                    instance_path,
+                    schema_path,
                 }
             })
             .collect::<Vec<_>>()
@@ -151,13 +159,22 @@ impl Rule for UseValidSchema {
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        Some(RuleDiagnostic::new(
+        let mut diag = RuleDiagnostic::new(
             rule_category!(),
             state.range,
             markup! {
                 "Schema validation error: "{&state.message}
             },
-        ))
+        );
+
+        // Add path context as a note when available
+        if !state.instance_path.is_empty() && state.instance_path != "/" {
+            diag = diag.note(markup! {
+                "At path: "{&state.instance_path}
+            });
+        }
+
+        Some(diag)
     }
 }
 

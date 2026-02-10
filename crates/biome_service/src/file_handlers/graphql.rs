@@ -292,6 +292,7 @@ impl ExtensionHandler for GraphqlFileHandler {
                 fix_all: Some(fix_all),
                 update_snippets: None,
                 pull_diagnostics_and_actions: None,
+                ..Default::default()
             },
             formatter: FormatterCapabilities {
                 format: Some(format),

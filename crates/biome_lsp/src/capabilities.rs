@@ -3,9 +3,9 @@ use biome_line_index::WideEncoding;
 use biome_lsp_converters::{PositionEncoding, negotiated_encoding};
 use tower_lsp_server::ls_types::{
     ClientCapabilities, CodeActionKind, CodeActionOptions, CodeActionProviderCapability,
-    DocumentOnTypeFormattingOptions, OneOf, PositionEncodingKind, ServerCapabilities,
-    TextDocumentSyncCapability, TextDocumentSyncKind, WorkspaceFoldersServerCapabilities,
-    WorkspaceServerCapabilities,
+    CompletionOptions, DocumentOnTypeFormattingOptions, HoverProviderCapability, OneOf,
+    PositionEncodingKind, ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind,
+    WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
 };
 
 pub(crate) const DEFAULT_CODE_ACTION_CAPABILITIES: &[&str] = &[
@@ -109,6 +109,9 @@ pub(crate) fn server_capabilities(capabilities: &ClientCapabilities) -> ServerCa
         document_range_formatting_provider: supports_range_formatter_dynamic_registration,
         document_on_type_formatting_provider: supports_on_type_formatter_dynamic_registration,
         code_action_provider,
+        hover_provider: Some(HoverProviderCapability::Simple(true)),
+        definition_provider: Some(OneOf::Left(true)),
+        completion_provider: Some(CompletionOptions::default()),
         rename_provider: None,
         workspace: Some(WorkspaceServerCapabilities {
             workspace_folders: Some(WorkspaceFoldersServerCapabilities {

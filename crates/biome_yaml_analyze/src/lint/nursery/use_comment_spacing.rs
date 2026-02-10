@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange, TextSize};
-use biome_yaml_syntax::YamlRoot;
+use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_yaml_syntax::{YamlLanguage, YamlRoot, YamlSyntaxToken};
 
 declare_lint_rule! {
     /// Enforce a space after the `#` character in comments.
@@ -32,6 +34,7 @@ declare_lint_rule! {
         language: "yaml",
         recommended: false,
         severity: Severity::Warning,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -92,6 +95,46 @@ impl Rule for UseCommentSpacing {
                 "Add a space between '#' and the comment text for readability."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleAction<YamlLanguage>> {
+        let root = ctx.query();
+        let mut mutation = ctx.root().begin();
+
+        // Find the token covering the comment
+        let token = root
+            .syntax()
+            .covering_element(TextRange::new(state.start(), state.start()))
+            .into_token()?;
+
+        let text = token.text().to_string();
+        // Insert a space after each '#' that is immediately followed by non-space
+        let mut result = String::with_capacity(text.len() + 1);
+        let mut chars = text.chars().peekable();
+        while let Some(c) = chars.next() {
+            result.push(c);
+            if c == '#' {
+                if let Some(&next) = chars.peek() {
+                    if next != ' ' && next != '\n' && next != '!' {
+                        result.push(' ');
+                    }
+                }
+            }
+        }
+
+        if result == text {
+            return None;
+        }
+
+        let new_token = YamlSyntaxToken::new_detached(token.kind(), &result, [], []);
+        mutation.replace_token_transfer_trivia(token, new_token);
+
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Add space after '#'." }.to_owned(),
+            mutation,
+        ))
     }
 }
 

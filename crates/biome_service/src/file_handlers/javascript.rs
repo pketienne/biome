@@ -503,6 +503,7 @@ impl ExtensionHandler for JsFileHandler {
                 rename: Some(rename),
                 update_snippets: None,
                 pull_diagnostics_and_actions: Some(pull_diagnostics_and_actions),
+                ..Default::default()
             },
             formatter: FormatterCapabilities {
                 format: Some(format),

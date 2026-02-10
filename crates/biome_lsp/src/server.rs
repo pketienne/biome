@@ -483,6 +483,36 @@ impl LanguageServer for LSPServer {
 
         self.map_op_error(result).await
     }
+
+    async fn hover(&self, params: HoverParams) -> LspResult<Option<Hover>> {
+        let result = biome_diagnostics::panic::catch_unwind(move || {
+            handlers::semantic::hover(&self.session, params)
+        });
+
+        self.map_op_error(result).await
+    }
+
+    async fn goto_definition(
+        &self,
+        params: GotoDefinitionParams,
+    ) -> LspResult<Option<GotoDefinitionResponse>> {
+        let result = biome_diagnostics::panic::catch_unwind(move || {
+            handlers::semantic::goto_definition(&self.session, params)
+        });
+
+        self.map_op_error(result).await
+    }
+
+    async fn completion(
+        &self,
+        params: CompletionParams,
+    ) -> LspResult<Option<CompletionResponse>> {
+        let result = biome_diagnostics::panic::catch_unwind(move || {
+            handlers::semantic::completions(&self.session, params)
+        });
+
+        self.map_op_error(result).await
+    }
 }
 
 impl Drop for LSPServer {
@@ -675,6 +705,9 @@ impl ServerFactory {
         workspace_method!(builder, parse_pattern);
         workspace_method!(builder, search_pattern);
         workspace_method!(builder, drop_pattern);
+        workspace_method!(builder, hover);
+        workspace_method!(builder, goto_definition);
+        workspace_method!(builder, get_completions);
 
         let (service, socket) = builder.finish();
         ServerConnection { socket, service }

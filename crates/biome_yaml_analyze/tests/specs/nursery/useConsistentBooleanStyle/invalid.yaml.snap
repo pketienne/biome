@@ -12,7 +12,7 @@ active: True
 
 # Diagnostics
 ```
-invalid.yaml:1:10 lint/nursery/useConsistentBooleanStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:1:10 lint/nursery/useConsistentBooleanStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Use lowercase true instead of True.
   
@@ -25,11 +25,18 @@ invalid.yaml:1:10 lint/nursery/useConsistentBooleanStyle ━━━━━━━�
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
+  i Safe fix: Replace with lowercase true.
+  
+    1   │ - enabled:·True
+      1 │ + enabled:·true
+    2 2 │   disabled: FALSE
+    3 3 │   active: True
+  
 
 ```
 
 ```
-invalid.yaml:2:11 lint/nursery/useConsistentBooleanStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:2:11 lint/nursery/useConsistentBooleanStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Use lowercase false instead of FALSE.
   
@@ -43,11 +50,19 @@ invalid.yaml:2:11 lint/nursery/useConsistentBooleanStyle ━━━━━━━�
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
+  i Safe fix: Replace with lowercase false.
+  
+    1 1 │   enabled: True
+    2   │ - disabled:·FALSE
+      2 │ + disabled:·false
+    3 3 │   active: True
+    4 4 │   
+  
 
 ```
 
 ```
-invalid.yaml:3:9 lint/nursery/useConsistentBooleanStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:3:9 lint/nursery/useConsistentBooleanStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Use lowercase true instead of True.
   
@@ -60,6 +75,14 @@ invalid.yaml:3:9 lint/nursery/useConsistentBooleanStyle ━━━━━━━━
   i For consistency, always use lowercase true and false for boolean values.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+  i Safe fix: Replace with lowercase true.
+  
+    1 1 │   enabled: True
+    2 2 │   disabled: FALSE
+    3   │ - active:·True
+      3 │ + active:·true
+    4 4 │   
   
 
 ```

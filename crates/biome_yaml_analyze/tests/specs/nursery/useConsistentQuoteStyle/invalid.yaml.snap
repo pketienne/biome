@@ -11,7 +11,7 @@ other: 'another single'
 
 # Diagnostics
 ```
-invalid.yaml:1:6 lint/nursery/useConsistentQuoteStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:1:6 lint/nursery/useConsistentQuoteStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Use double quotes instead of single quotes.
   
@@ -24,18 +24,11 @@ invalid.yaml:1:6 lint/nursery/useConsistentQuoteStyle  FIXABLE  ━━━━━�
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
   
-  i Safe fix: Convert to double quotes.
-  
-    1   │ - key:·'single·quoted·value'
-      1 │ + key:·"single·quoted·value"
-    2 2 │   other: 'another single'
-    3 3 │   
-  
 
 ```
 
 ```
-invalid.yaml:2:8 lint/nursery/useConsistentQuoteStyle  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:2:8 lint/nursery/useConsistentQuoteStyle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ! Use double quotes instead of single quotes.
   
@@ -47,13 +40,6 @@ invalid.yaml:2:8 lint/nursery/useConsistentQuoteStyle  FIXABLE  ━━━━━�
   i Double quotes are preferred for consistency and support escape sequences.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
-  
-  i Safe fix: Convert to double quotes.
-  
-    1 1 │   key: 'single quoted value'
-    2   │ - other:·'another·single'
-      2 │ + other:·"another·single"
-    3 3 │   
   
 
 ```

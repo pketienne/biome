@@ -503,6 +503,9 @@ define_categories! {
     "lint/suspicious/useStrictMode": "https://biomejs.dev/linter/rules/use-strict-mode",
     // end lint rules
     // start assist actions
+    "assist/source/useBlockStyle": "https://biomejs.dev/assist/actions/use-block-style",
+    "assist/source/useExpandedMergeKeys": "https://biomejs.dev/assist/actions/use-expanded-merge-keys",
+    "assist/source/useFlowStyle": "https://biomejs.dev/assist/actions/use-flow-style",
     "assist/source/useInlineAlias": "https://biomejs.dev/assist/actions/use-inline-alias",
     "assist/source/useSortedKeys": "https://biomejs.dev/assist/actions/use-sorted-keys",
     "assist/source/useSortedProperties": "https://biomejs.dev/assist/actions/use-sorted-properties",

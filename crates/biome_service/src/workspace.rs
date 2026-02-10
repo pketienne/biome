@@ -1370,6 +1370,65 @@ pub struct GetModuleGraphResult {
     pub data: FxHashMap<String, SerializedModuleInfo>,
 }
 
+// LSP semantic types
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(rename_all = "camelCase")]
+pub struct HoverParams {
+    pub project_key: ProjectKey,
+    pub path: BiomePath,
+    pub offset: TextSize,
+}
+
+#[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(rename_all = "camelCase")]
+pub struct HoverResult {
+    pub content: String,
+    pub range: Option<TextRange>,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(rename_all = "camelCase")]
+pub struct GotoDefinitionParams {
+    pub project_key: ProjectKey,
+    pub path: BiomePath,
+    pub offset: TextSize,
+}
+
+#[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(rename_all = "camelCase")]
+pub struct GotoDefinitionResult {
+    pub definitions: Vec<TextRange>,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(rename_all = "camelCase")]
+pub struct GetCompletionsParams {
+    pub project_key: ProjectKey,
+    pub path: BiomePath,
+    pub offset: TextSize,
+}
+
+#[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(rename_all = "camelCase")]
+pub struct CompletionItem {
+    pub label: String,
+    pub detail: Option<String>,
+}
+
+#[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(rename_all = "camelCase")]
+pub struct GetCompletionsResult {
+    pub items: Vec<CompletionItem>,
+}
+
 pub trait Workspace: Send + Sync + RefUnwindSafe {
     // #region PROJECT-LEVEL METHODS
 
@@ -1517,6 +1576,21 @@ pub trait Workspace: Send + Sync + RefUnwindSafe {
 
     /// Returns the content of the file after renaming a symbol.
     fn rename(&self, params: RenameParams) -> Result<RenameResult, WorkspaceError>;
+
+    /// Returns hover information at a given position.
+    fn hover(&self, params: HoverParams) -> Result<HoverResult, WorkspaceError>;
+
+    /// Returns definition locations for the symbol at a given position.
+    fn goto_definition(
+        &self,
+        params: GotoDefinitionParams,
+    ) -> Result<GotoDefinitionResult, WorkspaceError>;
+
+    /// Returns completion items at a given position.
+    fn get_completions(
+        &self,
+        params: GetCompletionsParams,
+    ) -> Result<GetCompletionsResult, WorkspaceError>;
 
     /// Closes a file that is opened in the workspace.
     ///

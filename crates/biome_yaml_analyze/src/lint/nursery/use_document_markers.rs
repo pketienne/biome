@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::AstNode;
-use biome_yaml_syntax::YamlDocument;
+use biome_rowan::{AstNode, BatchMutationExt};
+use biome_yaml_syntax::{YamlDocument, YamlLanguage, YamlSyntaxKind, YamlSyntaxToken};
 
 declare_lint_rule! {
     /// Require the use of document start markers (`---`) in YAML.
@@ -31,6 +33,7 @@ declare_lint_rule! {
         language: "yaml",
         recommended: false,
         severity: Severity::Warning,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -69,5 +72,30 @@ impl Rule for UseDocumentMarkers {
                 "Add a "<Emphasis>"---"</Emphasis>" marker at the beginning of the document."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleAction<YamlLanguage>> {
+        let document = ctx.query();
+        let mut mutation = ctx.root().begin();
+
+        // Insert a `---` token using the with_dashdashdash_token builder
+        let marker = YamlSyntaxToken::new_detached(
+            YamlSyntaxKind::DIRECTIVE_END,
+            "---",
+            [],
+            [biome_rowan::TriviaPiece::new(
+                biome_rowan::TriviaPieceKind::Newline,
+                1,
+            )],
+        );
+        let new_document = document.clone().with_dashdashdash_token(Some(marker));
+        mutation.replace_node(document.clone(), new_document);
+
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Add document start marker." }.to_owned(),
+            mutation,
+        ))
     }
 }

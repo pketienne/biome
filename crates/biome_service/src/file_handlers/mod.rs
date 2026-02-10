@@ -987,6 +987,19 @@ type Rename = fn(&BiomePath, AnyParse, TextSize, String) -> Result<RenameResult,
 type UpdateSnippets = fn(AnyParse, Vec<UpdateSnippetsNodes>) -> Result<SendNode, WorkspaceError>;
 type PullDiagnosticsAndActions = fn(DiagnosticsAndActionsParams) -> PullDiagnosticsAndActionsResult;
 
+pub(crate) type Hover =
+    fn(&BiomePath, AnyParse, TextSize) -> Result<crate::workspace::HoverResult, WorkspaceError>;
+pub(crate) type GotoDefinition = fn(
+    &BiomePath,
+    AnyParse,
+    TextSize,
+) -> Result<crate::workspace::GotoDefinitionResult, WorkspaceError>;
+pub(crate) type GetCompletions = fn(
+    &BiomePath,
+    AnyParse,
+    TextSize,
+) -> Result<crate::workspace::GetCompletionsResult, WorkspaceError>;
+
 #[derive(Default)]
 pub struct AnalyzerCapabilities {
     /// It lints a file
@@ -1001,6 +1014,12 @@ pub struct AnalyzerCapabilities {
     pub(crate) update_snippets: Option<UpdateSnippets>,
     /// Pulls diagnostics with relative code actions
     pub(crate) pull_diagnostics_and_actions: Option<PullDiagnosticsAndActions>,
+    /// Provides hover information
+    pub(crate) hover: Option<Hover>,
+    /// Provides go-to-definition
+    pub(crate) goto_definition: Option<GotoDefinition>,
+    /// Provides completions
+    pub(crate) get_completions: Option<GetCompletions>,
 }
 
 type Format =

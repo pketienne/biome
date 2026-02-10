@@ -28,7 +28,7 @@ invalid.yaml:2:1 parse ━━━━━━━━━━━━━━━━━━━
 ```
 
 ```
-invalid.yaml:2:1 lint/nursery/noTabIndentation ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+invalid.yaml:2:1 lint/nursery/noTabIndentation  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   × Tabs are not allowed for indentation in YAML.
   
@@ -40,6 +40,14 @@ invalid.yaml:2:1 lint/nursery/noTabIndentation ━━━━━━━━━━━
   i The YAML specification forbids tabs for indentation. Use spaces instead.
   
   i This rule belongs to the nursery group, which means it is not yet stable and may change in the future. Visit https://biomejs.dev/linter/#nursery for more information.
+  
+  i Safe fix: Replace tab with spaces.
+  
+    1 1 │   key:
+    2   │ - → value:·indented·with·tab
+      2 │ + → 
+      3 │ + ··value:·indented·with·tab
+    3 4 │   
   
 
 ```

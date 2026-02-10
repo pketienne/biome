@@ -1,8 +1,10 @@
-use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    Ast, FixKind, Rule, RuleAction, RuleDiagnostic, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_diagnostics::Severity;
-use biome_rowan::{AstNode, TextRange, TextSize};
-use biome_yaml_syntax::YamlRoot;
+use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
+use biome_yaml_syntax::{YamlLanguage, YamlRoot, YamlSyntaxToken};
 
 declare_lint_rule! {
     /// Disallow tabs for indentation in YAML files.
@@ -32,6 +34,7 @@ declare_lint_rule! {
         language: "yaml",
         recommended: true,
         severity: Severity::Error,
+        fix_kind: FixKind::Safe,
     }
 }
 
@@ -80,5 +83,32 @@ impl Rule for NoTabIndentation {
                 "The YAML specification forbids tabs for indentation. Use spaces instead."
             }),
         )
+    }
+
+    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleAction<YamlLanguage>> {
+        let root = ctx.query();
+        let mut mutation = ctx.root().begin();
+
+        // Find the token covering this tab
+        let token = root
+            .syntax()
+            .covering_element(TextRange::new(state.start(), state.start()))
+            .into_token()?;
+
+        let text = token.text().to_string();
+        let new_text = text.replace('\t', "  ");
+        if new_text == text {
+            return None;
+        }
+
+        let new_token = YamlSyntaxToken::new_detached(token.kind(), &new_text, [], []);
+        mutation.replace_token_transfer_trivia(token, new_token);
+
+        Some(RuleAction::new(
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
+            ctx.metadata().applicability(),
+            markup! { "Replace tab with spaces." }.to_owned(),
+            mutation,
+        ))
     }
 }

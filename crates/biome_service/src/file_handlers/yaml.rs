@@ -6,7 +6,10 @@ use super::{
 };
 use crate::configuration::to_analyzer_rules;
 use crate::settings::{OverrideSettings, check_feature_activity};
-use crate::workspace::{FixFileResult, PullActionsResult, RenameResult};
+use crate::workspace::{
+    CompletionItem, FixFileResult, GetCompletionsResult, GotoDefinitionResult, HoverResult,
+    PullActionsResult, RenameResult,
+};
 use crate::{
     WorkspaceError,
     settings::{ServiceLanguage, Settings},
@@ -23,6 +26,7 @@ use biome_text_edit::TextEdit;
 use biome_yaml_analyze::analyze;
 use biome_yaml_formatter::format_node;
 use biome_yaml_parser::parse_yaml_with_cache;
+use biome_yaml_semantic::semantic_model;
 use biome_yaml_syntax::{YamlLanguage, YamlSyntaxKind, YamlSyntaxNode, YamlRoot};
 use biome_parser::AnyParse;
 use biome_rowan::{AstNode, Direction, NodeCache, TextRange, TextSize};
@@ -229,6 +233,9 @@ impl ExtensionHandler for YamlFileHandler {
                 fix_all: Some(fix_all),
                 update_snippets: None,
                 pull_diagnostics_and_actions: None,
+                hover: Some(hover),
+                goto_definition: Some(goto_definition),
+                get_completions: Some(get_completions),
             },
             formatter: FormatterCapabilities {
                 format: Some(format),
@@ -588,4 +595,135 @@ fn rename(
         range: result_range,
         indels,
     })
+}
+
+fn hover(
+    _path: &BiomePath,
+    parse: AnyParse,
+    offset: TextSize,
+) -> Result<HoverResult, WorkspaceError> {
+    let root = YamlRoot::cast(parse.syntax()).ok_or_else(WorkspaceError::not_found)?;
+    let model = semantic_model(&root);
+
+    // Find the token at the cursor position
+    let token = match root.syntax().token_at_offset(offset) {
+        biome_rowan::TokenAtOffset::Single(t) => t,
+        biome_rowan::TokenAtOffset::Between(_, right) => right,
+        biome_rowan::TokenAtOffset::None => return Ok(HoverResult::default()),
+    };
+
+    let text = token.text_trimmed();
+
+    // Check if cursor is on an alias (*name)
+    if token.kind() == YamlSyntaxKind::ALIAS_LITERAL {
+        let alias_name = text.strip_prefix('*').unwrap_or(text);
+        // Find the anchor this alias references
+        if let Some(alias) = model.all_aliases().find(|a| a.name() == alias_name) {
+            if let Some(anchor) = alias.anchor() {
+                let anchor_range = anchor.range();
+                return Ok(HoverResult {
+                    content: format!(
+                        "**Alias** `*{alias_name}` references anchor `&{alias_name}` at offset {}",
+                        u32::from(anchor_range.start())
+                    ),
+                    range: Some(token.text_trimmed_range()),
+                });
+            }
+        }
+        return Ok(HoverResult {
+            content: format!("**Alias** `*{alias_name}` (unresolved)"),
+            range: Some(token.text_trimmed_range()),
+        });
+    }
+
+    // Check if cursor is on an anchor (&name)
+    if token.kind() == YamlSyntaxKind::ANCHOR_PROPERTY_LITERAL {
+        let anchor_name = text.strip_prefix('&').unwrap_or(text);
+        let alias_count = model
+            .all_aliases()
+            .filter(|a| a.name() == anchor_name)
+            .count();
+        return Ok(HoverResult {
+            content: format!(
+                "**Anchor** `&{anchor_name}` — referenced by {alias_count} alias(es)"
+            ),
+            range: Some(token.text_trimmed_range()),
+        });
+    }
+
+    Ok(HoverResult::default())
+}
+
+fn goto_definition(
+    _path: &BiomePath,
+    parse: AnyParse,
+    offset: TextSize,
+) -> Result<GotoDefinitionResult, WorkspaceError> {
+    let root = YamlRoot::cast(parse.syntax()).ok_or_else(WorkspaceError::not_found)?;
+    let model = semantic_model(&root);
+
+    let token = match root.syntax().token_at_offset(offset) {
+        biome_rowan::TokenAtOffset::Single(t) => t,
+        biome_rowan::TokenAtOffset::Between(_, right) => right,
+        biome_rowan::TokenAtOffset::None => return Ok(GotoDefinitionResult::default()),
+    };
+
+    let text = token.text_trimmed();
+
+    // Alias → go to anchor definition
+    if token.kind() == YamlSyntaxKind::ALIAS_LITERAL {
+        let alias_name = text.strip_prefix('*').unwrap_or(text);
+        if let Some(alias) = model.all_aliases().find(|a| a.name() == alias_name) {
+            if let Some(anchor) = alias.anchor() {
+                return Ok(GotoDefinitionResult {
+                    definitions: vec![anchor.range()],
+                });
+            }
+        }
+    }
+
+    // Anchor → go to all alias usages
+    if token.kind() == YamlSyntaxKind::ANCHOR_PROPERTY_LITERAL {
+        let anchor_name = text.strip_prefix('&').unwrap_or(text);
+        let definitions: Vec<TextRange> = model
+            .all_aliases()
+            .filter(|a| a.name() == anchor_name)
+            .map(|a| a.range())
+            .collect();
+        if !definitions.is_empty() {
+            return Ok(GotoDefinitionResult { definitions });
+        }
+    }
+
+    Ok(GotoDefinitionResult::default())
+}
+
+fn get_completions(
+    _path: &BiomePath,
+    parse: AnyParse,
+    offset: TextSize,
+) -> Result<GetCompletionsResult, WorkspaceError> {
+    let root = YamlRoot::cast(parse.syntax()).ok_or_else(WorkspaceError::not_found)?;
+    let model = semantic_model(&root);
+
+    let token = match root.syntax().token_at_offset(offset) {
+        biome_rowan::TokenAtOffset::Single(t) => t,
+        biome_rowan::TokenAtOffset::Between(_, right) => right,
+        biome_rowan::TokenAtOffset::None => return Ok(GetCompletionsResult::default()),
+    };
+
+    // If cursor is on or right after `*`, suggest all anchors
+    let text = token.text_trimmed();
+    if token.kind() == YamlSyntaxKind::ALIAS_LITERAL || text.starts_with('*') {
+        let items: Vec<CompletionItem> = model
+            .all_anchors()
+            .map(|anchor| CompletionItem {
+                label: format!("*{}", anchor.name()),
+                detail: Some(format!("Alias to anchor &{}", anchor.name())),
+            })
+            .collect();
+        return Ok(GetCompletionsResult { items });
+    }
+
+    Ok(GetCompletionsResult::default())
 }

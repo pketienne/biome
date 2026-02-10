@@ -2141,6 +2141,63 @@ impl Workspace for WorkspaceServer {
         Ok(result)
     }
 
+    fn hover(&self, params: HoverParams) -> Result<HoverResult, WorkspaceError> {
+        let settings = self
+            .projects
+            .get_settings_based_on_path(params.project_key, &params.path)
+            .ok_or_else(WorkspaceError::no_project)?;
+        let capabilities = self.get_file_capabilities(
+            &params.path,
+            settings.experimental_full_html_support_enabled(),
+        );
+        let hover_fn = capabilities
+            .analyzer
+            .hover
+            .ok_or_else(self.build_capability_error(&params.path))?;
+        let parse = self.get_parse(&params.path)?;
+        hover_fn(&params.path, parse, params.offset)
+    }
+
+    fn goto_definition(
+        &self,
+        params: GotoDefinitionParams,
+    ) -> Result<GotoDefinitionResult, WorkspaceError> {
+        let settings = self
+            .projects
+            .get_settings_based_on_path(params.project_key, &params.path)
+            .ok_or_else(WorkspaceError::no_project)?;
+        let capabilities = self.get_file_capabilities(
+            &params.path,
+            settings.experimental_full_html_support_enabled(),
+        );
+        let goto_def_fn = capabilities
+            .analyzer
+            .goto_definition
+            .ok_or_else(self.build_capability_error(&params.path))?;
+        let parse = self.get_parse(&params.path)?;
+        goto_def_fn(&params.path, parse, params.offset)
+    }
+
+    fn get_completions(
+        &self,
+        params: GetCompletionsParams,
+    ) -> Result<GetCompletionsResult, WorkspaceError> {
+        let settings = self
+            .projects
+            .get_settings_based_on_path(params.project_key, &params.path)
+            .ok_or_else(WorkspaceError::no_project)?;
+        let capabilities = self.get_file_capabilities(
+            &params.path,
+            settings.experimental_full_html_support_enabled(),
+        );
+        let completions_fn = capabilities
+            .analyzer
+            .get_completions
+            .ok_or_else(self.build_capability_error(&params.path))?;
+        let parse = self.get_parse(&params.path)?;
+        completions_fn(&params.path, parse, params.offset)
+    }
+
     /// Closes a file that is opened in the workspace.
     ///
     /// This only unloads the document from the workspace if the file is NOT
