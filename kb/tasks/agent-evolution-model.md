@@ -84,7 +84,21 @@ Naming should be language-agnostic from the start: `lang-feature-extractor` not 
 - What the evaluator-optimizer loop needs to check (the rubric emerges from the first real evaluation)
 - Where the spec writer needs to pull in research output — this reveals the **data flow** between agents
 
-**Crystallizes:** The first spec becomes a template. The rubric becomes the seed of the **spec-methodology skill**. The data flow between extractor → analyst → spec-writer reveals whether an orchestrating command is needed or whether manual sequencing is fine.
+**Discovered (from YAML spec writing):**
+
+1. **Architecture notes are a prerequisite, not optional.** The extension contract (`references/biome/extension-contract.md`) is universal — it describes what any language needs. But the spec writer also needs language-specific state: what the parser already handles, what concerns differ from JSON, where the gaps are. This drove creation of `references/yaml/architecture-notes.md` as a mandatory input. The Phase 2 growth path listed it but didn't create it. Future languages should create architecture notes as the final Phase 2 deliverable, not defer to Phase 3.
+
+2. **Spec organizes by layer, then by phase within each layer.** The natural structure is: Layer 5 (Formatter) → Layer 6 (Analyzer) → Layer 7 (Service Integration), with each layer subdivided into phases (MVP → Advanced → Edge Cases for formatter; Tier 1 → Tier 2 → Tier 3 for analyzer). This mirrors both the extension contract's layer ordering and the research report's tier ranking. The template is now validated.
+
+3. **Monolithic spec is correct for a single language.** At ~700 lines, the YAML spec covers all three missing layers in one document. Splitting into per-layer specs would lose the cross-cutting sections (implementation order, testing strategy, open questions) that tie the layers together. A single document also makes it easier for an implementer to understand the full scope. Per-layer specs might make sense if layers were being built by different teams, but that's not the case here.
+
+4. **Opus is the right model for spec writing.** The task requires synthesizing three documents (521 + 392 + 150 lines), maintaining internal consistency across 22 rules and 10+ format options, and making judgment calls about priorities and edge cases. This is a one-time artifact per language where quality matters more than speed. Sonnet could produce the structure but would miss edge case analysis and cross-reference consistency.
+
+5. **The spec-as-template pattern works.** The YAML spec's structure (Overview → Prerequisites → Layer 5 → Layer 6 → Layer 7 → Implementation Order → Testing → Open Questions) is reusable for any language. The per-rule table format (name, category, severity, what it checks, config, edge cases, reference, target file) is the minimum information an implementer needs. Future specs should follow this exact structure with language-specific content.
+
+6. **Data flow is strictly sequential: extractor → analyst → spec-writer.** No shared state between agents. The spec writer reads files produced by the other two, never invokes them. Manual sequencing (run Phase 1, run Phase 2, run Phase 3) is sufficient — no orchestrating command needed yet. This may change when we add Phase 4 (implementation) which could benefit from a `/lang-dev` command that sequences all phases.
+
+**Crystallizes:** The first spec becomes a template. The rubric becomes the seed of the **spec-methodology skill**. The data flow between extractor → analyst → spec-writer reveals that manual sequencing is fine — no orchestrating command needed yet.
 
 ### Phase 4: Implementation
 
@@ -145,7 +159,8 @@ Phase 2    agents/lang-architecture-analyst.md
            ─────────────────────────────────────── two-agent system
 
 Phase 3    agents/lang-spec-writer.md
-           references/yaml/spec-template.md        ← emerged from first spec
+           references/yaml/architecture-notes.md   ← prerequisite discovered
+           references/yaml/yaml-support-spec.md    ← first spec = template
            ─────────────────────────────────────── spec capability added
 
 Phase 4    references/yaml/ on existing agents
