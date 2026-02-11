@@ -528,7 +528,7 @@ kb/tasks/
 └── ...
 ```
 
-Convention: `phase{N}-{description}.md` for plans, `phase{N}-{description}-summary.md` for outcomes. Language-specific files go in `kb/tasks/{language}/`, methodology files stay at `kb/tasks/`.
+Convention: `phase{N}-{description}-plan.md` for plans, `phase{N}-{description}-summary.md` for outcomes. Language-specific files go in `kb/tasks/{language}/`, methodology files stay at `kb/tasks/`.
 
 Note: existing YAML files use inconsistent naming (`phase-1-feature-extraction-toolkit.md` vs `phase2-architecture-analysis-plan.md` vs `phase4-implementation-plan.md`). For the second language, standardize on the convention above.
 
@@ -566,65 +566,90 @@ This is the largest uncaptured work item from Phase 4.
 
 ## Open questions — explored
 
-### 1. Context loss and compaction optimization
+### 1. Context management: `/clear` over `/compact`
 
 **Problem:** Compaction loses debugging context, exploration results, and decision rationale. The current mitigation (persist everything to disk) works but requires discipline.
 
 **Questions explored:**
 
-**Can deterministic gates serve as compaction-safe checkpoints?**
+**Can deterministic gates serve as context-reset checkpoints?**
 
-Yes. The 4 gates defined above (plan capture, prerequisite check, phase summary, test status) each produce a disk artifact. After any gate fires, the conversation can be safely compacted because all decision-relevant state is on disk. The gate output files are the compaction boundary markers.
+Yes. The 4 gates defined above (plan capture, prerequisite check, phase summary, test status) each produce a disk artifact. After any gate fires, the conversation can be fully cleared because all decision-relevant state is on disk. The gate output files are the reset boundary markers.
 
-The pattern is:
+**`/clear` is strictly better than `/compact` when gates are working.**
+
+| | `/compact` | `/clear` |
+|---|---|---|
+| Context freed | Partial | 100% |
+| What survives | Lossy summary (uncontrolled) | Nothing — disk artifacts only |
+| Predictability | Low — you don't know what was kept | High — clean slate every time |
+| Re-orientation cost | Low (some context remains) | Bounded (read plan + resumption instructions) |
+| Risk of lost info | Medium — compression may drop key details | Zero if gates fired; total if they didn't |
+| Timing control | Automatic (can happen mid-work) | Intentional (you choose when) |
+
+The reasoning: if gates enforce writing everything decision-relevant to disk, then a compressed summary of the conversation is just noise consuming context window space. A clean slate + disk artifacts is more predictable and more efficient — the agent starts fresh with maximum available context for the next phase.
+
+The only reason to prefer `/compact` is if you don't trust the gates to capture everything. That means the gates need fixing, not the context strategy.
+
+**`/compact` is a fallback, not a strategy.** Compaction happens automatically when the context window fills up. It's useful as a safety net when you've been working without gates and need to keep going. But it's not something to plan around — it's an emergency measure. The planned approach should be:
 
 ```
-[gate fires] → [artifact written to kb/tasks/] → [safe to compact] → [new session reads artifact]
+[phase work] → [gate fires: artifacts to disk] → [/clear] → [new context reads artifacts]
 ```
 
-This is exactly what happened during Phase 4: the plan was in `kb/tasks/yaml/phase4-implementation-plan.md` and `.claude/plans/`, so session recovery after compaction worked (discovery #9). The problem was that this only happened because the plan was manually persisted. Gates make it automatic.
+Not:
 
-**What is the minimum context that must survive compaction for each phase?**
+```
+[phase work] → [hope compaction preserves the right things] → [continue with degraded context]
+```
 
-| Phase | Minimum surviving context | Where it lives |
+This is exactly what happened during Phase 4: the plan was in `kb/tasks/yaml/phase4-implementation-plan.md` and `.claude/plans/`, so recovery after compaction worked (discovery #9). But it worked *despite* compaction, not *because* of it. The disk artifacts were the recovery mechanism; the compressed context was irrelevant.
+
+**What must be on disk before `/clear`?**
+
+| Phase boundary | Required artifacts | Where they live |
 |-------|--------------------------|----------------|
 | 1 → 2 | Feature research report | `references/{language}/feature-research-report.md` |
 | 2 → 3 | Extension contract + architecture notes | `references/biome/extension-contract.md` + `references/{language}/architecture-notes.md` |
-| 3 → 4 | Support spec + implementation plan | `references/{language}/*-support-spec.md` + `kb/tasks/yaml/phase4-*.md` |
-| Mid-stage (within Phase 4) | Plan file + last stage's compile status + current stage number | `kb/tasks/yaml/phase4-*.md` + compiled crates on disk |
-| 4 → 5 | Phase summary with completed/deferred/discovered work | `kb/tasks/yaml/phase4-*-summary.md` |
+| 3 → 4 | Support spec + implementation plan | `references/{language}/*-support-spec.md` + `kb/tasks/{language}/phase4-*.md` |
+| Mid-stage (within Phase 4) | Plan file + stage status | `kb/tasks/{language}/phase4-*.md` + compiled crates on disk |
+| 4 → 5 | Phase summary with completed/deferred/discovered work | `kb/tasks/{language}/phase4-*-summary.md` |
 
-The key insight: **compile status is implicit** — if `cargo build -p biome_yaml_formatter` succeeds, Stage 1 is done. The build system is a durable checkpoint that doesn't need to be in conversation context.
+Compile status is implicit — if `cargo build -p biome_{language}_formatter` succeeds, Stage 1 is done. The build system is a durable checkpoint that doesn't need to be in conversation context.
 
-**Should there be an explicit "compact now" gate?**
+**The `/clear` gate pattern:**
 
-Not as a gate — compaction is triggered by the system, not by the user or the agent. But there should be a **"compaction readiness" check** that any command can invoke: "Are all decision-relevant artifacts on disk? If yes, compaction is safe. If no, persist before proceeding."
-
-This check could be a simple list in the command definition:
+Each phase command should end with a clear-readiness check before signaling completion:
 
 ```markdown
-## Compaction Readiness Check
-Before proceeding past this point, verify these files exist:
-- [ ] kb/tasks/{language}/phase{N}-{description}.md (plan)
-- [ ] All reference files listed in the plan's prerequisites
-- [ ] Last compile/test output (if mid-stage, capture to kb/tasks/{language}/phase{N}-stage{M}-status.md)
+## Phase Completion Gate (BLOCKING)
+Before this phase is complete:
+1. Verify phase summary written to `kb/tasks/{language}/phase{N}-{description}-summary.md`
+2. Verify all reference artifacts committed to git
+3. Summary must include resumption instructions (see template below)
+4. Report to user: "Phase {N} complete. Safe to /clear. To resume, read the summary."
 ```
 
-**Would a `kb/tasks/context-snapshot.md` file work?**
-
-Yes, but it should be **per-phase, not global**. A single file would get overwritten. The phase summary files (`phase{N}-{description}-summary.md`) already serve this purpose if they include a "current state" section. Adding a "resumption instructions" section to each summary would make fresh-session recovery trivial:
+**Resumption instructions template** (included in every phase summary):
 
 ```markdown
 ## Resumption instructions
 To continue from where this phase left off:
 1. Read this summary for completed/deferred/discovered work
 2. Read the plan at kb/tasks/{language}/phase{N}-{description}.md for remaining stages
-3. Run `cargo build -p biome_yaml_formatter` to verify Stage 1 is intact
+3. Run `cargo build -p biome_{language}_formatter` to verify Stage 1 is intact
 4. Current stage: Stage 3 (configuration module)
-5. Next action: create crates/biome_configuration/src/yaml.rs
+5. Next action: create crates/biome_configuration/src/{language}.rs
 ```
 
-**Conclusion:** Gates are compaction boundaries. Phase summaries with resumption instructions are the recovery mechanism. No new infrastructure needed — just discipline in what the gates write to disk.
+After a `/clear`, the next message can be as simple as: "Continue from `kb/tasks/{language}/phase{N}-summary.md`" — the agent reads the file, orients, and resumes. No compressed context needed; no guessing what survived.
+
+**When `/compact` is still appropriate:**
+- Mid-stage within Phase 4, when you haven't reached a gate boundary but context is getting large
+- During research phases (1-2) where the work is exploratory and artifact boundaries are less defined
+- As an automatic safety net — don't disable it, just don't rely on it
+
+**Conclusion:** Plan for `/clear` at phase boundaries. Use gates to ensure everything is on disk. Use `/compact` only as an emergency fallback mid-phase. The overhead of re-reading a plan file + resumption instructions (~30 seconds) is negligible compared to the benefit of a full, clean context window.
 
 ### 2. Test timing and parallelization
 
@@ -632,7 +657,7 @@ To continue from where this phase left off:
 
 **Analysis:**
 
-Biome's testing infrastructure has 4 distinct layers, each with different timing constraints:
+Biome's testing infrastructure has 5 distinct layers, each with different timing constraints:
 
 **Layer 1: Inline smoke tests (`#[test]` in `lib.rs`)**
 - **When:** Write *during* each stage, as the last step before declaring the stage complete
@@ -667,32 +692,143 @@ Biome's testing infrastructure has 4 distinct layers, each with different timing
 - **Cost:** ~5 lines added to the test runner
 - **Current state:** Missing. The inline smoke test verifies one case, but there's no systematic idempotency check.
 
-**Recommended test timeline for second language:**
+**Layer 5: Fuzz testing (`fuzz/fuzz_targets/rome_*_yaml.rs`)**
+
+Biome has an existing fuzz infrastructure in `fuzz/` using `libfuzzer-sys`. It has parser and formatter fuzz targets for JS and JSON. The JSON formatter fuzzer (`rome_common.rs:fuzz_json_formatter`) checks three properties on random input: (a) formatting doesn't introduce parse errors, (b) formatting is idempotent, (c) formatting doesn't introduce new linter errors. No YAML fuzz targets exist yet.
+
+Fuzzing has a fundamentally different timing pattern from the other 4 layers. Testing (layers 1-4) is **point-in-time**: you write a test, you run it, it passes or fails. Fuzzing is **continuous**: you set up infrastructure once, seed a corpus, and let it run in the background — potentially for hours or days. Each time you add new formatter nodes or lint rules, the fuzzer is already exercising them. When it finds a crash or assertion failure, it produces a minimal reproducer that becomes a permanent regression fixture in layer 3.
+
+This makes fuzzing more like CI than like unit testing — it's infrastructure that pays off over time, not a one-shot check.
+
+**Four levels of fuzzing, built up incrementally:**
+
+| Level | Technique | What it catches | When to create | Effort |
+|-------|-----------|----------------|---------------|--------|
+| 1a | **Unstructured parser fuzzing** (random bytes → parse_yaml) | Parser panics/crashes on malformed input | **Pre-Phase 4** — parser already exists | ~20 lines, copy from `fuzz_json_parser` |
+| 1b | **Unstructured formatter fuzzing** (random bytes → parse → format → re-parse → re-format) | Formatter crashes, formatter introduces parse errors, formatter is non-idempotent | **End of Stage 1** — requires formatter | ~40 lines, copy from `fuzz_json_formatter` |
+| 2 | **Corpus-based fuzzing** (mutate real YAML files as seeds) | Edge cases near valid YAML — partial documents, unusual indentation, mixed block/flow styles | **End of Stage 4** — seed with real-world files | Low — add files to `fuzz/corpus/` directory |
+| 3 | **Property-based testing** (`proptest` — generate valid YAML structures programmatically) | Semantic preservation on valid input, structural round-trip fidelity | **Post-Phase 4** — when formatter is stable | Medium — need a YAML AST generator (~200 lines) |
+
+Level 4 (grammar-guided structure-aware fuzzing) exists conceptually but is high effort and unlikely to be needed for the first or second language.
+
+**Why YAML fuzzing is higher value than JSON fuzzing:**
+
+- **Indentation is semantic.** A formatter bug that shifts indentation by one space can silently restructure data — a nested key becomes a sibling, a sequence item becomes a mapping value. JSON formatting can't change semantics (braces/brackets are explicit). YAML formatting can. The idempotency check in the fuzzer (`format(format(x)) == format(x)`) catches unstable formatting. But the more critical check for YAML is **semantic preservation**: `parse(format(parse(input))).tree_structure == parse(input).tree_structure`. This verifies that formatting doesn't change what the YAML *means*, not just what it looks like.
+
+- **YAML's grammar is ambiguous.** Block scalars with chomping indicators (`|+`, `>-`), anchor/alias references, tag directives, multi-document streams, implicit keys, flow-in-block contexts. Handwritten fixtures will cover the common cases; fuzzing covers the combinatorial explosion of interactions between these features.
+
+- **YAML spec version differences.** `yes`/`no`/`on`/`off` are booleans in YAML 1.1 but strings in 1.2. `0777` is octal in 1.1 but a string in 1.2. Fuzzed input generates these ambiguous patterns naturally.
+
+**Fuzzing timing and parallelization:**
+
+Fuzzing is **fully parallelizable with everything** because:
+- Level 1a (parser fuzzing) has zero dependencies on Phase 4 work — the parser already exists
+- Level 1b (formatter fuzzing) depends only on Stage 1 completion, then is independent
+- Corpus collection (Level 2) is independent of all implementation — just gathering files
+- Fuzzing *runs* are background processes — they run while other work happens
+
+The optimal strategy is **infrastructure early, run continuously, harvest results as fixtures:**
 
 ```
+Pre-Phase 4:
+  └── Level 1a: create rome_parse_yaml.rs fuzz target (~20 lines)
+       Can run immediately — parser exists. Catches parser panics.
+
+Stage 1 (Formatter) END:
+  └── Level 1b: create rome_format_yaml.rs fuzz target (~40 lines)
+       Add biome_yaml_parser + biome_yaml_formatter to fuzz/Cargo.toml.
+       Checks: format doesn't crash, re-parses cleanly, idempotent.
+       Also add: create fuzz_yaml_formatter_with_linting (after Stage 2)
+       to check formatting doesn't introduce lint errors.
+
+Stage 2 (Analyzer) END:
+  └── Update Level 1b: add linter stability check to formatter fuzzer
+       (format → re-analyze → no new diagnostics)
+
+Stage 4 (Service Integration) END:
+  └── Level 2: seed fuzz/corpus/yaml/ with real-world YAML files
+       Sources: YAML Test Suite, Kubernetes manifests, GitHub Actions
+       workflows, Docker Compose files, Ansible playbooks.
+       Run fuzzer with corpus — better coverage than random bytes.
+
+Post-Phase 4 (ongoing):
+  └── Level 3: property-based testing with proptest
+       Generate random valid YAML ASTs, format them, verify properties.
+       This is the most thorough level but requires a YAML structure generator.
+
+Continuous (background during any phase):
+  └── When fuzzer finds a crash/assertion failure:
+       1. Fuzzer produces minimal reproducer file
+       2. Add reproducer as a Layer 3 snapshot fixture (permanent regression test)
+       3. Fix the bug
+       4. Reproducer ensures it never recurs
+```
+
+**The harvest loop** is the key efficiency insight. Fuzzing doesn't just find bugs — it **generates test cases**. Each minimized reproducer from the fuzzer becomes a permanent snapshot fixture. Over time, the fuzzer builds up a regression suite that no human would write, covering edge cases that emerge from the combinatorial interaction of YAML features. This means:
+
+- Layer 3 (snapshot fixtures) grows organically from Layer 5 (fuzzing), not just from manual authoring
+- The fixture suite gets stronger over time without additional human effort
+- Edge cases discovered by fuzzing in one language inform fixture design for the next language
+
+**Gate integration:**
+
+Add to the Environment Readiness Gate (Pre-Phase 4):
+```
+- [ ] `cargo install cargo-fuzz` succeeds (or `cargo +nightly fuzz --version`)
+- [ ] `fuzz/fuzz_targets/rome_parse_{language}.rs` exists
+```
+
+Add to the Code Quality Gate (end of Phase 4):
+```
+- [ ] `fuzz/fuzz_targets/rome_format_{language}.rs` exists
+- [ ] Fuzzer runs for 5+ minutes with zero crashes on default corpus
+- [ ] Any crash reproducers added as snapshot fixtures
+```
+
+**Current state for YAML:** No fuzz targets exist. `fuzz/Cargo.toml` has no YAML dependencies. This is uncaptured work alongside the testing gap.
+
+**Recommended test timeline for second language (updated with all 5 layers):**
+
+```
+Pre-Phase 4 (environment + infrastructure):
+  ├── Layer 5: create parser fuzz target, start running in background
+  └── GATE: verify cargo-fuzz, cargo-expand, cargo-insta installed
+
 Stage 1 (Formatter):
   ├── START: create test harness (spec_tests.rs, spec_test.rs, language.rs, quick_test.rs)
   ├── DURING: add fixture file after each group of formatter nodes is implemented
   ├── DURING: use quick_test.rs for interactive debugging
-  └── END: inline smoke test in lib.rs, verify all fixtures pass
+  ├── END: inline smoke test in lib.rs, verify all fixtures pass
+  └── END (Layer 5): create formatter fuzz target, start running in background
 
 Stage 2 (Analyzer):
   ├── START: create test harness (spec_tests.rs)
   ├── DURING: add valid.yaml + invalid.yaml per rule
   ├── DURING: use quick_test in lib.rs for debugging
-  └── END: verify all fixtures pass, add suppression tests
+  ├── END: verify all fixtures pass, add suppression tests
+  └── END (Layer 5): update formatter fuzzer with linter stability check
 
 Stage 3 (Configuration):
   └── END: accept updated configuration snapshots (these break automatically)
 
 Stage 4 (Service Integration):
-  └── END: manual end-to-end test (minimum), ideally add CLI integration test
+  ├── END: manual end-to-end test (minimum), ideally add CLI integration test
+  └── END (Layer 5): seed corpus with real-world files, run fuzzer 5+ min
 
 Stage 5 (Review):
-  └── Verify: round-trip idempotency, all fixtures pass, snapshot review
+  ├── Verify: round-trip idempotency, all fixtures pass, snapshot review
+  └── Harvest: add any fuzzer reproducers as permanent fixtures
+
+Ongoing (background, any phase):
+  └── Fuzzer runs continuously; reproducers become regression fixtures
 ```
 
-**Key change from YAML-first:** Don't defer testing to a separate Stage 5. Embed test harness creation at Stage 1/2 start, and fixture creation during each stage. Testing is part of implementation, not a follow-up.
+**Key difference between fuzzing and other layers:**
+- Layers 1-4 are **written once, run at test time** — their value is fixed at creation
+- Layer 5 is **created once, runs continuously** — its value grows over time as it discovers edge cases
+- Layers 1-4 catch known failure modes. Layer 5 catches **unknown unknowns**.
+
+**Key change from YAML-first:** Fuzzing infrastructure should exist before Phase 4 implementation begins (parser fuzz target), and grow with each stage. Don't defer it — the earlier the fuzzer starts running, the more edge cases it finds by the time you need them.
 
 ### 3. Lightweight container impact
 
@@ -746,25 +882,25 @@ The agents' value isn't gated by `just` — it's gated by context (as analyzed i
 
 Option (a) is simplest — one line added to the devcontainer's `postCreateCommand`.
 
-### 4. Debugging practices
+### 4. Debugging practices: timing, gated infrastructure, and CONTRIBUTING.md enforcement
 
-**Problem:** Debugging during Phase 4 relied on `eprintln!` debug prints and manual inspection of output. The CONTRIBUTING.md documents more systematic approaches.
+**Problem:** Debugging during Phase 4 was entirely reactive — tools were reached for only after something broke, and the most valuable tool (`cargo expand`) wasn't even installed. The CONTRIBUTING.md documents systematic practices, but reading a document doesn't enforce behavior. Debugging infrastructure should be **proactive**: set up before it's needed, like testing infrastructure.
 
-**What CONTRIBUTING.md recommends vs. what was used:**
+#### What CONTRIBUTING.md recommends vs. what was used
 
 | Technique | Recommended by | Used during Phase 4? | Would it have helped? |
 |-----------|---------------|---------------------|---------------------|
-| `dbg!()` macro | Analyzer CONTRIBUTING (line ~1210) | No — used `eprintln!` instead | **Equivalent** — both print to stderr. `dbg!` is slightly better because it prints the expression and file/line. |
-| `cargo test -- --show-output` | Analyzer CONTRIBUTING | No — used `cargo t` without flags | **Yes** — would have shown debug output from passing tests without needing to add `eprintln!` |
-| `--profile debugging` | Root CONTRIBUTING + `Cargo.toml` `[profile.debugging]` | No | **Marginal** — preserves debug symbols for stack traces. The registration system bug didn't produce stack traces; it was a logic error (missing call). Would help for panics/crashes. |
-| `cargo expand` | Not in CONTRIBUTING (would be an improvement) | No — **not installed** | **Significantly** — this is the single highest-value tool for the registration system bug. `cargo expand -p biome_configuration_macros` would have shown the generated `Suspicious` struct without the YAML rule, immediately revealing the root cause. The 2+ hour debugging session could have been <15 minutes. |
-| `RUST_LOG` / tracing | Not in CONTRIBUTING | No | **Moderate** — biome uses `tracing` in some crates. Would help with service-layer debugging (why a file isn't being processed, which handler is selected). Not applicable to the registration bug. |
-| `cargo insta review` | Analyzer + Formatter CONTRIBUTING | Yes (for configuration snapshots) | **Yes** — used correctly when configuration snapshots broke. Would be more valuable once YAML snapshot tests exist. |
-| Quick test (`tests/quick_test.rs`) | Both CONTRIBUTINGs | Partially — inline `quick_test` in `lib.rs` but not in `tests/` | **Yes** — the CONTRIBUTING pattern of an ignored `quick_test.rs` in `tests/` is better than inline because it can be run with `cargo t quick_test -- --show-output` and doesn't pollute `lib.rs`. |
+| `dbg!()` macro | Analyzer CONTRIBUTING | No — used `eprintln!` instead | **Equivalent** — `dbg!` is slightly better because it prints expression + file:line automatically |
+| `cargo test -- --show-output` | Analyzer CONTRIBUTING | No — used `cargo t` without flags | **Yes** — would have shown debug output from passing tests without needing manual prints |
+| `--profile debugging` | Root CONTRIBUTING + `Cargo.toml` `[profile.debugging]` | No | **Marginal** — preserves debug symbols for stack traces. The registration bug was a logic error, not a crash. Would help for panics/crashes. |
+| `cargo expand` | Not in CONTRIBUTING (would be an improvement) | No — **not installed** | **Significantly** — the single highest-value debugging tool for the registration bug (see below) |
+| `RUST_LOG` / tracing | Not in CONTRIBUTING | No | **Moderate** — useful for service-layer debugging. Not applicable to the registration bug. |
+| `cargo insta review` | Analyzer + Formatter CONTRIBUTING | Yes (for configuration snapshots) | **Yes** — used correctly. More valuable once snapshot tests exist. |
+| Quick test (`tests/quick_test.rs`) | Both CONTRIBUTINGs | Partially — inline `quick_test` in `lib.rs` but not in `tests/` | **Yes** — the `tests/quick_test.rs` pattern is better: run with `--show-output`, doesn't pollute `lib.rs` |
 
-**The `cargo expand` gap:**
+#### The `cargo expand` gap
 
-This deserves special attention. The three-registration-system bug (Phase 4 discovery #1) consumed 2+ hours because the proc macro's behavior was opaque. The debugging process was:
+The three-registration-system bug (Phase 4 discovery #1) consumed 2+ hours. The debugging was:
 
 1. Add `eprintln!` to `yaml.rs` handler → confirmed parse/lint functions are called
 2. Add `eprintln!` to analyzer `lib.rs` → confirmed `analyze()` is called
@@ -773,59 +909,240 @@ This deserves special attention. The three-registration-system bug (Phase 4 disc
 5. Search for `recommended_rules_as_filters()` → found it in generated group structs
 6. Trace from group struct to proc macro → found `collect_lint_rules()` doesn't visit YAML
 
-Steps 5-6 required reading through multiple generated files and manually tracing the code path. `cargo expand -p biome_configuration_macros` would have shown the generated output of `lint_group_structs!` directly, revealing that the `Suspicious` struct's `recommended_rules_as_filters()` method doesn't include `noDuplicateKeys`. This would have jumped straight from step 3 to the answer.
+`cargo expand -p biome_configuration_macros` would have jumped from step 3 to the answer — showing the generated `Suspicious` struct without `noDuplicateKeys`. Instead, steps 4-6 required manual reading of generated code.
 
-**`cargo expand` is not installed and is not in either devcontainer configuration.** It requires the nightly toolchain (for `-Zunpretty=expanded`). For the Erasimus container, adding it to `postCreateCommand`:
+`cargo expand` requires the nightly toolchain. It is not installed in either devcontainer. This should be a Phase 4 prerequisite.
 
-```bash
-rustup toolchain install nightly && cargo install cargo-expand
+#### Debugging infrastructure timeline
+
+Like testing, debugging infrastructure has timing dependencies. The right approach is proactive setup:
+
+```
+Pre-Phase 4 (environment setup):
+  ├── GATE: Verify cargo-expand installed (rustup toolchain install nightly && cargo install cargo-expand)
+  ├── GATE: Verify cargo-insta installed
+  ├── GATE: Verify [profile.debugging] exists in root Cargo.toml
+  └── GATE: Verify cargo test -- --show-output works
+
+Stage 1 (Formatter):
+  ├── START: create tests/quick_test.rs with #[ignore] — available from day one
+  ├── DURING: use quick_test.rs + --show-output for node debugging (not eprintln!)
+  ├── DURING: use dbg!() (not eprintln!) — auto-prints file:line, caught by clippy in release
+  └── END: verify no dbg!()/eprintln!() remain in committed code
+
+Stage 2 (Analyzer):
+  ├── START: create tests/quick_test.rs with #[ignore] (separate from formatter's)
+  ├── DURING: use quick_test.rs + --show-output for rule debugging
+  ├── DURING: if rule doesn't fire → cargo expand -p biome_configuration_macros FIRST
+  └── END: verify no debug artifacts remain
+
+Stage 3 (Configuration):
+  └── DURING: cargo insta review for snapshot changes (already available)
+
+Stage 4 (Service Integration):
+  ├── DURING: if end-to-end test fails, use cargo expand before manual tracing
+  ├── DURING: if panic/crash, use --profile debugging for stack traces
+  ├── DURING: if file not recognized, check RUST_LOG output from service layer
+  └── END: verify no debug artifacts remain
+
+Post-Stage 4 (before commit):
+  └── GATE: grep for dbg!(), eprintln!(), println!() in modified files — must be zero
 ```
 
-**Debugging checklist for Phase 4 command:**
+**Key change from YAML-first:** Don't wait for a bug to install debugging tools. Verify them at Phase 4 start. Don't wait for confusion to create quick_test.rs. Create it at Stage 1/2 start. The 5 minutes spent setting up debugging infrastructure saves hours when something goes wrong.
 
-The `/lang-implement` command should include this debugging section:
+#### Gated CONTRIBUTING.md practices
+
+The CONTRIBUTING.md is 2376+ lines across three files. Reading it doesn't enforce compliance. The following practices should be **gated** — verified at specific points, not left to interpretation:
+
+**Gate: Environment readiness (Pre-Phase 4)**
+
+Verify before any implementation begins:
 
 ```markdown
-## Debugging Checklist
-When a stage doesn't behave as expected:
-1. **Compilation error:** Read the error. Check imports, trait bounds, type mismatches.
-2. **Test passes but feature doesn't work end-to-end:**
-   - Run `cargo test -p <crate> -- --show-output` to see debug output
-   - If proc macro involvement suspected: `cargo expand -p <macro_crate>` to inspect generated code
-   - Add `dbg!(&variable)` (not `eprintln!`) for quick inspection — it prints file:line automatically
-3. **Formatter produces wrong output:**
-   - Use quick_test.rs with `--show-output` to isolate the node
-   - Compare IR output with `biome-cli-dev format --write=false` if debug_formatter_ir is wired
-4. **Rule doesn't fire:**
-   - Verify rule appears in `cargo expand` output of configuration macros
-   - Check all three registration points (codegen analyzer, codegen configuration, proc macro)
-   - Run `biome lint --verbose` to see enabled rule count
-5. **Stack trace needed:** `cargo t --profile debugging <test_name>`
-6. **Before committing:** Remove all `dbg!()` and `eprintln!()` calls
+## Environment Readiness Gate (BLOCKING)
+Before starting implementation, verify ALL of the following:
+- [ ] `cargo fmt --version` succeeds (rustfmt installed)
+- [ ] `cargo clippy --version` succeeds (clippy installed)
+- [ ] `cargo insta --version` succeeds (cargo-insta installed)
+- [ ] `cargo expand --version` succeeds (cargo-expand installed, nightly toolchain present)
+- [ ] `just --version` succeeds OR raw cargo equivalents are documented in CLAUDE.md
+- [ ] `[profile.debugging]` section exists in root Cargo.toml
+If any check fails, install the missing tool before proceeding.
 ```
 
-**Code contribution standards assessment:**
+**Gate: Stage start (per stage)**
 
-The current YAML implementation has these quality gaps relative to CONTRIBUTING.md expectations:
+Before implementing any formatter node or lint rule:
+
+```markdown
+## Stage Start Gate (BLOCKING)
+- [ ] tests/quick_test.rs exists for this crate (with #[ignore])
+- [ ] Test harness exists (spec_tests.rs + language.rs for formatter, spec_tests.rs for analyzer)
+- [ ] Previous stage compiles: `cargo build -p <previous_crate>` succeeds
+```
+
+**Gate: Debug hygiene (per commit)**
+
+Before any commit within Phase 4:
+
+```markdown
+## Debug Hygiene Gate (BLOCKING)
+- [ ] `grep -rn 'dbg!\|eprintln!\|println!' <modified_files>` returns zero matches
+- [ ] No `#[ignore]` removed from quick_test.rs (it should remain ignored in committed code)
+- [ ] No test files contain hardcoded paths or debug-specific configuration
+```
+
+**Gate: Code quality (end of Phase 4)**
+
+Before declaring implementation complete:
+
+```markdown
+## Code Quality Gate (BLOCKING)
+- [ ] `cargo fmt -- --check` passes for all modified crates
+- [ ] `cargo clippy -p biome_{language}_formatter -p biome_{language}_analyze` passes with zero warnings
+- [ ] All snapshot tests pass: `cargo insta test -p biome_{language}_formatter -p biome_{language}_analyze`
+- [ ] No TODO/FIXME/HACK comments in production code (or each is tracked as a deferred work item)
+- [ ] Inline smoke tests exist and pass for formatter + analyzer
+```
+
+**Gate: PR readiness (before contribution)**
+
+The full validation equivalent to `just ready`:
+
+```markdown
+## PR Readiness Gate (BLOCKING)
+- [ ] `cargo fmt -- --check` (all crates, not just modified)
+- [ ] `cargo clippy --workspace` (or at minimum, affected crates)
+- [ ] `cargo test -p biome_{language}_formatter -p biome_{language}_analyze -p biome_service`
+- [ ] Snapshot tests exist and are accepted
+- [ ] `cargo test -p biome_configuration` passes (snapshot updates accepted)
+- [ ] End-to-end: `biome format`, `biome lint`, `biome check` work on sample files
+- [ ] No debug artifacts in code
+```
+
+#### Code contribution standards assessment
+
+The current YAML implementation has these quality gaps relative to gated expectations:
 
 | Standard | Expected | Current | Gap |
 |----------|----------|---------|-----|
-| Snapshot tests | Required for formatter + analyzer | None | **Critical** |
-| Quick test file | Standard practice | Inline only | **Minor** (functional equivalent exists) |
-| `cargo fmt` clean | Required | **Unknown** — never ran `cargo fmt` | **Must verify** |
-| `cargo clippy` clean | Required | **Unknown** — never ran clippy | **Must verify** |
-| `just ready` passes | Required for PR | **Never ran** | **Blocking for PR** |
-| Doctests | Encouraged | None | **Minor** |
-| `cargo insta` snapshots accepted | Required | Configuration snapshots accepted; no formatter/analyzer snapshots exist | **Critical** |
+| Snapshot tests | Required (Stage Start Gate) | None | **Critical** |
+| Quick test file | Required (Stage Start Gate) | Inline only | **Medium** — functional equivalent exists but wrong location |
+| `cargo fmt` clean | Required (Code Quality Gate) | **Unknown** — never ran | **Must verify** |
+| `cargo clippy` clean | Required (Code Quality Gate) | **Unknown** — never ran | **Must verify** |
+| `cargo expand` available | Required (Environment Gate) | **Not installed** | **Must install** |
+| Debug artifact check | Required (Debug Hygiene Gate) | Cleaned manually | **Gate would automate** |
+| `just ready` / equivalent | Required (PR Readiness Gate) | **Never ran** | **Blocking for PR** |
+| Doctests | Encouraged (not gated) | None | **Minor** |
 
-**Before contributing the YAML work as a PR:**
-1. Install `just` (or run equivalent commands)
-2. Run `cargo fmt -- --check` to verify formatting
-3. Run `cargo clippy -p biome_yaml_formatter -p biome_yaml_analyze -p biome_service` to catch warnings
-4. Create snapshot test infrastructure (harness + initial fixtures)
-5. Run `just ready` equivalent to validate full suite
+**Recommendation:** The gates above should be embedded in the `/lang-implement` command definition and enforced at the specified points. They transform CONTRIBUTING.md from "read this and follow it" into "these checks must pass before proceeding." Add `cargo-expand`, `just`, and `cargo-insta` to the Erasimus devcontainer's `postCreateCommand`. Make `cargo fmt --check`, `cargo clippy`, and debug artifact scanning part of Gate 4.
 
-**Recommendation:** Add `cargo-expand` and `just` to the Erasimus devcontainer. Add the debugging checklist to the Phase 4 command definition. Make `cargo fmt --check` and `cargo clippy` part of Gate 4 (test status gate at end of implementation).
+## Standards
+
+This section collects all standards governing development work. Standards fall into two categories: **external** (defined by the Biome project, enforced by CI or convention) and **internal** (defined by this methodology, enforced by gates).
+
+### Biome Contribution Specification
+
+**Document:** `kb/tasks/biome-contrib-spec.md`
+
+The comprehensive extraction of all contribution instructions from Biome's CONTRIBUTING.md files (4 primary + 3 crate-specific), CI workflow files (3), configuration files (4), and governance documents (2). 18 source files total, 80+ individual instructions categorized as mandatory, optional, or not applicable.
+
+Key sections and their relevance to implementation phases:
+
+| Spec Section | Content | When It Matters |
+|---|---|---|
+| 1-2: Environment & Workflow | Toolchain, `just`, codegen, formatting, linting | Pre-Phase 4 (environment gate) |
+| 3: Testing | `cargo insta`, snapshot tests, quick tests, spec_tests harness | Stages 1-2 (test infrastructure) |
+| 4: Parser Development | Grammar conventions, naming, error recovery | Already complete for YAML |
+| 5: Formatter Development | Crate creation, codegen, required types, verbatim stubs | Stage 1 (formatter) |
+| 6: Analyzer / Lint Rules | Rule types, naming, diagnostics, documentation, code actions | Stage 2 (analyzer) |
+| 7: Contribution Process | AI disclosure, commits, branches, changesets | PR readiness gate |
+| 9: Code Style & Lint Policy | 60+ workspace clippy/rust lints, disallowed methods, `.editorconfig` | Every commit |
+| 10: CI/CD Requirements | PR jobs (lint, test, udeps, e2e, docs), PR title validation | PR readiness gate |
+| 11: Diagnostics | WHAT/WHY/FIX, `#[derive(Diagnostic)]`, advice types, category registration | Stage 2 (analyzer) |
+| 12: Service Integration | Workspace trait, `WorkspaceServer` vs `WorkspaceClient` | Stage 4 (service wiring) |
+| 13: Formatter Rules | Use AST tokens not literals, don't "fix" code, `dbg_write!` for IR | Stage 1 (formatter) |
+| 14-15: PR & Governance | PR template, CodeRabbit config, liberal review philosophy | PR readiness gate |
+
+The spec's 5 gate tables (Environment Readiness, Stage Start, Debug Hygiene, Code Quality, PR Readiness) map directly to the deterministic gates defined in this document.
+
+### Documentation
+
+**Standard type:** Implied (Biome has no explicit general documentation standard)
+
+**What Biome enforces:**
+- `RUSTDOCFLAGS='-D warnings'` in CI — broken intra-doc links fail the build
+- Rule documentation: rigid structure enforced by codegen (first paragraph single-line, `## Examples`, `### Invalid` before `### Valid`, code blocks auto-validated)
+- `cargo documentation` CI job builds docs for ~17 key packages
+
+**What Biome does NOT enforce:**
+- No `missing_docs` lint — documentation on public items is voluntary
+- No standard for module-level `//!` comments
+- No standard for struct/trait/function doc comments outside lint rules
+- No prose style guide for doc comments
+
+**Codebase survey results** (from sampling 9 representative crates):
+
+| Maturity | Example Crates | Public Item Doc Coverage | Module Docs |
+|---|---|---|---|
+| Core infrastructure | `biome_formatter` | ~72% | Yes (structured sections) |
+| Mature infrastructure | `biome_parser`, `biome_analyze` | 63-69% | No |
+| Language-specific | `biome_json_formatter`, `biome_diagnostics` | 38-63% | No |
+| Newer crates | `biome_yaml_*` | 40-48% | No |
+| Foundational | `biome_rowan` | ~6% | One-liner only |
+
+**Implied standard:** Document public API of core infrastructure crates. Language-specific crates, internal types, and trait implementations are undocumented by convention. Rules are the exception — they have rigid requirements because rustdoc generates user-facing website content.
+
+**Why documentation doesn't need timing/parallelization analysis:** Unlike testing (5 layers with different timing) or debugging (proactive setup vs reactive use), documentation in Biome is either co-located with code (rustdoc on rules, validated by CI as part of the build) or deferred post-merge (website docs PR). There is no separate documentation phase, no background documentation process, and no documentation that should "start at Stage 2 but finish at Stage 4." It's binary: inline with implementation (and therefore gated by the same CI as code), or optional follow-up.
+
+**For this methodology:** The existing gate structure is sufficient — Gate 4 (Code Quality) checks rule doc validity, Gate 5 (PR Readiness) checks changeset descriptions and PR sections. No additional documentation gates are needed beyond what the biome-contrib-spec already defines.
+
+### Testing
+
+**Standard type:** Mixed (Biome has explicit test infrastructure patterns; timing/layering is internal methodology)
+
+**Reference:** Open question #2 in this document (test timing and parallelization)
+
+Five testing layers, each with different timing:
+
+| Layer | What | When to Create | Parallelizable |
+|---|---|---|---|
+| 1: Inline smoke tests | `#[test]` in `lib.rs` | During each stage | No |
+| 2: Quick tests | `tests/quick_test.rs` | Stage start | No (interactive) |
+| 3: Snapshot/fixture tests | `tests/spec_tests.rs` + `tests/specs/` | Stage start (harness), incremental (fixtures) | Yes |
+| 4: E2E / CLI tests | Full pipeline tests | After Stage 4 | No |
+| 5: Fuzz testing | `fuzz/fuzz_targets/rome_*_yaml.rs` | Pre-Phase 4 (parser), end of Stage 1 (formatter) | Yes (background) |
+
+**Gate integration:** Environment Readiness gate verifies test tooling. Stage Start gate verifies harness exists. Code Quality gate verifies tests pass. See the test timeline in open question #2 for the detailed schedule.
+
+### Debugging
+
+**Standard type:** Internal methodology (Biome's CONTRIBUTING.md recommends tools but doesn't gate on them)
+
+**Reference:** Open question #4 in this document (debugging practices)
+
+Key principle: **proactive setup, not reactive installation.** Debugging tools (`cargo-expand`, `--profile debugging`, `quick_test.rs`) should be verified at Phase 4 start, not installed after a bug appears.
+
+**Gate integration:** Environment Readiness gate verifies `cargo-expand`, `cargo-insta`, `[profile.debugging]`. Debug Hygiene gate (per commit) verifies no `dbg!()`/`eprintln!()` in production code.
+
+### Process
+
+**Standard type:** Internal methodology
+
+**Reference:** Process issues section in this document; command structure and deterministic gates section
+
+Key process standards:
+
+| Standard | What It Enforces | Where Defined |
+|---|---|---|
+| Plan persistence | Plans written to disk before implementation begins | Process issue: Plan file persistence |
+| `/clear` over `/compact` | Full context reset at phase boundaries, not lossy compression | Open question #1 |
+| Deterministic gates | 4 hard gates at phase boundaries (plan, prereqs, summary, tests) | Command structure section |
+| Phase summaries with resumption instructions | Every phase ends with a summary containing "how to continue" | Gate 3 (phase summary) |
+| Silent failure detection | Three-registration-system check for new languages | Process issue: Silent registration failures |
+| Convention commit format | `feat(crate): description`, lowercase subject | Biome-contrib-spec §7, §10.3 |
+| AI disclosure | Required in all PRs | Biome-contrib-spec §7.1, §14.2 |
 
 ## Revised assessment
 
