@@ -253,7 +253,7 @@ Phase 7    skills/feature-comparison/SKILL.md       ← crystallized from patter
 
 **Observed in:** Phases 1, 2, 3, and 4 (every phase).
 
-**Problem:** The agent consistently needs an explicit reminder to write the plan to `kb/tasks/phase{N}-*.md` before starting implementation. The plan exists in conversation context but doesn't get persisted to disk as a first action.
+**Problem:** The agent consistently needs an explicit reminder to write the plan to `kb/tasks/{language}/phase{N}-*.md` before starting implementation. The plan exists in conversation context but doesn't get persisted to disk as a first action.
 
 **Impact:** Creates friction and wastes a conversational round-trip on every phase transition.
 
@@ -262,7 +262,7 @@ Phase 7    skills/feature-comparison/SKILL.md       ← crystallized from patter
 ```
 ## Workflow: Plan persistence
 When starting a new phase of work (planning or implementation), the FIRST action
-is to write the plan to `kb/tasks/phase{N}-{description}.md`. Do not begin
+is to write the plan to `kb/tasks/{language}/phase{N}-{description}.md`. Do not begin
 implementation before the plan file exists on disk. This is non-negotiable.
 ```
 
@@ -409,7 +409,7 @@ One command exists: `/lang-research` — it orchestrates Phase 1 (feature extrac
 
 Plans were stored in two places during development:
 - **Internal:** `/home/vscode/.claude/plans/` — Claude Code's plan mode writes here automatically. The file (`cached-prancing-gem.md`) survives compaction within a session and persists across sessions in the same workspace. It is re-injected into conversation context at session start (visible in the system prompt). However, this is a single-file store — entering plan mode for a new task overwrites the previous plan. It is **not** a reliable archive, but it **is** referenceable after compaction within the same planning scope.
-- **Manual:** `kb/tasks/phase{N}-*.md` — these were created only when the user explicitly asked for plan persistence. They are durable git-tracked artifacts. They survived across all sessions.
+- **Manual:** `kb/tasks/{language}/phase{N}-*.md` — these were created only when the user explicitly asked for plan persistence. They are durable git-tracked artifacts. They survived across all sessions.
 
 The internal plan store worked for session recovery (Phase 4 discovery #9), but the `kb/tasks/` files are the only reliable archive. The internal store is a working buffer, not a record.
 
@@ -449,10 +449,10 @@ Within Phase 4, Stages 1 (formatter) and 2 (analyzer) are parallelizable but wer
 Each command would follow the same internal structure:
 
 ```
-1. GATE: Capture plan to kb/tasks/phase{N}-{description}.md
+1. GATE: Capture plan to kb/tasks/{language}/phase{N}-{description}-plan.md
 2. GATE: Verify prerequisites (previous phase artifacts exist)
 3. Execute phase work
-4. GATE: Capture phase summary to kb/tasks/phase{N}-{description}-summary.md
+4. GATE: Capture phase summary to kb/tasks/{language}/phase{N}-{description}-summary.md
 5. GATE: Update agent-evolution-model.md with discoveries
 ```
 
@@ -463,7 +463,7 @@ The plan persistence problem recurred in every phase because there was no enforc
 **Gate 1: Plan capture (start of phase)**
 
 Before any implementation work begins, the command must:
-1. Write the plan to `kb/tasks/phase{N}-{description}.md`
+1. Write the plan to `kb/tasks/{language}/phase{N}-{description}.md`
 2. Verify the file exists on disk
 3. Only then proceed to execution
 
@@ -472,7 +472,7 @@ This is enforceable in a command definition by making the plan-writing step a pr
 ```markdown
 ## Step 1: Plan Capture (BLOCKING)
 1. Generate the implementation plan for this phase.
-2. Write it to `kb/tasks/phase{N}-{description}.md`.
+2. Write it to `kb/tasks/{language}/phase{N}-{description}.md`.
 3. Read the file back to confirm it was written.
 4. If the file does not exist or is empty, STOP and report the failure.
 5. Only after confirmation, proceed to Step 2.
@@ -489,7 +489,7 @@ Before starting Phase N, verify Phase N-1 artifacts exist:
 **Gate 3: Phase summary (end of phase)**
 
 After phase work completes, the command must:
-1. Write a summary to `kb/tasks/phase{N}-{description}-summary.md` containing:
+1. Write a summary to `kb/tasks/{language}/phase{N}-{description}-summary.md` containing:
    - **Completed work:** What was built, with file paths
    - **Planned but deferred work:** Items from the plan that weren't implemented
    - **Discovered work:** New tasks found during execution that weren't in the original plan
@@ -505,27 +505,32 @@ After Phase 4, specifically capture:
 
 ### Documentation directory convention
 
-All documentation lives in `kb/tasks/` with this naming:
+Cross-language methodology docs live in `kb/tasks/`. Per-language phase plans and summaries live in `kb/tasks/{language}/`.
 
 ```
 kb/tasks/
-├── agent-evolution-model.md          # Living document, updated every phase
-├── agent-leverage-options.md          # Decision record (static after Phase 1)
-├── agent-design-references.md         # Reference patterns (static after Phase 1)
-├── phase1-feature-extraction.md       # Phase 1 plan
-├── phase1-feature-extraction-summary.md  # Phase 1 outcomes (NEW)
-├── phase2-architecture-analysis.md    # Phase 2 plan (exists as phase2-architecture-analysis-plan.md)
-├── phase2-architecture-analysis-summary.md  # Phase 2 outcomes (NEW)
-├── phase3-spec-writing.md             # Phase 3 plan (exists as phase3-spec-writing-plan.md)
-├── phase3-spec-writing-summary.md     # Phase 3 outcomes (NEW)
-├── phase4-implementation.md           # Phase 4 plan (exists as phase4-implementation-plan.md)
-├── phase4-implementation-summary.md   # Phase 4 outcomes (NEW)
-└── phase5-review-summary.md           # Phase 5 checkpoint (NEW)
+├── agent-evolution-model.md              # Living document, updated every phase (cross-language)
+├── agent-leverage-options.md              # Decision record (cross-language, static after Phase 1)
+├── agent-design-references.md             # Reference patterns (cross-language, static after Phase 1)
+├── yaml/
+│   ├── phase1-feature-extraction.md       # Phase 1 plan
+│   ├── phase1-feature-extraction-summary.md  # Phase 1 outcomes (NEW)
+│   ├── phase2-architecture-analysis.md    # Phase 2 plan
+│   ├── phase2-architecture-analysis-summary.md  # Phase 2 outcomes (NEW)
+│   ├── phase3-spec-writing.md             # Phase 3 plan
+│   ├── phase3-spec-writing-summary.md     # Phase 3 outcomes (NEW)
+│   ├── phase4-implementation.md           # Phase 4 plan
+│   ├── phase4-implementation-summary.md   # Phase 4 outcomes (NEW)
+│   └── phase5-review-summary.md           # Phase 5 checkpoint (NEW)
+├── shell/                                 # (future) second language
+│   ├── phase1-feature-extraction.md
+│   └── ...
+└── ...
 ```
 
-Convention: `phase{N}-{description}.md` for plans, `phase{N}-{description}-summary.md` for outcomes. No `-plan` suffix needed since the phase number already implies it's a plan.
+Convention: `phase{N}-{description}.md` for plans, `phase{N}-{description}-summary.md` for outcomes. Language-specific files go in `kb/tasks/{language}/`, methodology files stay at `kb/tasks/`.
 
-Note: existing files use inconsistent naming (`phase-1-feature-extraction-toolkit.md` vs `phase2-architecture-analysis-plan.md` vs `phase4-implementation-plan.md`). For the second language, standardize on the convention above.
+Note: existing YAML files use inconsistent naming (`phase-1-feature-extraction-toolkit.md` vs `phase2-architecture-analysis-plan.md` vs `phase4-implementation-plan.md`). For the second language, standardize on the convention above.
 
 ### Uncaptured work: testing gap
 
@@ -577,7 +582,7 @@ The pattern is:
 [gate fires] → [artifact written to kb/tasks/] → [safe to compact] → [new session reads artifact]
 ```
 
-This is exactly what happened during Phase 4: the plan was in `kb/tasks/phase4-implementation-plan.md` and `.claude/plans/`, so session recovery after compaction worked (discovery #9). The problem was that this only happened because the plan was manually persisted. Gates make it automatic.
+This is exactly what happened during Phase 4: the plan was in `kb/tasks/yaml/phase4-implementation-plan.md` and `.claude/plans/`, so session recovery after compaction worked (discovery #9). The problem was that this only happened because the plan was manually persisted. Gates make it automatic.
 
 **What is the minimum context that must survive compaction for each phase?**
 
@@ -585,9 +590,9 @@ This is exactly what happened during Phase 4: the plan was in `kb/tasks/phase4-i
 |-------|--------------------------|----------------|
 | 1 → 2 | Feature research report | `references/{language}/feature-research-report.md` |
 | 2 → 3 | Extension contract + architecture notes | `references/biome/extension-contract.md` + `references/{language}/architecture-notes.md` |
-| 3 → 4 | Support spec + implementation plan | `references/{language}/*-support-spec.md` + `kb/tasks/phase4-*.md` |
-| Mid-stage (within Phase 4) | Plan file + last stage's compile status + current stage number | `kb/tasks/phase4-*.md` + compiled crates on disk |
-| 4 → 5 | Phase summary with completed/deferred/discovered work | `kb/tasks/phase4-*-summary.md` |
+| 3 → 4 | Support spec + implementation plan | `references/{language}/*-support-spec.md` + `kb/tasks/yaml/phase4-*.md` |
+| Mid-stage (within Phase 4) | Plan file + last stage's compile status + current stage number | `kb/tasks/yaml/phase4-*.md` + compiled crates on disk |
+| 4 → 5 | Phase summary with completed/deferred/discovered work | `kb/tasks/yaml/phase4-*-summary.md` |
 
 The key insight: **compile status is implicit** — if `cargo build -p biome_yaml_formatter` succeeds, Stage 1 is done. The build system is a durable checkpoint that doesn't need to be in conversation context.
 
@@ -600,9 +605,9 @@ This check could be a simple list in the command definition:
 ```markdown
 ## Compaction Readiness Check
 Before proceeding past this point, verify these files exist:
-- [ ] kb/tasks/phase{N}-{description}.md (plan)
+- [ ] kb/tasks/{language}/phase{N}-{description}.md (plan)
 - [ ] All reference files listed in the plan's prerequisites
-- [ ] Last compile/test output (if mid-stage, capture to kb/tasks/phase{N}-stage{M}-status.md)
+- [ ] Last compile/test output (if mid-stage, capture to kb/tasks/{language}/phase{N}-stage{M}-status.md)
 ```
 
 **Would a `kb/tasks/context-snapshot.md` file work?**
@@ -613,7 +618,7 @@ Yes, but it should be **per-phase, not global**. A single file would get overwri
 ## Resumption instructions
 To continue from where this phase left off:
 1. Read this summary for completed/deferred/discovered work
-2. Read the plan at kb/tasks/phase{N}-{description}.md for remaining stages
+2. Read the plan at kb/tasks/{language}/phase{N}-{description}.md for remaining stages
 3. Run `cargo build -p biome_yaml_formatter` to verify Stage 1 is intact
 4. Current stage: Stage 3 (configuration module)
 5. Next action: create crates/biome_configuration/src/yaml.rs
