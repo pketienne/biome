@@ -109,7 +109,27 @@ Naming should be language-agnostic from the start: `lang-feature-extractor` not 
 - Mistakes that a hook could have prevented ("I started implementing before the spec covered this area")
 - Whether the spec was detailed enough to guide implementation
 
-**Crystallizes:** Hook patterns become obvious — the exact rules are known because the pain was just experienced. The **pre-implementation-check hook** isn't speculative anymore; it's a direct response to something that went wrong.
+**Discovered (from YAML implementation):**
+
+1. **Three separate registration systems, not one.** Adding a language to Biome requires registering it in three independent codegen/macro systems: (a) `xtask/codegen` analyzer codegen (generates `registry.rs`, `lint.rs`, `build.rs` for the new analyzer crate), (b) `xtask/codegen` configuration codegen (generates the unified `Rules` enum in `rules.rs`), and (c) `biome_configuration_macros` proc macro (generates group structs like `Suspicious` with `recommended_rules_as_filters()` at compile time). Missing any one causes rules to silently not fire — no error, no warning, just absent from the enabled list. This was the hardest bug: `noDuplicateKeys` passed unit tests but was invisible to `biome lint` because the proc macro didn't know about `biome_yaml_analyze`. A future hook should verify all three registration points.
+
+2. **The spec scoped correctly but the extension contract was the real implementation guide.** The spec told us *what* to build (which rules, which format options, which layers). But *how* to build it required deep reading of the JSON reference implementation at every step. The extension contract (`references/biome/extension-contract.md`) was necessary but insufficient — it describes the trait boundaries, not the implementation patterns within each trait. The actual implementation pattern (how `ServiceLanguage` methods compose, how `AnalyzerVisitorBuilder::finish()` collects rules, how the proc macro feeds `recommended_rules_as_filters()`) had to be reverse-engineered from `json.rs` each time. Future languages need less spec and more annotated reference walkthrough.
+
+3. **Formatter is harder than analyzer, by a wide margin.** The analyzer was straightforward: declare rule → query AST → collect state → emit diagnostic. One rule (`noDuplicateKeys`) took ~100 lines and worked on the first try at the unit level. The formatter required understanding biome's IR primitives (`block_indent` vs `indent` vs `hard_line_break` vs `soft_line_break`), YAML's semantic indentation (spaces-only default, compact notation for `- key: value`), and several iterations of debugging where output collapsed or mis-indented structure. Formatter bugs produce "wrong output" not "error messages," making them harder to diagnose. The ir-formatter-engineer agent would need biome-specific IR knowledge injected to be useful.
+
+4. **Existing specialized agents were not used.** Implementation was done entirely by the main conversation agent. The biome-lint-engineer and ir-formatter-engineer agents lack the biome-specific context needed: the extension contract, the YAML syntax tree structure, the registration system details. To be useful, they'd need either (a) access to `references/biome/` and `references/yaml/` directories in their prompts, or (b) to be invoked only for narrow subtasks with full context passed in. As-is, they're too generic for biome integration work.
+
+5. **End-to-end testing caught what unit tests missed.** The `noDuplicateKeys` rule passed its unit test (quick_test in `lib.rs`) on the first attempt. But `biome lint test.yaml` reported zero diagnostics. The gap was the registration system (discovery #1 above). Similarly, the formatter's `smoke_test` passed but `biome format complex.yaml` destroyed indentation. The lesson: every stage needs an end-to-end verification step, not just `cargo test -p <crate>`. A checklist item: "run `biome check` on a real file before declaring a stage complete."
+
+6. **Language-specific defaults must diverge from Biome globals.** YAML requires spaces for indentation (the spec forbids tabs). Biome's global default is tabs. This caused the formatter to output tab-indented YAML that violated the spec. The fix was a one-line change (`unwrap_or(IndentStyle::Space)` instead of `unwrap_or_default()`), but the spec didn't flag it. Future specs should include a "defaults that differ from Biome globals" section.
+
+7. **Stages 1-2 are truly parallel; Stages 3-4 are serial.** The formatter crate and analyzer crate have zero compile-time dependencies on each other. Configuration (Stage 3) depends on both (it references format option types and rule metadata). Service integration (Stage 4) depends on all three. The plan's stage ordering was correct.
+
+8. **Snapshot tests are configuration surface area guards.** Adding `yaml` as a valid config key caused 2 existing snapshot tests to fail in `biome_configuration`. This is good — it proves the test suite catches when new languages widen the configuration surface. The fix was accepting updated snapshots. Future languages should expect this and not be surprised.
+
+9. **Session recovery worked because of plan persistence.** The implementation spanned 3 sessions due to context compaction. Each time, the cached plan file (`.claude/plans/`) plus the on-disk plan (`kb/tasks/`) allowed seamless continuation. This validates the "plan persistence" process issue (documented below). Without these files, each session would have required re-explaining the full implementation strategy.
+
+**Crystallizes:** The three-registration-system problem is the strongest candidate for a **pre-implementation hook** — it's non-obvious, silent on failure, and will recur for every new language. The end-to-end testing requirement is the second candidate. The specialized agents need biome-specific knowledge injection before they're useful for this workflow.
 
 ### Phase 5: Review + Retrospective
 
@@ -163,9 +183,11 @@ Phase 3    agents/lang-spec-writer.md
            references/yaml/yaml-support-spec.md    ← first spec = template
            ─────────────────────────────────────── spec capability added
 
-Phase 4    references/yaml/ on existing agents
-           hooks/ identified but not yet built
-           ─────────────────────────────────────── existing agents enhanced
+Phase 4    biome_yaml_formatter, biome_yaml_analyze crates built
+           3 registration systems identified as critical gotcha
+           specialized agents NOT used (too generic for biome work)
+           end-to-end testing > unit testing for integration bugs
+           ─────────────────────────────────────── implementation complete, hooks identified
 
 Phase 5    agents/lang-code-reviewer.md
            kb/tasks/yaml-retrospective.md           ← lessons learned
@@ -179,6 +201,66 @@ Phase 6    skills/feature-comparison/SKILL.md       ← crystallized from patter
            plugin.json                               ← bundle justified
            ─────────────────────────────────────── full plugin (Option C)
 ```
+
+## Process issue: Plan file persistence
+
+**Observed in:** Phases 1, 2, 3, and 4 (every phase).
+
+**Problem:** The agent consistently needs an explicit reminder to write the plan to `kb/tasks/phase{N}-*.md` before starting implementation. The plan exists in conversation context but doesn't get persisted to disk as a first action.
+
+**Impact:** Creates friction and wastes a conversational round-trip on every phase transition.
+
+**Fix applied:** Add a directive to CLAUDE.md requiring plan file creation as the first action when entering any new phase. The directive should be:
+
+```
+## Workflow: Plan persistence
+When starting a new phase of work (planning or implementation), the FIRST action
+is to write the plan to `kb/tasks/phase{N}-{description}.md`. Do not begin
+implementation before the plan file exists on disk. This is non-negotiable.
+```
+
+**Why this keeps happening:** The agent optimizes for getting to implementation quickly. Plan writing feels like overhead rather than a deliverable. The fix reframes it: the plan file IS a deliverable, not a side effect.
+
+## Process issue: Conversation compaction timing
+
+**Observed in:** Phase 4 (implementation), but applies to all phases.
+
+**Problem:** By the time implementation starts, the conversation is heavy with exploration results, reference code snippets, and plan iterations. Only a fraction is needed for actual implementation.
+
+**Optimal compaction points:**
+1. **Between plan approval and implementation start** — plan is on disk in `kb/tasks/`, reference files are in `references/`. Safe to compress.
+2. **Between stages within implementation** — after each stage compiles, the debug context (which imports failed, what was tried) is no longer needed. Stage output is on disk (compiled crates).
+3. **Never mid-stage** — compacting while debugging a compilation error loses critical context.
+
+**What enables safe compaction:** Durable artifacts on disk. The less that lives only in conversation context, the safer compaction is.
+
+**Practical approach for next language:**
+- Phases 1-3 (research → spec): one session, commit artifacts
+- **Compact here** — fresh session for Phase 4
+- Phase 4: start fresh, read plan from `kb/tasks/`, read reference files on demand
+- Between stages: compact if context gets large, since each stage is independently verifiable
+
+**Key principle:** Compaction is safe when all decision-relevant information exists on disk, not just in conversation memory.
+
+## Process issue: Silent registration failures
+
+**Observed in:** Phase 4 (implementation), Stage 2 and Stage 5.
+
+**Problem:** Biome has three independent systems that must all know about a new language's analyzer for lint rules to fire at runtime:
+
+1. `xtask/codegen` analyzer — generates `registry.rs`, `lint.rs`, group files for the analyzer crate
+2. `xtask/codegen` configuration — generates the `Rules` enum in `rules.rs` with the rule name and group mapping
+3. `biome_configuration_macros` proc macro — generates group structs (e.g., `Suspicious`) with `recommended_rules_as_filters()` by visiting all language analyzer registries at compile time
+
+Missing #1 or #2 causes a compile error. Missing #3 causes **silent failure** — the rule compiles, passes unit tests, appears in the `Rules` enum, but is never included in the enabled rules at runtime. The proc macro generates a `Suspicious` struct that doesn't include the YAML rule because `biome_yaml_analyze::visit_registry()` was never called.
+
+**Impact:** 2+ hours of debugging. The symptom ("213 rules enabled, noDuplicateKeys not among them") pointed everywhere except the proc macro crate. Unit tests passed. The configuration codegen showed the rule registered. Only by tracing the `recommended_rules_as_filters()` call chain to the proc macro's `collect_lint_rules()` function was the gap found.
+
+**Fix applied:** Added `biome_yaml_analyze` dependency and `visit_registry` call to `biome_configuration_macros/src/lib.rs` and `visitors.rs`.
+
+**Hook candidate:** A post-codegen or pre-build hook that verifies: for every `biome_{lang}_analyze` crate that exists, there must be a corresponding `visit_registry` call in all three locations. This is mechanical to check and would have saved the debugging entirely.
+
+**Why this will recur:** Every new language needs the same three registrations. The first two are somewhat discoverable (codegen fails or rules don't appear). The third is invisible until you run end-to-end tests and notice the rule doesn't fire.
 
 ## Crystallization heuristics
 
