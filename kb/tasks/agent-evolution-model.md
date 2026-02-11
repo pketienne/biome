@@ -559,55 +559,268 @@ The JSON reference has ~504 lines of test infrastructure and ~200 fixture files.
 
 This is the largest uncaptured work item from Phase 4.
 
-## Open questions for further exploration
+## Open questions — explored
 
 ### 1. Context loss and compaction optimization
 
 **Problem:** Compaction loses debugging context, exploration results, and decision rationale. The current mitigation (persist everything to disk) works but requires discipline.
 
-**Questions to explore:**
-- Can deterministic gates (the plan/summary capture gates above) serve double duty as compaction-safe checkpoints?
-- What is the minimum context that must survive compaction for each phase to resume? (Likely: the plan file + the last compile/test output)
-- Should there be an explicit "compact now" gate between phases that forces artifact persistence before allowing compaction?
-- Would a `kb/tasks/context-snapshot.md` file (updated at each gate) provide enough state for a fresh session to resume without the conversation history?
+**Questions explored:**
+
+**Can deterministic gates serve as compaction-safe checkpoints?**
+
+Yes. The 4 gates defined above (plan capture, prerequisite check, phase summary, test status) each produce a disk artifact. After any gate fires, the conversation can be safely compacted because all decision-relevant state is on disk. The gate output files are the compaction boundary markers.
+
+The pattern is:
+
+```
+[gate fires] → [artifact written to kb/tasks/] → [safe to compact] → [new session reads artifact]
+```
+
+This is exactly what happened during Phase 4: the plan was in `kb/tasks/phase4-implementation-plan.md` and `.claude/plans/`, so session recovery after compaction worked (discovery #9). The problem was that this only happened because the plan was manually persisted. Gates make it automatic.
+
+**What is the minimum context that must survive compaction for each phase?**
+
+| Phase | Minimum surviving context | Where it lives |
+|-------|--------------------------|----------------|
+| 1 → 2 | Feature research report | `references/{language}/feature-research-report.md` |
+| 2 → 3 | Extension contract + architecture notes | `references/biome/extension-contract.md` + `references/{language}/architecture-notes.md` |
+| 3 → 4 | Support spec + implementation plan | `references/{language}/*-support-spec.md` + `kb/tasks/phase4-*.md` |
+| Mid-stage (within Phase 4) | Plan file + last stage's compile status + current stage number | `kb/tasks/phase4-*.md` + compiled crates on disk |
+| 4 → 5 | Phase summary with completed/deferred/discovered work | `kb/tasks/phase4-*-summary.md` |
+
+The key insight: **compile status is implicit** — if `cargo build -p biome_yaml_formatter` succeeds, Stage 1 is done. The build system is a durable checkpoint that doesn't need to be in conversation context.
+
+**Should there be an explicit "compact now" gate?**
+
+Not as a gate — compaction is triggered by the system, not by the user or the agent. But there should be a **"compaction readiness" check** that any command can invoke: "Are all decision-relevant artifacts on disk? If yes, compaction is safe. If no, persist before proceeding."
+
+This check could be a simple list in the command definition:
+
+```markdown
+## Compaction Readiness Check
+Before proceeding past this point, verify these files exist:
+- [ ] kb/tasks/phase{N}-{description}.md (plan)
+- [ ] All reference files listed in the plan's prerequisites
+- [ ] Last compile/test output (if mid-stage, capture to kb/tasks/phase{N}-stage{M}-status.md)
+```
+
+**Would a `kb/tasks/context-snapshot.md` file work?**
+
+Yes, but it should be **per-phase, not global**. A single file would get overwritten. The phase summary files (`phase{N}-{description}-summary.md`) already serve this purpose if they include a "current state" section. Adding a "resumption instructions" section to each summary would make fresh-session recovery trivial:
+
+```markdown
+## Resumption instructions
+To continue from where this phase left off:
+1. Read this summary for completed/deferred/discovered work
+2. Read the plan at kb/tasks/phase{N}-{description}.md for remaining stages
+3. Run `cargo build -p biome_yaml_formatter` to verify Stage 1 is intact
+4. Current stage: Stage 3 (configuration module)
+5. Next action: create crates/biome_configuration/src/yaml.rs
+```
+
+**Conclusion:** Gates are compaction boundaries. Phase summaries with resumption instructions are the recovery mechanism. No new infrastructure needed — just discipline in what the gates write to disk.
 
 ### 2. Test timing and parallelization
 
 **Problem:** Testing was deferred to Phase 4 Stage 5 and then not completed. Some tests could have been written earlier and in parallel with implementation.
 
-**Questions to explore:**
-- **Inline unit tests** (smoke tests): should be written *during* each stage, not deferred. They verify the immediate work and cost almost nothing.
-- **Snapshot/fixture tests**: depend on the test harness infrastructure. The harness itself (spec_tests.rs, language.rs) could be created at the start of Stage 1, with fixtures added as each formatter node is implemented.
-- **Analyzer fixture tests**: could be written in parallel with Stage 2 (analyzer implementation), since the test harness follows the same pattern.
-- **End-to-end tests**: require Stage 4 (service integration) to be complete. These are inherently serial.
-- **Parallelization opportunity**: formatter fixture tests and analyzer fixture tests are fully independent and could be written by separate agents simultaneously.
-- When should round-trip property testing (`format(format(x)) == format(x)`) be added? This is a formatter-specific concern that could catch bugs early.
+**Analysis:**
+
+Biome's testing infrastructure has 4 distinct layers, each with different timing constraints:
+
+**Layer 1: Inline smoke tests (`#[test]` in `lib.rs`)**
+- **When:** Write *during* each stage, as the last step before declaring the stage complete
+- **Cost:** ~20 lines per crate, <1 minute to write
+- **What they catch:** Basic compilation, API surface works, trivial round-trip
+- **Current state:** Both formatter and analyzer have one inline test each. These were written during implementation and caught nothing that the compiler didn't already catch, but they serve as documentation of the API.
+- **Parallelizable:** N/A — written by whoever implements the stage
+
+**Layer 2: Quick tests (`tests/quick_test.rs`)**
+- **When:** Create the file at Stage 1 start (formatter) or Stage 2 start (analyzer), marked `#[ignore]`. Un-ignore when debugging a specific case.
+- **Cost:** ~45 lines scaffold, then ad-hoc modifications
+- **What they catch:** Individual node formatting, individual rule behavior. The CONTRIBUTING.md recommends: "Remove or comment out the `#[ignore]` macro, modify the `let SOURCE` variable with test code, update rule filter, run with `cargo t quick_test -- --show-output`."
+- **Current state:** Missing for both formatter and analyzer (the inline tests serve a similar purpose but live in `src/lib.rs` rather than `tests/`)
+- **Parallelizable:** N/A — used interactively during development
+
+**Layer 3: Snapshot/fixture tests (`tests/spec_tests.rs` + `tests/specs/`)**
+- **When:** The test harness (`spec_tests.rs`, `spec_test.rs`, `language.rs`) should be created at Stage 1 start. It's pure boilerplate (~250 lines for formatter, ~255 lines for analyzer) copied from JSON with language-specific types swapped in. Fixture files should be added incrementally as nodes/rules are implemented.
+- **Cost:** Harness is ~500 lines total (one-time). Each fixture is a `.yaml` file + expected `.snap` output.
+- **What they catch:** Formatting correctness for specific input patterns. Regression detection. The `gen_tests!` macro auto-generates a test function for every `.yaml` file in the specs directory.
+- **Current state:** Entirely missing — 0 test directories, 0 harness files, 0 fixtures
+- **Parallelizable:** **Yes.** Formatter fixtures and analyzer fixtures are completely independent. Could be written by two separate agents simultaneously. The harness files could also be created in parallel with Stage 1/2 implementation (since they don't depend on the formatter/analyzer code, only on the generated syntax types which exist already).
+
+**Layer 4: End-to-end / CLI integration tests**
+- **When:** After Stage 4 (service integration) is complete. Cannot be written earlier because they require the full `biome` binary to accept YAML files.
+- **Cost:** Variable — biome's existing CLI test infrastructure is in `crates/biome_cli/tests/`
+- **What they catch:** Full pipeline: file detection → parsing → formatting/linting → output. This is where the three-registration-system bug and the formatter indentation bugs were caught manually.
+- **Current state:** Missing. Manual end-to-end testing was performed but not captured as automated tests.
+- **Parallelizable:** No — depends on all prior stages
+
+**Round-trip property testing (`format(format(x)) == format(x)`):**
+- **When:** After the snapshot test harness exists. Can be a property of the spec_test.rs runner (format twice, assert idempotent). The JSON formatter already does this in its test harness.
+- **Cost:** ~5 lines added to the test runner
+- **Current state:** Missing. The inline smoke test verifies one case, but there's no systematic idempotency check.
+
+**Recommended test timeline for second language:**
+
+```
+Stage 1 (Formatter):
+  ├── START: create test harness (spec_tests.rs, spec_test.rs, language.rs, quick_test.rs)
+  ├── DURING: add fixture file after each group of formatter nodes is implemented
+  ├── DURING: use quick_test.rs for interactive debugging
+  └── END: inline smoke test in lib.rs, verify all fixtures pass
+
+Stage 2 (Analyzer):
+  ├── START: create test harness (spec_tests.rs)
+  ├── DURING: add valid.yaml + invalid.yaml per rule
+  ├── DURING: use quick_test in lib.rs for debugging
+  └── END: verify all fixtures pass, add suppression tests
+
+Stage 3 (Configuration):
+  └── END: accept updated configuration snapshots (these break automatically)
+
+Stage 4 (Service Integration):
+  └── END: manual end-to-end test (minimum), ideally add CLI integration test
+
+Stage 5 (Review):
+  └── Verify: round-trip idempotency, all fixtures pass, snapshot review
+```
+
+**Key change from YAML-first:** Don't defer testing to a separate Stage 5. Embed test harness creation at Stage 1/2 start, and fixture creation during each stage. Testing is part of implementation, not a follow-up.
 
 ### 3. Lightweight container impact
 
-**Problem:** Development used `erasimus/devcontainer.json` instead of the full Biome devcontainer. The full devcontainer includes `just` (task runner), `cargo-binstall`, `cargo-insta`, `tombi`, `wasm-bindgen-cli`, and `wasm-opt`.
+**Problem:** Development used `.devcontainer/erasimus/devcontainer.json` (base image `mcr.microsoft.com/devcontainers/rust:1`) instead of the full Biome devcontainer (base image `mcr.microsoft.com/devcontainers/universal:5` with `just` feature).
 
-**Questions to explore:**
-- **`just` absence**: All `just` commands (`just gen-formatter`, `just gen-analyzer`, `just gen-rules`, `just test`, `just f`, `just l`, `just ready`) were unavailable. We used raw `cargo` commands instead. This meant: (a) codegen was run via `cargo run -p xtask_codegen -- formatter` instead of `just gen-formatter`, (b) formatting checks (`just f`) and linting checks (`just l`) were not run, (c) the `just ready` command (full pre-PR validation) was never executed. Impact: potentially missed formatting/linting issues in contributed code.
-- **`cargo-insta` absence**: Initially missing, installed manually via `cargo install cargo-insta`. This delayed snapshot test acceptance. In the full devcontainer, it would have been available from the start.
-- **Would dependencies have helped the engineering agents?** The agents themselves don't invoke `just` or `cargo-insta` — they work through the main conversation's tool access. But the full devcontainer would have made the *validation* step easier, which is where the agents' output gets checked. The agents' usefulness is gated by the ability to verify their work, and the lightweight container weakened that verification step.
-- **Missing `wasm-bindgen-cli` and `wasm-opt`**: Not relevant for YAML support (no WASM build needed). No impact.
-- **Missing `tombi`**: Not relevant for YAML support (TOML formatting only). No impact.
+**Concrete differences:**
+
+| Tool | Full devcontainer | Erasimus lightweight | Impact on YAML development |
+|------|------------------|---------------------|---------------------------|
+| `just` | Installed via feature | **Not installed** | **High** — see below |
+| `cargo-binstall` | Installed by `just install-tools` | Not installed | Low — only needed to install other tools faster |
+| `cargo-insta` | Installed by `just install-tools` | Installed manually mid-session | **Medium** — delayed snapshot workflow |
+| `cargo-expand` | Not in either | Not installed | **Would have been high** — see debugging section |
+| `tombi` | Installed by `just install-tools` | Not installed | None — TOML formatting irrelevant |
+| `wasm-bindgen-cli` | Installed by `just install-tools` | Not installed | None — no WASM needed |
+| `wasm-opt` | Installed by `just install-tools` | Not installed | None — no WASM needed |
+| Rust toolchain | `complete` profile | Default (presumably `default` or `minimal`) | Low — `complete` adds `clippy`, `rustfmt`, cross-compile targets. Core compilation unaffected |
+| Claude CLI + config | Not included | **Mounted from host** | The Erasimus container is purpose-built for Claude Code development |
+
+**`just` absence — detailed impact:**
+
+The Justfile (281 lines) defines the canonical Biome development workflows. Every command in CONTRIBUTING.md references `just`:
+
+| `just` command | What it does | How we worked around it | What we missed |
+|---------------|-------------|----------------------|---------------|
+| `just gen-formatter` | `cargo run -p xtask_codegen -- formatter` | Ran the raw cargo command | Nothing — exact equivalent |
+| `just gen-analyzer` / `just gen-rules` | `cargo run -p xtask_codegen -- analyzer` | Ran the raw cargo command | Nothing — exact equivalent |
+| `just gen-configuration` | `cargo run -p xtask_codegen -- configuration` | Ran the raw cargo command | Nothing — exact equivalent |
+| `just test` | Full test suite with `cargo nextest` or `cargo test` | `cargo test -p <crate>` per crate | **Missed cross-crate test failures** — never ran full suite |
+| `just f` / `just format` | `cargo fmt` + `tombi format` | **Never ran** | **Potentially unformatted Rust code** in contributed files |
+| `just l` / `just lint` | `cargo clippy` with specific flags | **Never ran** | **Potentially missed clippy warnings** |
+| `just ready` | `gen-all` + `documentation` + `format` + `lint` + `test` + `test-doc` | **Never ran** | **No pre-PR validation was performed** |
+| `just test-lintrule` | Runs snapshot tests for a specific rule | Not used (no snapshot tests exist) | N/A |
+| `just new-crate` | Creates new crate with workspace config | Created crates manually | Possibly inconsistent Cargo.toml formatting |
+
+**The `just ready` gap is the most significant.** This is Biome's equivalent of CI locally. It runs codegen, formats, lints, and tests everything. By never running it, we have no assurance that the contributed code passes the project's quality gates. Before any PR, this must be run — which requires either installing `just` in the lightweight container or switching to the full devcontainer.
+
+**Would the full devcontainer have changed engineering agent usefulness?**
+
+Minimally. The agents don't invoke build tools directly — they work through the main conversation's Bash tool. But the validation loop would have been tighter:
+- `just test-lintrule noDuplicateKeys` would have immediately shown whether the rule fires in snapshot tests (if they existed)
+- `just l` after each stage would have caught clippy warnings early
+- `just ready` at the end of Phase 4 would have been a one-command validation gate
+
+The agents' value isn't gated by `just` — it's gated by context (as analyzed in the engineering agent section). But the *validation step* that confirms whether agent output is correct would have been easier with the full toolchain.
+
+**Recommendation:** For the second language, either:
+- (a) Install `just` into the Erasimus container via `postCreateCommand`: add `cargo install just` (or use the system package manager)
+- (b) Add a `just ready` equivalent as a raw cargo command sequence to CLAUDE.md so it can be run without `just`
+- (c) Switch to the full devcontainer for implementation phases (Phases 4+), keep the lightweight container for research phases (Phases 1-3) where build tools aren't needed
+
+Option (a) is simplest — one line added to the devcontainer's `postCreateCommand`.
 
 ### 4. Debugging practices
 
 **Problem:** Debugging during Phase 4 relied on `eprintln!` debug prints and manual inspection of output. The CONTRIBUTING.md documents more systematic approaches.
 
-**Questions to explore:**
-- **CONTRIBUTING.md debugging guidance**: The guide recommends `dbg!()` macro with `--show-output`, and a `debugging` cargo profile that preserves stack traces. Neither was used during Phase 4. The `debugging` profile (`cargo t --profile debugging some_test`) would have provided better stack traces when tracing the registration system bug.
-- **Systematic approaches that could help:**
-  - `cargo test -- --show-output` for seeing debug output from passing tests
-  - `RUST_LOG` / `tracing` for structured logging during end-to-end runs
-  - `cargo expand` for inspecting proc macro output — this would have directly shown the missing `visit_registry` call in `biome_configuration_macros`, cutting the 2+ hour debugging session significantly
-  - `cargo test -p biome_configuration_macros` with expanded output to verify the proc macro generates expected code
-- **What was actually used:** `eprintln!` statements added to `yaml.rs` and `lib.rs`, manually counting enabled rules, manually tracing call chains through source code. All debug prints were removed before commit.
-- **Recommendation for future development:** Add a "debugging checklist" to the Phase 4 command that includes: (a) use `cargo expand` when proc macro behavior is unexpected, (b) use `--profile debugging` when stack traces are needed, (c) use `cargo test -- --show-output` instead of `eprintln!` for test debugging, (d) check `RUST_LOG` output for service-layer issues.
-- **Code contribution standards:** Biome's CONTRIBUTING.md sets expectations for testing (`cargo insta` snapshots, doctests, quick_test patterns). The current YAML implementation meets the functional requirements but falls short on testing standards. The testing gap (documented above) should be addressed before any PR contribution.
+**What CONTRIBUTING.md recommends vs. what was used:**
+
+| Technique | Recommended by | Used during Phase 4? | Would it have helped? |
+|-----------|---------------|---------------------|---------------------|
+| `dbg!()` macro | Analyzer CONTRIBUTING (line ~1210) | No — used `eprintln!` instead | **Equivalent** — both print to stderr. `dbg!` is slightly better because it prints the expression and file/line. |
+| `cargo test -- --show-output` | Analyzer CONTRIBUTING | No — used `cargo t` without flags | **Yes** — would have shown debug output from passing tests without needing to add `eprintln!` |
+| `--profile debugging` | Root CONTRIBUTING + `Cargo.toml` `[profile.debugging]` | No | **Marginal** — preserves debug symbols for stack traces. The registration system bug didn't produce stack traces; it was a logic error (missing call). Would help for panics/crashes. |
+| `cargo expand` | Not in CONTRIBUTING (would be an improvement) | No — **not installed** | **Significantly** — this is the single highest-value tool for the registration system bug. `cargo expand -p biome_configuration_macros` would have shown the generated `Suspicious` struct without the YAML rule, immediately revealing the root cause. The 2+ hour debugging session could have been <15 minutes. |
+| `RUST_LOG` / tracing | Not in CONTRIBUTING | No | **Moderate** — biome uses `tracing` in some crates. Would help with service-layer debugging (why a file isn't being processed, which handler is selected). Not applicable to the registration bug. |
+| `cargo insta review` | Analyzer + Formatter CONTRIBUTING | Yes (for configuration snapshots) | **Yes** — used correctly when configuration snapshots broke. Would be more valuable once YAML snapshot tests exist. |
+| Quick test (`tests/quick_test.rs`) | Both CONTRIBUTINGs | Partially — inline `quick_test` in `lib.rs` but not in `tests/` | **Yes** — the CONTRIBUTING pattern of an ignored `quick_test.rs` in `tests/` is better than inline because it can be run with `cargo t quick_test -- --show-output` and doesn't pollute `lib.rs`. |
+
+**The `cargo expand` gap:**
+
+This deserves special attention. The three-registration-system bug (Phase 4 discovery #1) consumed 2+ hours because the proc macro's behavior was opaque. The debugging process was:
+
+1. Add `eprintln!` to `yaml.rs` handler → confirmed parse/lint functions are called
+2. Add `eprintln!` to analyzer `lib.rs` → confirmed `analyze()` is called
+3. Manually count enabled rules → found 213, expected 214
+4. Search `rules.rs` for `noDuplicateKeys` → found it registered in the enum
+5. Search for `recommended_rules_as_filters()` → found it in generated group structs
+6. Trace from group struct to proc macro → found `collect_lint_rules()` doesn't visit YAML
+
+Steps 5-6 required reading through multiple generated files and manually tracing the code path. `cargo expand -p biome_configuration_macros` would have shown the generated output of `lint_group_structs!` directly, revealing that the `Suspicious` struct's `recommended_rules_as_filters()` method doesn't include `noDuplicateKeys`. This would have jumped straight from step 3 to the answer.
+
+**`cargo expand` is not installed and is not in either devcontainer configuration.** It requires the nightly toolchain (for `-Zunpretty=expanded`). For the Erasimus container, adding it to `postCreateCommand`:
+
+```bash
+rustup toolchain install nightly && cargo install cargo-expand
+```
+
+**Debugging checklist for Phase 4 command:**
+
+The `/lang-implement` command should include this debugging section:
+
+```markdown
+## Debugging Checklist
+When a stage doesn't behave as expected:
+1. **Compilation error:** Read the error. Check imports, trait bounds, type mismatches.
+2. **Test passes but feature doesn't work end-to-end:**
+   - Run `cargo test -p <crate> -- --show-output` to see debug output
+   - If proc macro involvement suspected: `cargo expand -p <macro_crate>` to inspect generated code
+   - Add `dbg!(&variable)` (not `eprintln!`) for quick inspection — it prints file:line automatically
+3. **Formatter produces wrong output:**
+   - Use quick_test.rs with `--show-output` to isolate the node
+   - Compare IR output with `biome-cli-dev format --write=false` if debug_formatter_ir is wired
+4. **Rule doesn't fire:**
+   - Verify rule appears in `cargo expand` output of configuration macros
+   - Check all three registration points (codegen analyzer, codegen configuration, proc macro)
+   - Run `biome lint --verbose` to see enabled rule count
+5. **Stack trace needed:** `cargo t --profile debugging <test_name>`
+6. **Before committing:** Remove all `dbg!()` and `eprintln!()` calls
+```
+
+**Code contribution standards assessment:**
+
+The current YAML implementation has these quality gaps relative to CONTRIBUTING.md expectations:
+
+| Standard | Expected | Current | Gap |
+|----------|----------|---------|-----|
+| Snapshot tests | Required for formatter + analyzer | None | **Critical** |
+| Quick test file | Standard practice | Inline only | **Minor** (functional equivalent exists) |
+| `cargo fmt` clean | Required | **Unknown** — never ran `cargo fmt` | **Must verify** |
+| `cargo clippy` clean | Required | **Unknown** — never ran clippy | **Must verify** |
+| `just ready` passes | Required for PR | **Never ran** | **Blocking for PR** |
+| Doctests | Encouraged | None | **Minor** |
+| `cargo insta` snapshots accepted | Required | Configuration snapshots accepted; no formatter/analyzer snapshots exist | **Critical** |
+
+**Before contributing the YAML work as a PR:**
+1. Install `just` (or run equivalent commands)
+2. Run `cargo fmt -- --check` to verify formatting
+3. Run `cargo clippy -p biome_yaml_formatter -p biome_yaml_analyze -p biome_service` to catch warnings
+4. Create snapshot test infrastructure (harness + initial fixtures)
+5. Run `just ready` equivalent to validate full suite
+
+**Recommendation:** Add `cargo-expand` and `just` to the Erasimus devcontainer. Add the debugging checklist to the Phase 4 command definition. Make `cargo fmt --check` and `cargo clippy` part of Gate 4 (test status gate at end of implementation).
 
 ## Revised assessment
 
