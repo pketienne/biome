@@ -64,8 +64,13 @@ impl PrintedTokens {
     /// Asserts that all tokens of the passed in node have been tracked
     ///
     /// ## Panics
-    /// If any descendant token of `root` hasn't been tracked
+    /// If any descendant token of `root` hasn't been tracked.
+    /// Does nothing if tracking has been disabled.
     pub fn assert_all_tracked<L: Language>(&self, root: &SyntaxNode<L>) {
+        if self.disabled {
+            return;
+        }
+
         let mut offsets = self.offsets.clone();
 
         for token in root.descendants_tokens(Direction::Next) {

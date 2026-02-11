@@ -108,6 +108,7 @@ pub fn generate_analyzer() -> Result<()> {
     generate_css_analyzer()?;
     generate_graphql_analyzer()?;
     generate_html_analyzer()?;
+    generate_yaml_analyzer()?;
     Ok(())
 }
 
@@ -255,6 +256,37 @@ fn generate_html_analyzer() -> Result<()> {
     fs2::write(build_rs_path, build_script)?;
 
     update_html_registry_builder(analyzers)
+}
+
+fn generate_yaml_analyzer() -> Result<()> {
+    let base_path = project_root().join("crates/biome_yaml_analyze/src");
+    let mut analyzers = BTreeMap::new();
+    let mut categories_and_groups = BTreeMap::new();
+
+    // Check if lint directory exists
+    let lint_path = base_path.join("lint");
+    if lint_path.exists() {
+        let lint_groups = generate_category("lint", &mut analyzers, &base_path)?;
+        if !lint_groups.is_empty() {
+            categories_and_groups.insert("lint", lint_groups);
+        }
+    }
+
+    // Check if assist directory exists
+    let assist_path = base_path.join("assist");
+    if assist_path.exists() {
+        let assist_groups = generate_category("assist", &mut analyzers, &base_path)?;
+        if !assist_groups.is_empty() {
+            categories_and_groups.insert("assist", assist_groups);
+        }
+    }
+
+    // Generate and write build.rs
+    let build_script = generate_build_script(&categories_and_groups)?;
+    let build_rs_path = project_root().join("crates/biome_yaml_analyze/build.rs");
+    fs2::write(build_rs_path, build_script)?;
+
+    update_yaml_registry_builder(analyzers)
 }
 
 fn generate_category(
@@ -449,6 +481,25 @@ fn update_html_registry_builder(analyzers: BTreeMap<&'static str, TokenStream>) 
         use biome_html_syntax::HtmlLanguage;
 
         pub fn visit_registry<V: RegistryVisitor<HtmlLanguage>>(registry: &mut V) {
+            #( #categories )*
+        }
+    })?;
+
+    fs2::write(path, tokens)?;
+
+    Ok(())
+}
+
+fn update_yaml_registry_builder(analyzers: BTreeMap<&'static str, TokenStream>) -> Result<()> {
+    let path = project_root().join("crates/biome_yaml_analyze/src/registry.rs");
+
+    let categories = analyzers.into_values();
+
+    let tokens = xtask_glue::reformat(quote! {
+        use biome_analyze::RegistryVisitor;
+        use biome_yaml_syntax::YamlLanguage;
+
+        pub fn visit_registry<V: RegistryVisitor<YamlLanguage>>(registry: &mut V) {
             #( #categories )*
         }
     })?;

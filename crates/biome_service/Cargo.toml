@@ -60,6 +60,10 @@ biome_resolver          = { workspace = true }
 biome_rowan             = { workspace = true, features = ["serde"] }
 biome_string_case       = { workspace = true }
 biome_text_edit         = { workspace = true }
+biome_yaml_analyze      = { workspace = true }
+biome_yaml_formatter    = { workspace = true }
+biome_yaml_parser       = { workspace = true }
+biome_yaml_syntax       = { workspace = true }
 boxcar                  = { workspace = true }
 camino                  = { workspace = true }
 crossbeam               = { workspace = true }
@@ -101,6 +105,7 @@ schema    = [
   "biome_json_syntax/schema",
   "biome_module_graph/schema",
   "biome_text_edit/schema",
+  "biome_yaml_syntax/schema",
   "dep:schemars",
 ]
 

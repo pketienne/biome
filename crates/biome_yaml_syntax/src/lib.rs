@@ -2,7 +2,8 @@
 
 #[macro_use]
 mod generated;
-mod file_source;
+pub mod file_source;
+pub use file_source::YamlFileSource;
 mod syntax_node;
 
 pub use self::generated::*;

@@ -5,7 +5,7 @@ use crate::html::HtmlConfiguration;
 use crate::max_size::MaxSize;
 use crate::{
     CssConfiguration, GraphqlConfiguration, GritConfiguration, JsConfiguration, JsonConfiguration,
-    Rules,
+    Rules, YamlConfiguration,
 };
 use biome_deserialize_macros::{Deserializable, Merge};
 use biome_formatter::{
@@ -37,6 +37,10 @@ pub struct OverridePattern {
     /// Specific configuration for the Json language
     #[serde(skip_serializing_if = "Option::is_none")]
     pub json: Option<JsonConfiguration>,
+
+    /// Specific configuration for the YAML language
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub yaml: Option<YamlConfiguration>,
 
     /// Specific configuration for the CSS language
     #[serde(skip_serializing_if = "Option::is_none")]

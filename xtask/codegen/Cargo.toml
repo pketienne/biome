@@ -30,6 +30,8 @@ biome_json_formatter  = { workspace = true, optional = true }
 biome_json_parser     = { workspace = true, optional = true }
 biome_json_syntax     = { workspace = true, optional = true }
 biome_rowan           = { workspace = true, optional = true }
+biome_yaml_analyze    = { workspace = true, optional = true }
+biome_yaml_syntax     = { workspace = true, optional = true }
 biome_service         = { workspace = true, features = ["schema"], optional = true }
 biome_string_case     = { workspace = true }
 biome_ungrammar       = { workspace = true }
@@ -59,6 +61,8 @@ configuration = [
   "biome_json_analyze",
   "biome_json_syntax",
   "biome_rowan",
+  "biome_yaml_analyze",
+  "biome_yaml_syntax",
   "pulldown-cmark",
 ]
 license       = ["serde", "serde_json", "ureq/default", "ureq/json"]

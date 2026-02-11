@@ -21,6 +21,7 @@ pub mod json;
 pub mod max_size;
 mod overrides;
 pub mod vcs;
+pub mod yaml;
 
 use crate::analyzer::assist::{Actions, AssistConfiguration, Source, assist_configuration};
 use crate::analyzer::{RuleAssistConfiguration, RuleDomains};
@@ -35,6 +36,7 @@ pub use crate::grit::{GritConfiguration, grit_configuration};
 use crate::javascript::{JsFormatterConfiguration, JsLinterConfiguration};
 use crate::json::{JsonFormatterConfiguration, JsonLinterConfiguration};
 use crate::max_size::MaxSize;
+use crate::yaml::{YamlFormatterConfiguration, YamlLinterConfiguration};
 use crate::vcs::{VcsConfiguration, vcs_configuration};
 pub use analyzer::{
     LinterConfiguration, RuleConfiguration, RuleFixConfiguration, RulePlainConfiguration,
@@ -59,6 +61,7 @@ pub use graphql::{GraphqlConfiguration, graphql_configuration};
 pub use html::{HtmlConfiguration, html_configuration};
 pub use javascript::{JsConfiguration, js_configuration};
 pub use json::{JsonConfiguration, json_configuration};
+pub use yaml::{YamlConfiguration, yaml_configuration};
 pub use overrides::{
     OverrideAssistConfiguration, OverrideFilesConfiguration, OverrideFormatterConfiguration,
     OverrideGlobs, OverrideLinterConfiguration, OverridePattern, Overrides,
@@ -148,6 +151,11 @@ pub struct Configuration {
     #[bpaf(external(json_configuration), optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub json: Option<JsonConfiguration>,
+
+    /// Specific configuration for the YAML language
+    #[bpaf(external(yaml_configuration), optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub yaml: Option<YamlConfiguration>,
 
     /// Specific configuration for the Css language
     #[bpaf(external(css_configuration), optional)]
@@ -358,6 +366,21 @@ impl Configuration {
 
     pub fn get_json_linter_configuration(&self) -> JsonLinterConfiguration {
         self.json
+            .as_ref()
+            .and_then(|lang| lang.linter.clone())
+            .unwrap_or_default()
+    }
+
+    pub fn get_yaml_formatter_configuration(&self) -> YamlFormatterConfiguration {
+        self.yaml
+            .as_ref()
+            .and_then(|lang| lang.formatter.as_ref())
+            .cloned()
+            .unwrap_or_default()
+    }
+
+    pub fn get_yaml_linter_configuration(&self) -> YamlLinterConfiguration {
+        self.yaml
             .as_ref()
             .and_then(|lang| lang.linter.clone())
             .unwrap_or_default()

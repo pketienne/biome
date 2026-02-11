@@ -1,6 +1,6 @@
 use self::{
     css::CssFileHandler, javascript::JsFileHandler, json::JsonFileHandler,
-    unknown::UnknownFileHandler,
+    unknown::UnknownFileHandler, yaml::YamlFileHandler,
 };
 use crate::WorkspaceError;
 use crate::diagnostics::{QueryDiagnostic, SearchError};
@@ -42,6 +42,8 @@ use biome_js_syntax::{
 };
 use biome_json_analyze::METADATA as json_metadata;
 use biome_json_syntax::{JsonFileSource, JsonLanguage};
+use biome_yaml_analyze::METADATA as yaml_metadata;
+use biome_yaml_syntax::{YamlFileSource, YamlLanguage};
 use biome_module_graph::ModuleGraph;
 use biome_package::PackageJson;
 use biome_parser::AnyParse;
@@ -68,6 +70,7 @@ mod ignore;
 pub(crate) mod javascript;
 pub(crate) mod json;
 pub mod svelte;
+pub(crate) mod yaml;
 mod unknown;
 pub mod vue;
 
@@ -82,6 +85,7 @@ pub enum DocumentFileSource {
     Graphql(GraphqlFileSource),
     Html(HtmlFileSource),
     Grit(GritFileSource),
+    Yaml(YamlFileSource),
     // Ignore files
     Ignore,
     #[default]
@@ -124,6 +128,12 @@ impl From<GritFileSource> for DocumentFileSource {
     }
 }
 
+impl From<YamlFileSource> for DocumentFileSource {
+    fn from(value: YamlFileSource) -> Self {
+        Self::Yaml(value)
+    }
+}
+
 impl From<&Utf8Path> for DocumentFileSource {
     fn from(path: &Utf8Path) -> Self {
         Self::from_path(path, false)
@@ -158,6 +168,9 @@ impl DocumentFileSource {
             return Ok(file_source.into());
         }
         if let Ok(file_source) = GraphqlFileSource::try_from_well_known(path) {
+            return Ok(file_source.into());
+        }
+        if let Ok(file_source) = YamlFileSource::try_from_well_known(path) {
             return Ok(file_source.into());
         }
 
@@ -201,6 +214,9 @@ impl DocumentFileSource {
             return Ok(file_source.into());
         }
 
+        if let Ok(file_source) = YamlFileSource::try_from_extension(extension) {
+            return Ok(file_source.into());
+        }
         if let Ok(file_source) = GritFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
@@ -227,6 +243,9 @@ impl DocumentFileSource {
             return Ok(file_source.into());
         }
         if let Ok(file_source) = HtmlFileSource::try_from_language_id(language_id) {
+            return Ok(file_source.into());
+        }
+        if let Ok(file_source) = YamlFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
         if let Ok(file_source) = GritFileSource::try_from_language_id(language_id) {
@@ -370,6 +389,17 @@ impl DocumentFileSource {
         }
     }
 
+    pub const fn is_yaml_like(&self) -> bool {
+        matches!(self, Self::Yaml(_))
+    }
+
+    pub fn to_yaml_file_source(&self) -> Option<YamlFileSource> {
+        match self {
+            Self::Yaml(yaml) => Some(*yaml),
+            _ => None,
+        }
+    }
+
     /// The file can be parsed
     pub fn can_parse(path: &Utf8Path) -> bool {
         let file_source = Self::from(path);
@@ -379,7 +409,8 @@ impl DocumentFileSource {
             | Self::Graphql(_)
             | Self::Json(_)
             | Self::Html(_)
-            | Self::Grit(_) => true,
+            | Self::Grit(_)
+            | Self::Yaml(_) => true,
             Self::Ignore => false,
             Self::Unknown => false,
         }
@@ -394,7 +425,8 @@ impl DocumentFileSource {
             | Self::Graphql(_)
             | Self::Json(_)
             | Self::Html(_)
-            | Self::Grit(_) => true,
+            | Self::Grit(_)
+            | Self::Yaml(_) => true,
             Self::Ignore => true,
             Self::Unknown => false,
         }
@@ -410,6 +442,7 @@ impl DocumentFileSource {
             | Self::Graphql(_)
             | Self::Json(_)
             | Self::Grit(_)
+            | Self::Yaml(_)
             | Self::Ignore
             | Self::Unknown => false,
         }
@@ -444,6 +477,7 @@ impl std::fmt::Display for DocumentFileSource {
             Self::Graphql(_) => write!(fmt, "GraphQL"),
             Self::Html(_) => write!(fmt, "HTML"),
             Self::Grit(_) => write!(fmt, "Grit"),
+            Self::Yaml(_) => write!(fmt, "YAML"),
             Self::Ignore => write!(fmt, "Ignore"),
             Self::Unknown => write!(fmt, "Unknown"),
         }
@@ -1030,6 +1064,7 @@ pub(crate) struct Features {
     graphql: GraphqlFileHandler,
     html: HtmlFileHandler,
     grit: GritFileHandler,
+    yaml: YamlFileHandler,
     ignore: IgnoreFileHandler,
 }
 
@@ -1045,6 +1080,7 @@ impl Features {
             graphql: GraphqlFileHandler {},
             html: HtmlFileHandler {},
             grit: GritFileHandler {},
+            yaml: YamlFileHandler {},
             ignore: IgnoreFileHandler {},
             unknown: UnknownFileHandler::default(),
         }
@@ -1065,6 +1101,7 @@ impl Features {
             DocumentFileSource::Graphql(_) => self.graphql.capabilities(),
             DocumentFileSource::Html(_) => self.html.capabilities(),
             DocumentFileSource::Grit(_) => self.grit.capabilities(),
+            DocumentFileSource::Yaml(_) => self.yaml.capabilities(),
             DocumentFileSource::Ignore => self.ignore.capabilities(),
             DocumentFileSource::Unknown => self.unknown.capabilities(),
         }
@@ -1301,6 +1338,25 @@ impl RegistryVisitor<HtmlLanguage> for SyntaxVisitor<'_> {
     fn record_rule<R>(&mut self)
     where
         R: Rule<Options: Default, Query: Queryable<Language = HtmlLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.enabled_rules.push(RuleFilter::Rule(
+            <R::Group as RuleGroup>::NAME,
+            R::METADATA.name,
+        ))
+    }
+}
+
+impl RegistryVisitor<YamlLanguage> for SyntaxVisitor<'_> {
+    fn record_category<C: GroupCategory<Language = YamlLanguage>>(&mut self) {
+        if C::CATEGORY == RuleCategory::Syntax {
+            C::record_groups(self)
+        }
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = YamlLanguage, Output: Clone>>
             + 'static,
     {
         self.enabled_rules.push(RuleFilter::Rule(
@@ -1648,6 +1704,30 @@ impl RegistryVisitor<HtmlLanguage> for LintVisitor<'_, '_> {
     }
 }
 
+impl RegistryVisitor<YamlLanguage> for LintVisitor<'_, '_> {
+    fn record_category<C: GroupCategory<Language = YamlLanguage>>(&mut self) {
+        if C::CATEGORY == RuleCategory::Lint {
+            C::record_groups(self)
+        }
+    }
+
+    fn record_group<G: RuleGroup<Language = YamlLanguage>>(&mut self) {
+        G::record_rules(self)
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = YamlLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.push_rule::<R, <R::Query as Queryable>::Language>(
+            yaml_metadata
+                .find_rule(R::Group::NAME, R::METADATA.name)
+                .map(RuleFilter::from),
+        )
+    }
+}
+
 struct AssistsVisitor<'a, 'b> {
     settings: &'b Settings,
     enabled_rules: Vec<RuleFilter<'a>>,
@@ -1816,6 +1896,22 @@ impl RegistryVisitor<HtmlLanguage> for AssistsVisitor<'_, '_> {
     }
 }
 
+impl RegistryVisitor<YamlLanguage> for AssistsVisitor<'_, '_> {
+    fn record_category<C: GroupCategory<Language = YamlLanguage>>(&mut self) {
+        if C::CATEGORY == RuleCategory::Action {
+            C::record_groups(self)
+        }
+    }
+
+    fn record_rule<R>(&mut self)
+    where
+        R: Rule<Options: Default, Query: Queryable<Language = YamlLanguage, Output: Clone>>
+            + 'static,
+    {
+        self.push_rule::<R, <R::Query as Queryable>::Language>();
+    }
+}
+
 pub(crate) struct AnalyzerVisitorBuilder<'a> {
     settings: &'a Settings,
     only: Option<&'a [AnalyzerSelector]>,
@@ -1894,6 +1990,7 @@ impl<'b> AnalyzerVisitorBuilder<'b> {
         biome_json_analyze::visit_registry(&mut syntax);
         biome_graphql_analyze::visit_registry(&mut syntax);
         biome_html_analyze::visit_registry(&mut syntax);
+        biome_yaml_analyze::visit_registry(&mut syntax);
         enabled_rules.extend(syntax.enabled_rules);
 
         let package_json = self
@@ -1915,6 +2012,7 @@ impl<'b> AnalyzerVisitorBuilder<'b> {
         biome_json_analyze::visit_registry(&mut lint);
         biome_graphql_analyze::visit_registry(&mut lint);
         biome_html_analyze::visit_registry(&mut lint);
+        biome_yaml_analyze::visit_registry(&mut lint);
         let (linter_enabled_rules, linter_disabled_rules) = lint.finish();
         enabled_rules.extend(linter_enabled_rules);
         disabled_rules.extend(linter_disabled_rules);
@@ -1926,6 +2024,7 @@ impl<'b> AnalyzerVisitorBuilder<'b> {
         biome_json_analyze::visit_registry(&mut assist);
         biome_graphql_analyze::visit_registry(&mut assist);
         biome_html_analyze::visit_registry(&mut assist);
+        biome_yaml_analyze::visit_registry(&mut assist);
         let (assists_enabled_rules, assists_disabled_rules) = assist.finish();
         enabled_rules.extend(assists_enabled_rules);
         disabled_rules.extend(assists_disabled_rules);

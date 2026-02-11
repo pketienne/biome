@@ -395,6 +395,7 @@ define_categories! {
     "lint/suspicious/noDuplicateFields": "https://biomejs.dev/linter/rules/no-duplicate-fields",
     "lint/suspicious/noDuplicateFontNames": "https://biomejs.dev/linter/rules/no-font-family-duplicate-names",
     "lint/suspicious/noDuplicateJsxProps": "https://biomejs.dev/linter/rules/no-duplicate-jsx-props",
+    "lint/suspicious/noDuplicateKeys": "https://biomejs.dev/linter/rules/no-duplicate-keys",
     "lint/suspicious/noDuplicateObjectKeys": "https://biomejs.dev/linter/rules/no-duplicate-object-keys",
     "lint/suspicious/noDuplicateParameters": "https://biomejs.dev/linter/rules/no-duplicate-parameters",
     "lint/suspicious/noDuplicateProperties": "https://biomejs.dev/linter/rules/no-duplicate-properties",
