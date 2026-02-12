@@ -119,7 +119,6 @@ commands/
 | Progress tracking       | `anthropic-cookbook/claude_agent_sdk/01_*.ipynb`           | `courses/prompt_evaluations/`                  |
 | Spec writing            | `skills/doc-coauthoring/SKILL.md`                         | `anthropic-cookbook/.claude/skills/`            |
 | Hook patterns           | `claude-code/plugins/hookify/`                            | `claude-code/plugins/plugin-dev/skills/hook-*` |
-| MCP integration         | `skills/mcp-builder/SKILL.md`                             | `claude-code/plugins/plugin-dev/skills/mcp-*`  |
 | Teaching patterns       | `courses/prompt_engineering_interactive_tutorial/`         | `anthropic-cookbook/.claude/skills/cookbook-*`   |
 
 All paths are relative to `~/Clones/anthropics/`.

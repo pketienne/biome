@@ -10,12 +10,21 @@ Conduct a systematic research workflow to extract and compare features from clon
 Language: $1
 Focus area (optional): $2
 
+## Gate 1: Plan Capture (BLOCKING)
+
+1. Generate a research plan for $1 covering: which repos to scan, how to group them, what extraction depth to use, what spec versions to reference.
+2. Write the plan to `kb/tasks/$1/phase1-feature-extraction-plan.md`.
+3. Read the file back to confirm it was written.
+4. If the file does not exist or is empty, STOP and report the failure.
+5. Only after confirmation, proceed to Phase 1.
+
 ## Phase 1: Setup
 
 1. Create a todo list tracking all phases of this research workflow.
 2. Load the tool inventory for the target language from @references/$1/tools.md to understand which repos are available, their types, and where features are located.
 3. If the tool inventory file does not exist, inform the user that references/$1/tools.md must be created first, listing cloned repos with their type, language, and feature locations. Stop here.
 4. If $2 is provided, filter the tool inventory to repos relevant to that focus area (e.g., "linting" filters to linter repos, "formatting" filters to formatter repos, "parsing" filters to parser repos, "validation" filters to validator repos). If no filter matches, use all repos.
+5. Load the `feature-comparison` skill for report template and spec classification guidance.
 
 ## Phase 2: Clarifying Questions
 
@@ -76,7 +85,16 @@ Prioritized list of what to investigate or implement next.
 
 ## Phase 5: Completion
 
-1. Present the synthesis report to the user.
-2. Ask if they want to drill deeper into any specific area, tool, or feature category.
-3. Mark all todos complete.
-4. Suggest saving the report to references/$1/ for future reference.
+1. Save the report to `references/$1/feature-research-report.md`.
+2. Present the synthesis report to the user.
+3. Ask if they want to drill deeper into any specific area, tool, or feature category.
+4. Mark all todos complete.
+
+## Gate 2: Phase Summary (BLOCKING)
+
+1. Write a summary to `kb/tasks/$1/phase1-feature-extraction-summary.md` containing:
+   - **Completed work:** N tools scanned, N features extracted, N consensus features identified
+   - **Artifacts produced:** `references/$1/feature-research-report.md`
+   - **Key findings:** Top 3-5 observations
+   - **Resumption instructions:** How to continue to Phase 2 (architecture analysis)
+2. Report to user: "Phase 1 complete. Report: references/$1/feature-research-report.md. Safe to /clear. To resume, read the summary."

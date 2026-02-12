@@ -8,6 +8,12 @@
       "Bash(cargo test:*)",
       "Bash(cargo check:*)",
       "Bash(cargo run:*)",
+      "Bash(cargo build:*)",
+      "Bash(cargo clippy:*)",
+      "Bash(cargo fmt:*)",
+      "Bash(cargo expand:*)",
+      "Bash(.claude/hooks/check-registration.sh:*)",
+      "Bash(.claude/hooks/check-debug-hygiene.sh:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:typescript-eslint.io)",
       "WebFetch(domain:eslint.org)"
