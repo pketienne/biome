@@ -231,7 +231,7 @@ match these patterns.
 	* Use any `.editorconfig` files to configure the formatter. Configuration
 in `biome.json` will override `.editorconfig` configuration.
 
-Default: `true`. 
+Default: `false`. 
 	 */
 	useEditorconfig?: Bool;
 }
@@ -2248,19 +2248,24 @@ See https://biomejs.dev/linter/rules/no-multi-str
 	noMultiStr?: NoMultiStrConfiguration;
 	/**
 	* Disallow multiple spaces after hash characters in atx headings.
-See https://biomejs.dev/linter/rules/no-multiple-space-atx-heading 
+See https://biomejs.dev/linter/rules/no-multiple-space-atx-heading
 	 */
 	noMultipleSpaceAtxHeading?: NoMultipleSpaceAtxHeadingConfiguration;
 	/**
 	* Disallow multiple spaces before closing hashes in closed ATX headings.
-See https://biomejs.dev/linter/rules/no-multiple-space-closed-atx-heading 
+See https://biomejs.dev/linter/rules/no-multiple-space-closed-atx-heading
 	 */
 	noMultipleSpaceClosedAtxHeading?: NoMultipleSpaceClosedAtxHeadingConfiguration;
 	/**
 	* Disallow multiple top-level headings in a document.
-See https://biomejs.dev/linter/rules/no-multiple-top-level-headings 
+See https://biomejs.dev/linter/rules/no-multiple-top-level-headings
 	 */
 	noMultipleTopLevelHeadings?: NoMultipleTopLevelHeadingsConfiguration;
+	/**
+	* Disallow nested .then() or .catch() promise calls.
+See https://biomejs.dev/linter/rules/no-nested-promises
+	 */
+	noNestedPromises?: NoNestedPromisesConfiguration;
 	/**
 	* Prevent client components from being async functions.
 See https://biomejs.dev/linter/rules/no-next-async-client-component 
@@ -2421,6 +2426,11 @@ See https://biomejs.dev/linter/rules/no-unused-expressions
 See https://biomejs.dev/linter/rules/no-useless-catch-binding 
 	 */
 	noUselessCatchBinding?: NoUselessCatchBindingConfiguration;
+	/**
+	* Disallow redundant return statements.
+See https://biomejs.dev/linter/rules/no-useless-return 
+	 */
+	noUselessReturn?: NoUselessReturnConfiguration;
 	/**
 	* Disallow the use of useless undefined.
 See https://biomejs.dev/linter/rules/no-useless-undefined 
@@ -4552,6 +4562,9 @@ export type NoMultipleSpaceClosedAtxHeadingConfiguration =
 export type NoMultipleTopLevelHeadingsConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoMultipleTopLevelHeadingsOptions;
+export type NoNestedPromisesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoNestedPromisesOptions;
 export type NoNextAsyncClientComponentConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoNextAsyncClientComponentOptions;
@@ -4648,6 +4661,9 @@ export type NoUnusedExpressionsConfiguration =
 export type NoUselessCatchBindingConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoUselessCatchBindingOptions;
+export type NoUselessReturnConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoUselessReturnOptions;
 export type NoUselessUndefinedConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoUselessUndefinedOptions;
@@ -6457,6 +6473,10 @@ export interface RuleWithNoMultipleTopLevelHeadingsOptions {
 	level: RulePlainConfiguration;
 	options?: NoMultipleTopLevelHeadingsOptions;
 }
+export interface RuleWithNoNestedPromisesOptions {
+	level: RulePlainConfiguration;
+	options?: NoNestedPromisesOptions;
+}
 export interface RuleWithNoNextAsyncClientComponentOptions {
 	level: RulePlainConfiguration;
 	options?: NoNextAsyncClientComponentOptions;
@@ -6587,6 +6607,11 @@ export interface RuleWithNoUselessCatchBindingOptions {
 	fix?: FixKind;
 	level: RulePlainConfiguration;
 	options?: NoUselessCatchBindingOptions;
+}
+export interface RuleWithNoUselessReturnOptions {
+	fix?: FixKind;
+	level: RulePlainConfiguration;
+	options?: NoUselessReturnOptions;
 }
 export interface RuleWithNoUselessUndefinedOptions {
 	fix?: FixKind;
@@ -8260,6 +8285,7 @@ export type NoMultiStrOptions = {};
 export type NoMultipleSpaceAtxHeadingOptions = {};
 export type NoMultipleSpaceClosedAtxHeadingOptions = {};
 export type NoMultipleTopLevelHeadingsOptions = {};
+export type NoNestedPromisesOptions = {};
 export type NoNextAsyncClientComponentOptions = {};
 export type NoParagraphContentIndentOptions = {};
 export type NoParametersOnlyUsedInRecursionOptions = {};
@@ -8312,6 +8338,7 @@ export type NoUnusedExpressionsOptions = {};
 Currently empty; reserved for future extensions (e.g. allowlist of names). 
 	 */
 export type NoUselessCatchBindingOptions = {};
+export type NoUselessReturnOptions = {};
 export type NoUselessUndefinedOptions = {};
 export type NoVueArrowFuncInWatchOptions = {};
 export type NoVueDataObjectDeclarationOptions = {};
@@ -9430,6 +9457,7 @@ export type Category =
 	| "lint/nursery/noMultipleSpaceClosedAtxHeading"
 	| "lint/nursery/noMultipleTopLevelHeadings"
 	| "lint/nursery/noMultiStr"
+	| "lint/nursery/noNestedPromises"
 	| "lint/nursery/noNextAsyncClientComponent"
 	| "lint/nursery/noParagraphContentIndent"
 	| "lint/nursery/noParametersOnlyUsedInRecursion"
@@ -9464,6 +9492,7 @@ export type Category =
 	| "lint/nursery/noUnwantedPolyfillio"
 	| "lint/nursery/noUselessBackrefInRegex"
 	| "lint/nursery/noUselessCatchBinding"
+	| "lint/nursery/noUselessReturn"
 	| "lint/nursery/noUselessUndefined"
 	| "lint/nursery/noVueArrowFuncInWatch"
 	| "lint/nursery/noVueDataObjectDeclaration"

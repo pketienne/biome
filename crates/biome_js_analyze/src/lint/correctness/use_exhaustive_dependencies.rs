@@ -7,7 +7,9 @@ use biome_analyze::{Rule, RuleDiagnostic, RuleDomain, context::RuleContext, decl
 use biome_console::markup;
 use biome_diagnostics::Severity;
 use biome_js_factory::make;
-use biome_js_semantic::{CanBeImportedExported, ClosureExtensions, ReferencesExtensions, SemanticModel, is_constant};
+use biome_js_semantic::{
+    CanBeImportedExported, ClosureExtensions, ReferencesExtensions, SemanticModel, is_constant,
+};
 use biome_js_syntax::binding_ext::AnyJsIdentifierBinding;
 use biome_js_syntax::{
     AnyJsArrayElement, AnyJsArrowFunctionParameters, AnyJsBinding, AnyJsExpression,
@@ -587,19 +589,6 @@ fn get_expression_candidates(node: JsSyntaxNode) -> Vec<AnyExpressionCandidate> 
             }
         }
 
-        // Follow eslint React plugin behavior:
-        // When calling a method of an object, only the object should be included in the dependency list.
-        if matches!(
-            parent.kind(),
-            JsSyntaxKind::JS_STATIC_MEMBER_EXPRESSION | JsSyntaxKind::JS_COMPUTED_MEMBER_EXPRESSION
-        ) && let Some(wrapper) = parent.parent()
-            && let Some(call_expression) = JsCallExpression::cast(wrapper)
-            && let Ok(callee) = call_expression.callee()
-            && callee.syntax().eq(&parent)
-        {
-            return result;
-        }
-
         if matches!(
             parent.kind(),
             JsSyntaxKind::JS_IDENTIFIER_EXPRESSION
@@ -1014,13 +1003,14 @@ fn get_single_pattern_member(
                             .map(|member| {
                                 (
                                     array_pattern.syntax().clone(),
-                                    ReactHookResultMember::Index(member),
+                                    Some(ReactHookResultMember::Index(member)),
                                 )
                             })
                     })
             }),
         JsSyntaxKind::JS_OBJECT_BINDING_PATTERN_PROPERTY
-        | JsSyntaxKind::JS_OBJECT_BINDING_PATTERN_SHORTHAND_PROPERTY => {
+        | JsSyntaxKind::JS_OBJECT_BINDING_PATTERN_SHORTHAND_PROPERTY
+        | JsSyntaxKind::JS_OBJECT_BINDING_PATTERN_REST => {
             let Some(object_pattern) = parent_syntax
                 .parent()
                 .and_then(JsObjectBindingPatternPropertyList::cast)
@@ -1030,27 +1020,41 @@ fn get_single_pattern_member(
             else {
                 return GetSinglePatternMemberResult::Unknown;
             };
-            let Some(member) = (match AnyJsObjectBindingPatternMember::try_cast(parent_syntax) {
-                Ok(AnyJsObjectBindingPatternMember::JsObjectBindingPatternProperty(property)) => {
-                    property
+            if matches!(
+                parent_syntax.kind(),
+                JsSyntaxKind::JS_OBJECT_BINDING_PATTERN_REST
+            ) {
+                Some((object_pattern.syntax().clone(), None))
+            } else if let Some(member) =
+                match AnyJsObjectBindingPatternMember::try_cast(parent_syntax) {
+                    Ok(AnyJsObjectBindingPatternMember::JsObjectBindingPatternProperty(
+                        property,
+                    )) => property
                         .member()
                         .ok()
                         .and_then(|member| member.name())
-                        .map(ReactHookResultMember::Key)
+                        .map(ReactHookResultMember::Key),
+                    Ok(
+                        AnyJsObjectBindingPatternMember::JsObjectBindingPatternShorthandProperty(
+                            shorthand_property,
+                        ),
+                    ) => shorthand_property
+                        .identifier()
+                        .ok()
+                        .and_then(|identifier| {
+                            identifier.as_js_identifier_binding()?.name_token().ok()
+                        })
+                        .map(|name_token| {
+                            ReactHookResultMember::Key(name_token.token_text_trimmed())
+                        }),
+                    // Shouldn't happen because of the previous check
+                    _ => None,
                 }
-                Ok(AnyJsObjectBindingPatternMember::JsObjectBindingPatternShorthandProperty(
-                    shorthand_property,
-                )) => shorthand_property
-                    .identifier()
-                    .ok()
-                    .and_then(|identifier| identifier.as_js_identifier_binding()?.name_token().ok())
-                    .map(|name_token| ReactHookResultMember::Key(name_token.token_text_trimmed())),
-                // Shouldn't happen because of the previous check
-                _ => None,
-            }) else {
+            {
+                Some((object_pattern.syntax().clone(), Some(member)))
+            } else {
                 return GetSinglePatternMemberResult::Unknown;
-            };
-            Some((object_pattern.syntax().clone(), member))
+            }
         }
         JsSyntaxKind::JS_VARIABLE_DECLARATOR => {
             return GetSinglePatternMemberResult::NoPattern;
@@ -1065,7 +1069,10 @@ fn get_single_pattern_member(
     {
         return GetSinglePatternMemberResult::TooDeep;
     }
-    GetSinglePatternMemberResult::Member(member)
+    match member {
+        Some(member) => GetSinglePatternMemberResult::Member(member),
+        None => GetSinglePatternMemberResult::NoPattern,
+    }
 }
 
 enum GetSinglePatternMemberResult {
@@ -1627,12 +1634,13 @@ impl Rule for UseExhaustiveDependencies {
                 let new_elements = captures.first().into_iter().filter_map(|node| {
                     if let Some(jsx_ref) = JsxReferenceIdentifier::cast_ref(node) {
                         return Some(AnyJsArrayElement::AnyJsExpression(
-                             make::js_identifier_expression(
-                                 make::js_reference_identifier(jsx_ref.value_token().ok()?)
-                             ).into()
+                            make::js_identifier_expression(make::js_reference_identifier(
+                                jsx_ref.value_token().ok()?,
+                            ))
+                            .into(),
                         ));
                     }
-                    
+
                     node.ancestors()
                         .find_map(|node| match JsReferenceIdentifier::cast_ref(&node) {
                             Some(node) => Some(make::js_identifier_expression(node).into()),
