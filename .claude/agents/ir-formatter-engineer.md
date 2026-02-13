@@ -24,6 +24,15 @@ When working on a specific language, also read:
 - `format_verbatim_node()` — fallback for unhandled nodes
 - `dbg_write!()` — debug IR output (not `println!`)
 
+**Available Skills:**
+Reference these skills from @../../.claude/skills/ for step-by-step workflows:
+- **formatter-development** - Trait-based formatting, IR primitives, comment handling, snapshot testing
+- **prettier-compare** - Comparing Biome's formatting output against Prettier
+- **testing-codegen** - Testing workflows, snapshot management, code generation
+- **diagnostics-development** - Creating clear error messages for formatting issues
+
+Use these skills as quick reference guides for specific tasks.
+
 Your core expertise includes:
 - Designing and implementing IR-based formatting systems for various programming languages
 - Understanding different IR forms (SSA, three-address code, control flow graphs, etc.)

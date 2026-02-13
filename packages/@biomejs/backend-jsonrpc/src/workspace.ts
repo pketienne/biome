@@ -227,7 +227,7 @@ match these patterns.
 	* Use any `.editorconfig` files to configure the formatter. Configuration
 in `biome.json` will override `.editorconfig` configuration.
 
-Default: `true`. 
+Default: `false`. 
 	 */
 	useEditorconfig?: Bool;
 }
@@ -2019,6 +2019,11 @@ See https://biomejs.dev/linter/rules/no-multi-str
 	 */
 	noMultiStr?: NoMultiStrConfiguration;
 	/**
+	* Disallow nested .then() or .catch() promise calls.
+See https://biomejs.dev/linter/rules/no-nested-promises 
+	 */
+	noNestedPromises?: NoNestedPromisesConfiguration;
+	/**
 	* Prevent client components from being async functions.
 See https://biomejs.dev/linter/rules/no-next-async-client-component 
 	 */
@@ -2103,6 +2108,11 @@ See https://biomejs.dev/linter/rules/no-unused-expressions
 See https://biomejs.dev/linter/rules/no-useless-catch-binding 
 	 */
 	noUselessCatchBinding?: NoUselessCatchBindingConfiguration;
+	/**
+	* Disallow redundant return statements.
+See https://biomejs.dev/linter/rules/no-useless-return 
+	 */
+	noUselessReturn?: NoUselessReturnConfiguration;
 	/**
 	* Disallow the use of useless undefined.
 See https://biomejs.dev/linter/rules/no-useless-undefined 
@@ -3887,6 +3897,9 @@ export type NoMultiAssignConfiguration =
 export type NoMultiStrConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoMultiStrOptions;
+export type NoNestedPromisesConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoNestedPromisesOptions;
 export type NoNextAsyncClientComponentConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoNextAsyncClientComponentOptions;
@@ -3938,6 +3951,9 @@ export type NoUnusedExpressionsConfiguration =
 export type NoUselessCatchBindingConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoUselessCatchBindingOptions;
+export type NoUselessReturnConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoUselessReturnOptions;
 export type NoUselessUndefinedConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoUselessUndefinedOptions;
@@ -5453,6 +5469,10 @@ export interface RuleWithNoMultiStrOptions {
 	level: RulePlainConfiguration;
 	options?: NoMultiStrOptions;
 }
+export interface RuleWithNoNestedPromisesOptions {
+	level: RulePlainConfiguration;
+	options?: NoNestedPromisesOptions;
+}
 export interface RuleWithNoNextAsyncClientComponentOptions {
 	level: RulePlainConfiguration;
 	options?: NoNextAsyncClientComponentOptions;
@@ -5523,6 +5543,11 @@ export interface RuleWithNoUselessCatchBindingOptions {
 	fix?: FixKind;
 	level: RulePlainConfiguration;
 	options?: NoUselessCatchBindingOptions;
+}
+export interface RuleWithNoUselessReturnOptions {
+	fix?: FixKind;
+	level: RulePlainConfiguration;
+	options?: NoUselessReturnOptions;
 }
 export interface RuleWithNoUselessUndefinedOptions {
 	fix?: FixKind;
@@ -6930,6 +6955,7 @@ export type NoLeakedRenderOptions = {};
 export type NoMisusedPromisesOptions = {};
 export type NoMultiAssignOptions = {};
 export type NoMultiStrOptions = {};
+export type NoNestedPromisesOptions = {};
 export type NoNextAsyncClientComponentOptions = {};
 export type NoParametersOnlyUsedInRecursionOptions = {};
 export type NoProtoOptions = {};
@@ -6967,6 +6993,7 @@ export type NoUnusedExpressionsOptions = {};
 Currently empty; reserved for future extensions (e.g. allowlist of names). 
 	 */
 export type NoUselessCatchBindingOptions = {};
+export type NoUselessReturnOptions = {};
 export type NoUselessUndefinedOptions = {};
 export type NoVueArrowFuncInWatchOptions = {};
 export type NoVueDataObjectDeclarationOptions = {};
@@ -7871,6 +7898,7 @@ export type Category =
 	| "lint/nursery/noMisusedPromises"
 	| "lint/nursery/noMultiAssign"
 	| "lint/nursery/noMultiStr"
+	| "lint/nursery/noNestedPromises"
 	| "lint/nursery/noNextAsyncClientComponent"
 	| "lint/nursery/noParametersOnlyUsedInRecursion"
 	| "lint/nursery/noProto"
@@ -7890,6 +7918,7 @@ export type Category =
 	| "lint/nursery/noUnwantedPolyfillio"
 	| "lint/nursery/noUselessBackrefInRegex"
 	| "lint/nursery/noUselessCatchBinding"
+	| "lint/nursery/noUselessReturn"
 	| "lint/nursery/noUselessUndefined"
 	| "lint/nursery/noVueArrowFuncInWatch"
 	| "lint/nursery/noVueDataObjectDeclaration"

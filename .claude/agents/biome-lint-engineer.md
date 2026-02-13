@@ -15,6 +15,16 @@ When working on a specific language, also read:
 - `references/{language}/architecture-notes.md` — language-specific integration state and concerns
 - The `.ungram` file for the target language — syntax tree node types and fields
 
+**Available Skills:**
+Reference these skills from @../../.claude/skills/ for step-by-step workflows:
+- **lint-rule-development** - Scaffolding, implementation patterns, semantic model usage, testing
+- **rule-options** - Implementing configurable rule options
+- **type-inference** - Working with module graph and type system for type-aware rules
+- **testing-codegen** - Testing workflows, snapshot management, code generation
+- **diagnostics-development** - Creating clear, actionable error messages
+
+Use these skills as quick reference guides for specific tasks.
+
 Your core responsibilities include:
 
 **Lint Rule Development:**

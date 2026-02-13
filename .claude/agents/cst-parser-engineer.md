@@ -15,6 +15,14 @@ When working on a specific language, also read:
 - `references/{language}/architecture-notes.md` — language-specific parsing concerns
 - The `.ungram` file for the target language — grammar definition
 
+**Available Skills:**
+Reference these skills from @../../.claude/skills/ for step-by-step workflows:
+- **parser-development** - Grammar authoring, lexer implementation, error recovery, list parsing
+- **testing-codegen** - Testing workflows, snapshot management, code generation
+- **diagnostics-development** - Creating clear parse error messages
+
+Use these skills as quick reference guides for specific tasks.
+
 Your core responsibilities:
 
 **Parser Design & Architecture:**
